@@ -28,8 +28,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,10 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
-
+	
+	@Autowired
+	HostInfoService hostInfoService;
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.BlacklistedSiteRepository#getAll()
 	 */
@@ -50,16 +55,22 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<BlacklistedSite> getAll() {
 		TypedQuery<BlacklistedSite> query = manager.createNamedQuery(BlacklistedSite.QUERY_ALL, BlacklistedSite.class);
+		query.setParameter(BlacklistedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.repository.BlacklistedSiteRepository#getById(java.lang.Long)
+	 * @see org.mitre.openid.connect.repository.BlacklistedSiteRepository#getById(java.lang.String)
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public BlacklistedSite getById(Long id) {
-		return manager.find(BlacklistedSite.class, id);
+	public BlacklistedSite getById(String id) {
+		BlacklistedSite entity = manager.find(BlacklistedSite.class, id);
+		if (entity == null) {
+			throw new IllegalArgumentException("BlacklistedSite not found: " + id);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	/* (non-Javadoc)
@@ -68,14 +79,8 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(BlacklistedSite blacklistedSite) {
-		BlacklistedSite found = manager.find(BlacklistedSite.class, blacklistedSite.getId());
-
-		if (found != null) {
-			manager.remove(found);
-		} else {
-			throw new IllegalArgumentException();
-		}
-
+		BlacklistedSite found = getById(blacklistedSite.getUuid());
+		manager.remove(found);
 	}
 
 	/* (non-Javadoc)
@@ -84,7 +89,8 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite save(BlacklistedSite blacklistedSite) {
-		return saveOrUpdate(blacklistedSite.getId(), manager, blacklistedSite);
+		hostInfoService.validateHost(blacklistedSite.getHostUuid());
+		return saveOrUpdate(blacklistedSite.getUuid(), manager, blacklistedSite);
 	}
 
 	/* (non-Javadoc)
@@ -93,9 +99,9 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite update(BlacklistedSite oldBlacklistedSite, BlacklistedSite blacklistedSite) {
-
-		blacklistedSite.setId(oldBlacklistedSite.getId());
-		return saveOrUpdate(oldBlacklistedSite.getId(), manager, blacklistedSite);
+		hostInfoService.validateHost(blacklistedSite.getHostUuid());
+		blacklistedSite.setUuid(oldBlacklistedSite.getUuid());
+		return saveOrUpdate(oldBlacklistedSite.getUuid(), manager, blacklistedSite);
 
 	}
 

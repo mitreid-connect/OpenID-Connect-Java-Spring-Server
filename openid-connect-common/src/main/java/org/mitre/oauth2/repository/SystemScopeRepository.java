@@ -30,14 +30,14 @@ import org.mitre.oauth2.model.SystemScope;
  */
 public interface SystemScopeRepository {
 
-	public Set<SystemScope> getAll(String hostUuid);
+	public Set<SystemScope> getAll();
 
-	public SystemScope getById(String hostUuid, String uuid);
+	public SystemScope getById(String uuid);
 
-	public SystemScope getByValue(String hostUuid, String value);
+	public SystemScope getByValue(String value);
 
-	public void remove(String hostUuid, SystemScope scope);
+	public void remove(SystemScope scope);
 
-	public SystemScope save(String hostUuid, SystemScope scope);
+	public SystemScope save(SystemScope scope);
 
 }

@@ -25,8 +25,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,41 +44,47 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
+	@Autowired
+	HostInfoService hostInfoService;
+	
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public Collection<ApprovedSite> getAll() {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public ApprovedSite getById(Long id) {
-		return manager.find(ApprovedSite.class, id);
+	public ApprovedSite getById(String id) {
+		ApprovedSite entity = manager.find(ApprovedSite.class, id);
+		if (entity == null) {
+			throw new IllegalArgumentException("ApprovedSite not found: " + id);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(ApprovedSite approvedSite) {
-		ApprovedSite found = manager.find(ApprovedSite.class, approvedSite.getId());
-
-		if (found != null) {
-			manager.remove(found);
-		} else {
-			throw new IllegalArgumentException();
-		}
+		ApprovedSite found = getById(approvedSite.getUuid());
+		manager.remove(found);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
-		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
+		hostInfoService.validateHost(approvedSite.getHostUuid());
+		return saveOrUpdate(approvedSite.getUuid(), manager, approvedSite);
 	}
 
 	@Override
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
 
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);
 
@@ -87,6 +95,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_USER_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
 
 		return query.getResultList();
@@ -97,6 +106,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<ApprovedSite> getByClientId(String clientId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);
 
 		return query.getResultList();

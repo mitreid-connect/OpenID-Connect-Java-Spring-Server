@@ -112,12 +112,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	}
 
 	@Override
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
+	public OAuth2AccessTokenEntity getAccessTokenById(String id) {
 		return clearExpiredAccessToken(tokenRepository.getAccessTokenById(id));
 	}
 
 	@Override
-	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
+	public OAuth2RefreshTokenEntity getRefreshTokenById(String id) {
 		return clearExpiredRefreshToken(tokenRepository.getRefreshTokenById(id));
 	}
 
@@ -237,7 +237,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 			if (originalAuthRequest.getExtensions() != null && originalAuthRequest.getExtensions().containsKey("approved_site")) {
 
-				Long apId = Long.parseLong((String) originalAuthRequest.getExtensions().get("approved_site"));
+				String apId = (String) originalAuthRequest.getExtensions().get("approved_site");
 				ApprovedSite ap = approvedSiteService.getById(apId);
 
 				token.setApprovedSite(ap);

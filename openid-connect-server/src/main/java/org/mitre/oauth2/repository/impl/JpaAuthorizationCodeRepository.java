@@ -28,9 +28,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.data.PageCriteria;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
 import org.mitre.util.jpa.JpaUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,9 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	EntityManager manager;
+	
+	@Autowired
+	HostInfoService hostInfoService;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#save(org.mitre.oauth2.model.AuthorizationCodeEntity)
@@ -54,6 +59,8 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Transactional(value="defaultTransactionManager")
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode) {
 
+		hostInfoService.validateHost(authorizationCode.getHostUuid());
+		
 		return JpaUtil.saveOrUpdate(authorizationCode.getUuid(), manager, authorizationCode);
 
 	}
@@ -63,9 +70,9 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public AuthorizationCodeEntity getByCode(String hostUuid, String code) {
+	public AuthorizationCodeEntity getByCode(String code) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_BY_VALUE, AuthorizationCodeEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(AuthorizationCodeEntity.PARAM_CODE, code);
 
 		AuthorizationCodeEntity result = JpaUtil.getSingleResult(query.getResultList());
@@ -79,6 +86,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	public void remove(AuthorizationCodeEntity authorizationCodeEntity) {
 		AuthorizationCodeEntity found = manager.find(AuthorizationCodeEntity.class, authorizationCodeEntity.getUuid());
 		if (found != null) {
+			hostInfoService.validateHost(found.getHostUuid());
 			manager.remove(found);
 		}
 	}
@@ -87,18 +95,18 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#getExpiredCodes()
 	 */
 	@Override
-	public Collection<AuthorizationCodeEntity> getExpiredCodes(String hostUuid) {
+	public Collection<AuthorizationCodeEntity> getExpiredCodes() {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return query.getResultList();
 	}
 
 
 	@Override
-	public Collection<AuthorizationCodeEntity> getExpiredCodes(String hostUuid, PageCriteria pageCriteria) {
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return JpaUtil.getResultPage(query, pageCriteria);
 	}

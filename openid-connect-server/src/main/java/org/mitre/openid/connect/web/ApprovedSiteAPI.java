@@ -80,7 +80,7 @@ public class ApprovedSiteAPI {
 	 *
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-	public String deleteApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String deleteApprovedSite(@PathVariable("id") String id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 
 		if (approvedSite == null) {
@@ -106,7 +106,7 @@ public class ApprovedSiteAPI {
 	 * Get a single approved site
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String getApprovedSite(@PathVariable("id") String id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {
 			logger.error("getApprovedSite failed; no approved site found for id: " + id);

@@ -66,7 +66,7 @@ public interface PermissionRepository {
 	 * @param permissionId
 	 * @return
 	 */
-	public Permission getById(Long permissionId);
+	public Permission getById(String uuid);
 
 	/**
 	 * Get all permission tickets issued against a resource set (called when RS is deleted)

@@ -357,7 +357,7 @@ public class ClientAPI {
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
+	public String apiUpdateClient(@PathVariable("id") String id, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
 		ClientDetailsEntity client = null;
@@ -461,7 +461,7 @@ public class ClientAPI {
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-	public String apiDeleteClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
+	public String apiDeleteClient(@PathVariable("id") String id, ModelAndView modelAndView) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);
 
@@ -486,7 +486,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
+	public String apiShowClient(@PathVariable("id") String id, Model model, Authentication auth) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);
 
@@ -511,7 +511,7 @@ public class ClientAPI {
 	 * @param id
 	 */
 	@RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
+	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") String id, Model model) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);
 

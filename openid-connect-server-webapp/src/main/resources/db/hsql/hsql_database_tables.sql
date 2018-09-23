@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS host_info (
 	uuid VARCHAR(64) PRIMARY KEY,
 	owner_uuid VARCHAR(64),
 	host VARCHAR(256),
-	config text
+	config VARCHAR(8192),
 	UNIQUE(host)
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS access_token (
 	refresh_token_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
-	approved_site_uuid VARCHAR(64)
+	approved_site_uuid VARCHAR(64),
 	UNIQUE(token_value)
 );
 
@@ -263,7 +263,6 @@ CREATE TABLE IF NOT EXISTS client_scope (
 
 CREATE TABLE IF NOT EXISTS system_scope (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	scope VARCHAR(256) NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),
@@ -352,8 +351,6 @@ CREATE TABLE IF NOT EXISTS permission_ticket (
 );
 
 CREATE TABLE IF NOT EXISTS permission_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	permission_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );
@@ -368,22 +365,16 @@ CREATE TABLE IF NOT EXISTS claim (
 );
 
 CREATE TABLE IF NOT EXISTS claim_token_format (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	claim_uuid VARCHAR(64) NOT NULL,
 	claim_token_format VARCHAR(1024)
 );
 
 CREATE TABLE IF NOT EXISTS claim_issuer (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	claim_uuid VARCHAR(64) NOT NULL,
 	issuer VARCHAR(1024)
 );
 
 CREATE TABLE IF NOT EXISTS claim_to_permission_ticket (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	claim_uuid VARCHAR(64) NOT NULL,
 	permission_ticket_uuid VARCHAR(64) NOT NULL
 );
@@ -396,15 +387,11 @@ CREATE TABLE IF NOT EXISTS policy (
 );
 
 CREATE TABLE IF NOT EXISTS policy_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	policy_uuid BIGINT NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS claim_to_policy (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	policy_uuid VARCHAR(64) NOT NULL,
 	claim_uuid VARCHAR(64) NOT NULL
 );
@@ -421,7 +408,7 @@ CREATE TABLE IF NOT EXISTS saved_registered_client (
 CREATE TABLE IF NOT EXISTS device_code (
 	uuid VARCHAR(64) PRIMARY KEY,
 	host_uuid VARCHAR(64),
-	auth_holder_uuid VARCHAR(64,
+	auth_holder_uuid VARCHAR(64),
 	device_code VARCHAR(1024),
 	user_code VARCHAR(1024),
 	expiration TIMESTAMP,

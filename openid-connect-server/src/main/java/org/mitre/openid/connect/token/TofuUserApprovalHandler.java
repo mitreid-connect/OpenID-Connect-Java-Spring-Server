@@ -149,7 +149,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						ap.setAccessDate(new Date());
 						approvedSiteService.save(ap);
 
-						String apId = ap.getId().toString();
+						String apId = ap.getUuid().toString();
 						authorizationRequest.getExtensions().put(APPROVED_SITE, apId);
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
@@ -226,7 +226,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				}
 
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes);
-				String newSiteId = newSite.getId().toString();
+				String newSiteId = newSite.getUuid().toString();
 				authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 			}
 

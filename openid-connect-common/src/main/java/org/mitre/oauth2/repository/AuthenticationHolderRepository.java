@@ -23,15 +23,15 @@ import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 
 public interface AuthenticationHolderRepository {
-	public List<AuthenticationHolderEntity> getAll(String hostUuid);
+	public List<AuthenticationHolderEntity> getAll();
 
-	public AuthenticationHolderEntity getById(String hostUuid, String uuid);
+	public AuthenticationHolderEntity getById(String uuid);
 
-	public void remove(String hostUuid, AuthenticationHolderEntity a);
+	public void remove(AuthenticationHolderEntity a);
 
-	public AuthenticationHolderEntity save(String hostUuid, AuthenticationHolderEntity a);
+	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
 
-	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(String hostUuid);
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders();
 
-	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(String hostUuid, PageCriteria pageCriteria);
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria);
 }

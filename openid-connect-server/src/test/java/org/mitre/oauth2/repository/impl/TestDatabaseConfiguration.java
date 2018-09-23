@@ -3,6 +3,8 @@ package org.mitre.oauth2.repository.impl;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -11,6 +13,13 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.mitre.discovery.repository.impl.JpaHostInfoRepository;
+import org.mitre.host.model.DefaultHostInfo;
+import org.mitre.host.model.HostInfo;
+import org.mitre.host.repository.HostInfoRepository;
+import org.mitre.host.service.HostInfoService;
+import org.mitre.host.service.impl.DefaultHostInfoService;
+import org.mitre.host.util.HostUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +45,10 @@ public class TestDatabaseConfiguration {
 
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
+	
+	public TestDatabaseConfiguration() throws MalformedURLException {
+		HostUtils.setCurrentHost(new URL("http://localhost"));
+	}
 
 	@Bean
 	public JpaOAuth2TokenRepository repository() {
@@ -92,5 +105,15 @@ public class TestDatabaseConfiguration {
 		JpaTransactionManager platformTransactionManager = new JpaTransactionManager();
 		platformTransactionManager.setEntityManagerFactory(entityManagerFactory);
 		return platformTransactionManager;
+	}
+	
+	@Bean
+	public HostInfoRepository hostInfoRepository() {
+		return new JpaHostInfoRepository();
+	}
+	
+	@Bean
+	public HostInfoService hostInfoService() {
+		return new DefaultHostInfoService();
 	}
 }

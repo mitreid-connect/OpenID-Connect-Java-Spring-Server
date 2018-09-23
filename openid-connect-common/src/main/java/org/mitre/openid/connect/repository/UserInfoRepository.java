@@ -32,7 +32,7 @@ public interface UserInfoRepository {
 	 * @param username
 	 * @return
 	 */
-	public UserInfo getByUsername(String hostUuid, String username);
+	public UserInfo getByUsername(String username);
 
 	/**
 	 *
@@ -41,6 +41,6 @@ public interface UserInfoRepository {
 	 * @param email
 	 * @return
 	 */
-	public UserInfo getByEmailAddress(String hostUuid, String email);
+	public UserInfo getByEmailAddress(String email);
 
 }

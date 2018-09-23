@@ -25,8 +25,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -52,6 +50,7 @@ public class WhitelistedSite {
 	public static final String QUERY_BY_CLIENT_ID = "WhitelistedSite.getByClientId";
 	public static final String QUERY_ALL = "WhitelistedSite.getAll";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_USER_ID = "userId";
 	public static final String PARAM_CLIENT_ID = "clientId";
 

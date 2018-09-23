@@ -40,7 +40,7 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 	private WhitelistedSiteRepository repository;
 
 	@Override
-	public WhitelistedSite getById(Long id) {
+	public WhitelistedSite getById(String id) {
 		return repository.getById(id);
 	}
 
@@ -51,8 +51,8 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 
 	@Override
 	public WhitelistedSite saveNew(WhitelistedSite whitelistedSite) {
-		if (whitelistedSite.getId() != null) {
-			throw new IllegalArgumentException("A new whitelisted site cannot be created with an id value already set: " + whitelistedSite.getId());
+		if (whitelistedSite.getUuid() != null) {
+			throw new IllegalArgumentException("A new whitelisted site cannot be created with an id value already set: " + whitelistedSite.getUuid());
 		}
 		return repository.save(whitelistedSite);
 	}

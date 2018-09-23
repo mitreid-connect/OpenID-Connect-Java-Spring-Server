@@ -100,40 +100,40 @@ public class TestDefaultUserInfoService {
 	public void prepare() {
 
 
-		userInfoAdmin = new DefaultUserInfo();
+		userInfoAdmin = new DefaultUserInfo("admin");
 		userInfoAdmin.setPreferredUsername(adminUsername);
 		userInfoAdmin.setSub(adminSub);
 
-		userInfoRegular = new DefaultUserInfo();
+		userInfoRegular = new DefaultUserInfo("regular");
 		userInfoRegular.setPreferredUsername(regularUsername);
 		userInfoRegular.setSub(regularSub);
 
-		publicClient1 = new ClientDetailsEntity();
+		publicClient1 = new ClientDetailsEntity("client1");
 		publicClient1.setClientId(publicClientId1);
 
-		publicClient2 = new ClientDetailsEntity();
+		publicClient2 = new ClientDetailsEntity("client2");
 		publicClient2.setClientId(publicClientId2);
 		publicClient2.setSubjectType(SubjectType.PUBLIC);
 
 		// pairwise set 1
-		pairwiseClient1 = new ClientDetailsEntity();
+		pairwiseClient1 = new ClientDetailsEntity("client1");
 		pairwiseClient1.setClientId(pairwiseClientId1);
 		pairwiseClient1.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier1);
 
-		pairwiseClient2 = new ClientDetailsEntity();
+		pairwiseClient2 = new ClientDetailsEntity("client2");
 		pairwiseClient2.setClientId(pairwiseClientId2);
 		pairwiseClient2.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier2);
 
 		// pairwise set 2
-		pairwiseClient3 = new ClientDetailsEntity();
+		pairwiseClient3 = new ClientDetailsEntity("client3");
 		pairwiseClient3.setClientId(pairwiseClientId3);
 		pairwiseClient3.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient3.setSectorIdentifierUri(sectorIdentifier3);
 
 		// pairwise with null sector
-		pairwiseClient4 = new ClientDetailsEntity();
+		pairwiseClient4 = new ClientDetailsEntity("client4");
 		pairwiseClient4.setClientId(pairwiseClientId4);
 		pairwiseClient4.setSubjectType(SubjectType.PAIRWISE);
 
@@ -220,10 +220,10 @@ public class TestDefaultUserInfoService {
 			}
 		});
 
-		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient1)).thenReturn(pairwiseSub12);
-		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient2)).thenReturn(pairwiseSub12);
-		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient3)).thenReturn(pairwiseSub3);
-		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient4)).thenReturn(pairwiseSub4);
+		Mockito.when(pairwiseIdentiferService.getIdentifier(Mockito.any(UserInfo.class), Mockito.eq(pairwiseClient1))).thenReturn(pairwiseSub12);
+		Mockito.when(pairwiseIdentiferService.getIdentifier(Mockito.any(UserInfo.class), Mockito.eq(pairwiseClient2))).thenReturn(pairwiseSub12);
+		Mockito.when(pairwiseIdentiferService.getIdentifier(Mockito.any(UserInfo.class), Mockito.eq(pairwiseClient3))).thenReturn(pairwiseSub3);
+		Mockito.when(pairwiseIdentiferService.getIdentifier(Mockito.any(UserInfo.class), Mockito.eq(pairwiseClient4))).thenReturn(pairwiseSub4);
 
 		UserInfo user1 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId1);
 		UserInfo user2 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId2);

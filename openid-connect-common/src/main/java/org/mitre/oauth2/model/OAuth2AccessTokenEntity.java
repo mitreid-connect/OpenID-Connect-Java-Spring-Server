@@ -70,8 +70,8 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, query = "select a from OAuth2AccessTokenEntity a where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and a.approvedSite = :" + OAuth2AccessTokenEntity.PARAM_APPROVED_SITE),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_NAME, query = "select r from OAuth2AccessTokenEntity r where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and r.authenticationHolder.userAuth.name = :" + OAuth2AccessTokenEntity.PARAM_NAME)
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and p.resourceSet.uuid = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_NAME, query = "select a from OAuth2AccessTokenEntity a where a.hostUuid = :" + OAuth2AccessTokenEntity.PARAM_HOST_UUID + " and a.authenticationHolder.userAuth.name = :" + OAuth2AccessTokenEntity.PARAM_NAME)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)

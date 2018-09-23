@@ -82,8 +82,8 @@ public class TokenApiView extends AbstractView {
 					JsonObject o = new JsonObject();
 
 					o.addProperty("value", src.getValue());
-					o.addProperty("id", src.getId());
-					o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getId() : null);
+					o.addProperty("id", src.getUuid());
+					o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getUuid() : null);
 
 					o.add("scopes", context.serialize(src.getScope()));
 
@@ -104,7 +104,7 @@ public class TokenApiView extends AbstractView {
 					JsonObject o = new JsonObject();
 
 					o.addProperty("value", src.getValue());
-					o.addProperty("id", src.getId());
+					o.addProperty("id", src.getUuid());
 
 					o.add("scopes", context.serialize(src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope()));
 

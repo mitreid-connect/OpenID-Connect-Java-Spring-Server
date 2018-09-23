@@ -16,9 +16,9 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.discovery.repository;
+package org.mitre.host.repository;
 
-import org.mitre.discovery.model.HostInfo;
+import org.mitre.host.model.HostInfo;
 
 public interface HostInfoRepository {
 	

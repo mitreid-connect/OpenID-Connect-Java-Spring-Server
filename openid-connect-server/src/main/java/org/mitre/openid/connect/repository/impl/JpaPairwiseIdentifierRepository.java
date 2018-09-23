@@ -27,8 +27,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.openid.connect.model.PairwiseIdentifier;
 import org.mitre.openid.connect.repository.PairwiseIdentifierRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,9 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
+	
+	@Autowired
+	HostInfoService hostInfoService;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#getBySectorIdentifier(java.lang.String, java.lang.String)
@@ -48,6 +53,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	@Override
 	public PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri) {
 		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery(PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, PairwiseIdentifier.class);
+		query.setParameter(PairwiseIdentifier.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(PairwiseIdentifier.PARAM_SUB, sub);
 		query.setParameter(PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER, sectorIdentifierUri);
 
@@ -60,7 +66,8 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void save(PairwiseIdentifier pairwise) {
-		saveOrUpdate(pairwise.getId(), manager, pairwise);
+		hostInfoService.validateHost(pairwise.getHostUuid());
+		saveOrUpdate(pairwise.getUuid(), manager, pairwise);
 	}
 
 }

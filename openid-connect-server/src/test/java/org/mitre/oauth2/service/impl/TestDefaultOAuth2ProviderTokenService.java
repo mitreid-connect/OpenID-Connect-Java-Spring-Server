@@ -20,6 +20,7 @@ package org.mitre.oauth2.service.impl;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -170,7 +171,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 				Set<String> input = (Set<String>) args[0];
 				Set<SystemScope> output = new HashSet<>();
 				for (String scope : input) {
-					output.add(new SystemScope(scope));
+					output.add(new SystemScope(null, scope));
 				}
 				return output;
 			}

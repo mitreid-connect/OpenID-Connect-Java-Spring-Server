@@ -51,10 +51,10 @@ public class DefaultBlacklistedSiteService implements BlacklistedSiteService {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.service.BlacklistedSiteService#getById(java.lang.Long)
+	 * @see org.mitre.openid.connect.service.BlacklistedSiteService#getById(java.lang.String)
 	 */
 	@Override
-	public BlacklistedSite getById(Long id) {
+	public BlacklistedSite getById(String id) {
 		return repository.getById(id);
 	}
 

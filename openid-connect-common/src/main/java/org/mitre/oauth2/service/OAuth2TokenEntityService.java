@@ -51,9 +51,9 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
 
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
+	public OAuth2AccessTokenEntity getAccessTokenById(String id);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
+	public OAuth2RefreshTokenEntity getRefreshTokenById(String id);
 
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
 

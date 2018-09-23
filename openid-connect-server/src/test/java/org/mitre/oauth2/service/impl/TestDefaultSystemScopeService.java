@@ -18,6 +18,7 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -79,24 +80,24 @@ public class TestDefaultSystemScopeService {
 		Mockito.reset(repository);
 
 		// two default and dynamically registerable scopes (unrestricted)
-		defaultDynScope1 = new SystemScope(defaultDynScope1String);
-		defaultDynScope2 = new SystemScope(defaultDynScope2String);
+		defaultDynScope1 = new SystemScope(null, defaultDynScope1String);
+		defaultDynScope2 = new SystemScope(null, defaultDynScope2String);
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
 
 		// two strictly default scopes (restricted)
-		defaultScope1 = new SystemScope(defaultScope1String);
-		defaultScope2 = new SystemScope(defaultScope2String);
+		defaultScope1 = new SystemScope(null, defaultScope1String);
+		defaultScope2 = new SystemScope(null, defaultScope2String);
 		defaultScope1.setRestricted(true);
 		defaultScope2.setRestricted(true);
 		defaultScope1.setDefaultScope(true);
 		defaultScope2.setDefaultScope(true);
 
 		// one strictly dynamically registerable scope (isDefault false)
-		dynScope1 = new SystemScope(dynScope1String);
+		dynScope1 = new SystemScope(null, dynScope1String);
 
 		// extraScope1 : extra scope that is neither restricted nor default (defaults to false/false)
-		restrictedScope1 = new SystemScope(restrictedScope1String);
+		restrictedScope1 = new SystemScope(null, restrictedScope1String);
 		restrictedScope1.setRestricted(true);
 
 

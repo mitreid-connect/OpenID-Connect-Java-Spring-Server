@@ -69,7 +69,7 @@ public class Claim {
 		this.uuid = uuid;
 	}
 	
-	@Id
+	@Basic
 	@Column(name = "host_uuid")
 	public String getHostUuid() {
 		return hostUuid;
@@ -131,7 +131,7 @@ public class Claim {
 	@Column(name = "claim_token_format")
 	@CollectionTable(
 			name = "claim_token_format",
-			joinColumns = @JoinColumn(name = "owner_id")
+			joinColumns = @JoinColumn(name = "claim_uuid")
 			)
 	public Set<String> getClaimTokenFormat() {
 		return claimTokenFormat;
@@ -147,11 +147,11 @@ public class Claim {
 	 * @return the issuer
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
-	@Column(name = "issuer")
 	@CollectionTable(
 			name = "claim_issuer",
-			joinColumns = @JoinColumn(name = "owner_id")
+			joinColumns = @JoinColumn(name = "claim_uuid", referencedColumnName="uuid")
 			)
+	@Column(name = "issuer")
 	public Set<String> getIssuer() {
 		return issuer;
 	}

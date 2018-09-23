@@ -32,7 +32,7 @@ public interface BlacklistedSiteRepository {
 
 	public Collection<BlacklistedSite> getAll();
 
-	public BlacklistedSite getById(Long id);
+	public BlacklistedSite getById(String id);
 
 	public void remove(BlacklistedSite blacklistedSite);
 

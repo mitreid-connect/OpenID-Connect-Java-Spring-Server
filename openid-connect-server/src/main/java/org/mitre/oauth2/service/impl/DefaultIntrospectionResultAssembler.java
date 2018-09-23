@@ -21,7 +21,6 @@ import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
 
-import org.mitre.discovery.repository.HostInfoRepository;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
@@ -29,7 +28,6 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.uma.model.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +44,6 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
-
-	@Autowired
-	private HostInfoRepository hostInfoRepository;
 	
 	@Override
 	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes) {
@@ -64,7 +59,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 			for (Permission perm : accessToken.getPermissions()) {
 				Map<String, Object> o = newLinkedHashMap();
-				o.put("resource_set_id", perm.getResourceSet().getId().toString());
+				o.put("resource_set_id", perm.getResourceSet().getUuid().toString());
 				Set<String> scopes = Sets.newHashSet(perm.getScopes());
 				o.put("scopes", scopes);
 				permissions.add(o);

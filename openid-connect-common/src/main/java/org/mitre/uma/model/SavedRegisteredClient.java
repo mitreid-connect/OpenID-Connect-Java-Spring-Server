@@ -62,7 +62,7 @@ public class SavedRegisteredClient {
 	}
 
 	@Basic
-	@Column(name = "uuid")
+	@Column(name = "host_uuid")
 	public String getHostUuid() {
 		return hostUuid;
 	}

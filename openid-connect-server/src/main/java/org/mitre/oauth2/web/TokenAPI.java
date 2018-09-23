@@ -79,7 +79,7 @@ public class TokenAPI {
 	}
 
 	@RequestMapping(value = "/access/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String getAccessTokenById(@PathVariable("id") String id, ModelMap m, Principal p) {
 
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 
@@ -100,7 +100,7 @@ public class TokenAPI {
 	}
 
 	@RequestMapping(value = "/access/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String deleteAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String deleteAccessTokenById(@PathVariable("id") String id, ModelMap m, Principal p) {
 
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 
@@ -202,7 +202,7 @@ public class TokenAPI {
 	}
 
 	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String getRefreshTokenById(@PathVariable("id") String id, ModelMap m, Principal p) {
 
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
 
@@ -223,7 +223,7 @@ public class TokenAPI {
 	}
 
 	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String deleteRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	public String deleteRefreshTokenById(@PathVariable("id") String id, ModelMap m, Principal p) {
 
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
 

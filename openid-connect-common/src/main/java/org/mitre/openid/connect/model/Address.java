@@ -26,6 +26,9 @@ public interface Address extends Serializable {
 	 * @return
 	 */
 	public String getUuid();
+	
+	
+	public String getHostUuid();
 
 	/**
 	 * @return the formatted address

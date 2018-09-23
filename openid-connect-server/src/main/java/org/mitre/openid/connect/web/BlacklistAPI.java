@@ -125,7 +125,7 @@ public class BlacklistAPI {
 	 * Update an existing blacklisted site
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String updateBlacklistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
+	public String updateBlacklistedSite(@PathVariable("id") String id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
 
@@ -172,7 +172,7 @@ public class BlacklistAPI {
 	 *
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-	public String deleteBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
+	public String deleteBlacklistedSite(@PathVariable("id") String id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 
 		if (blacklist == null) {
@@ -191,7 +191,7 @@ public class BlacklistAPI {
 	 * Get a single blacklisted site
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
+	public String getBlacklistedSite(@PathVariable("id") String id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		if (blacklist == null) {
 			logger.error("getBlacklistedSite failed; blacklist with id " + id + " could not be found");

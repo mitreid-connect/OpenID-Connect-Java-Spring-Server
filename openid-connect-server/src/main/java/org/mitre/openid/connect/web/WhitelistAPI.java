@@ -129,7 +129,7 @@ public class WhitelistAPI {
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
+	public String updateWhitelistedSite(@PathVariable("id") String id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
 
@@ -173,7 +173,7 @@ public class WhitelistAPI {
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-	public String deleteWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
+	public String deleteWhitelistedSite(@PathVariable("id") String id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 
 		if (whitelist == null) {
@@ -193,7 +193,7 @@ public class WhitelistAPI {
 	 * Get a single whitelisted site
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
+	public String getWhitelistedSite(@PathVariable("id") String id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
 			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");

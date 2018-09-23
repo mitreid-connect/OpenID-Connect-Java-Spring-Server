@@ -180,386 +180,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	public boolean supportsVersion(String version) {
 		return THIS_VERSION.equals(version);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
-	 */
-	@Override
-	public void exportData(JsonWriter writer) throws IOException {
-
-		// version tag at the root
-		writer.name(THIS_VERSION);
-
-		writer.beginObject();
-
-		// clients list
-		writer.name(CLIENTS);
-		writer.beginArray();
-		writeClients(writer);
-		writer.endArray();
-
-		writer.name(GRANTS);
-		writer.beginArray();
-		writeGrants(writer);
-		writer.endArray();
-
-		writer.name(WHITELISTEDSITES);
-		writer.beginArray();
-		writeWhitelistedSites(writer);
-		writer.endArray();
-
-		writer.name(BLACKLISTEDSITES);
-		writer.beginArray();
-		writeBlacklistedSites(writer);
-		writer.endArray();
-
-		writer.name(AUTHENTICATIONHOLDERS);
-		writer.beginArray();
-		writeAuthenticationHolders(writer);
-		writer.endArray();
-
-		writer.name(ACCESSTOKENS);
-		writer.beginArray();
-		writeAccessTokens(writer);
-		writer.endArray();
-
-		writer.name(REFRESHTOKENS);
-		writer.beginArray();
-		writeRefreshTokens(writer);
-		writer.endArray();
-
-		writer.name(SYSTEMSCOPES);
-		writer.beginArray();
-		writeSystemScopes(writer);
-		writer.endArray();
-
-		for (MITREidDataServiceExtension extension : extensions) {
-			if (extension.supportsVersion(THIS_VERSION)) {
-				extension.exportExtensionData(writer);
-				break;
-			}
-		}
-
-		writer.endObject(); // end mitreid-connect-1.3
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeRefreshTokens(JsonWriter writer) throws IOException {
-		for (OAuth2RefreshTokenEntity token : tokenRepository.getAllRefreshTokens()) {
-			writer.beginObject();
-			writer.name(ID).value(token.getId());
-			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
-			writer.name(CLIENT_ID)
-			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name(AUTHENTICATION_HOLDER_ID)
-			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
-			writer.name(VALUE).value(token.getValue());
-			writer.endObject();
-			logger.debug("Wrote refresh token {}", token.getId());
-		}
-		logger.info("Done writing refresh tokens");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeAccessTokens(JsonWriter writer) throws IOException {
-		for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
-			writer.beginObject();
-			writer.name(ID).value(token.getId());
-			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
-			writer.name(CLIENT_ID)
-			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name(AUTHENTICATION_HOLDER_ID)
-			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
-			writer.name(REFRESH_TOKEN_ID)
-			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
-			writer.name(SCOPE);
-			writer.beginArray();
-			for (String s : token.getScope()) {
-				writer.value(s);
-			}
-			writer.endArray();
-			writer.name(TYPE).value(token.getTokenType());
-			writer.name(VALUE).value(token.getValue());
-			writer.endObject();
-			logger.debug("Wrote access token {}", token.getId());
-		}
-		logger.info("Done writing access tokens");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeAuthenticationHolders(JsonWriter writer) throws IOException {
-		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
-			writer.beginObject();
-			writer.name(ID).value(holder.getId());
-
-			writer.name(REQUEST_PARAMETERS);
-			writer.beginObject();
-			for (Entry<String, String> entry : holder.getRequestParameters().entrySet()) {
-				writer.name(entry.getKey()).value(entry.getValue());
-			}
-			writer.endObject();
-			writer.name(CLIENT_ID).value(holder.getClientId());
-			Set<String> scope = holder.getScope();
-			writer.name(SCOPE);
-			writer.beginArray();
-			for (String s : scope) {
-				writer.value(s);
-			}
-			writer.endArray();
-			writer.name(RESOURCE_IDS);
-			writer.beginArray();
-			if (holder.getResourceIds() != null) {
-				for (String s : holder.getResourceIds()) {
-					writer.value(s);
-				}
-			}
-			writer.endArray();
-			writer.name(AUTHORITIES);
-			writer.beginArray();
-			for (GrantedAuthority authority : holder.getAuthorities()) {
-				writer.value(authority.getAuthority());
-			}
-			writer.endArray();
-			writer.name(APPROVED).value(holder.isApproved());
-			writer.name(REDIRECT_URI).value(holder.getRedirectUri());
-			writer.name(RESPONSE_TYPES);
-			writer.beginArray();
-			for (String s : holder.getResponseTypes()) {
-				writer.value(s);
-			}
-			writer.endArray();
-			writer.name(EXTENSIONS);
-			writer.beginObject();
-			for (Entry<String, Serializable> entry : holder.getExtensions().entrySet()) {
-				// while the extension map itself is Serializable, we enforce storage of Strings
-				if (entry.getValue() instanceof String) {
-					writer.name(entry.getKey()).value((String) entry.getValue());
-				} else {
-					logger.warn("Skipping non-string extension: " + entry);
-				}
-			}
-			writer.endObject();
-
-			writer.name(SAVED_USER_AUTHENTICATION);
-			if (holder.getUserAuth() != null) {
-				writer.beginObject();
-				writer.name(NAME).value(holder.getUserAuth().getName());
-				writer.name(SOURCE_CLASS).value(holder.getUserAuth().getSourceClass());
-				writer.name(AUTHENTICATED).value(holder.getUserAuth().isAuthenticated());
-				writer.name(AUTHORITIES);
-				writer.beginArray();
-				for (GrantedAuthority authority : holder.getUserAuth().getAuthorities()) {
-					writer.value(authority.getAuthority());
-				}
-				writer.endArray();
-
-				writer.endObject();
-			} else {
-				writer.nullValue();
-			}
-
-
-			writer.endObject();
-			logger.debug("Wrote authentication holder {}", holder.getId());
-		}
-		logger.info("Done writing authentication holders");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeGrants(JsonWriter writer) throws IOException {
-		for (ApprovedSite site : approvedSiteRepository.getAll()) {
-			writer.beginObject();
-			writer.name(ID).value(site.getId());
-			writer.name(ACCESS_DATE).value(toUTCString(site.getAccessDate()));
-			writer.name(CLIENT_ID).value(site.getClientId());
-			writer.name(CREATION_DATE).value(toUTCString(site.getCreationDate()));
-			writer.name(TIMEOUT_DATE).value(toUTCString(site.getTimeoutDate()));
-			writer.name(USER_ID).value(site.getUserId());
-			writer.name(ALLOWED_SCOPES);
-			writeNullSafeArray(writer, site.getAllowedScopes());
-			List<OAuth2AccessTokenEntity> tokens = tokenRepository.getAccessTokensForApprovedSite(site);
-			writer.name(APPROVED_ACCESS_TOKENS);
-			writer.beginArray();
-			for (OAuth2AccessTokenEntity token : tokens) {
-				writer.value(token.getId());
-			}
-			writer.endArray();
-			writer.endObject();
-			logger.debug("Wrote grant {}", site.getId());
-		}
-		logger.info("Done writing grants");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeWhitelistedSites(JsonWriter writer) throws IOException {
-		for (WhitelistedSite wlSite : wlSiteRepository.getAll()) {
-			writer.beginObject();
-			writer.name(ID).value(wlSite.getId());
-			writer.name(CLIENT_ID).value(wlSite.getClientId());
-			writer.name(CREATOR_USER_ID).value(wlSite.getCreatorUserId());
-			writer.name(ALLOWED_SCOPES);
-			writeNullSafeArray(writer, wlSite.getAllowedScopes());
-			writer.endObject();
-			logger.debug("Wrote whitelisted site {}", wlSite.getId());
-		}
-		logger.info("Done writing whitelisted sites");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeBlacklistedSites(JsonWriter writer) throws IOException {
-		for (BlacklistedSite blSite : blSiteRepository.getAll()) {
-			writer.beginObject();
-			writer.name(ID).value(blSite.getId());
-			writer.name(URI).value(blSite.getUri());
-			writer.endObject();
-			logger.debug("Wrote blacklisted site {}", blSite.getId());
-		}
-		logger.info("Done writing blacklisted sites");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeClients(JsonWriter writer) {
-		for (ClientDetailsEntity client : clientRepository.getAllClients()) {
-			try {
-				writer.beginObject();
-				writer.name(CLIENT_ID).value(client.getClientId());
-				writer.name(RESOURCE_IDS);
-				writeNullSafeArray(writer, client.getResourceIds());
-
-				writer.name(SECRET).value(client.getClientSecret());
-
-				writer.name(SCOPE);
-				writeNullSafeArray(writer, client.getScope());
-
-				writer.name(AUTHORITIES);
-				writer.beginArray();
-				for (GrantedAuthority authority : client.getAuthorities()) {
-					writer.value(authority.getAuthority());
-				}
-				writer.endArray();
-				writer.name(ACCESS_TOKEN_VALIDITY_SECONDS).value(client.getAccessTokenValiditySeconds());
-				writer.name(REFRESH_TOKEN_VALIDITY_SECONDS).value(client.getRefreshTokenValiditySeconds());
-				writer.name(ID_TOKEN_VALIDITY_SECONDS).value(client.getIdTokenValiditySeconds());
-				writer.name(DEVICE_CODE_VALIDITY_SECONDS).value(client.getDeviceCodeValiditySeconds());
-				writer.name(REDIRECT_URIS);
-				writeNullSafeArray(writer, client.getRedirectUris());
-				writer.name(CLAIMS_REDIRECT_URIS);
-				writeNullSafeArray(writer, client.getClaimsRedirectUris());
-				writer.name(NAME).value(client.getClientName());
-				writer.name(URI).value(client.getClientUri());
-				writer.name(LOGO_URI).value(client.getLogoUri());
-				writer.name(CONTACTS);
-				writeNullSafeArray(writer, client.getContacts());
-				writer.name(TOS_URI).value(client.getTosUri());
-				writer.name(TOKEN_ENDPOINT_AUTH_METHOD)
-				.value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
-				writer.name(GRANT_TYPES);
-				writer.beginArray();
-				for (String s : client.getGrantTypes()) {
-					writer.value(s);
-				}
-				writer.endArray();
-				writer.name(RESPONSE_TYPES);
-				writer.beginArray();
-				for (String s : client.getResponseTypes()) {
-					writer.value(s);
-				}
-				writer.endArray();
-				writer.name(POLICY_URI).value(client.getPolicyUri());
-				writer.name(JWKS_URI).value(client.getJwksUri());
-				writer.name(JWKS).value((client.getJwks() != null) ? client.getJwks().toString() : null);
-				writer.name(APPLICATION_TYPE)
-				.value((client.getApplicationType() != null) ? client.getApplicationType().getValue() : null);
-				writer.name(SECTOR_IDENTIFIER_URI).value(client.getSectorIdentifierUri());
-				writer.name(SUBJECT_TYPE)
-				.value((client.getSubjectType() != null) ? client.getSubjectType().getValue() : null);
-				writer.name(REQUEST_OBJECT_SIGNING_ALG)
-				.value((client.getRequestObjectSigningAlg() != null) ? client.getRequestObjectSigningAlg().getName() : null);
-				writer.name(ID_TOKEN_SIGNED_RESPONSE_ALG)
-				.value((client.getIdTokenSignedResponseAlg() != null) ? client.getIdTokenSignedResponseAlg().getName() : null);
-				writer.name(ID_TOKEN_ENCRYPTED_RESPONSE_ALG)
-				.value((client.getIdTokenEncryptedResponseAlg() != null) ? client.getIdTokenEncryptedResponseAlg().getName() : null);
-				writer.name(ID_TOKEN_ENCRYPTED_RESPONSE_ENC)
-				.value((client.getIdTokenEncryptedResponseEnc() != null) ? client.getIdTokenEncryptedResponseEnc().getName() : null);
-				writer.name(USER_INFO_SIGNED_RESPONSE_ALG)
-				.value((client.getUserInfoSignedResponseAlg() != null) ? client.getUserInfoSignedResponseAlg().getName() : null);
-				writer.name(USER_INFO_ENCRYPTED_RESPONSE_ALG)
-				.value((client.getUserInfoEncryptedResponseAlg() != null) ? client.getUserInfoEncryptedResponseAlg().getName() : null);
-				writer.name(USER_INFO_ENCRYPTED_RESPONSE_ENC)
-				.value((client.getUserInfoEncryptedResponseEnc() != null) ? client.getUserInfoEncryptedResponseEnc().getName() : null);
-				writer.name(TOKEN_ENDPOINT_AUTH_SIGNING_ALG)
-				.value((client.getTokenEndpointAuthSigningAlg() != null) ? client.getTokenEndpointAuthSigningAlg().getName() : null);
-				writer.name(DEFAULT_MAX_AGE).value(client.getDefaultMaxAge());
-				Boolean requireAuthTime = null;
-				try {
-					requireAuthTime = client.getRequireAuthTime();
-				} catch (NullPointerException e) {
-				}
-				if (requireAuthTime != null) {
-					writer.name(REQUIRE_AUTH_TIME).value(requireAuthTime);
-				}
-				writer.name(DEFAULT_ACR_VALUES);
-				writeNullSafeArray(writer, client.getDefaultACRvalues());
-				writer.name(INTITATE_LOGIN_URI).value(client.getInitiateLoginUri());
-				writer.name(POST_LOGOUT_REDIRECT_URI);
-				writeNullSafeArray(writer, client.getPostLogoutRedirectUris());
-				writer.name(REQUEST_URIS);
-				writeNullSafeArray(writer, client.getRequestUris());
-				writer.name(DESCRIPTION).value(client.getClientDescription());
-				writer.name(ALLOW_INTROSPECTION).value(client.isAllowIntrospection());
-				writer.name(REUSE_REFRESH_TOKEN).value(client.isReuseRefreshToken());
-				writer.name(CLEAR_ACCESS_TOKENS_ON_REFRESH).value(client.isClearAccessTokensOnRefresh());
-				writer.name(DYNAMICALLY_REGISTERED).value(client.isDynamicallyRegistered());
-				writer.name(CODE_CHALLENGE_METHOD).value(client.getCodeChallengeMethod() != null ? client.getCodeChallengeMethod().getName() : null);
-				writer.name(SOFTWARE_ID).value(client.getSoftwareId());
-				writer.name(SOFTWARE_VERSION).value(client.getSoftwareVersion());
-				writer.name(SOFTWARE_STATEMENT).value(client.getSoftwareStatement() != null ? client.getSoftwareStatement().serialize() : null);
-				writer.name(CREATION_DATE).value(toUTCString(client.getCreatedAt()));
-				writer.endObject();
-				logger.debug("Wrote client {}", client.getId());
-			} catch (IOException ex) {
-				logger.error("Unable to write client {}", client.getId(), ex);
-			}
-		}
-		logger.info("Done writing clients");
-	}
-
-	/**
-	 * @param writer
-	 */
-	private void writeSystemScopes(JsonWriter writer) {
-		for (SystemScope sysScope : sysScopeRepository.getAll()) {
-			try {
-				writer.beginObject();
-				writer.name(ID).value(sysScope.getId());
-				writer.name(DESCRIPTION).value(sysScope.getDescription());
-				writer.name(ICON).value(sysScope.getIcon());
-				writer.name(VALUE).value(sysScope.getValue());
-				writer.name(RESTRICTED).value(sysScope.isRestricted());
-				writer.name(DEFAULT_SCOPE).value(sysScope.isDefaultScope());
-				writer.endObject();
-				logger.debug("Wrote system scope {}", sysScope.getId());
-			} catch (IOException ex) {
-				logger.error("Unable to write system scope {}", sysScope.getId(), ex);
-			}
-		}
-		logger.info("Done writing system scopes");
-	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#importData(com.google.gson.stream.JsonReader)
 	 */
@@ -683,10 +304,10 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = tokenRepository.saveRefreshToken(token).getId();
-			maps.getRefreshTokenToClientRefs().put(currentId, clientId);
-			maps.getRefreshTokenToAuthHolderRefs().put(currentId, authHolderId);
-			maps.getRefreshTokenOldToNewIdMap().put(currentId, newId);
+			String newId = tokenRepository.saveRefreshToken(token).getUuid();
+			maps.getRefreshTokenToClientRefs().put(currentId.toString(), clientId.toString());
+			maps.getRefreshTokenToAuthHolderRefs().put(currentId.toString(), authHolderId.toString());
+			maps.getRefreshTokenOldToNewIdMap().put(currentId.toString(), newId);
 			logger.debug("Read refresh token {}", currentId);
 		}
 		reader.endArray();
@@ -753,13 +374,13 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = tokenRepository.saveAccessToken(token).getId();
-			maps.getAccessTokenToClientRefs().put(currentId, clientId);
-			maps.getAccessTokenToAuthHolderRefs().put(currentId, authHolderId);
+			String newId = tokenRepository.saveAccessToken(token).getUuid();
+			maps.getAccessTokenToClientRefs().put(currentId.toString(), clientId.toString());
+			maps.getAccessTokenToAuthHolderRefs().put(currentId.toString(), authHolderId.toString());
 			if (refreshTokenId != null) {
-				maps.getAccessTokenToRefreshTokenRefs().put(currentId, refreshTokenId);
+				maps.getAccessTokenToRefreshTokenRefs().put(currentId.toString(), refreshTokenId.toString());
 			}
-			maps.getAccessTokenOldToNewIdMap().put(currentId, newId);
+			maps.getAccessTokenOldToNewIdMap().put(currentId.toString(), newId);
 			logger.debug("Read access token {}", currentId);
 		}
 		reader.endArray();
@@ -823,8 +444,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = authHolderRepository.save(ahe).getId();
-			maps.getAuthHolderOldToNewIdMap().put(currentId, newId);
+			String newId = authHolderRepository.save(ahe).getUuid();
+			maps.getAuthHolderOldToNewIdMap().put(currentId.toString(), newId);
 			logger.debug("Read authentication holder {}", currentId);
 		}
 		reader.endArray();
@@ -929,10 +550,12 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = approvedSiteRepository.save(site).getId();
-			maps.getGrantOldToNewIdMap().put(currentId, newId);
+			String newId = approvedSiteRepository.save(site).getUuid();
+			maps.getGrantOldToNewIdMap().put(currentId.toString(), newId);
 			if (tokenIds != null) {
-				maps.getGrantToAccessTokensRefs().put(currentId, tokenIds);
+				Set<String> tokenIdsInString = new HashSet<>(tokenIds.size());
+				tokenIds.forEach(tokenId -> tokenIdsInString.add(tokenId.toString()));				
+				maps.getGrantToAccessTokensRefs().put(currentId.toString(), tokenIdsInString);
 			}
 			logger.debug("Read grant {}", currentId);
 		}
@@ -977,8 +600,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = wlSiteRepository.save(wlSite).getId();
-			maps.getWhitelistedSiteOldToNewIdMap().put(currentId, newId);
+			String newId = wlSiteRepository.save(wlSite).getUuid();
+			maps.getWhitelistedSiteOldToNewIdMap().put(currentId.toString(), newId);
 		}
 		reader.endArray();
 		logger.info("Done reading whitelisted sites");
@@ -1240,57 +863,57 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 
 	private void fixObjectReferences() {
 		logger.info("Fixing object references...");
-		for (Long oldRefreshTokenId : maps.getRefreshTokenToClientRefs().keySet()) {
+		for (String oldRefreshTokenId : maps.getRefreshTokenToClientRefs().keySet()) {
 			String clientRef = maps.getRefreshTokenToClientRefs().get(oldRefreshTokenId);
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setClient(client);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		for (Long oldRefreshTokenId : maps.getRefreshTokenToAuthHolderRefs().keySet()) {
-			Long oldAuthHolderId = maps.getRefreshTokenToAuthHolderRefs().get(oldRefreshTokenId);
-			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
+		for (String oldRefreshTokenId : maps.getRefreshTokenToAuthHolderRefs().keySet()) {
+			String oldAuthHolderId = maps.getRefreshTokenToAuthHolderRefs().get(oldRefreshTokenId);
+			String newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		for (Long oldAccessTokenId : maps.getAccessTokenToClientRefs().keySet()) {
+		for (String oldAccessTokenId : maps.getAccessTokenToClientRefs().keySet()) {
 			String clientRef = maps.getAccessTokenToClientRefs().get(oldAccessTokenId);
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setClient(client);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		for (Long oldAccessTokenId : maps.getAccessTokenToAuthHolderRefs().keySet()) {
-			Long oldAuthHolderId = maps.getAccessTokenToAuthHolderRefs().get(oldAccessTokenId);
-			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
+		for (String oldAccessTokenId : maps.getAccessTokenToAuthHolderRefs().keySet()) {
+			String oldAuthHolderId = maps.getAccessTokenToAuthHolderRefs().get(oldAccessTokenId);
+			String newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		for (Long oldAccessTokenId : maps.getAccessTokenToRefreshTokenRefs().keySet()) {
-			Long oldRefreshTokenId = maps.getAccessTokenToRefreshTokenRefs().get(oldAccessTokenId);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+		for (String oldAccessTokenId : maps.getAccessTokenToRefreshTokenRefs().keySet()) {
+			String oldRefreshTokenId = maps.getAccessTokenToRefreshTokenRefs().get(oldAccessTokenId);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setRefreshToken(refreshToken);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		for (Long oldGrantId : maps.getGrantToAccessTokensRefs().keySet()) {
-			Set<Long> oldAccessTokenIds = maps.getGrantToAccessTokensRefs().get(oldGrantId);
+		for (String oldGrantId : maps.getGrantToAccessTokensRefs().keySet()) {
+			Set<String> oldAccessTokenIds = maps.getGrantToAccessTokensRefs().get(oldGrantId);
 
-			Long newGrantId = maps.getGrantOldToNewIdMap().get(oldGrantId);
+			String newGrantId = maps.getGrantOldToNewIdMap().get(oldGrantId);
 			ApprovedSite site = approvedSiteRepository.getById(newGrantId);
 
-			for(Long oldTokenId : oldAccessTokenIds) {
-				Long newTokenId = maps.getAccessTokenOldToNewIdMap().get(oldTokenId);
+			for(String oldTokenId : oldAccessTokenIds) {
+				String newTokenId = maps.getAccessTokenOldToNewIdMap().get(oldTokenId);
 				OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
 				token.setApprovedSite(site);
 				tokenRepository.saveAccessToken(token);
@@ -1310,5 +933,13 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		 */
 		logger.info("Done fixing object references.");
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
+	 */
+	@Override
+	public void exportData(JsonWriter writer) throws IOException {
 
+		throw new UnsupportedOperationException("Can not export 1.3 format from this version.");
+	}
 }

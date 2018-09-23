@@ -53,7 +53,7 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 @NamedQueries ({
 	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID),
 	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID +
-			"a.uuid not in (select t.authenticationHolder.uuid from OAuth2AccessTokenEntity t) and " +
+			" and a.uuid not in (select t.authenticationHolder.uuid from OAuth2AccessTokenEntity t) and " +
 			"a.uuid not in (select r.authenticationHolder.uuid from OAuth2RefreshTokenEntity r) and " +
 			"a.uuid not in (select c.authenticationHolder.uuid from AuthorizationCodeEntity c) ")
 })

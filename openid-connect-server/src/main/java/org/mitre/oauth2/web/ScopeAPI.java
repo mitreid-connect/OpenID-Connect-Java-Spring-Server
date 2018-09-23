@@ -75,7 +75,7 @@ public class ScopeAPI {
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getScope(@PathVariable("id") Long id, ModelMap m) {
+	public String getScope(@PathVariable("id") String id, ModelMap m) {
 
 		SystemScope scope = scopeService.getById(id);
 
@@ -96,7 +96,7 @@ public class ScopeAPI {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String updateScope(@PathVariable("id") Long id, @RequestBody String json, ModelMap m) {
+	public String updateScope(@PathVariable("id") String id, @RequestBody String json, ModelMap m) {
 
 		SystemScope existing = scopeService.getById(id);
 
@@ -104,7 +104,7 @@ public class ScopeAPI {
 
 		if (existing != null && scope != null) {
 
-			if (existing.getId().equals(scope.getId())) {
+			if (existing.getUuid().equals(scope.getUuid())) {
 				// sanity check
 
 				scope = scopeService.save(scope);
@@ -115,11 +115,11 @@ public class ScopeAPI {
 			} else {
 
 				logger.error("updateScope failed; scope ids to not match: got "
-						+ existing.getId() + " and " + scope.getId());
+						+ existing.getUuid() + " and " + scope.getUuid());
 
 				m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.put(JsonErrorView.ERROR_MESSAGE, "Could not update scope. Scope ids to not match: got "
-						+ existing.getId() + " and " + scope.getId());
+						+ existing.getUuid() + " and " + scope.getUuid());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -148,7 +148,7 @@ public class ScopeAPI {
 
 		scope = scopeService.save(scope);
 
-		if (scope != null && scope.getId() != null) {
+		if (scope != null && scope.getUuid() != null) {
 
 			m.put(JsonEntityView.ENTITY, scope);
 
@@ -165,7 +165,7 @@ public class ScopeAPI {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public String deleteScope(@PathVariable("id") Long id, ModelMap m) {
+	public String deleteScope(@PathVariable("id") String id, ModelMap m) {
 		SystemScope existing = scopeService.getById(id);
 
 		if (existing != null) {

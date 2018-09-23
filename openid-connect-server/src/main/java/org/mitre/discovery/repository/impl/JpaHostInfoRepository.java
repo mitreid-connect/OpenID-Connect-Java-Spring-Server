@@ -4,9 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.discovery.model.DefaultHostInfo;
-import org.mitre.discovery.model.HostInfo;
-import org.mitre.discovery.repository.HostInfoRepository;
+import org.mitre.host.model.DefaultHostInfo;
+import org.mitre.host.model.HostInfo;
+import org.mitre.host.repository.HostInfoRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

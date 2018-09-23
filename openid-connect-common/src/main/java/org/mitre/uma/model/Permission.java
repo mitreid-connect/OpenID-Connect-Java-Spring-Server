@@ -93,7 +93,7 @@ public class Permission {
 	@Column(name = "scope")
 	@CollectionTable(
 			name = "permission_scope",
-			joinColumns = @JoinColumn(name = "owner_id")
+			joinColumns = @JoinColumn(name = "permission_uuid")
 			)
 	public Set<String> getScopes() {
 		return scopes;

@@ -20,6 +20,7 @@ package org.mitre.oauth2.service.impl;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -107,7 +108,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 			}
 		});
 
-		Mockito.when(clientRepository.updateClient(Matchers.anyLong(), Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+		Mockito.when(clientRepository.updateClient(Matchers.anyString(), Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
@@ -122,7 +123,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 				Set<String> input = (Set<String>) args[0];
 				Set<SystemScope> output = new HashSet<>();
 				for (String scope : input) {
-					output.add(new SystemScope(scope));
+					output.add(new SystemScope(null, scope));
 				}
 				return output;
 			}
@@ -149,26 +150,13 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	}
 
 	/**
-	 * Failure case of existing client id.
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void saveNewClient_badId() {
-
-		// Set up a mock client.
-		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(12345L); // any non-null ID will work
-
-		service.saveNewClient(client);
-	}
-
-	/**
 	 * Failure case of blacklisted client uri.
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void saveNewClient_blacklisted() {
 
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(null);
+		Mockito.when(client.getUuid()).thenReturn(null);
 
 		String badUri = "badplace.xxx";
 
@@ -183,7 +171,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// Set up a mock client.
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(null);
+		Mockito.when(client.getUuid()).thenReturn(null);
 
 		service.saveNewClient(client);
 
@@ -256,9 +244,9 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Test(expected = InvalidClientException.class)
 	public void deleteClient_badId() {
 
-		Long id = 12345L;
+		String id = "12345";
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(id);
+		Mockito.when(client.getUuid()).thenReturn(id);
 		Mockito.when(clientRepository.getById(id)).thenReturn(null);
 
 		service.deleteClient(client);
@@ -267,11 +255,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Test
 	public void deleteClient() {
 
-		Long id = 12345L;
+		String id = "12345";
 		String clientId = "b00g3r";
 
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(id);
+		Mockito.when(client.getUuid()).thenReturn(id);
 		Mockito.when(client.getClientId()).thenReturn(clientId);
 
 		Mockito.when(clientRepository.getById(id)).thenReturn(client);

@@ -22,11 +22,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.PermissionRepository;
 import org.mitre.util.jpa.JpaUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +41,14 @@ public class JpaPermissionRepository implements PermissionRepository {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager em;
+		
+	@Autowired
+	HostInfoService hostInfoService;
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public PermissionTicket save(PermissionTicket p) {
-		return JpaUtil.saveOrUpdate(p.getId(), em, p);
+		return JpaUtil.saveOrUpdate(p.getUuid(), em, p);
 	}
 
 	/* (non-Javadoc)
@@ -52,6 +57,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	public PermissionTicket getByTicket(String ticket) {
 		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_TICKET, PermissionTicket.class);
+		query.setParameter(PermissionTicket.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(PermissionTicket.PARAM_TICKET, ticket);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -62,6 +68,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	public Collection<PermissionTicket> getAll() {
 		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_ALL, PermissionTicket.class);
+		query.setParameter(PermissionTicket.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 
@@ -71,15 +78,21 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public Permission saveRawPermission(Permission p) {
-		return JpaUtil.saveOrUpdate(p.getId(), em, p);
+		hostInfoService.validateHost(p.getHostUuid());
+		return JpaUtil.saveOrUpdate(p.getUuid(), em, p);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.uma.repository.PermissionRepository#getById(java.lang.Long)
 	 */
 	@Override
-	public Permission getById(Long permissionId) {
-		return em.find(Permission.class, permissionId);
+	public Permission getById(String uuid) {
+		Permission entity = em.find(Permission.class, uuid);
+		if (entity == null) {
+			throw new IllegalArgumentException("Permission not found: " + uuid);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	/* (non-Javadoc)
@@ -88,7 +101,8 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	public Collection<PermissionTicket> getPermissionTicketsForResourceSet(ResourceSet rs) {
 		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_BY_RESOURCE_SET, PermissionTicket.class);
-		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getId());
+		query.setParameter(PermissionTicket.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
+		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getUuid());
 		return query.getResultList();
 	}
 
@@ -100,6 +114,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	public void remove(PermissionTicket ticket) {
 		PermissionTicket found = getByTicket(ticket.getTicket());
 		if (found != null) {
+			hostInfoService.validateHost(found.getHostUuid());
 			em.remove(found);
 		}
 	}

@@ -50,6 +50,7 @@ public class ApprovedSite {
 	public static final String QUERY_BY_USER_ID = "ApprovedSite.getByUserId";
 	public static final String QUERY_ALL = "ApprovedSite.getAll";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_CLIENT_ID = "clientId";
 	public static final String PARAM_USER_ID = "userId";
 

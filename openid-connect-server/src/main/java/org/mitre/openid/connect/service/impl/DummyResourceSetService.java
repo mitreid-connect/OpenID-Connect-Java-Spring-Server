@@ -40,7 +40,7 @@ public class DummyResourceSetService implements ResourceSetService {
 	}
 
 	@Override
-	public ResourceSet getById(Long id) {
+	public ResourceSet getById(String id) {
 		throw new UnsupportedOperationException();
 	}
 

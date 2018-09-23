@@ -35,6 +35,7 @@ public interface MITREidDataService {
 	public static final String MITREID_CONNECT_1_1 = "mitreid-connect-1.1";
 	public static final String MITREID_CONNECT_1_2 = "mitreid-connect-1.2";
 	public static final String MITREID_CONNECT_1_3 = "mitreid-connect-1.3";
+	public static final String MITREID_CONNECT_2_0 = "mitreid-connect-2.0";
 
 	// member names
 	public static final String REFRESHTOKENS = "refreshTokens";
@@ -52,14 +53,14 @@ public interface MITREidDataService {
 	 * @param writer
 	 * @throws IOException
 	 */
-	void exportData(String hostUuid, JsonWriter writer) throws IOException;
+	void exportData(JsonWriter writer) throws IOException;
 
 	/**
 	 * Read in the current server state from the given JSON reader as a JSON object
 	 *
 	 * @param reader
 	 */
-	void importData(String hostUuid, JsonReader reader) throws IOException;
+	void importData(JsonReader reader) throws IOException;
 
 	/**
 	 * Return true if the this data service supports the given version. This is called before

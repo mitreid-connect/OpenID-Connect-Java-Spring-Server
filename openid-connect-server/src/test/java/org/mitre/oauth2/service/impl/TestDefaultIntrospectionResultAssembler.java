@@ -88,7 +88,7 @@ public class TestDefaultIntrospectionResultAssembler {
 
 		// given
 		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"),
-				permissions(permission(1L, "foo", "bar")),
+				permissions(permission("1", "foo", "bar")),
 				"Bearer", oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
 
 		UserInfo userInfo = userInfo("sub");
@@ -353,9 +353,9 @@ public class TestDefaultIntrospectionResultAssembler {
 		return newHashSet(permissions);
 	}
 
-	private Permission permission(Long resourceSetId, String... scopes) {
+	private Permission permission(String resourceSetId, String... scopes) {
 		Permission permission = mock(Permission.class, RETURNS_DEEP_STUBS);
-		given(permission.getResourceSet().getId()).willReturn(resourceSetId);
+		given(permission.getResourceSet().getUuid()).willReturn(resourceSetId);
 		given(permission.getScopes()).willReturn(scopes(scopes));
 		return permission;
 	}

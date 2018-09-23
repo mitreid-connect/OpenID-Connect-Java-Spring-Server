@@ -46,16 +46,16 @@ public class DefaultUserInfoService implements UserInfoService {
 	private PairwiseIdentiferService pairwiseIdentifierService;
 
 	@Override
-	public UserInfo getByUsername(String hostUuid, String username) {
-		return userInfoRepository.getByUsername(hostUuid, username);
+	public UserInfo getByUsername(String username) {
+		return userInfoRepository.getByUsername(username);
 	}
 
 	@Override
-	public UserInfo getByUsernameAndClientId(String host, String username, String clientId) {
+	public UserInfo getByUsernameAndClientId(String username, String clientId) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
-		UserInfo userInfo = getByUsername(host, username);
+		UserInfo userInfo = getByUsername(username);
 
 		if (client == null || userInfo == null) {
 			return null;
@@ -71,7 +71,7 @@ public class DefaultUserInfoService implements UserInfoService {
 	}
 
 	@Override
-	public UserInfo getByEmailAddress(String host, String email) {
+	public UserInfo getByEmailAddress(String email) {
 		return userInfoRepository.getByEmailAddress(email);
 	}
 

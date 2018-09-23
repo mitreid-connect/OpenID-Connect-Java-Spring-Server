@@ -23,9 +23,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -41,13 +43,16 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
+	@Autowired
+	HostInfoService hostInfoService;
+	
 	/**
 	 * Get a single UserInfo object by its username for a specific host
 	 */
 	@Override
-	public UserInfo getByUsername(String hostUuid, String username) {
+	public UserInfo getByUsername(String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
-		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostUuid);
+		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
 
 		return getSingleResult(query.getResultList());
@@ -58,9 +63,9 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its email address for a specific host
 	 */
 	@Override
-	public UserInfo getByEmailAddress(String hostUuid, String email) {
+	public UserInfo getByEmailAddress(String email) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
-		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostUuid);
+		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
 
 		return getSingleResult(query.getResultList());

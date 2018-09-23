@@ -25,8 +25,6 @@ import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -42,14 +40,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pairwise_identifier")
 @NamedQueries({
-	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p where u.hostUuid = :hostUuid"),
-	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE u.hostUuid = :hostUuid and p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
+	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p where p.hostUuid = :hostUuid"),
+	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE p.hostUuid = :hostUuid and p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
 })
 public class PairwiseIdentifier {
 
 	public static final String QUERY_BY_SECTOR_IDENTIFIER = "PairwiseIdentifier.getBySectorIdentifier";
 	public static final String QUERY_ALL = "PairwiseIdentifier.getAll";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
 	public static final String PARAM_SUB = "sub";
 

@@ -24,7 +24,7 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 /**
  * WhitelistedSite repository interface
  *
- * @author Michael Joseph Walsh, aanganes
+ * @author Michael Joseph Walsh, aanganes, nkabi
  *
  */
 public interface WhitelistedSiteRepository {
@@ -43,7 +43,7 @@ public interface WhitelistedSiteRepository {
 	 *            id the id of the WhitelistedSite
 	 * @return a valid WhitelistedSite if it exists, null otherwise
 	 */
-	public WhitelistedSite getById(Long id);
+	public WhitelistedSite getById(String id);
 
 	/**
 	 * Find a WhitelistedSite by its associated ClientDetails reference

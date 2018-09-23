@@ -25,21 +25,21 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 public interface ClientDetailsEntityService extends ClientDetailsService {
 
-	public ClientDetailsEntity saveNewClient(String host, ClientDetailsEntity client);
+	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client);
 
-	public ClientDetailsEntity getClientById(String host, String uuid);
+	public ClientDetailsEntity getClientById(String uuid);
 
 	@Override
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
 
-	public void deleteClient(String host, ClientDetailsEntity client);
+	public void deleteClient(ClientDetailsEntity client);
 
-	public ClientDetailsEntity updateClient(String host, ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
+	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
 
-	public Collection<ClientDetailsEntity> getAllClients(String host);
+	public Collection<ClientDetailsEntity> getAllClients();
 
-	public ClientDetailsEntity generateClientId(String host, ClientDetailsEntity client);
+	public ClientDetailsEntity generateClientId(ClientDetailsEntity client);
 
-	public ClientDetailsEntity generateClientSecret(String host, ClientDetailsEntity client);
+	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client);
 
 }

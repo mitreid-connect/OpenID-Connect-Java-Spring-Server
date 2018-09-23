@@ -35,20 +35,20 @@ public interface DeviceCodeService {
 	 * @param userCode
 	 * @return
 	 */
-	public DeviceCode lookUpByUserCode(String host, String userCode);
+	public DeviceCode lookUpByUserCode(String userCode);
 
 	/**
 	 * @param dc
 	 * @param o2Auth
 	 */
-	public DeviceCode approveDeviceCode(String host, DeviceCode dc, OAuth2Authentication o2Auth);
+	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication o2Auth);
 
 	/**
 	 * @param deviceCode
 	 * @param client
 	 * @return
 	 */
-	public DeviceCode findDeviceCode(String host, String deviceCode, ClientDetails client);
+	public DeviceCode findDeviceCode(String deviceCode, ClientDetails client);
 
 
 	/**
@@ -56,7 +56,7 @@ public interface DeviceCodeService {
 	 * @param deviceCode
 	 * @param client
 	 */
-	public void clearDeviceCode(String host, String deviceCode, ClientDetails client);
+	public void clearDeviceCode(String deviceCode, ClientDetails client);
 	
 	/**
 	 * @param deviceCode
@@ -66,8 +66,8 @@ public interface DeviceCodeService {
 	 * @param parameters
 	 * @return
 	 */
-	public DeviceCode createNewDeviceCode(String host, Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) throws DeviceCodeCreationException;
+	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) throws DeviceCodeCreationException;
 
 
-	public void clearExpiredDeviceCodes(String host);
+	public void clearExpiredDeviceCodes();
 }

@@ -10,6 +10,9 @@ import javax.persistence.PersistenceContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.host.model.DefaultHostInfo;
+import org.mitre.host.service.HostInfoService;
+import org.mitre.host.util.HostUtils;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -27,11 +30,18 @@ public class TestJpaOAuth2TokenRepository {
 	@Autowired
 	private JpaOAuth2TokenRepository repository;
 	
+	@Autowired
+	private HostInfoService hostInfoService;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
 	@Before
 	public void setUp(){
+		DefaultHostInfo hostInfo = new DefaultHostInfo();
+		hostInfo.setHost(HostUtils.getCurrentHost().getHost());
+		hostInfo = entityManager.merge(hostInfo);
+		
 		createAccessToken("user1");
 		createAccessToken("user1");
 		createAccessToken("user2");
@@ -73,15 +83,17 @@ public class TestJpaOAuth2TokenRepository {
 	private OAuth2AccessTokenEntity createAccessToken(String name) {
 		SavedUserAuthentication userAuth = new SavedUserAuthentication();
 		userAuth.setName(name);
+		userAuth.setHostUuid(hostInfoService.getCurrentHostUuid());
 		userAuth = entityManager.merge(userAuth);
 		
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setUserAuth(userAuth);
+		authHolder.setHostUuid(hostInfoService.getCurrentHostUuid());
 		authHolder = entityManager.merge(authHolder);
 	
 		OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
 		accessToken.setAuthenticationHolder(authHolder);
-		
+		accessToken.setHostUuid(hostInfoService.getCurrentHostUuid());
 		accessToken = entityManager.merge(accessToken);
 		
 		return accessToken;
@@ -89,16 +101,18 @@ public class TestJpaOAuth2TokenRepository {
 	
 	private OAuth2RefreshTokenEntity createRefreshToken(String name) {
 		SavedUserAuthentication userAuth = new SavedUserAuthentication();
+		userAuth.setHostUuid(hostInfoService.getCurrentHostUuid());
 		userAuth.setName(name);
 		userAuth = entityManager.merge(userAuth);
 		
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setUserAuth(userAuth);
+		authHolder.setHostUuid(hostInfoService.getCurrentHostUuid());
 		authHolder = entityManager.merge(authHolder);
 	
 		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity();
 		refreshToken.setAuthenticationHolder(authHolder);
-		
+		refreshToken.setHostUuid(hostInfoService.getCurrentHostUuid());
 		refreshToken = entityManager.merge(refreshToken);
 		
 		return refreshToken;

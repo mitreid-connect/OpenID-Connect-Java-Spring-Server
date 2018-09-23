@@ -20,8 +20,10 @@ package org.mitre.openid.connect.repository.impl;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.openid.connect.model.Address;
 import org.mitre.openid.connect.repository.AddressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +38,19 @@ public class JpaAddressRepository implements AddressRepository {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
+	
+	@Autowired
+	HostInfoService hostInfoService;
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public Address getById(Long id) {
-		return manager.find(Address.class, id);
+	public Address getById(String id) {
+		Address entity = manager.find(Address.class, id);
+		if (entity == null) {
+			throw new IllegalArgumentException("Address not found: " + id);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 }

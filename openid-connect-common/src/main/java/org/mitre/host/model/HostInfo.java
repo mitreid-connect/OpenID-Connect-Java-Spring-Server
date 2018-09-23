@@ -1,4 +1,4 @@
-package org.mitre.discovery.model;
+package org.mitre.host.model;
 
 public interface HostInfo {
 

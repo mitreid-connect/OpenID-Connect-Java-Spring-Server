@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.MITREidDataService;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_3;
+import org.mitre.openid.connect.service.impl.MITREidDataService_2_0;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +75,11 @@ public class DataAPI {
 			MITREidDataService.MITREID_CONNECT_1_0,
 			MITREidDataService.MITREID_CONNECT_1_1,
 			MITREidDataService.MITREID_CONNECT_1_2,
-			MITREidDataService.MITREID_CONNECT_1_3);
+			MITREidDataService.MITREID_CONNECT_1_3,
+			MITREidDataService.MITREID_CONNECT_2_0);
 
 	@Autowired
-	private MITREidDataService_1_3 exporter;
+	private MITREidDataService_2_0 exporter;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String importData(Reader in, Model m) throws IOException {

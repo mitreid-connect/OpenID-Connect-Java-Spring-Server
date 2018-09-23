@@ -29,18 +29,18 @@ import org.mitre.uma.model.ResourceSet;
  */
 public interface ResourceSetService {
 
-	public ResourceSet saveNew(String host, ResourceSet rs);
+	public ResourceSet saveNew(ResourceSet rs);
 
-	public ResourceSet getById(String host, String uuid);
+	public ResourceSet getById(String uuid);
 
-	public ResourceSet update(String host, ResourceSet oldRs, ResourceSet newRs);
+	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
 
-	public void remove(String host, ResourceSet rs);
+	public void remove(ResourceSet rs);
 
-	public Collection<ResourceSet> getAllForOwner(String host, String owner);
+	public Collection<ResourceSet> getAllForOwner(String owner);
 
-	public Collection<ResourceSet> getAllForOwnerAndClient(String host, String owner, String authClientId);
+	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId);
 
-	public Collection<ResourceSet> getAllForClient(String host, ClientDetailsEntity client);
+	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client);
 
 }

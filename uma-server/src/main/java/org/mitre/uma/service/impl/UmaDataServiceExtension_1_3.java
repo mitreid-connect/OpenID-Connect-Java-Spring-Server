@@ -392,7 +392,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 
 	}
 
-	private Map<Long, Long> permissionToResourceRefs = new HashMap<>();
+	private Map<String, String> permissionToResourceRefs = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -485,7 +485,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 							}
 							reader.endObject();
 							Permission saved = permissionRepository.saveRawPermission(p);
-							permissionToResourceRefs.put(saved.getId(), rsid);
+							permissionToResourceRefs.put(saved.getUuid(), rsid);
 							ticket.setPermission(saved);
 						} else if (name.equals(TICKET)) {
 							ticket.setTicket(reader.nextString());

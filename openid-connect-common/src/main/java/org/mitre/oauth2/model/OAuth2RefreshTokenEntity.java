@@ -21,6 +21,7 @@
 package org.mitre.oauth2.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -48,11 +49,11 @@ import com.nimbusds.jwt.JWT;
 @Entity
 @Table(name = "refresh_token")
 @NamedQueries({
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r"),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.jwt = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_NAME, query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.userAuth.name = :" + OAuth2RefreshTokenEntity.PARAM_NAME)
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid"),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.jwt = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_NAME, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.authenticationHolder.userAuth.name = :" + OAuth2RefreshTokenEntity.PARAM_NAME)
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
@@ -62,12 +63,15 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public static final String QUERY_ALL = "OAuth2RefreshTokenEntity.getAll";
 	public static final String QUERY_BY_NAME = "OAuth2RefreshTokenEntity.getByName";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_NAME = "name";
 
 	private String uuid;
+	
+	private String hostUuid;
 
 	private AuthenticationHolderEntity authenticationHolder;
 
@@ -83,7 +87,11 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 *
 	 */
 	public OAuth2RefreshTokenEntity() {
-
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public OAuth2RefreshTokenEntity(String uuid) {
+		this.uuid = uuid;
 	}
 
 	@Id
@@ -94,6 +102,16 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	@Basic
+	@Column(name = "host_uuid")	
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

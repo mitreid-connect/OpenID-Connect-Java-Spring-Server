@@ -1,11 +1,15 @@
-package org.mitre.discovery.model;
+package org.mitre.host.model;
 
+import java.util.UUID;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-@Entity
+@Entity(name = "HostInfo")
 @Table(name = "host_info")
 @NamedQueries({ @NamedQuery(name = DefaultHostInfo.QUERY_BY_HOST, query = "select h from HostInfo h where h.host = :"
 		+ DefaultHostInfo.PARAM_HOST),
@@ -23,6 +27,12 @@ public class DefaultHostInfo implements HostInfo {
 	private String host;
 	private String config;
 
+	public DefaultHostInfo() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	@Id
+	@Column(name = "uuid")
 	public String getUuid() {
 		return uuid;
 	}

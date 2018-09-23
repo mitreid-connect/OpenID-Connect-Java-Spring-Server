@@ -41,8 +41,8 @@ public interface SystemScopeService {
 
 	public static final Set<SystemScope> reservedScopes =
 			Sets.newHashSet(
-					new SystemScope(REGISTRATION_TOKEN_SCOPE),
-					new SystemScope(RESOURCE_TOKEN_SCOPE)
+					new SystemScope(null, REGISTRATION_TOKEN_SCOPE),
+					new SystemScope(null, RESOURCE_TOKEN_SCOPE)
 					);
 
 	public Set<SystemScope> getAll();
@@ -74,7 +74,7 @@ public interface SystemScopeService {
 	 */
 	public Set<SystemScope> getUnrestricted();
 
-	public SystemScope getById(Long id);
+	public SystemScope getById(String id);
 
 	public SystemScope getByValue(String value);
 

@@ -30,7 +30,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.springframework.stereotype.Repository;
@@ -51,9 +50,9 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public Set<SystemScope> getAll(String hostUuid) {
+	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostUuid);
+
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
@@ -62,8 +61,8 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public SystemScope getById(String uuid) {
-		return em.find(SystemScope.class, uuid);
+	public SystemScope getById(String id) {
+		return em.find(SystemScope.class, id);
 	}
 
 	/* (non-Javadoc)
@@ -71,9 +70,8 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public SystemScope getByValue(String hostUuid, String value) {
+	public SystemScope getByValue(String value) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostUuid);
 		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}

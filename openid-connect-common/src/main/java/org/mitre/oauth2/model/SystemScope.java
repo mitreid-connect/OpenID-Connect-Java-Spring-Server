@@ -25,8 +25,6 @@ import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -39,8 +37,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-		@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s where s.hostUuid = :"
-				+ SystemScope.PARAM_HOST_UUID + " ORDER BY s.value"),
+		@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.value"),
 		@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :"
 				+ SystemScope.PARAM_VALUE) })
 public class SystemScope {
@@ -62,23 +59,18 @@ public class SystemScope {
 	public SystemScope() {
 		this.uuid = UUID.randomUUID().toString();
 	}
-
-	public SystemScope(String uuid) {
-		this.uuid = uuid;
-	}
-
+	
 	/**
 	 * Make a system scope with the given scope value
 	 * 
 	 * @param value
 	 */
 	public SystemScope(String uuid, String value) {
-		this(uuid);
+		this.uuid = uuid;
 		this.value = value;
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "uuid")
 	public String getUuid() {
 		return uuid;

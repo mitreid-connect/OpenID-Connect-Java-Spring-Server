@@ -41,6 +41,8 @@ public class BlacklistedSite {
 
 	public static final String QUERY_ALL = "BlacklistedSite.getAll";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
+	
 	// unique id
 	private String uuid;
 

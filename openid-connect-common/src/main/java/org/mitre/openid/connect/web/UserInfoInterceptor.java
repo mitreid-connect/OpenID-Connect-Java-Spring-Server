@@ -26,6 +26,7 @@ import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.host.util.HostUtils;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -72,6 +73,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 		URL url = HttpUtils.getHost(request);
 		
+		HostUtils.setCurrentHost(url);
+		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (auth instanceof Authentication){
@@ -94,7 +97,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				if (auth != null && auth.getName() != null && userInfoService != null) {
 
 					// try to look up a user based on the principal's name
-					UserInfo user = userInfoService.getByUsername(url.getHost(), auth.getName());
+					UserInfo user = userInfoService.getByUsername(auth.getName());
 
 					// if we have one, inject it so views can use it
 					if (user != null) {
