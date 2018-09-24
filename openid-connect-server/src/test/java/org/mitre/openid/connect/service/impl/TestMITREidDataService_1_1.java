@@ -148,10 +148,10 @@ public class TestMITREidDataService_1_1 {
 		when(mockedClient1.getClientId()).thenReturn("mocked_client_1");
 
 		AuthenticationHolderEntity mockedAuthHolder1 = mock(AuthenticationHolderEntity.class);
-		when(mockedAuthHolder1.getUuid()).thenReturn("1");
+		when(mockedAuthHolder1.getId()).thenReturn("1");
 
 		OAuth2RefreshTokenEntity token1 = new OAuth2RefreshTokenEntity();
-		token1.setUuid("1");
+		token1.setId("1");
 		token1.setClient(mockedClient1);
 		token1.setExpiration(expirationDate1);
 		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
@@ -164,10 +164,10 @@ public class TestMITREidDataService_1_1 {
 		when(mockedClient2.getClientId()).thenReturn("mocked_client_2");
 
 		AuthenticationHolderEntity mockedAuthHolder2 = mock(AuthenticationHolderEntity.class);
-		when(mockedAuthHolder2.getUuid()).thenReturn("2");
+		when(mockedAuthHolder2.getId()).thenReturn("2");
 
 		OAuth2RefreshTokenEntity token2 = new OAuth2RefreshTokenEntity();
-		token2.setUuid("2");
+		token2.setId("2");
 		token2.setClient(mockedClient2);
 		token2.setExpiration(expirationDate2);
 		token2.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ."));
@@ -200,10 +200,10 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public OAuth2RefreshTokenEntity answer(InvocationOnMock invocation) throws Throwable {
 				OAuth2RefreshTokenEntity _token = (OAuth2RefreshTokenEntity) invocation.getArguments()[0];
-				if(_token.getUuid() == null) {
-					_token.setUuid(id++ + "");
+				if(_token.getId() == null) {
+					_token.setId(id++ + "");
 				}
-				fakeDb.put(_token.getUuid(), _token);
+				fakeDb.put(_token.getId(), _token);
 				return _token;
 			}
 		});
@@ -228,7 +228,7 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public AuthenticationHolderEntity answer(InvocationOnMock invocation) throws Throwable {
 				AuthenticationHolderEntity _auth = mock(AuthenticationHolderEntity.class);
-				when(_auth.getUuid()).thenReturn(id + "");
+				when(_auth.getId()).thenReturn(id + "");
 				id++;
 				return _auth;
 			}
@@ -271,10 +271,10 @@ public class TestMITREidDataService_1_1 {
 		when(mockedClient1.getClientId()).thenReturn("mocked_client_1");
 
 		AuthenticationHolderEntity mockedAuthHolder1 = mock(AuthenticationHolderEntity.class);
-		when(mockedAuthHolder1.getUuid()).thenReturn("1");
+		when(mockedAuthHolder1.getId()).thenReturn("1");
 
 		OAuth2AccessTokenEntity token1 = new OAuth2AccessTokenEntity();
-		token1.setUuid("1");
+		token1.setId("1");
 		token1.setClient(mockedClient1);
 		token1.setExpiration(expirationDate1);
 		token1.setJwt(JWTParser.parse("eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3ODk5NjgsInN1YiI6IjkwMzQyLkFTREZKV0ZBIiwiYXRfaGFzaCI6InptTmt1QmNRSmNYQktNaVpFODZqY0EiLCJhdWQiOlsiY2xpZW50Il0sImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDgwXC9vcGVuaWQtY29ubmVjdC1zZXJ2ZXItd2ViYXBwXC8iLCJpYXQiOjE0MTI3ODkzNjh9.xkEJ9IMXpH7qybWXomfq9WOOlpGYnrvGPgey9UQ4GLzbQx7JC0XgJK83PmrmBZosvFPCmota7FzI_BtwoZLgAZfFiH6w3WIlxuogoH-TxmYbxEpTHoTsszZppkq9mNgOlArV4jrR9y3TPo4MovsH71dDhS_ck-CvAlJunHlqhs0"));
@@ -289,13 +289,13 @@ public class TestMITREidDataService_1_1 {
 		when(mockedClient2.getClientId()).thenReturn("mocked_client_2");
 
 		AuthenticationHolderEntity mockedAuthHolder2 = mock(AuthenticationHolderEntity.class);
-		when(mockedAuthHolder2.getUuid()).thenReturn("2");
+		when(mockedAuthHolder2.getId()).thenReturn("2");
 
 		OAuth2RefreshTokenEntity mockRefreshToken2 = mock(OAuth2RefreshTokenEntity.class);
-		when(mockRefreshToken2.getUuid()).thenReturn("1");
+		when(mockRefreshToken2.getId()).thenReturn("1");
 
 		OAuth2AccessTokenEntity token2 = new OAuth2AccessTokenEntity();
-		token2.setUuid("2");
+		token2.setId("2");
 		token2.setClient(mockedClient2);
 		token2.setExpiration(expirationDate2);
 		token2.setJwt(JWTParser.parse("eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3OTI5NjgsImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgwODBcL29wZW5pZC1jb25uZWN0LXNlcnZlci13ZWJhcHBcLyIsImp0aSI6IjBmZGE5ZmRiLTYyYzItNGIzZS05OTdiLWU0M2VhMDUwMzNiOSIsImlhdCI6MTQxMjc4OTM2OH0.xgaVpRLYE5MzbgXfE0tZt823tjAm6Oh3_kdR1P2I9jRLR6gnTlBQFlYi3Y_0pWNnZSerbAE8Tn6SJHZ9k-curVG0-ByKichV7CNvgsE5X_2wpEaUzejvKf8eZ-BammRY-ie6yxSkAarcUGMvGGOLbkFcz5CtrBpZhfd75J49BIQ"));
@@ -335,10 +335,10 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
 				OAuth2AccessTokenEntity _token = (OAuth2AccessTokenEntity) invocation.getArguments()[0];
-				if(_token.getUuid() == null) {
-					_token.setUuid(id++ + "");
+				if(_token.getId() == null) {
+					_token.setId(id++ + "");
 				}
-				fakeDb.put(_token.getUuid(), _token);
+				fakeDb.put(_token.getId(), _token);
 				return _token;
 			}
 		});
@@ -363,7 +363,7 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public AuthenticationHolderEntity answer(InvocationOnMock invocation) throws Throwable {
 				AuthenticationHolderEntity _auth = mock(AuthenticationHolderEntity.class);
-				when(_auth.getUuid()).thenReturn(id + "");
+				when(_auth.getId()).thenReturn(id + "");
 				id++;
 				return _auth;
 			}
@@ -393,7 +393,7 @@ public class TestMITREidDataService_1_1 {
 	@Test
 	public void testImportClients() throws IOException {
 		ClientDetailsEntity client1 = new ClientDetailsEntity();
-		client1.setUuid("1");
+		client1.setId("1");
 		client1.setAccessTokenValiditySeconds(3600);
 		client1.setClientId("client1");
 		client1.setClientSecret("clientsecret1");
@@ -403,7 +403,7 @@ public class TestMITREidDataService_1_1 {
 		client1.setAllowIntrospection(true);
 
 		ClientDetailsEntity client2 = new ClientDetailsEntity();
-		client2.setUuid("2");
+		client2.setId("2");
 		client2.setAccessTokenValiditySeconds(3600);
 		client2.setClientId("client2");
 		client2.setClientSecret("clientsecret2");
@@ -467,15 +467,15 @@ public class TestMITREidDataService_1_1 {
 	@Test
 	public void testImportBlacklistedSites() throws IOException {
 		BlacklistedSite site1 = new BlacklistedSite();
-		site1.setUuid("1");
+		site1.setId("1");
 		site1.setUri("http://foo.com");
 
 		BlacklistedSite site2 = new BlacklistedSite();
-		site2.setUuid("2");
+		site2.setId("2");
 		site2.setUri("http://bar.com");
 
 		BlacklistedSite site3 = new BlacklistedSite();
-		site3.setUuid("3");
+		site3.setId("3");
 		site3.setUri("http://baz.com");
 
 		String configJson = "{" +
@@ -515,15 +515,15 @@ public class TestMITREidDataService_1_1 {
 	@Test
 	public void testImportWhitelistedSites() throws IOException {
 		WhitelistedSite site1 = new WhitelistedSite();
-		site1.setUuid("1");
+		site1.setId("1");
 		site1.setClientId("foo");
 
 		WhitelistedSite site2 = new WhitelistedSite();
-		site2.setUuid("2");
+		site2.setId("2");
 		site2.setClientId("bar");
 
 		WhitelistedSite site3 = new WhitelistedSite();
-		site3.setUuid("3");
+		site3.setId("3");
 		site3.setClientId("baz");
 		//site3.setAllowedScopes(null);
 
@@ -554,10 +554,10 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public WhitelistedSite answer(InvocationOnMock invocation) throws Throwable {
 				WhitelistedSite _site = (WhitelistedSite) invocation.getArguments()[0];
-				if(_site.getUuid() == null) {
-					_site.setUuid(id++ + "");
+				if(_site.getId() == null) {
+					_site.setId(id++ + "");
 				}
-				fakeDb.put(_site.getUuid(), _site);
+				fakeDb.put(_site.getId(), _site);
 				return _site;
 			}
 		});
@@ -587,10 +587,10 @@ public class TestMITREidDataService_1_1 {
 		Date accessDate1 = formatter.parse("2014-09-10T23:49:44.090+0000", Locale.ENGLISH);
 
 		OAuth2AccessTokenEntity mockToken1 = mock(OAuth2AccessTokenEntity.class);
-		when(mockToken1.getUuid()).thenReturn("1");
+		when(mockToken1.getId()).thenReturn("1");
 
 		ApprovedSite site1 = new ApprovedSite();
-		site1.setUuid("1");
+		site1.setId("1");
 		site1.setClientId("foo");
 		site1.setCreationDate(creationDate1);
 		site1.setAccessDate(accessDate1);
@@ -603,7 +603,7 @@ public class TestMITREidDataService_1_1 {
 		Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090+0000", Locale.ENGLISH);
 
 		ApprovedSite site2 = new ApprovedSite();
-		site2.setUuid("2");
+		site2.setId("2");
 		site2.setClientId("bar");
 		site2.setCreationDate(creationDate2);
 		site2.setAccessDate(accessDate2);
@@ -641,10 +641,10 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public ApprovedSite answer(InvocationOnMock invocation) throws Throwable {
 				ApprovedSite _site = (ApprovedSite) invocation.getArguments()[0];
-				if(_site.getUuid() == null) {
-					_site.setUuid(id++ + "");
+				if(_site.getId() == null) {
+					_site.setId(id++ + "");
 				}
-				fakeDb.put(_site.getUuid(), _site);
+				fakeDb.put(_site.getId(), _site);
 				return _site;
 			}
 		});
@@ -660,7 +660,7 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public WhitelistedSite answer(InvocationOnMock invocation) throws Throwable {
 				WhitelistedSite _site = mock(WhitelistedSite.class);
-				when(_site.getUuid()).thenReturn(id++ + "");
+				when(_site.getId()).thenReturn(id++ + "");
 				return _site;
 			}
 		});
@@ -669,7 +669,7 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
 				OAuth2AccessTokenEntity _token = mock(OAuth2AccessTokenEntity.class);
-				when(_token.getUuid()).thenReturn(id++ + "");
+				when(_token.getId()).thenReturn(id++ + "");
 				return _token;
 			}
 		});
@@ -719,7 +719,7 @@ public class TestMITREidDataService_1_1 {
 		OAuth2Authentication auth1 = new OAuth2Authentication(req1, mockAuth1);
 
 		AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
-		holder1.setUuid("1");
+		holder1.setId("1");
 		holder1.setAuthentication(auth1);
 
 		OAuth2Request req2 = new OAuth2Request(new HashMap<String, String>(), "client2", new ArrayList<GrantedAuthority>(),
@@ -729,7 +729,7 @@ public class TestMITREidDataService_1_1 {
 		OAuth2Authentication auth2 = new OAuth2Authentication(req2, mockAuth2);
 
 		AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
-		holder2.setUuid("2");
+		holder2.setId("2");
 		holder2.setAuthentication(auth2);
 
 		String configJson = "{" +
@@ -759,10 +759,10 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public AuthenticationHolderEntity answer(InvocationOnMock invocation) throws Throwable {
 				AuthenticationHolderEntity _site = (AuthenticationHolderEntity) invocation.getArguments()[0];
-				if(_site.getUuid() == null) {
-					_site.setUuid(id++ + "");
+				if(_site.getId() == null) {
+					_site.setId(id++ + "");
 				}
-				fakeDb.put(_site.getUuid(), _site);
+				fakeDb.put(_site.getId(), _site);
 				return _site;
 			}
 		});
@@ -780,7 +780,7 @@ public class TestMITREidDataService_1_1 {
 	@Test
 	public void testImportSystemScopes() throws IOException {
 		SystemScope scope1 = new SystemScope();
-		scope1.setUuid("1");
+		scope1.setId("1");
 		scope1.setValue("scope1");
 		scope1.setDescription("Scope 1");
 		scope1.setRestricted(true);
@@ -788,7 +788,7 @@ public class TestMITREidDataService_1_1 {
 		scope1.setIcon("glass");
 
 		SystemScope scope2 = new SystemScope();
-		scope2.setUuid("2");
+		scope2.setId("2");
 		scope2.setValue("scope2");
 		scope2.setDescription("Scope 2");
 		scope2.setRestricted(false);
@@ -796,7 +796,7 @@ public class TestMITREidDataService_1_1 {
 		scope2.setIcon("ball");
 
 		SystemScope scope3 = new SystemScope();
-		scope3.setUuid("3");
+		scope3.setId("3");
 		scope3.setValue("scope3");
 		scope3.setDescription("Scope 3");
 		scope3.setRestricted(false);
@@ -865,11 +865,11 @@ public class TestMITREidDataService_1_1 {
 		OAuth2Authentication auth1 = new OAuth2Authentication(req1, mockAuth1);
 
 		AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
-		holder1.setUuid("1");
+		holder1.setId("1");
 		holder1.setAuthentication(auth1);
 
 		OAuth2RefreshTokenEntity token1 = new OAuth2RefreshTokenEntity();
-		token1.setUuid("1");
+		token1.setId("1");
 		token1.setClient(mockedClient1);
 		token1.setExpiration(expirationDate1);
 		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
@@ -888,11 +888,11 @@ public class TestMITREidDataService_1_1 {
 		OAuth2Authentication auth2 = new OAuth2Authentication(req2, mockAuth2);
 
 		AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
-		holder2.setUuid("2");
+		holder2.setId("2");
 		holder2.setAuthentication(auth2);
 
 		OAuth2RefreshTokenEntity token2 = new OAuth2RefreshTokenEntity();
-		token2.setUuid("2");
+		token2.setId("2");
 		token2.setClient(mockedClient2);
 		token2.setExpiration(expirationDate2);
 		token2.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ."));
@@ -931,8 +931,8 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public OAuth2RefreshTokenEntity answer(InvocationOnMock invocation) throws Throwable {
 				OAuth2RefreshTokenEntity _token = (OAuth2RefreshTokenEntity) invocation.getArguments()[0];
-				_token.setUuid(id++ + "");
-				fakeRefreshTokenTable.put(_token.getUuid(), _token);
+				_token.setId(id++ + "");
+				fakeRefreshTokenTable.put(_token.getId(), _token);
 				return _token;
 			}
 		});
@@ -957,8 +957,8 @@ public class TestMITREidDataService_1_1 {
 			@Override
 			public AuthenticationHolderEntity answer(InvocationOnMock invocation) throws Throwable {
 				AuthenticationHolderEntity _holder = (AuthenticationHolderEntity) invocation.getArguments()[0];
-				_holder.setUuid(id++ + "");
-				fakeAuthHolderTable.put(_holder.getUuid(), _holder);
+				_holder.setId(id++ + "");
+				fakeAuthHolderTable.put(_holder.getId(), _holder);
 				return _holder;
 			}
 		});
@@ -976,11 +976,11 @@ public class TestMITREidDataService_1_1 {
 
 		int savedRefreshToken1Index = Collections.binarySearch(savedRefreshTokens, token1, new refreshTokenIdComparator());
 
-		assertThat(savedRefreshTokens.get(savedRefreshToken1Index).getAuthenticationHolder().getUuid(), equalTo("356"));
+		assertThat(savedRefreshTokens.get(savedRefreshToken1Index).getAuthenticationHolder().getId(), equalTo("356"));
 		
 		int savedRefreshToken2Index = Collections.binarySearch(savedRefreshTokens, token2, new refreshTokenIdComparator());
 		
-		assertThat(savedRefreshTokens.get(savedRefreshToken2Index).getAuthenticationHolder().getUuid(), equalTo("357"));
+		assertThat(savedRefreshTokens.get(savedRefreshToken2Index).getAuthenticationHolder().getId(), equalTo("357"));
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

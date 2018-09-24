@@ -29,7 +29,7 @@ public class DefaultAddress implements Address {
 
 	private static final long serialVersionUID = -1304880008685206811L;
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String formatted;
 	private String streetAddress;
@@ -39,11 +39,11 @@ public class DefaultAddress implements Address {
 	private String country;
 
 	public DefaultAddress() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public DefaultAddress(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 	/**
 	 * Copy constructor from an existing address.
@@ -60,12 +60,12 @@ public class DefaultAddress implements Address {
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic
@@ -188,7 +188,7 @@ public class DefaultAddress implements Address {
 		int result = 1;
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
 		result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((locality == null) ? 0 : locality.hashCode());
 		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
 		result = prime * result + ((region == null) ? 0 : region.hashCode());
@@ -225,11 +225,11 @@ public class DefaultAddress implements Address {
 		} else if (!formatted.equals(other.formatted)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (locality == null) {

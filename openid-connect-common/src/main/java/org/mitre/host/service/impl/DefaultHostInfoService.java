@@ -23,7 +23,7 @@ public class DefaultHostInfoService implements HostInfoService {
 
 	@Override
 	public String getCurrentHostUuid() {
-		return getCurrentHostInfo().getUuid();
+		return getCurrentHostInfo().getId();
 	}
 
 	@Override

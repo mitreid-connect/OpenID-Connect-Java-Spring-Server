@@ -48,7 +48,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public PermissionTicket save(PermissionTicket p) {
-		return JpaUtil.saveOrUpdate(p.getUuid(), em, p);
+		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
 	/* (non-Javadoc)
@@ -79,7 +79,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Permission saveRawPermission(Permission p) {
 		hostInfoService.validateHost(p.getHostUuid());
-		return JpaUtil.saveOrUpdate(p.getUuid(), em, p);
+		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
 	/* (non-Javadoc)
@@ -102,7 +102,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	public Collection<PermissionTicket> getPermissionTicketsForResourceSet(ResourceSet rs) {
 		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_BY_RESOURCE_SET, PermissionTicket.class);
 		query.setParameter(PermissionTicket.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
-		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getUuid());
+		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getId());
 		return query.getResultList();
 	}
 

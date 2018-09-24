@@ -48,7 +48,7 @@ public class SystemScope {
 	public static final String PARAM_VALUE = "value";
 	public static final String PARAM_HOST_UUID = "value";
 
-	private String uuid;
+	private String id;
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page
@@ -57,7 +57,7 @@ public class SystemScope {
 
 
 	public SystemScope() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	/**
@@ -66,18 +66,18 @@ public class SystemScope {
 	 * @param value
 	 */
 	public SystemScope(String uuid, String value) {
-		this.uuid = uuid;
+		this.id = uuid;
 		this.value = value;
 	}
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class SystemScope {
 		result = prime * result + (defaultScope ? 1231 : 1237);
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + (restricted ? 1231 : 1237);
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
@@ -212,11 +212,11 @@ public class SystemScope {
 		} else if (!icon.equals(other.icon)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (restricted != other.restricted) {
@@ -239,7 +239,7 @@ public class SystemScope {
 	 */
 	@Override
 	public String toString() {
-		return "SystemScope [uuid=" + uuid + ", value=" + value + ", description=" + description + ", icon=" + icon
+		return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon
 				+ ", defaultScope=" + defaultScope + ", restricted=" + restricted + "]";
 	}
 

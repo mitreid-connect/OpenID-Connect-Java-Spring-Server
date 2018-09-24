@@ -55,7 +55,7 @@ public class TestDefaultWhitelistedSiteService {
 	public void saveNew_notNullId() {
 
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
-		Mockito.when(site.getUuid()).thenReturn("12345"); // arbitrary long value
+		Mockito.when(site.getId()).thenReturn("12345"); // arbitrary long value
 
 		service.saveNew(site);
 	}
@@ -63,7 +63,7 @@ public class TestDefaultWhitelistedSiteService {
 	@Test
 	public void saveNew_success() {
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
-		Mockito.when(site.getUuid()).thenReturn(null);
+		Mockito.when(site.getId()).thenReturn(null);
 
 		service.saveNew(site);
 

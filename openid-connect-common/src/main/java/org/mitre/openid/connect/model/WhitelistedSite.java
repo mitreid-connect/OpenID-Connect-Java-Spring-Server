@@ -55,7 +55,7 @@ public class WhitelistedSite {
 	public static final String PARAM_CLIENT_ID = "clientId";
 
 	// unique id
-	private String uuid;
+	private String id;
 	private String hostUuid;
 
 	// Reference to the admin user who created this entry
@@ -77,12 +77,12 @@ public class WhitelistedSite {
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@Basic
@@ -99,7 +99,7 @@ public class WhitelistedSite {
 	 * @return the clientId
 	 */
 	@Basic
-	@Column(name="client_id")
+	@Column(name="client_uuid")
 	public String getClientId() {
 		return clientId;
 	}
@@ -117,7 +117,7 @@ public class WhitelistedSite {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="whitelisted_site_scope",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="whitelisted_site_uuid")
 			)
 	@Column(name="scope")
 	public Set<String> getAllowedScopes() {
@@ -132,7 +132,7 @@ public class WhitelistedSite {
 	}
 
 	@Basic
-	@Column(name="creator_user_id")
+	@Column(name="creator_user_uuid")
 	public String getCreatorUserId() {
 		return creatorUserId;
 	}

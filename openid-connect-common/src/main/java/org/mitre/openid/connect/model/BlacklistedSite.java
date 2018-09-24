@@ -44,7 +44,7 @@ public class BlacklistedSite {
 	public static final String PARAM_HOST_UUID = "hostUuid";
 	
 	// unique id
-	private String uuid;
+	private String id;
 
 	private String hostUuid;
 
@@ -52,21 +52,21 @@ public class BlacklistedSite {
 	private String uri;
 
 	public BlacklistedSite() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public BlacklistedSite(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

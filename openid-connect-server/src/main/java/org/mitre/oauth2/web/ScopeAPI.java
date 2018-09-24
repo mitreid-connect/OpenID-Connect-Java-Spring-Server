@@ -104,7 +104,7 @@ public class ScopeAPI {
 
 		if (existing != null && scope != null) {
 
-			if (existing.getUuid().equals(scope.getUuid())) {
+			if (existing.getId().equals(scope.getId())) {
 				// sanity check
 
 				scope = scopeService.save(scope);
@@ -115,11 +115,11 @@ public class ScopeAPI {
 			} else {
 
 				logger.error("updateScope failed; scope ids to not match: got "
-						+ existing.getUuid() + " and " + scope.getUuid());
+						+ existing.getId() + " and " + scope.getId());
 
 				m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.put(JsonErrorView.ERROR_MESSAGE, "Could not update scope. Scope ids to not match: got "
-						+ existing.getUuid() + " and " + scope.getUuid());
+						+ existing.getId() + " and " + scope.getId());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -148,7 +148,7 @@ public class ScopeAPI {
 
 		scope = scopeService.save(scope);
 
-		if (scope != null && scope.getUuid() != null) {
+		if (scope != null && scope.getId() != null) {
 
 			m.put(JsonEntityView.ENTITY, scope);
 

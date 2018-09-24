@@ -108,13 +108,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
 		token.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return JpaUtil.saveOrUpdate(token.getUuid(), manager, token);
+		return JpaUtil.saveOrUpdate(token.getId(), manager, token);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
-		OAuth2AccessTokenEntity found = getAccessTokenById(accessToken.getUuid());		
+		OAuth2AccessTokenEntity found = getAccessTokenById(accessToken.getId());		
 		manager.remove(found);
 	}
 
@@ -151,13 +151,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-		return JpaUtil.saveOrUpdate(refreshToken.getUuid(), manager, refreshToken);
+		return JpaUtil.saveOrUpdate(refreshToken.getId(), manager, refreshToken);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-		OAuth2RefreshTokenEntity found = getRefreshTokenById(refreshToken.getUuid());
+		OAuth2RefreshTokenEntity found = getRefreshTokenById(refreshToken.getId());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -252,7 +252,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getUuid());
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
 		return new LinkedHashSet<>(query.getResultList());
 	}
 

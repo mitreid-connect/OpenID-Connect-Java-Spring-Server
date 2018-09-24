@@ -47,10 +47,10 @@ public class MatchLoginHintsAgainstUsers implements LoginHintExtracter {
 				if (user == null) {
 					return null;
 				} else {
-					return user.getUuid();
+					return user.getId();
 				}
 			} else {
-				return user.getUuid();
+				return user.getId();
 			}
 		}
 	}

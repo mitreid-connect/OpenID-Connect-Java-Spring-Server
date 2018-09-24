@@ -69,7 +69,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_NAME = "name";
 
-	private String uuid;
+	private String id;
 	
 	private String hostUuid;
 
@@ -87,21 +87,21 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 *
 	 */
 	public OAuth2RefreshTokenEntity() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public OAuth2RefreshTokenEntity(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@Basic

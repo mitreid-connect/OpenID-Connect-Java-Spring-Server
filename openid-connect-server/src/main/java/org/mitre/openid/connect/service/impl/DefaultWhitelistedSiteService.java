@@ -51,8 +51,8 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 
 	@Override
 	public WhitelistedSite saveNew(WhitelistedSite whitelistedSite) {
-		if (whitelistedSite.getUuid() != null) {
-			throw new IllegalArgumentException("A new whitelisted site cannot be created with an id value already set: " + whitelistedSite.getUuid());
+		if (whitelistedSite.getId() != null) {
+			throw new IllegalArgumentException("A new whitelisted site cannot be created with an id value already set: " + whitelistedSite.getId());
 		}
 		return repository.save(whitelistedSite);
 	}

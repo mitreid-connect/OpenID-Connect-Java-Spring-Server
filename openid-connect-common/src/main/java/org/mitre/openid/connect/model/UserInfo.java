@@ -24,7 +24,7 @@ import com.google.gson.JsonObject;
 
 public interface UserInfo extends Serializable {
 
-	public String getUuid();
+	public String getId();
 	
 	/**
 	 * @return the userId

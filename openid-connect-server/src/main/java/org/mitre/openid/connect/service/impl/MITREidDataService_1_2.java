@@ -296,7 +296,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = tokenRepository.saveRefreshToken(token).getUuid();
+			String newId = tokenRepository.saveRefreshToken(token).getId();
 			maps.getRefreshTokenToClientRefs().put(currentId.toString(), clientId.toString());
 			maps.getRefreshTokenToAuthHolderRefs().put(currentId.toString(), authHolderId.toString());
 			maps.getRefreshTokenOldToNewIdMap().put(currentId.toString(), newId);
@@ -366,7 +366,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = tokenRepository.saveAccessToken(token).getUuid();
+			String newId = tokenRepository.saveAccessToken(token).getId();
 			maps.getAccessTokenToClientRefs().put(currentId.toString(), clientId);
 			maps.getAccessTokenToAuthHolderRefs().put(currentId.toString(), authHolderId.toString());
 			if (refreshTokenId != null) {
@@ -436,7 +436,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = authHolderRepository.save(ahe).getUuid();
+			String newId = authHolderRepository.save(ahe).getId();
 			maps.getAuthHolderOldToNewIdMap().put(currentId.toString(), newId);
 			logger.debug("Read authentication holder {}", currentId);
 		}
@@ -542,7 +542,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = approvedSiteRepository.save(site).getUuid();
+			String newId = approvedSiteRepository.save(site).getId();
 			maps.getGrantOldToNewIdMap().put(currentId.toString(), newId);
 			if (tokenIds != null) {
 				Set<String> tokenIdsInString = new HashSet<>(tokenIds.size());
@@ -591,7 +591,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = wlSiteRepository.save(wlSite).getUuid();
+			String newId = wlSiteRepository.save(wlSite).getId();
 			maps.getWhitelistedSiteOldToNewIdMap().put(currentId.toString(), newId);
 		}
 		reader.endArray();

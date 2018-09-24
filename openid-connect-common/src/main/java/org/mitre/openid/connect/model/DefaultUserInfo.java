@@ -55,7 +55,7 @@ public class DefaultUserInfo implements UserInfo {
 
 	private static final long serialVersionUID = 6078310513185681918L;
 
-	private String uuid;
+	private String id;
 	private DefaultUser user;
 	private String hostUuid;
 	private String sub;
@@ -81,21 +81,21 @@ public class DefaultUserInfo implements UserInfo {
 
 
 	public DefaultUserInfo() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public DefaultUserInfo(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}	
 	
 	@Id
 	@Column(name = "user_uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 	
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@OneToOne(fetch = FetchType.EAGER)
@@ -486,7 +486,7 @@ public class DefaultUserInfo implements UserInfo {
 		
 		ui.setSource(obj);
 
-		ui.setUuid(nullSafeGetString(obj, "uuid"));
+		ui.setId(nullSafeGetString(obj, "uuid"));
 		ui.setSub(nullSafeGetString(obj, "sub"));
 
 		ui.setName(nullSafeGetString(obj, "name"));
@@ -563,7 +563,7 @@ public class DefaultUserInfo implements UserInfo {
 		result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
 		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
 		result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
 		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -643,11 +643,11 @@ public class DefaultUserInfo implements UserInfo {
 		} else if (!givenName.equals(other.givenName)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (locale == null) {

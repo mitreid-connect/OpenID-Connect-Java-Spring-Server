@@ -84,13 +84,13 @@ public class JsonApprovedSiteView extends AbstractView {
 				@Override
 				public JsonElement serialize(OAuth2AccessTokenEntity src,
 						Type typeOfSrc, JsonSerializationContext context) {
-					return new JsonPrimitive(src.getUuid());
+					return new JsonPrimitive(src.getId());
 				}
 			})
 			.registerTypeAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
 				@Override
 				public JsonElement serialize(WhitelistedSite src, Type typeOfSrc, JsonSerializationContext context) {
-					return new JsonPrimitive(src.getUuid());
+					return new JsonPrimitive(src.getId());
 				}
 			})
 			.serializeNulls()

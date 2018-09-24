@@ -80,7 +80,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	@Override
 	public ClientDetailsEntity saveClient(ClientDetailsEntity client) {		
 		client.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return JpaUtil.saveOrUpdate(client.getUuid(), manager, client);
+		return JpaUtil.saveOrUpdate(client.getId(), manager, client);
 	}
 
 	/* (non-Javadoc)
@@ -88,7 +88,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public void deleteClient(ClientDetailsEntity client) {
-		ClientDetailsEntity found = getById(client.getUuid());
+		ClientDetailsEntity found = getById(client.getId());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -99,7 +99,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	@Override
 	public ClientDetailsEntity updateClient(String uuid, ClientDetailsEntity client) {
 		// sanity check
-		client.setUuid(uuid);
+		client.setId(uuid);
 		
 		hostInfoService.validateHost(client.getHostUuid());
 

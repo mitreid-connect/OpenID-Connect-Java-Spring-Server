@@ -43,38 +43,38 @@ import javax.persistence.Table;
 @Table(name = "policy")
 public class Policy {
 
-	private String uuid;
-	private String hostUuid;
+	private String id;
+	private String hostid;
 	private String name;
 	private Collection<Claim> claimsRequired;
 	private Set<String> scopes;
 	
 	public Policy() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
-	public Policy(String uuid) {
-		this.uuid = uuid;
+	public Policy(String id) {
+		this.id = id;
 	}	
 
 	@Id
-	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	@Column(name = "id")
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Basic
-	@Column(name = "host_uuid")
-	public String getHostUuid() {
-		return hostUuid;
+	@Column(name = "host_id")
+	public String getHostid() {
+		return hostid;
 	}
 
-	public void setHostUuid(String hostUuid) {
-		this.hostUuid = hostUuid;
+	public void setHostid(String hostid) {
+		this.hostid = hostid;
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class Policy {
 	@Column(name = "scope")
 	@CollectionTable(
 			name = "policy_scope",
-			joinColumns = @JoinColumn(name = "owner_id")
+			joinColumns = @JoinColumn(name = "policy_id")
 			)
 	public Set<String> getScopes() {
 		return scopes;
@@ -138,7 +138,7 @@ public class Policy {
 	 */
 	@Override
 	public String toString() {
-		return "Policy [uuid=" + uuid + ", name=" + name + ", claimsRequired=" + claimsRequired + ", scopes=" + scopes + "]";
+		return "Policy [id=" + id + ", name=" + name + ", claimsRequired=" + claimsRequired + ", scopes=" + scopes + "]";
 	}
 
 	/* (non-Javadoc)
@@ -149,7 +149,7 @@ public class Policy {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((claimsRequired == null) ? 0 : claimsRequired.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((scopes == null) ? 0 : scopes.hashCode());
 		return result;
@@ -177,11 +177,11 @@ public class Policy {
 		} else if (!claimsRequired.equals(other.claimsRequired)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (name == null) {

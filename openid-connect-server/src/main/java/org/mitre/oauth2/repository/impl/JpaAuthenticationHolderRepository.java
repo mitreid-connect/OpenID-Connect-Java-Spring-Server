@@ -66,7 +66,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(AuthenticationHolderEntity a) {
-		AuthenticationHolderEntity found = getById(a.getUuid());
+		AuthenticationHolderEntity found = getById(a.getId());
 		manager.remove(found);
 	}
 
@@ -74,7 +74,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Transactional(value="defaultTransactionManager")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		a.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return JpaUtil.saveOrUpdate(a.getUuid(), manager, a);
+		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
 	}
 
 	@Override

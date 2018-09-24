@@ -52,28 +52,28 @@ public class PairwiseIdentifier {
 	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
 	public static final String PARAM_SUB = "sub";
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String identifier;
 	private String userSub;
 	private String sectorIdentifier;
 
 	public PairwiseIdentifier() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public PairwiseIdentifier(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}	
 	
 	@Id
 	@Column(name = "uuid")	
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

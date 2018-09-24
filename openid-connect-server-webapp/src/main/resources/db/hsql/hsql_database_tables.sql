@@ -304,8 +304,6 @@ CREATE TABLE IF NOT EXISTS whitelisted_site (
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),	
 	whitelisted_site_uuid VARCHAR(64),
 	scope VARCHAR(256)
 );
@@ -330,8 +328,6 @@ CREATE TABLE IF NOT EXISTS resource_set (
 );
 
 CREATE TABLE IF NOT EXISTS resource_set_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	resource_set_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );

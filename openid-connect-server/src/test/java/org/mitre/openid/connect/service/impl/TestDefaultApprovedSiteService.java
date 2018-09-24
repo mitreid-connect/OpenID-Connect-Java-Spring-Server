@@ -79,17 +79,17 @@ public class TestDefaultApprovedSiteService {
 		client.setClientId(clientId);
 
 		site1 = new ApprovedSite();
-		site1.setUuid("1");
+		site1.setId("1");
 		site1.setUserId("user1");
 		site1.setClientId("other");
 
 		site2 = new ApprovedSite();
-		site2.setUuid("2");
+		site2.setId("2");
 		site2.setUserId("user1");
 		site2.setClientId(clientId);
 
 		site3 = new ApprovedSite();
-		site3.setUuid("3");
+		site3.setId("3");
 		site3.setUserId("user2");
 		site3.setClientId(clientId);
 

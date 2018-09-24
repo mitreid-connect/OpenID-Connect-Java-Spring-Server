@@ -79,7 +79,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(BlacklistedSite blacklistedSite) {
-		BlacklistedSite found = getById(blacklistedSite.getUuid());
+		BlacklistedSite found = getById(blacklistedSite.getId());
 		manager.remove(found);
 	}
 
@@ -90,7 +90,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite save(BlacklistedSite blacklistedSite) {
 		blacklistedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return saveOrUpdate(blacklistedSite.getUuid(), manager, blacklistedSite);
+		return saveOrUpdate(blacklistedSite.getId(), manager, blacklistedSite);
 	}
 
 	/* (non-Javadoc)
@@ -100,8 +100,8 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite update(BlacklistedSite oldBlacklistedSite, BlacklistedSite blacklistedSite) {
 		hostInfoService.validateHost(blacklistedSite.getHostUuid());
-		blacklistedSite.setUuid(oldBlacklistedSite.getUuid());
-		return saveOrUpdate(oldBlacklistedSite.getUuid(), manager, blacklistedSite);
+		blacklistedSite.setId(oldBlacklistedSite.getId());
+		return saveOrUpdate(oldBlacklistedSite.getId(), manager, blacklistedSite);
 
 	}
 

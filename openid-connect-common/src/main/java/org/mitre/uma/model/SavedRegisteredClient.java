@@ -38,27 +38,27 @@ import org.mitre.uma.model.convert.RegisteredClientStringConverter;
 @Table(name = "saved_registered_client")
 public class SavedRegisteredClient {
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String issuer;
 	private RegisteredClient registeredClient;
 
 	public SavedRegisteredClient() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public SavedRegisteredClient(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}	
 	
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

@@ -50,7 +50,7 @@ import javax.persistence.TemporalType;
 @NamedQueries({
 	@NamedQuery(name = PermissionTicket.QUERY_TICKET, query = "select p from PermissionTicket p where p.hostUuid = :hostUuid and p.ticket = :" + PermissionTicket.PARAM_TICKET),
 	@NamedQuery(name = PermissionTicket.QUERY_ALL, query = "select p from PermissionTicket p where p.hostUuid = :hostUuid"),
-	@NamedQuery(name = PermissionTicket.QUERY_BY_RESOURCE_SET, query = "select p from PermissionTicket p where p.hostUuid = :hostUuid and p.permission.resourceSet.uuid = :" + PermissionTicket.PARAM_RESOURCE_SET_ID)
+	@NamedQuery(name = PermissionTicket.QUERY_BY_RESOURCE_SET, query = "select p from PermissionTicket p where p.hostUuid = :hostUuid and p.permission.resourceSet.id = :" + PermissionTicket.PARAM_RESOURCE_SET_ID)
 })
 public class PermissionTicket {
 
@@ -62,7 +62,7 @@ public class PermissionTicket {
 	public static final String PARAM_TICKET = "ticket";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private Permission permission;
 	private String ticket;
@@ -70,21 +70,21 @@ public class PermissionTicket {
 	private Collection<Claim> claimsSupplied;
 	
 	public PermissionTicket() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public PermissionTicket(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}	
 	
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

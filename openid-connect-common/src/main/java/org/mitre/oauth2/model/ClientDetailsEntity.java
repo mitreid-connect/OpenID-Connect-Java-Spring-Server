@@ -85,7 +85,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	private static final long serialVersionUID = -1617727085733786296L;
 
-	private String uuid;
+	private String id;
 
 	private String hostUuid;
 
@@ -243,11 +243,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	public ClientDetailsEntity() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 
 	public ClientDetailsEntity(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 	@PrePersist
@@ -261,12 +261,12 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@Basic

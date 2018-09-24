@@ -42,7 +42,7 @@ import com.google.gson.JsonElement;
 @Table(name = "claim")
 public class Claim {
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String name;
 	private String friendlyName;
@@ -52,21 +52,21 @@ public class Claim {
 	private Set<String> issuer;
 
 	public Claim() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public Claim(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 	
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 	
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@Basic
@@ -182,7 +182,7 @@ public class Claim {
 	 */
 	@Override
 	public String toString() {
-		return "Claim [uuid=" + uuid + ", name=" + name + ", friendlyName=" + friendlyName + ", claimType=" + claimType + ", value=" + value + ", claimTokenFormat=" + claimTokenFormat + ", issuer=" + issuer + "]";
+		return "Claim [id=" + id + ", name=" + name + ", friendlyName=" + friendlyName + ", claimType=" + claimType + ", value=" + value + ", claimTokenFormat=" + claimTokenFormat + ", issuer=" + issuer + "]";
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -194,7 +194,7 @@ public class Claim {
 		result = prime * result + ((claimTokenFormat == null) ? 0 : claimTokenFormat.hashCode());
 		result = prime * result + ((claimType == null) ? 0 : claimType.hashCode());
 		result = prime * result + ((friendlyName == null) ? 0 : friendlyName.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -236,11 +236,11 @@ public class Claim {
 		} else if (!friendlyName.equals(other.friendlyName)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (issuer == null) {

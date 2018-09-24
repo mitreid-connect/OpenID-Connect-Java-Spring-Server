@@ -37,27 +37,27 @@ import javax.persistence.Table;
 @Table(name = "permission")
 public class Permission {
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private ResourceSet resourceSet;
 	private Set<String> scopes;
 
 	public Permission() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public Permission(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}	
 	
 	@Id
 	@Column(name = "uuid")	
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

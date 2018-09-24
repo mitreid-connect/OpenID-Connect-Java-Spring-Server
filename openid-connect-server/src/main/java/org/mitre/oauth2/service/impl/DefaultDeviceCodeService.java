@@ -88,7 +88,7 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	 */
 	@Override
 	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication auth) {
-		DeviceCode found = repository.getById(dc.getUuid());
+		DeviceCode found = repository.getById(dc.getId());
 
 		found.setApproved(true);
 

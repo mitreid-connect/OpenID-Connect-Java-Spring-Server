@@ -61,7 +61,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 
 		authorizationCode.setHostUuid(hostInfoService.getCurrentHostUuid());
 		
-		return JpaUtil.saveOrUpdate(authorizationCode.getUuid(), manager, authorizationCode);
+		return JpaUtil.saveOrUpdate(authorizationCode.getId(), manager, authorizationCode);
 
 	}
 
@@ -84,7 +84,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 */
 	@Override
 	public void remove(AuthorizationCodeEntity authorizationCodeEntity) {
-		AuthorizationCodeEntity found = manager.find(AuthorizationCodeEntity.class, authorizationCodeEntity.getUuid());
+		AuthorizationCodeEntity found = manager.find(AuthorizationCodeEntity.class, authorizationCodeEntity.getId());
 		if (found != null) {
 			hostInfoService.validateHost(found.getHostUuid());
 			manager.remove(found);

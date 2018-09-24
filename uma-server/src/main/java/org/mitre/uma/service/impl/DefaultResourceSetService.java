@@ -73,8 +73,8 @@ public class DefaultResourceSetService implements ResourceSetService {
 	@Override
 	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs) {
 
-		if (oldRs.getUuid() == null || newRs.getUuid() == null
-				|| !oldRs.getUuid().equals(newRs.getUuid())) {
+		if (oldRs.getId() == null || newRs.getId() == null
+				|| !oldRs.getId().equals(newRs.getId())) {
 
 			throw new IllegalArgumentException("Resource set IDs mismatched");
 

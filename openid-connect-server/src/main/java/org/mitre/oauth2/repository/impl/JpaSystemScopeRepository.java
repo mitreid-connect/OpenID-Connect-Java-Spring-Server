@@ -82,7 +82,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(SystemScope scope) {
-		SystemScope found = getById(scope.getUuid());
+		SystemScope found = getById(scope.getId());
 
 		if (found != null) {
 			em.remove(found);
@@ -96,7 +96,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope save(SystemScope scope) {
-		return saveOrUpdate(scope.getUuid(), em, scope);
+		return saveOrUpdate(scope.getId(), em, scope);
 	}
 
 }

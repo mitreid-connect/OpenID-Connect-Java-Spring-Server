@@ -88,7 +88,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(DeviceCode scope) {
-		DeviceCode found = getById(scope.getUuid());
+		DeviceCode found = getById(scope.getId());
 		em.remove(found);
 	}
 
@@ -99,7 +99,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public DeviceCode save(DeviceCode scope) {
 		scope.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return saveOrUpdate(scope.getUuid(), em, scope);
+		return saveOrUpdate(scope.getId(), em, scope);
 	}
 
 	/* (non-Javadoc)

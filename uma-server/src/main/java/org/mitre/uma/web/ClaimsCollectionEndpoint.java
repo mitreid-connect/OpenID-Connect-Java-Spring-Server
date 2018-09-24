@@ -92,8 +92,8 @@ public class ClaimsCollectionEndpoint {
 		UserInfo userInfo = auth.getUserInfo();
 
 		claimsSupplied.add(mkClaim(issuer, "sub", new JsonPrimitive(auth.getSub())));
-		if (userInfo.getUuid() != null) {
-			claimsSupplied.add(mkClaim(issuer, "user_uuid", new JsonPrimitive(auth.getUserInfo().getUuid())));
+		if (userInfo.getId() != null) {
+			claimsSupplied.add(mkClaim(issuer, "user_uuid", new JsonPrimitive(auth.getUserInfo().getId())));
 		}
 		if (userInfo.getEmail() != null) {
 			claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));

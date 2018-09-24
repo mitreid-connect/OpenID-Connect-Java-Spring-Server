@@ -355,7 +355,7 @@ public class TestDefaultIntrospectionResultAssembler {
 
 	private Permission permission(String resourceSetId, String... scopes) {
 		Permission permission = mock(Permission.class, RETURNS_DEEP_STUBS);
-		given(permission.getResourceSet().getUuid()).willReturn(resourceSetId);
+		given(permission.getResourceSet().getId()).willReturn(resourceSetId);
 		given(permission.getScopes()).willReturn(scopes(scopes));
 		return permission;
 	}

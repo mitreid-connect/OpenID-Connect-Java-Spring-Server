@@ -50,7 +50,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Transactional(value="defaultTransactionManager")
 	public ResourceSet save(ResourceSet rs) {
 		rs.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return JpaUtil.saveOrUpdate(rs.getUuid(), em, rs);
+		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(ResourceSet rs) {
-		ResourceSet found = getById(rs.getUuid());
+		ResourceSet found = getById(rs.getId());
 		em.remove(found);
 	}
 

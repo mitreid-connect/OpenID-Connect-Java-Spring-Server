@@ -103,10 +103,10 @@ public class TestDefaultStatsService {
 
 		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4));
 
-		Mockito.when(client1.getUuid()).thenReturn("1");
-		Mockito.when(client2.getUuid()).thenReturn("2");
-		Mockito.when(client3.getUuid()).thenReturn("3");
-		Mockito.when(client4.getUuid()).thenReturn("4");
+		Mockito.when(client1.getId()).thenReturn("1");
+		Mockito.when(client2.getId()).thenReturn("2");
+		Mockito.when(client3.getId()).thenReturn("3");
+		Mockito.when(client4.getId()).thenReturn("4");
 
 		Mockito.when(approvedSiteService.getByClientId(clientId1)).thenReturn(Sets.newHashSet(ap1, ap2));
 		Mockito.when(approvedSiteService.getByClientId(clientId2)).thenReturn(Sets.newHashSet(ap3));

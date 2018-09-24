@@ -352,7 +352,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
 	public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
 
-		if (clientRepository.getById(client.getUuid()) == null) {
+		if (clientRepository.getById(client.getId()) == null) {
 			throw new InvalidClientException("Client with id " + client.getClientId() + " was not found");
 		}
 
@@ -420,7 +420,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
 
-			return clientRepository.updateClient(oldClient.getUuid(), newClient);
+			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
 	}

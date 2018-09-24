@@ -156,7 +156,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void saveNewClient_blacklisted() {
 
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getUuid()).thenReturn(null);
+		Mockito.when(client.getId()).thenReturn(null);
 
 		String badUri = "badplace.xxx";
 
@@ -171,7 +171,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// Set up a mock client.
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getUuid()).thenReturn(null);
+		Mockito.when(client.getId()).thenReturn(null);
 
 		service.saveNewClient(client);
 
@@ -246,7 +246,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		String id = "12345";
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getUuid()).thenReturn(id);
+		Mockito.when(client.getId()).thenReturn(id);
 		Mockito.when(clientRepository.getById(id)).thenReturn(null);
 
 		service.deleteClient(client);
@@ -259,7 +259,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		String clientId = "b00g3r";
 
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getUuid()).thenReturn(id);
+		Mockito.when(client.getId()).thenReturn(id);
 		Mockito.when(client.getClientId()).thenReturn(clientId);
 
 		Mockito.when(clientRepository.getById(id)).thenReturn(client);

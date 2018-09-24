@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "host_info")
 @NamedQueries({ @NamedQuery(name = DefaultHostInfo.QUERY_BY_HOST, query = "select h from HostInfo h where h.host = :"
 		+ DefaultHostInfo.PARAM_HOST),
-	@NamedQuery(name = DefaultHostInfo.QUERY_BY_UUID, query = "select h from HostInfo h where h.uuid = :"
+	@NamedQuery(name = DefaultHostInfo.QUERY_BY_UUID, query = "select h from HostInfo h where h.id = :"
 			+ DefaultHostInfo.PARAM_UUID)})
 public class DefaultHostInfo implements HostInfo {
 
@@ -23,22 +23,22 @@ public class DefaultHostInfo implements HostInfo {
 	public static final String PARAM_UUID = "uuid";
 	public static final String PARAM_HOST = "host";
 
-	private String uuid;
+	private String id;
 	private String host;
 	private String config;
 
 	public DefaultHostInfo() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	public String getHost() {

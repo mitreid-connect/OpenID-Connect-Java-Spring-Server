@@ -249,15 +249,15 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeRefreshTokens(JsonWriter writer) throws IOException {
 		for (OAuth2RefreshTokenEntity token : tokenRepository.getAllRefreshTokens()) {
 			writer.beginObject();
-			writer.name(ID).value(token.getUuid());
+			writer.name(ID).value(token.getId());
 			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
 			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
 			writer.name(AUTHENTICATION_HOLDER_ID)
-			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getUuid() : null);
+			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
-			logger.debug("Wrote refresh token {}", token.getUuid());
+			logger.debug("Wrote refresh token {}", token.getId());
 		}
 		logger.info("Done writing refresh tokens");
 	}
@@ -268,14 +268,14 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeAccessTokens(JsonWriter writer) throws IOException {
 		for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
 			writer.beginObject();
-			writer.name(ID).value(token.getUuid());
+			writer.name(ID).value(token.getId());
 			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
 			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
 			writer.name(AUTHENTICATION_HOLDER_ID)
-			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getUuid() : null);
+			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(REFRESH_TOKEN_ID)
-			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getUuid() : null);
+			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
 			writer.name(SCOPE);
 			writer.beginArray();
 			for (String s : token.getScope()) {
@@ -285,7 +285,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 			writer.name(TYPE).value(token.getTokenType());
 			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
-			logger.debug("Wrote access token {}", token.getUuid());
+			logger.debug("Wrote access token {}", token.getId());
 		}
 		logger.info("Done writing access tokens");
 	}
@@ -296,7 +296,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeAuthenticationHolders(JsonWriter writer) throws IOException {
 		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
 			writer.beginObject();
-			writer.name(ID).value(holder.getUuid());
+			writer.name(ID).value(holder.getId());
 
 			writer.name(REQUEST_PARAMETERS);
 			writer.beginObject();
@@ -366,7 +366,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 
 
 			writer.endObject();
-			logger.debug("Wrote authentication holder {}", holder.getUuid());
+			logger.debug("Wrote authentication holder {}", holder.getId());
 		}
 		logger.info("Done writing authentication holders");
 	}
@@ -377,7 +377,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeGrants(JsonWriter writer) throws IOException {
 		for (ApprovedSite site : approvedSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name(ID).value(site.getUuid());
+			writer.name(ID).value(site.getId());
 			writer.name(ACCESS_DATE).value(toUTCString(site.getAccessDate()));
 			writer.name(CLIENT_ID).value(site.getClientId());
 			writer.name(CREATION_DATE).value(toUTCString(site.getCreationDate()));
@@ -389,11 +389,11 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 			writer.name(APPROVED_ACCESS_TOKENS);
 			writer.beginArray();
 			for (OAuth2AccessTokenEntity token : tokens) {
-				writer.value(token.getUuid());
+				writer.value(token.getId());
 			}
 			writer.endArray();
 			writer.endObject();
-			logger.debug("Wrote grant {}", site.getUuid());
+			logger.debug("Wrote grant {}", site.getId());
 		}
 		logger.info("Done writing grants");
 	}
@@ -404,13 +404,13 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeWhitelistedSites(JsonWriter writer) throws IOException {
 		for (WhitelistedSite wlSite : wlSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name(ID).value(wlSite.getUuid());
+			writer.name(ID).value(wlSite.getId());
 			writer.name(CLIENT_ID).value(wlSite.getClientId());
 			writer.name(CREATOR_USER_ID).value(wlSite.getCreatorUserId());
 			writer.name(ALLOWED_SCOPES);
 			writeNullSafeArray(writer, wlSite.getAllowedScopes());
 			writer.endObject();
-			logger.debug("Wrote whitelisted site {}", wlSite.getUuid());
+			logger.debug("Wrote whitelisted site {}", wlSite.getId());
 		}
 		logger.info("Done writing whitelisted sites");
 	}
@@ -421,10 +421,10 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private void writeBlacklistedSites(JsonWriter writer) throws IOException {
 		for (BlacklistedSite blSite : blSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name(ID).value(blSite.getUuid());
+			writer.name(ID).value(blSite.getId());
 			writer.name(URI).value(blSite.getUri());
 			writer.endObject();
-			logger.debug("Wrote blacklisted site {}", blSite.getUuid());
+			logger.debug("Wrote blacklisted site {}", blSite.getId());
 		}
 		logger.info("Done writing blacklisted sites");
 	}
@@ -530,9 +530,9 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				writer.name(SOFTWARE_STATEMENT).value(client.getSoftwareStatement() != null ? client.getSoftwareStatement().serialize() : null);
 				writer.name(CREATION_DATE).value(toUTCString(client.getCreatedAt()));
 				writer.endObject();
-				logger.debug("Wrote client {}", client.getUuid());
+				logger.debug("Wrote client {}", client.getId());
 			} catch (IOException ex) {
-				logger.error("Unable to write client {}", client.getUuid(), ex);
+				logger.error("Unable to write client {}", client.getId(), ex);
 			}
 		}
 		logger.info("Done writing clients");
@@ -545,16 +545,16 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 		for (SystemScope sysScope : sysScopeRepository.getAll()) {
 			try {
 				writer.beginObject();
-				writer.name(ID).value(sysScope.getUuid());
+				writer.name(ID).value(sysScope.getId());
 				writer.name(DESCRIPTION).value(sysScope.getDescription());
 				writer.name(ICON).value(sysScope.getIcon());
 				writer.name(VALUE).value(sysScope.getValue());
 				writer.name(RESTRICTED).value(sysScope.isRestricted());
 				writer.name(DEFAULT_SCOPE).value(sysScope.isDefaultScope());
 				writer.endObject();
-				logger.debug("Wrote system scope {}", sysScope.getUuid());
+				logger.debug("Wrote system scope {}", sysScope.getId());
 			} catch (IOException ex) {
-				logger.error("Unable to write system scope {}", sysScope.getUuid(), ex);
+				logger.error("Unable to write system scope {}", sysScope.getId(), ex);
 			}
 		}
 		logger.info("Done writing system scopes");
@@ -683,7 +683,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = tokenRepository.saveRefreshToken(token).getUuid();
+			String newId = tokenRepository.saveRefreshToken(token).getId();
 			maps.getRefreshTokenToClientRefs().put(currentId, clientId);
 			maps.getRefreshTokenToAuthHolderRefs().put(currentId, authHolderId);
 			maps.getRefreshTokenOldToNewIdMap().put(currentId, newId);
@@ -753,7 +753,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = tokenRepository.saveAccessToken(token).getUuid();
+			String newId = tokenRepository.saveAccessToken(token).getId();
 			maps.getAccessTokenToClientRefs().put(currentId, clientId);
 			maps.getAccessTokenToAuthHolderRefs().put(currentId, authHolderId);
 			if (refreshTokenId != null) {
@@ -823,7 +823,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = authHolderRepository.save(ahe).getUuid();
+			String newId = authHolderRepository.save(ahe).getId();
 			maps.getAuthHolderOldToNewIdMap().put(currentId, newId);
 			logger.debug("Read authentication holder {}", currentId);
 		}
@@ -929,7 +929,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = approvedSiteRepository.save(site).getUuid();
+			String newId = approvedSiteRepository.save(site).getId();
 			maps.getGrantOldToNewIdMap().put(currentId, newId);
 			if (tokenIds != null) {
 				maps.getGrantToAccessTokensRefs().put(currentId, tokenIds);
@@ -977,7 +977,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			String newId = wlSiteRepository.save(wlSite).getUuid();
+			String newId = wlSiteRepository.save(wlSite).getId();
 			maps.getWhitelistedSiteOldToNewIdMap().put(currentId, newId);
 		}
 		reader.endArray();

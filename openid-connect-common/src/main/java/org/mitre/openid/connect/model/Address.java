@@ -25,7 +25,7 @@ public interface Address extends Serializable {
 	 * Get the system-specific ID of the Address object
 	 * @return
 	 */
-	public String getUuid();
+	public String getId();
 	
 	
 	public String getHostUuid();

@@ -37,7 +37,7 @@ public class DefaultUser implements UserDetails {
 	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_USER_NAME = "username";
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String username;
 	private String password;
@@ -48,22 +48,22 @@ public class DefaultUser implements UserDetails {
 	private Collection<GrantedAuthority> authorities;
 
 	public DefaultUser() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 
 	public DefaultUser(String uuid) {
 		super();
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

@@ -57,19 +57,19 @@ public class JpaUserRepository implements UserRepository {
 	@Override
 	public DefaultUser saveUser(DefaultUser user) {
 		user.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return JpaUtil.saveOrUpdate(user.getUuid(), manager, user);
+		return JpaUtil.saveOrUpdate(user.getId(), manager, user);
 	}
 
 	@Override
 	public void deleteUser(DefaultUser user) {
-		DefaultUser found = getById(user.getUuid());
+		DefaultUser found = getById(user.getId());
 		manager.remove(found);
 	}
 
 	@Override
 	public DefaultUser updateUser(String uuid, DefaultUser user) {
 		// sanity check
-		user.setUuid(uuid);
+		user.setId(uuid);
 
 		hostInfoService.validateHost(user.getHostUuid());
 		

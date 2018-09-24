@@ -57,7 +57,7 @@ public class DeviceCode {
 	public static final String PARAM_DEVICE_CODE = "deviceCode";
 	public static final String PARAM_DATE = "date";
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String deviceCode;
 	private String userCode;
@@ -69,15 +69,15 @@ public class DeviceCode {
 	private AuthenticationHolderEntity authenticationHolder;
 
 	public DeviceCode() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 
 	public DeviceCode(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 	
 	public DeviceCode(String hostUuid, String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 		this.hostUuid = hostUuid;
 		this.deviceCode = deviceCode;
 		this.userCode = userCode;
@@ -91,12 +91,12 @@ public class DeviceCode {
 	 */
 	@Id
 	@Column(name = "uuid")	
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

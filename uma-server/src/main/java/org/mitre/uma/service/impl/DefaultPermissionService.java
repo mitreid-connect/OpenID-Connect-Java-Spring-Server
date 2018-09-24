@@ -83,7 +83,7 @@ public class DefaultPermissionService implements PermissionService {
 	 */
 	@Override
 	public PermissionTicket updateTicket(PermissionTicket ticket) {
-		if (ticket.getUuid() != null) {
+		if (ticket.getId() != null) {
 			return repository.save(ticket);
 		} else {
 			return null;

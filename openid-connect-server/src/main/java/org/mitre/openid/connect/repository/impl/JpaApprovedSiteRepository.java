@@ -69,7 +69,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(ApprovedSite approvedSite) {
-		ApprovedSite found = getById(approvedSite.getUuid());
+		ApprovedSite found = getById(approvedSite.getId());
 		manager.remove(found);
 	}
 
@@ -77,7 +77,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		approvedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
-		return saveOrUpdate(approvedSite.getUuid(), manager, approvedSite);
+		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
 	}
 
 	@Override

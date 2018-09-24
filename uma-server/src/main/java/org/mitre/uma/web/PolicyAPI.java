@@ -200,15 +200,15 @@ public class PolicyAPI {
 
 		Policy p = gson.fromJson(jsonString, Policy.class);
 
-		if (p.getUuid() != null) {
-			logger.warn("Tried to add a policy with a non-null ID: " + p.getUuid());
+		if (p.getId() != null) {
+			logger.warn("Tried to add a policy with a non-null ID: " + p.getId());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		for (Claim claim : p.getClaimsRequired()) {
-			if (claim.getUuid() != null) {
-				logger.warn("Tried to add a policy with a non-null claim ID: " + claim.getUuid());
+			if (claim.getId() != null) {
+				logger.warn("Tried to add a policy with a non-null claim ID: " + claim.getId());
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				return HttpCodeView.VIEWNAME;
 			}
@@ -259,7 +259,7 @@ public class PolicyAPI {
 		}
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getUuid().equals(pid)) {
+			if (policy.getId().equals(pid)) {
 				// found it!
 				m.addAttribute(JsonEntityView.ENTITY, policy);
 				return JsonEntityView.VIEWNAME;
@@ -300,26 +300,26 @@ public class PolicyAPI {
 
 		Policy p = gson.fromJson(jsonString, Policy.class);
 
-		if (!pid.equals(p.getUuid())) {
-			logger.warn("Policy ID mismatch, expected " + pid + " got " + p.getUuid());
+		if (!pid.equals(p.getId())) {
+			logger.warn("Policy ID mismatch, expected " + pid + " got " + p.getId());
 
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getUuid().equals(pid)) {
+			if (policy.getId().equals(pid)) {
 				// found it!
 
 				// find the existing claim IDs, make sure we're not overwriting anything from another policy
 				Set<String> claimIds = new HashSet<>();
 				for (Claim claim : policy.getClaimsRequired()) {
-					claimIds.add(claim.getUuid());
+					claimIds.add(claim.getId());
 				}
 
 				for (Claim claim : p.getClaimsRequired()) {
-					if (claim.getUuid() != null && !claimIds.contains(claim.getUuid())) {
-						logger.warn("Tried to add a policy with a an unmatched claim ID: got " + claim.getUuid() + " expected " + claimIds);
+					if (claim.getId() != null && !claimIds.contains(claim.getId())) {
+						logger.warn("Tried to add a policy with a an unmatched claim ID: got " + claim.getId() + " expected " + claimIds);
 						m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 						return HttpCodeView.VIEWNAME;
 					}
@@ -372,7 +372,7 @@ public class PolicyAPI {
 
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getUuid().equals(pid)) {
+			if (policy.getId().equals(pid)) {
 				// found it!
 				rs.getPolicies().remove(policy);
 				resourceSetService.update(rs, rs);

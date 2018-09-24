@@ -2,7 +2,7 @@ package org.mitre.host.model;
 
 public interface HostInfo {
 
-	String getUuid();
+	String getId();
 
 	String getHost();
 

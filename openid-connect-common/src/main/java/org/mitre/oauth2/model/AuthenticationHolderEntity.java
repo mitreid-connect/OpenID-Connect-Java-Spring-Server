@@ -53,9 +53,9 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 @NamedQueries ({
 	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID),
 	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID +
-			" and a.uuid not in (select t.authenticationHolder.uuid from OAuth2AccessTokenEntity t) and " +
-			"a.uuid not in (select r.authenticationHolder.uuid from OAuth2RefreshTokenEntity r) and " +
-			"a.uuid not in (select c.authenticationHolder.uuid from AuthorizationCodeEntity c) ")
+			" and a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and " +
+			"a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r) and " +
+			"a.id not in (select c.authenticationHolder.id from AuthorizationCodeEntity c) ")
 })
 public class AuthenticationHolderEntity {
 
@@ -64,7 +64,7 @@ public class AuthenticationHolderEntity {
 	
 	public static final String PARAM_HOST_UUID = "hostUuid";
 
-	private String uuid;
+	private String id;
 	
 	private String hostUuid;
 
@@ -89,22 +89,22 @@ public class AuthenticationHolderEntity {
 	private Map<String, String> requestParameters;
 
 	public AuthenticationHolderEntity() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	public AuthenticationHolderEntity(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 	
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 	
 	@Basic

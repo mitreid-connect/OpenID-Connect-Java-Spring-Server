@@ -53,7 +53,7 @@ public class ResourceSet {
 	public static final String PARAM_OWNER = "owner";
 	public static final String PARAM_CLIENTID = "clientId";
 
-	private String uuid;
+	private String id;
 	private String hostUuid;
 	private String name;
 	private String uri;
@@ -67,25 +67,25 @@ public class ResourceSet {
 	private Collection<Policy> policies = new HashSet<>();
 
 	public ResourceSet() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 	
-	public ResourceSet(String uuid) {
-		this.uuid = uuid;
+	public ResourceSet(String id) {
+		this.id = id;
 	}	
 
 	@Id
-	@Column(name = "uuid")	
-	public String getUuid() {
-		return uuid;
+	@Column(name = "id")	
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Basic
-	@Column(name = "host_uuid")	
+	@Column(name = "host_id")	
 	public String getHostUuid() {
 		return hostUuid;
 	}
@@ -149,7 +149,7 @@ public class ResourceSet {
 	@Column(name = "scope")
 	@CollectionTable(
 			name = "resource_set_scope",
-			joinColumns = @JoinColumn(name = "owner_id")
+			joinColumns = @JoinColumn(name = "resource_set_id")
 			)
 	public Set<String> getScopes() {
 		return scopes;
@@ -231,7 +231,7 @@ public class ResourceSet {
 	 */
 	@Override
 	public String toString() {
-		return "ResourceSet [uuid=" + uuid + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
+		return "ResourceSet [id=" + id + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
 	}
 
 	/* (non-Javadoc)
@@ -243,7 +243,7 @@ public class ResourceSet {
 		int result = 1;
 		result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
 		result = prime * result + ((iconUri == null) ? 0 : iconUri.hashCode());
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		result = prime * result + ((policies == null) ? 0 : policies.hashCode());
@@ -282,11 +282,11 @@ public class ResourceSet {
 		} else if (!iconUri.equals(other.iconUri)) {
 			return false;
 		}
-		if (uuid == null) {
-			if (other.uuid != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uuid.equals(other.uuid)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (name == null) {

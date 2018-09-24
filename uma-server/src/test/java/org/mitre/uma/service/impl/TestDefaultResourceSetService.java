@@ -56,7 +56,7 @@ public class TestDefaultResourceSetService {
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_nullId() {
 		ResourceSet rs = new ResourceSet();
-		rs.setUuid("1");
+		rs.setId("1");
 
 		ResourceSet rs2 = new ResourceSet();
 
@@ -68,7 +68,7 @@ public class TestDefaultResourceSetService {
 		ResourceSet rs = new ResourceSet();
 
 		ResourceSet rs2 = new ResourceSet();
-		rs.setUuid("1");
+		rs.setId("1");
 
 		resourceSetService.update(rs, rs2);
 	}
@@ -76,10 +76,10 @@ public class TestDefaultResourceSetService {
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_mismatchedIds() {
 		ResourceSet rs = new ResourceSet();
-		rs.setUuid("1");
+		rs.setId("1");
 
 		ResourceSet rs2 = new ResourceSet();
-		rs.setUuid("2");
+		rs.setId("2");
 
 		resourceSetService.update(rs, rs2);
 

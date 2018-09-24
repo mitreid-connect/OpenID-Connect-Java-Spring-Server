@@ -67,7 +67,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	@Transactional(value="defaultTransactionManager")
 	public void save(PairwiseIdentifier pairwise) {
 		pairwise.setHostUuid(hostInfoService.getCurrentHostUuid());
-		saveOrUpdate(pairwise.getUuid(), manager, pairwise);
+		saveOrUpdate(pairwise.getId(), manager, pairwise);
 	}
 
 }

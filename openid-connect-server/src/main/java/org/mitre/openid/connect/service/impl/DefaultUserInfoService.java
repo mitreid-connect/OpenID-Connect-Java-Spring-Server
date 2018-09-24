@@ -54,7 +54,7 @@ public class DefaultUserInfoService implements UserInfoService {
 	public UserInfo getByUsername(String username) {
 		DefaultUser user = userRepository.getUserByUsername(username);
 		if (user != null) {
-			UserInfo userInfo = userInfoRepository.getByUuid(user.getUuid());
+			UserInfo userInfo = userInfoRepository.getByUuid(user.getId());
 			return userInfo;
 		} else {
 			return null;

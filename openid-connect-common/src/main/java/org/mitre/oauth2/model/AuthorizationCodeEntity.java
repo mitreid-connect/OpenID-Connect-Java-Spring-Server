@@ -52,7 +52,7 @@ public class AuthorizationCodeEntity {
 	public static final String PARAM_CODE = "code";
 	public static final String PARAM_DATE = "date";
 
-	private String uuid;
+	private String id;
 
 	private String hostUuid;
 
@@ -63,11 +63,11 @@ public class AuthorizationCodeEntity {
 	private Date expiration;
 
 	public AuthorizationCodeEntity() {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 
 	public AuthorizationCodeEntity(String uuid) {
-		this.uuid = uuid;
+		this.id = uuid;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class AuthorizationCodeEntity {
 	 *                    code request
 	 */
 	public AuthorizationCodeEntity(String code, AuthenticationHolderEntity authenticationHolder, Date expiration) {
-		this.uuid = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 		this.code = code;
 		this.authenticationHolder = authenticationHolder;
 		this.expiration = expiration;
@@ -87,12 +87,12 @@ public class AuthorizationCodeEntity {
 
 	@Id
 	@Column(name = "uuid")
-	public String getUuid() {
-		return uuid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(String uuid) {
+		this.id = uuid;
 	}
 
 	@Basic

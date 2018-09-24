@@ -71,7 +71,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(WhitelistedSite whitelistedSite) {
-		WhitelistedSite found = getById(whitelistedSite.getUuid());
+		WhitelistedSite found = getById(whitelistedSite.getId());
 		manager.remove(found);	
 	}
 
@@ -80,20 +80,20 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
 		whiteListedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
 
-		return saveOrUpdate(whiteListedSite.getUuid(), manager, whiteListedSite);
+		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		// sanity check
-		whitelistedSite.setUuid(oldWhitelistedSite.getUuid());
+		whitelistedSite.setId(oldWhitelistedSite.getId());
 
 		hostInfoService.validateHost(oldWhitelistedSite.getHostUuid());
 		
 		whitelistedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
 		
-		return saveOrUpdate(oldWhitelistedSite.getUuid(), manager, whitelistedSite);
+		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
 	}
 
 	@Override

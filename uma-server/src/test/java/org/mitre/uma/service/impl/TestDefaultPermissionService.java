@@ -83,13 +83,13 @@ public class TestDefaultPermissionService {
 		rs1 = new ResourceSet();
 		rs1.setName(rs1Name);
 		rs1.setOwner(rs1Owner);
-		rs1.setUuid(rs1Id );
+		rs1.setId(rs1Id );
 		rs1.setScopes(scopes1);
 
 		rs2 = new ResourceSet();
 		rs2.setName(rs2Name);
 		rs2.setOwner(rs2Owner);
-		rs2.setUuid(rs2Id);
+		rs2.setId(rs2Id);
 		rs2.setScopes(scopes2);
 
 		// have the repository just pass the argument through
