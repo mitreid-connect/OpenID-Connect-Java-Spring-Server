@@ -150,7 +150,6 @@
             "terms": "Villkor för tjänsten",
             "terms-help": "Länk till en sida som beskriver villkor för tjänsten. Den visas på bekräftelsesidan.",
             "token-signing-algorithm": "Signeringsalgoritm för vald autentiseringsmetod",
-            "token-timeout-help": "Ange tiden i sekunder, timmar eller minuter.",
             "tokens": "Nycklar",
             "type": "Typ av tjänst",
             "type-native": "App",

@@ -71,11 +71,11 @@ public class TestDefaultPermissionService {
 
 	private String rs1Name = "resource set 1";
 	private String rs1Owner = "resource set owner 1";
-	private Long rs1Id = 1L;
+	private String rs1Id = "1";
 
 	private String rs2Name = "resource set 2";
 	private String rs2Owner = "resource set owner 2";
-	private Long rs2Id = 2L;
+	private String rs2Id = "2";
 
 
 	@Before
@@ -83,13 +83,13 @@ public class TestDefaultPermissionService {
 		rs1 = new ResourceSet();
 		rs1.setName(rs1Name);
 		rs1.setOwner(rs1Owner);
-		rs1.setId(rs1Id );
+		rs1.setUuid(rs1Id );
 		rs1.setScopes(scopes1);
 
 		rs2 = new ResourceSet();
 		rs2.setName(rs2Name);
 		rs2.setOwner(rs2Owner);
-		rs2.setId(rs2Id);
+		rs2.setUuid(rs2Id);
 		rs2.setScopes(scopes2);
 
 		// have the repository just pass the argument through

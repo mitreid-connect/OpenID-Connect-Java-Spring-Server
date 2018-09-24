@@ -28,7 +28,7 @@ public interface ResourceSetRepository {
 
 	public ResourceSet save(ResourceSet rs);
 
-	public ResourceSet getById(Long id);
+	public ResourceSet getById(String id);
 
 	public void remove(ResourceSet rs);
 

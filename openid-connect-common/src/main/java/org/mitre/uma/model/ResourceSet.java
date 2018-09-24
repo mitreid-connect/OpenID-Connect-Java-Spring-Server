@@ -49,6 +49,7 @@ public class ResourceSet {
 	public static final String QUERY_BY_CLIENT = "ResourceSet.queryByClient";
 	public static final String QUERY_ALL = "ResourceSet.queryAll";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_OWNER = "owner";
 	public static final String PARAM_CLIENTID = "clientId";
 

@@ -20,8 +20,10 @@ package org.mitre.openid.connect.service.impl;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.openid.connect.model.DefaultUser;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.mitre.openid.connect.repository.UserRepository;
 import org.mitre.openid.connect.service.PairwiseIdentiferService;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -47,7 +52,13 @@ public class DefaultUserInfoService implements UserInfoService {
 
 	@Override
 	public UserInfo getByUsername(String username) {
-		return userInfoRepository.getByUsername(username);
+		DefaultUser user = userRepository.getUserByUsername(username);
+		if (user != null) {
+			UserInfo userInfo = userInfoRepository.getByUuid(user.getUuid());
+			return userInfo;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -55,7 +66,9 @@ public class DefaultUserInfoService implements UserInfoService {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
-		UserInfo userInfo = getByUsername(username);
+		DefaultUser user = userRepository.getUserByUsername(username);
+		
+		UserInfo userInfo = getByUsername(user.getUsername());
 
 		if (client == null || userInfo == null) {
 			return null;

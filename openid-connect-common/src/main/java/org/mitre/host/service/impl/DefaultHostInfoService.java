@@ -28,7 +28,7 @@ public class DefaultHostInfoService implements HostInfoService {
 
 	@Override
 	public void validateHost(String hostUuid) {
-		if (getCurrentHostUuid().equals(hostUuid)) {
+		if (!getCurrentHostUuid().equals(hostUuid)) {
 			throw new IllegalArgumentException("Host is violated");
 		}
 	}

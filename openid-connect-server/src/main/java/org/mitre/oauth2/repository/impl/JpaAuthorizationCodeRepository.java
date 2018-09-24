@@ -59,7 +59,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Transactional(value="defaultTransactionManager")
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode) {
 
-		hostInfoService.validateHost(authorizationCode.getHostUuid());
+		authorizationCode.setHostUuid(hostInfoService.getCurrentHostUuid());
 		
 		return JpaUtil.saveOrUpdate(authorizationCode.getUuid(), manager, authorizationCode);
 

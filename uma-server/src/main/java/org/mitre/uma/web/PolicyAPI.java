@@ -91,7 +91,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String getResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
+	public String getResourceSet(@PathVariable (value = "rsid") String rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -121,7 +121,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String deleteResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
+	public String deleteResourceSet(@PathVariable (value = "rsid") String rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -152,7 +152,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String getPoliciesForResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
+	public String getPoliciesForResourceSet(@PathVariable (value = "rsid") String rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -182,7 +182,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String createNewPolicyForResourceSet(@PathVariable (value = "rsid") Long rsid, @RequestBody String jsonString, Model m, Authentication auth) {
+	public String createNewPolicyForResourceSet(@PathVariable (value = "rsid") String rsid, @RequestBody String jsonString, Model m, Authentication auth) {
 		ResourceSet rs = resourceSetService.getById(rsid);
 
 		if (rs == null) {
@@ -200,15 +200,15 @@ public class PolicyAPI {
 
 		Policy p = gson.fromJson(jsonString, Policy.class);
 
-		if (p.getId() != null) {
-			logger.warn("Tried to add a policy with a non-null ID: " + p.getId());
+		if (p.getUuid() != null) {
+			logger.warn("Tried to add a policy with a non-null ID: " + p.getUuid());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		for (Claim claim : p.getClaimsRequired()) {
-			if (claim.getId() != null) {
-				logger.warn("Tried to add a policy with a non-null claim ID: " + claim.getId());
+			if (claim.getUuid() != null) {
+				logger.warn("Tried to add a policy with a non-null claim ID: " + claim.getUuid());
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				return HttpCodeView.VIEWNAME;
 			}
@@ -241,7 +241,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String getPolicy(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
+	public String getPolicy(@PathVariable (value = "rsid") String rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -259,7 +259,7 @@ public class PolicyAPI {
 		}
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getId().equals(pid)) {
+			if (policy.getUuid().equals(pid)) {
 				// found it!
 				m.addAttribute(JsonEntityView.ENTITY, policy);
 				return JsonEntityView.VIEWNAME;
@@ -281,7 +281,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String setClaimsForResourceSet(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, @RequestBody String jsonString, Model m, Authentication auth) {
+	public String setClaimsForResourceSet(@PathVariable (value = "rsid") String rsid, @PathVariable (value = "pid") Long pid, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -300,26 +300,26 @@ public class PolicyAPI {
 
 		Policy p = gson.fromJson(jsonString, Policy.class);
 
-		if (!pid.equals(p.getId())) {
-			logger.warn("Policy ID mismatch, expected " + pid + " got " + p.getId());
+		if (!pid.equals(p.getUuid())) {
+			logger.warn("Policy ID mismatch, expected " + pid + " got " + p.getUuid());
 
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getId().equals(pid)) {
+			if (policy.getUuid().equals(pid)) {
 				// found it!
 
 				// find the existing claim IDs, make sure we're not overwriting anything from another policy
-				Set<Long> claimIds = new HashSet<>();
+				Set<String> claimIds = new HashSet<>();
 				for (Claim claim : policy.getClaimsRequired()) {
-					claimIds.add(claim.getId());
+					claimIds.add(claim.getUuid());
 				}
 
 				for (Claim claim : p.getClaimsRequired()) {
-					if (claim.getId() != null && !claimIds.contains(claim.getId())) {
-						logger.warn("Tried to add a policy with a an unmatched claim ID: got " + claim.getId() + " expected " + claimIds);
+					if (claim.getUuid() != null && !claimIds.contains(claim.getUuid())) {
+						logger.warn("Tried to add a policy with a an unmatched claim ID: got " + claim.getUuid() + " expected " + claimIds);
 						m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 						return HttpCodeView.VIEWNAME;
 					}
@@ -351,7 +351,7 @@ public class PolicyAPI {
 	 * @return
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String deleteResourceSet(@PathVariable ("rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
+	public String deleteResourceSet(@PathVariable ("rsid") String rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -372,7 +372,7 @@ public class PolicyAPI {
 
 
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getId().equals(pid)) {
+			if (policy.getUuid().equals(pid)) {
 				// found it!
 				rs.getPolicies().remove(policy);
 				resourceSetService.update(rs, rs);

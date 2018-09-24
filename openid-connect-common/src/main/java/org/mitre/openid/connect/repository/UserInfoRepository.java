@@ -28,11 +28,11 @@ import org.mitre.openid.connect.model.UserInfo;
 public interface UserInfoRepository {
 
 	/**
-	 * Get a UserInfo object by its preferred_username field
-	 * @param username
+	 * Get a UserInfo object by its uuid field
+	 * @param uuid
 	 * @return
 	 */
-	public UserInfo getByUsername(String username);
+	public UserInfo getByUuid(String uuid);
 
 	/**
 	 *

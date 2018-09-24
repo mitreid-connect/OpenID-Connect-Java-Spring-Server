@@ -13,10 +13,10 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.mitre.discovery.repository.impl.JpaHostInfoRepository;
 import org.mitre.host.model.DefaultHostInfo;
 import org.mitre.host.model.HostInfo;
 import org.mitre.host.repository.HostInfoRepository;
+import org.mitre.host.repository.impl.JpaHostInfoRepository;
 import org.mitre.host.service.HostInfoService;
 import org.mitre.host.service.impl.DefaultHostInfoService;
 import org.mitre.host.util.HostUtils;

@@ -4,8 +4,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <c:choose>
-	<c:when test="${ not empty userInfo.preferredUsername }">
-		<c:set var="shortName" value="${ userInfo.preferredUsername }" />
+	<c:when test="${ not empty userInfo.user.username }">
+		<c:set var="shortName" value="${ userInfo.user.username }" />
 	</c:when>
 	<c:otherwise>
 		<c:set var="shortName" value="${ userInfo.sub }" />

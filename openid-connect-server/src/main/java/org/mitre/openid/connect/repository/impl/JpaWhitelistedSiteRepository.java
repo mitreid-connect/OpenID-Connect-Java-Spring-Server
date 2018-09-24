@@ -53,7 +53,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<WhitelistedSite> getAll() {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_ALL, WhitelistedSite.class);
-		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
+		query.setParameter(WhitelistedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 
@@ -78,7 +78,8 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
-		hostInfoService.validateHost(whiteListedSite.getHostUuid());
+		whiteListedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
+
 		return saveOrUpdate(whiteListedSite.getUuid(), manager, whiteListedSite);
 	}
 
@@ -88,6 +89,10 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 		// sanity check
 		whitelistedSite.setUuid(oldWhitelistedSite.getUuid());
 
+		hostInfoService.validateHost(oldWhitelistedSite.getHostUuid());
+		
+		whitelistedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
+		
 		return saveOrUpdate(oldWhitelistedSite.getUuid(), manager, whitelistedSite);
 	}
 

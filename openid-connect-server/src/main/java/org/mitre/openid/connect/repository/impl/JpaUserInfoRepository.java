@@ -50,13 +50,13 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its username for a specific host
 	 */
 	@Override
-	public UserInfo getByUsername(String username) {
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
-		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
-		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
-
-		return getSingleResult(query.getResultList());
-
+	public UserInfo getByUuid(String uuid) {
+		DefaultUserInfo entity = manager.find(DefaultUserInfo.class, uuid);
+		if (entity == null) {
+			throw new IllegalArgumentException("ApprovedSite not found: " + uuid);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	/**

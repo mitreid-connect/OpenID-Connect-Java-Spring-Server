@@ -98,7 +98,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public DeviceCode save(DeviceCode scope) {
-		hostInfoService.validateHost(scope.getHostUuid());
+		scope.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return saveOrUpdate(scope.getUuid(), em, scope);
 	}
 

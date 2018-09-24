@@ -24,6 +24,8 @@ import com.google.gson.JsonObject;
 
 public interface UserInfo extends Serializable {
 
+	public String getUuid();
+	
 	/**
 	 * @return the userId
 	 */
@@ -33,16 +35,6 @@ public interface UserInfo extends Serializable {
 	 * @param sub the userId to set
 	 */
 	public void setSub(String sub);
-
-	/**
-	 * @return the preferred username
-	 */
-	public String getPreferredUsername();
-
-	/**
-	 * @param preferredUsername the preferredUsername to set
-	 */
-	public void setPreferredUsername(String preferredUsername);
 
 	/**
 	 * @return the name

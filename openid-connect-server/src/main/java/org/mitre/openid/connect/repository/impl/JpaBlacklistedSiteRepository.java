@@ -89,7 +89,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite save(BlacklistedSite blacklistedSite) {
-		hostInfoService.validateHost(blacklistedSite.getHostUuid());
+		blacklistedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return saveOrUpdate(blacklistedSite.getUuid(), manager, blacklistedSite);
 	}
 

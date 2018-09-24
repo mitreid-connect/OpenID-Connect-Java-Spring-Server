@@ -88,7 +88,7 @@ public class ApprovedSite {
 	}
 
 	@Id
-	@Column(name = "id")
+	@Column(name = "uuid")
 	public String getUuid() {
 		return uuid;
 	}

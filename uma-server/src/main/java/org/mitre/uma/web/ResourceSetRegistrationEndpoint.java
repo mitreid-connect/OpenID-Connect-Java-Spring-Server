@@ -17,7 +17,7 @@ package org.mitre.uma.web;
 
 
 import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
@@ -121,14 +121,14 @@ public class ResourceSetRegistrationEndpoint {
 
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED);
 		m.addAttribute(JsonEntityView.ENTITY, saved);
-		m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + saved.getId());
+		m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + saved.getUuid());
 
 		return ResourceSetEntityAbbreviatedView.VIEWNAME;
 
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String readResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
+	public String readResourceSet(@PathVariable ("id") String id, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
 		ResourceSet rs = resourceSetService.getById(id);
@@ -158,7 +158,7 @@ public class ResourceSetRegistrationEndpoint {
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String updateResourceSet(@PathVariable ("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
+	public String updateResourceSet(@PathVariable ("id") String id, @RequestBody String jsonString, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
 		ResourceSet newRs = parseResourceSet(jsonString);
@@ -166,7 +166,7 @@ public class ResourceSetRegistrationEndpoint {
 		if (newRs == null // there was no resource set in the body
 				|| Strings.isNullOrEmpty(newRs.getName()) // there was no name (required)
 				|| newRs.getScopes() == null // there were no scopes (required)
-				|| newRs.getId() == null || !newRs.getId().equals(id) // the IDs didn't match
+				|| newRs.getUuid() == null || !newRs.getUuid().equals(id) // the IDs didn't match
 				) {
 
 			logger.warn("Resource set registration missing one or more required fields.");
@@ -195,7 +195,7 @@ public class ResourceSetRegistrationEndpoint {
 				ResourceSet saved = resourceSetService.update(rs, newRs);
 
 				m.addAttribute(JsonEntityView.ENTITY, saved);
-				m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + rs.getId());
+				m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + rs.getUuid());
 				return ResourceSetEntityAbbreviatedView.VIEWNAME;
 			}
 
@@ -203,7 +203,7 @@ public class ResourceSetRegistrationEndpoint {
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public String deleteResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
+	public String deleteResourceSet(@PathVariable ("id") String id, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
 		ResourceSet rs = resourceSetService.getById(id);
@@ -260,7 +260,7 @@ public class ResourceSetRegistrationEndpoint {
 
 		Set<String> ids = new HashSet<>();
 		for (ResourceSet resourceSet : resourceSets) {
-			ids.add(resourceSet.getId().toString()); // add them all as strings so that gson renders them properly
+			ids.add(resourceSet.getUuid().toString()); // add them all as strings so that gson renders them properly
 		}
 
 		m.addAttribute(JsonEntityView.ENTITY, ids);
@@ -276,7 +276,7 @@ public class ResourceSetRegistrationEndpoint {
 				JsonObject o = el.getAsJsonObject();
 
 				ResourceSet rs = new ResourceSet();
-				rs.setId(getAsLong(o, "_id"));
+				rs.setUuid(getAsString(o, "_id"));
 				rs.setName(getAsString(o, "name"));
 				rs.setIconUri(getAsString(o, "icon_uri"));
 				rs.setType(getAsString(o, "type"));

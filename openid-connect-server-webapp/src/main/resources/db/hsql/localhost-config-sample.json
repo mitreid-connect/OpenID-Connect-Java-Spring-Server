@@ -8,7 +8,6 @@
             "initScripts": [
                 "classpath:/db/hsql/hsql_database_tables.sql",
                 "classpath:/db/hsql/security-schema.sql",
-                "classpath:/db/hsql/loading_temp_tables.sql",
                 "classpath:/db/hsql/users.sql",
                 "classpath:/db/hsql/clients.sql",
                 "classpath:/db/hsql/scopes.sql"

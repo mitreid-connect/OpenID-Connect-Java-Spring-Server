@@ -92,6 +92,9 @@ public class ClaimsCollectionEndpoint {
 		UserInfo userInfo = auth.getUserInfo();
 
 		claimsSupplied.add(mkClaim(issuer, "sub", new JsonPrimitive(auth.getSub())));
+		if (userInfo.getUuid() != null) {
+			claimsSupplied.add(mkClaim(issuer, "user_uuid", new JsonPrimitive(auth.getUserInfo().getUuid())));
+		}
 		if (userInfo.getEmail() != null) {
 			claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));
 		}
@@ -103,9 +106,6 @@ public class ClaimsCollectionEndpoint {
 		}
 		if (userInfo.getPhoneNumberVerified() != null) {
 			claimsSupplied.add(mkClaim(issuer, "phone_number_verified", new JsonPrimitive(auth.getUserInfo().getPhoneNumberVerified())));
-		}
-		if (userInfo.getPreferredUsername() != null) {
-			claimsSupplied.add(mkClaim(issuer, "preferred_username", new JsonPrimitive(auth.getUserInfo().getPreferredUsername())));
 		}
 		if (userInfo.getProfile() != null) {
 			claimsSupplied.add(mkClaim(issuer, "profile", new JsonPrimitive(auth.getUserInfo().getProfile())));

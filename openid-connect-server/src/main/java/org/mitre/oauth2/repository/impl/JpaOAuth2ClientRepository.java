@@ -24,7 +24,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.host.service.HostInfoService;
-import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -58,7 +57,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	public ClientDetailsEntity getById(String uuid) {
 		ClientDetailsEntity entity = manager.find(ClientDetailsEntity.class, uuid);
 		if (entity == null) {
-			throw new IllegalArgumentException("DeviceCode not found: " + uuid);
+			throw new IllegalArgumentException("ClientDetailsEntity not found: " + uuid);
 		}
 		hostInfoService.validateHost(entity.getHostUuid());
 		return entity;
@@ -70,7 +69,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	@Override
 	public ClientDetailsEntity getClientByClientId(String clientId) {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_BY_CLIENT_ID, ClientDetailsEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
+		query.setParameter(ClientDetailsEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ClientDetailsEntity.PARAM_CLIENT_ID, clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -80,8 +79,8 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public ClientDetailsEntity saveClient(ClientDetailsEntity client) {		
-		hostInfoService.validateHost(client.getHostUuid());
-		return JpaUtil.saveOrUpdate(client.getClientId(), manager, client);
+		client.setHostUuid(hostInfoService.getCurrentHostUuid());
+		return JpaUtil.saveOrUpdate(client.getUuid(), manager, client);
 	}
 
 	/* (non-Javadoc)
@@ -102,7 +101,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 		// sanity check
 		client.setUuid(uuid);
 		
-		client.setHostUuid(hostInfoService.getCurrentHostUuid());
+		hostInfoService.validateHost(client.getHostUuid());
 
 		return JpaUtil.saveOrUpdate(uuid, manager, client);
 	}
@@ -110,7 +109,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	@Override
 	public Collection<ClientDetailsEntity> getAllClients() {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_ALL, ClientDetailsEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
+		query.setParameter(ClientDetailsEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 

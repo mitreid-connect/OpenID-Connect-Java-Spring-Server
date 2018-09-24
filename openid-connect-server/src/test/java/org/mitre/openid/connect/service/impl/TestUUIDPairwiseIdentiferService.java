@@ -91,8 +91,7 @@ public class TestUUIDPairwiseIdentiferService {
 
 	@Before
 	public void prepare() {
-		userInfoRegular = new DefaultUserInfo();
-		userInfoRegular.setPreferredUsername(regularUsername);
+		userInfoRegular = new DefaultUserInfo(regularUsername);
 		userInfoRegular.setSub(regularSub);
 
 		// pairwise set 1

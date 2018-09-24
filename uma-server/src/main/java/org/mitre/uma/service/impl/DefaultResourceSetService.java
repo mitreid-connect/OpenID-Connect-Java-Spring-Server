@@ -55,10 +55,6 @@ public class DefaultResourceSetService implements ResourceSetService {
 	@Override
 	public ResourceSet saveNew(ResourceSet rs) {
 
-		if (rs.getId() != null) {
-			throw new IllegalArgumentException("Can't save a new resource set with an ID already set to it.");
-		}
-
 		if (!checkScopeConsistency(rs)) {
 			throw new IllegalArgumentException("Can't save a resource set with inconsistent claims.");
 		}
@@ -70,15 +66,15 @@ public class DefaultResourceSetService implements ResourceSetService {
 	}
 
 	@Override
-	public ResourceSet getById(Long id) {
+	public ResourceSet getById(String id) {
 		return repository.getById(id);
 	}
 
 	@Override
 	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs) {
 
-		if (oldRs.getId() == null || newRs.getId() == null
-				|| !oldRs.getId().equals(newRs.getId())) {
+		if (oldRs.getUuid() == null || newRs.getUuid() == null
+				|| !oldRs.getUuid().equals(newRs.getUuid())) {
 
 			throw new IllegalArgumentException("Resource set IDs mismatched");
 

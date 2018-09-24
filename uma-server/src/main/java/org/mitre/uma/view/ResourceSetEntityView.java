@@ -101,8 +101,8 @@ public class ResourceSetEntityView extends AbstractView {
 
 			JsonObject o = new JsonObject();
 
-			o.addProperty("_id", rs.getId().toString()); // send the id as a string
-			o.addProperty("user_access_policy_uri", config.getIssuer() + "manage/resource/" + rs.getId());
+			o.addProperty("_id", rs.getUuid()); // send the id as a string
+			o.addProperty("user_access_policy_uri", config.getIssuer() + "manage/resource/" + rs.getUuid());
 			o.addProperty("name", rs.getName());
 			o.addProperty("uri", rs.getUri());
 			o.addProperty("type", rs.getType());

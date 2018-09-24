@@ -31,8 +31,10 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
 	<security:authentication-manager id="authenticationManager">
-		<security:authentication-provider>
-			<security:jdbc-user-service data-source-ref="dataSource"/>
+		<security:authentication-provider 
+			user-service-ref="defaultUserService">
+				<security:password-encoder ref="defaultPasswordEncoder">
+				</security:password-encoder>
 		</security:authentication-provider>
 	</security:authentication-manager>
 		

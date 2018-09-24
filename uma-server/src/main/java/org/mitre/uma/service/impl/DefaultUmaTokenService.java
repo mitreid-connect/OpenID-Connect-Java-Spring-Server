@@ -90,7 +90,7 @@ public class DefaultUmaTokenService implements UmaTokenService {
 
 		JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder();
 
-		claims.audience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
+		claims.audience(Lists.newArrayList(ticket.getPermission().getResourceSet().getUuid().toString()));
 		claims.issuer(config.getIssuer());
 		claims.jwtID(UUID.randomUUID().toString());
 

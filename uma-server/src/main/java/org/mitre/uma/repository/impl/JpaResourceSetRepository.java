@@ -22,11 +22,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,31 +43,37 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	private EntityManager em;
 	private static Logger logger = LoggerFactory.getLogger(JpaResourceSetRepository.class);
 
+	@Autowired
+	HostInfoService hostInfoService;
+	
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ResourceSet save(ResourceSet rs) {
-		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
+		rs.setHostUuid(hostInfoService.getCurrentHostUuid());
+		return JpaUtil.saveOrUpdate(rs.getUuid(), em, rs);
 	}
 
 	@Override
-	public ResourceSet getById(Long id) {
-		return em.find(ResourceSet.class, id);
+	public ResourceSet getById(String id) {
+		ResourceSet entity = em.find(ResourceSet.class, id);
+		if (entity == null) {
+			throw new IllegalArgumentException("ResourceSet not found: " + id);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(ResourceSet rs) {
-		ResourceSet found = getById(rs.getId());
-		if (found != null) {
-			em.remove(found);
-		} else {
-			logger.info("Tried to remove unknown resource set: " + rs.getId());
-		}
+		ResourceSet found = getById(rs.getUuid());
+		em.remove(found);
 	}
 
 	@Override
 	public Collection<ResourceSet> getAllForOwner(String owner) {
 		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ResourceSet.PARAM_OWNER, owner);
 		return query.getResultList();
 	}
@@ -73,6 +81,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId) {
 		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER_AND_CLIENT, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ResourceSet.PARAM_OWNER, owner);
 		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
@@ -81,6 +90,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	public Collection<ResourceSet> getAll() {
 		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_ALL, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}
 
@@ -90,6 +100,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	public Collection<ResourceSet> getAllForClient(String clientId) {
 		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_CLIENT, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
 	}

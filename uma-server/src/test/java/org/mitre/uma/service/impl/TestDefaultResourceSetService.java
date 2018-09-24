@@ -53,23 +53,10 @@ public class TestDefaultResourceSetService {
 
 	}
 
-	/**
-	 * Test method for {@link org.mitre.uma.service.impl.DefaultResourceSetService#saveNew(org.mitre.uma.model.ResourceSet)}.
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void testSaveNew_hasId() {
-
-		ResourceSet rs = new ResourceSet();
-		rs.setId(1L);
-
-		resourceSetService.saveNew(rs);
-
-	}
-
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_nullId() {
 		ResourceSet rs = new ResourceSet();
-		rs.setId(1L);
+		rs.setUuid("1");
 
 		ResourceSet rs2 = new ResourceSet();
 
@@ -81,7 +68,7 @@ public class TestDefaultResourceSetService {
 		ResourceSet rs = new ResourceSet();
 
 		ResourceSet rs2 = new ResourceSet();
-		rs2.setId(1L);
+		rs.setUuid("1");
 
 		resourceSetService.update(rs, rs2);
 	}
@@ -89,10 +76,10 @@ public class TestDefaultResourceSetService {
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_mismatchedIds() {
 		ResourceSet rs = new ResourceSet();
-		rs.setId(1L);
+		rs.setUuid("1");
 
 		ResourceSet rs2 = new ResourceSet();
-		rs2.setId(2L);
+		rs.setUuid("2");
 
 		resourceSetService.update(rs, rs2);
 

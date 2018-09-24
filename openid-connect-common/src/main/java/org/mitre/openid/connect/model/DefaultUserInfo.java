@@ -27,8 +27,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -44,12 +43,10 @@ import com.google.gson.JsonParser;
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.hostUuid = :hostUuid and u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
 	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.hostUuid = :hostUuid and u.email = :" + DefaultUserInfo.PARAM_EMAIL)
 })
 public class DefaultUserInfo implements UserInfo {
 
-	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";
 	public static final String QUERY_BY_EMAIL = "DefaultUserInfo.getByEmailAddress";
 
 	public static final String PARAM_HOST_UUID = "hostUuid";
@@ -59,9 +56,9 @@ public class DefaultUserInfo implements UserInfo {
 	private static final long serialVersionUID = 6078310513185681918L;
 
 	private String uuid;
+	private DefaultUser user;
 	private String hostUuid;
 	private String sub;
-	private String preferredUsername;
 	private String name;
 	private String givenName;
 	private String familyName;
@@ -92,13 +89,23 @@ public class DefaultUserInfo implements UserInfo {
 	}	
 	
 	@Id
-	@Column(name = "uuid")
+	@Column(name = "user_uuid")
 	public String getUuid() {
 		return uuid;
 	}
 	
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_uuid", insertable = false, updatable = false)
+	public DefaultUser getUser() {
+		return user;
+	}
+	
+	public void setUser(DefaultUser user) {
+		this.user = user;
 	}
 	
 	@Basic
@@ -126,22 +133,6 @@ public class DefaultUserInfo implements UserInfo {
 	@Override
 	public void setSub(String sub) {
 		this.sub = sub;
-	}
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.model.UserInfo#getPreferredUsername
-	 */
-	@Override
-	@Basic
-	@Column(name="preferred_username")
-	public String getPreferredUsername() {
-		return this.preferredUsername;
-	}
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.model.UserInfo#setPreferredUsername(java.lang.String)
-	 */
-	@Override
-	public void setPreferredUsername(String preferredUsername) {
-		this.preferredUsername = preferredUsername;
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getName()
@@ -446,7 +437,6 @@ public class DefaultUserInfo implements UserInfo {
 			obj.addProperty("sub", this.getSub());
 
 			obj.addProperty("name", this.getName());
-			obj.addProperty("preferred_username", this.getPreferredUsername());
 			obj.addProperty("given_name", this.getGivenName());
 			obj.addProperty("family_name", this.getFamilyName());
 			obj.addProperty("middle_name", this.getMiddleName());
@@ -500,7 +490,6 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setSub(nullSafeGetString(obj, "sub"));
 
 		ui.setName(nullSafeGetString(obj, "name"));
-		ui.setPreferredUsername(nullSafeGetString(obj, "preferred_username"));
 		ui.setGivenName(nullSafeGetString(obj, "given_name"));
 		ui.setFamilyName(nullSafeGetString(obj, "family_name"));
 		ui.setMiddleName(nullSafeGetString(obj, "middle_name"));
@@ -582,7 +571,6 @@ public class DefaultUserInfo implements UserInfo {
 		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
 		result = prime * result + ((phoneNumberVerified == null) ? 0 : phoneNumberVerified.hashCode());
 		result = prime * result + ((picture == null) ? 0 : picture.hashCode());
-		result = prime * result + ((preferredUsername == null) ? 0 : preferredUsername.hashCode());
 		result = prime * result + ((profile == null) ? 0 : profile.hashCode());
 		result = prime * result + ((sub == null) ? 0 : sub.hashCode());
 		result = prime * result + ((updatedTime == null) ? 0 : updatedTime.hashCode());
@@ -709,13 +697,6 @@ public class DefaultUserInfo implements UserInfo {
 				return false;
 			}
 		} else if (!picture.equals(other.picture)) {
-			return false;
-		}
-		if (preferredUsername == null) {
-			if (other.preferredUsername != null) {
-				return false;
-			}
-		} else if (!preferredUsername.equals(other.preferredUsername)) {
 			return false;
 		}
 		if (profile == null) {

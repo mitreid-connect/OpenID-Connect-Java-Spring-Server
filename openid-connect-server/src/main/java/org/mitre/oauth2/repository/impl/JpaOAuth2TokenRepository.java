@@ -107,7 +107,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
-		hostInfoService.validateHost(token.getHostUuid());
+		token.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return JpaUtil.saveOrUpdate(token.getUuid(), manager, token);
 	}
 

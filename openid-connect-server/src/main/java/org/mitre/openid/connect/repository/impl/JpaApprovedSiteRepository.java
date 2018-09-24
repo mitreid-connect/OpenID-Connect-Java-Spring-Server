@@ -76,7 +76,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
-		hostInfoService.validateHost(approvedSite.getHostUuid());
+		approvedSite.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return saveOrUpdate(approvedSite.getUuid(), manager, approvedSite);
 	}
 

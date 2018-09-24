@@ -17,7 +17,7 @@
 package org.mitre.uma.web;
 
 import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import java.util.Set;
@@ -85,7 +85,7 @@ public class PermissionRegistrationEndpoint {
 			if (el.isJsonObject()) {
 				JsonObject o = el.getAsJsonObject();
 
-				Long rsid = getAsLong(o, "resource_set_id");
+				String rsid = getAsString(o, "resource_set_id");
 				Set<String> scopes = getAsStringSet(o, "scopes");
 
 				if (rsid == null || scopes == null || scopes.isEmpty()){

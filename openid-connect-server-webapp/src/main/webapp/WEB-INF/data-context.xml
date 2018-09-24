@@ -37,7 +37,7 @@
 		<!-- The following file is for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/hsql/security-schema.sql"/>
 		<!-- The following files are for safely bootstrapping users and clients into the database -->
-		<jdbc:script location="classpath:/db/hsql/loading_temp_tables.sql"/>
+		<jdbc:script location="classpath:/db/hsql/init.sql"/>
 		<jdbc:script location="classpath:/db/hsql/users.sql"/>
 		<jdbc:script location="classpath:/db/hsql/clients.sql"/>
 		<jdbc:script location="classpath:/db/hsql/scopes.sql"/>

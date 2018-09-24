@@ -73,7 +73,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
-		hostInfoService.validateHost(a.getHostUuid());
+		a.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return JpaUtil.saveOrUpdate(a.getUuid(), manager, a);
 	}
 

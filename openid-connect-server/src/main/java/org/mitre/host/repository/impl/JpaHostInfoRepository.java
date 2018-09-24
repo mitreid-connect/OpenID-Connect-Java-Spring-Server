@@ -1,4 +1,4 @@
-package org.mitre.discovery.repository.impl;
+package org.mitre.host.repository.impl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
