@@ -375,7 +375,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	 * @param writer
 	 */
 	private void writeGrants(JsonWriter writer) throws IOException {
-		for (ApprovedSite site : approvedSiteRepository.getAll()) {
+		for (ApprovedSite site : approvedSiteRepository.getAllByHostUuid()) {
 			writer.beginObject();
 			writer.name(ID).value(site.getId());
 			writer.name(ACCESS_DATE).value(toUTCString(site.getAccessDate()));

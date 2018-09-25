@@ -97,7 +97,6 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Override
 	public Collection<AuthorizationCodeEntity> getExpiredCodes() {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return query.getResultList();
 	}
@@ -106,7 +105,6 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Override
 	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return JpaUtil.getResultPage(query, pageCriteria);
 	}

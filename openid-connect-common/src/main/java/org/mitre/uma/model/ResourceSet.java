@@ -149,7 +149,7 @@ public class ResourceSet {
 	@Column(name = "scope")
 	@CollectionTable(
 			name = "resource_set_scope",
-			joinColumns = @JoinColumn(name = "resource_set_id")
+			joinColumns = @JoinColumn(name = "resource_set_uuid")
 			)
 	public Set<String> getScopes() {
 		return scopes;
@@ -214,7 +214,7 @@ public class ResourceSet {
 	 * @return the claimsRequired
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "resource_set_id")
+	@JoinColumn(name = "resource_set_uuid")
 	public Collection<Policy> getPolicies() {
 		return policies;
 	}

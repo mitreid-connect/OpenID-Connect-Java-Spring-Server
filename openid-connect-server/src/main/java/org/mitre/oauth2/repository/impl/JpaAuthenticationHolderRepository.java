@@ -88,7 +88,6 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Transactional(value="defaultTransactionManager")
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria) {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());	
 		return JpaUtil.getResultPage(query, pageCriteria);
 	}
 

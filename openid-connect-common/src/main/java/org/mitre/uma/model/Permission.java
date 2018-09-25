@@ -74,7 +74,7 @@ public class Permission {
 	 * @return the resourceSet
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "resource_set_id")
+	@JoinColumn(name = "resource_set_uuid")
 	public ResourceSet getResourceSet() {
 		return resourceSet;
 	}

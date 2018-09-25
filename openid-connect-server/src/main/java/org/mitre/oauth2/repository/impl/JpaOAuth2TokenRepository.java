@@ -87,7 +87,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			JWT jwt = JWTParser.parse(accessTokenValue);
 			TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
 			query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
-			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, jwt);
+			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, accessTokenValue);
 			return JpaUtil.getSingleResult(query.getResultList());
 		} catch (ParseException e) {
 			return null;
@@ -229,7 +229,6 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
 		return new LinkedHashSet<>(JpaUtil.getResultPage(query, pageCriteria));
 	}
@@ -243,7 +242,6 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria) {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
-		query.setParameter(OAuth2RefreshTokenEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(OAuth2RefreshTokenEntity.PARAM_DATE, new Date());
 		return new LinkedHashSet<>(JpaUtil.getResultPage(query,pageCriteria));
 	}

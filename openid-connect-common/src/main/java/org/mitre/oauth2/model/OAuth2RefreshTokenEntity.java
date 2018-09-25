@@ -50,7 +50,7 @@ import com.nimbusds.jwt.JWT;
 @Table(name = "refresh_token")
 @NamedQueries({
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid"),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.jwt = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_NAME, query = "select r from OAuth2RefreshTokenEntity r where r.hostUuid = :hostUuid and r.authenticationHolder.userAuth.name = :" + OAuth2RefreshTokenEntity.PARAM_NAME)

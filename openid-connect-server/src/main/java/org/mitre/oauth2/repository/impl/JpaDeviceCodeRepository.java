@@ -109,7 +109,6 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<DeviceCode> getExpiredCodes() {
 		TypedQuery<DeviceCode> query = em.createNamedQuery(DeviceCode.QUERY_EXPIRED_BY_DATE, DeviceCode.class);
-		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(DeviceCode.PARAM_DATE, new Date());
 		return query.getResultList();
 	}

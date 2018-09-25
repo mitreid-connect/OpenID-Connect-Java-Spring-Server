@@ -41,7 +41,7 @@ import javax.persistence.Temporal;
 @Table(name = "authorization_code")
 @NamedQueries({
 		@NamedQuery(name = AuthorizationCodeEntity.QUERY_BY_VALUE, query = "select a from AuthorizationCodeEntity a where a.hostUuid = :hostUuid and a.code = :" + AuthorizationCodeEntity.PARAM_CODE),
-		@NamedQuery(name = AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, query = "select a from AuthorizationCodeEntity a where a.hostUuid = :hostUuid and a.expiration <= :"
+		@NamedQuery(name = AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, query = "select a from AuthorizationCodeEntity a where a.expiration <= :"
 				+ AuthorizationCodeEntity.PARAM_DATE) })
 public class AuthorizationCodeEntity {
 
@@ -127,7 +127,7 @@ public class AuthorizationCodeEntity {
 	 * @return the authentication
 	 */
 	@ManyToOne
-	@JoinColumn(name = "auth_holder_id")
+	@JoinColumn(name = "auth_holder_uuid")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}

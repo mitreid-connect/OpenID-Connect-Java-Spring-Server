@@ -45,7 +45,7 @@ import javax.persistence.Temporal;
 @NamedQueries({
 	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.userCode = :" + DeviceCode.PARAM_USER_CODE),
 	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.expiration <= :" + DeviceCode.PARAM_DATE)
+	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)
 })
 public class DeviceCode {
 

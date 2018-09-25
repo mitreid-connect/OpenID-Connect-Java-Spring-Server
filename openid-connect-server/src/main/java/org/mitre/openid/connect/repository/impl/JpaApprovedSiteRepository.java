@@ -51,6 +51,13 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Collection<ApprovedSite> getAll() {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
+		return query.getResultList();
+	}
+
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public Collection<ApprovedSite> getAllByHostUuid() {
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_HOST_UUID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return query.getResultList();
 	}

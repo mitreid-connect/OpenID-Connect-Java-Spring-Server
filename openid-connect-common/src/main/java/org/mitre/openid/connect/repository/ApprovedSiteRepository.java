@@ -44,6 +44,13 @@ public interface ApprovedSiteRepository {
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
+	
+	/**
+	 * Return a collection of all ApprovedSites of current host
+	 *
+	 * @return the ApprovedSite collection, or null
+	 */
+	public Collection<ApprovedSite> getAllByHostUuid();
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the

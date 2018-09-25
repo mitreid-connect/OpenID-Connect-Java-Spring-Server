@@ -68,44 +68,32 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_authority (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	authority VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_resource_id (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	resource_id VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_response_type (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	response_type VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_extension (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	extension VARCHAR(2048),
 	val VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	scope VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	param VARCHAR(2048),
 	val VARCHAR(2048)

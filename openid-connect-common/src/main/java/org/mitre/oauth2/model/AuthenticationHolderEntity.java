@@ -52,8 +52,8 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 @Table(name = "authentication_holder")
 @NamedQueries ({
 	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID),
-	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID +
-			" and a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and " +
+	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where " +
+			"a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and " +
 			"a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r) and " +
 			"a.id not in (select c.authenticationHolder.id from AuthorizationCodeEntity c) ")
 })
@@ -173,7 +173,7 @@ public class AuthenticationHolderEntity {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="authentication_holder_authority",
-			joinColumns=@JoinColumn(name="user_auth_uuid")
+			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
@@ -304,7 +304,7 @@ public class AuthenticationHolderEntity {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="authentication_holder_scope",
-			joinColumns=@JoinColumn(name="auth_holder_uuid")
+			joinColumns=@JoinColumn(name="auth_holder_uuid", referencedColumnName = "uuid")
 			)
 	@Column(name="scope")
 	public Set<String> getScope() {

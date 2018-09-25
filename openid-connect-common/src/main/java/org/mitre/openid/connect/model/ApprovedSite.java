@@ -38,7 +38,8 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="approved_site")
 @NamedQueries({
-	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid"),
+	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_HOST_UUID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid"),
 	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.userId = :" + ApprovedSite.PARAM_USER_ID),
 	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
 	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
@@ -48,6 +49,7 @@ public class ApprovedSite {
 	public static final String QUERY_BY_CLIENT_ID_AND_USER_ID = "ApprovedSite.getByClientIdAndUserId";
 	public static final String QUERY_BY_CLIENT_ID = "ApprovedSite.getByClientId";
 	public static final String QUERY_BY_USER_ID = "ApprovedSite.getByUserId";
+	public static final String QUERY_BY_HOST_UUID = "ApprovedSite.getByHostUuid";
 	public static final String QUERY_ALL = "ApprovedSite.getAll";
 
 	public static final String PARAM_HOST_UUID = "hostUuid";
