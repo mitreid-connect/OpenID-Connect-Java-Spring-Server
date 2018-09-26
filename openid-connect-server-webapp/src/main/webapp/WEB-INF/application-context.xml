@@ -46,10 +46,6 @@
 
 	<mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<bean id="hostInfoInterceptor" class="org.mitre.openid.connect.web.HostInfoInterceptor" />
-		</mvc:interceptor>
-		<mvc:interceptor>
 			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
 			<mvc:mapping path="/**" />
 			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
@@ -107,7 +103,7 @@
 	<!-- Spring Security configuration -->
 
 	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" stateless="false" />
-
+	
 	<security:http pattern="/token" 
 		create-session="stateless"
 		authentication-manager-ref="clientAuthenticationManager"

@@ -87,7 +87,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			JWT jwt = JWTParser.parse(accessTokenValue);
 			TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
 			query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
-			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, accessTokenValue);
+			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, jwt);
 			return JpaUtil.getSingleResult(query.getResultList());
 		} catch (ParseException e) {
 			return null;

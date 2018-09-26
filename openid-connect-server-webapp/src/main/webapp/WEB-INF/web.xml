@@ -53,6 +53,17 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+
+	<filter>
+		<filter-name>hostFilter</filter-name>
+		<filter-class>org.mitre.oauth2.web.HostFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>hostFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
 	<!-- Processes application requests -->
 	<servlet>
 		<servlet-name>spring</servlet-name>
