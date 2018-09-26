@@ -27,7 +27,7 @@ pipeline {
                 sh "mvn -N versions:update-child-modules"
 
                 timeout(time: 10, unit: 'MINUTES') {
-                    sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/third-party/"
+                    sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/thirdparty/"
                 }
             }
             post {
