@@ -45,7 +45,7 @@
 					<target>${java-version}</target>
 				</configuration>
 			</plugin>
-			<!-- BUILD SOURCE FILES -->
+			<!--&lt;!&ndash; BUILD SOURCE FILES &ndash;&gt;
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -58,7 +58,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- BUILD JavaDoc FILES -->
+			&lt;!&ndash; BUILD JavaDoc FILES &ndash;&gt;
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -70,7 +70,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 </project>

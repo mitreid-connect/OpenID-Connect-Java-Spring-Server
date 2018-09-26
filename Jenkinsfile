@@ -32,7 +32,7 @@ pipeline {
             }
             post {
                 always{
-                       archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'db-scripts-generator/target/*.jar,**auth.war'
+                       archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'openid-connect-server-webapp/target/*.war'
                 }
             }
         }
