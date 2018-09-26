@@ -18,9 +18,32 @@ pipeline {
 		disableConcurrentBuilds();
 	}
 	stages {
+		stage ('1.3.3 Build') {
+            when {
+                branch "1.3.x"
+            }
+            steps {
+                sh "mvn versions:set -DnewVersion=1.3.3.GRESHAM-${env.BUILD_NUMBER}"
+                sh "mvn -N versions:update-child-modules"
+
+                timeout(time: 10, unit: 'MINUTES') {
+                    sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/third-party/"
+                }
+            }
+            post {
+                always{
+                       archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'db-scripts-generator/target/*.jar,**auth.war'
+                }
+            }
+        }
 		stage ('Build') {
+			when {
+                not {
+                   branch "1.3.x"
+                }
+            }
 			steps {
-				sh "mvn versions:set -DnewVersion=1.3.3.GRESHAM-SNAPSHOT"
+				sh "mvn versions:set -DnewVersion=${env.BRANCH_NAME}.GRESHAM-SNAPSHOT"
 				sh "mvn -N versions:update-child-modules"
 				timeout(time: 10, unit: 'MINUTES') {
                 	sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/third-party-snapshots/"
