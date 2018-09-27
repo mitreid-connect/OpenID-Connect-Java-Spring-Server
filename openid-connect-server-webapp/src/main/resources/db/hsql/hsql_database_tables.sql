@@ -371,7 +371,7 @@ CREATE TABLE IF NOT EXISTS policy (
 );
 
 CREATE TABLE IF NOT EXISTS policy_scope (
-	policy_uuid BIGINT NOT NULL,
+	policy_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );
 
@@ -379,8 +379,6 @@ CREATE TABLE IF NOT EXISTS claim_to_policy (
 	policy_uuid VARCHAR(64) NOT NULL,
 	claim_uuid VARCHAR(64) NOT NULL
 );
-
-
 
 CREATE TABLE IF NOT EXISTS saved_registered_client (
 	uuid VARCHAR(64) PRIMARY KEY,
