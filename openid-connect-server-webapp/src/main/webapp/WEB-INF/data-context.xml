@@ -25,18 +25,13 @@
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="jdbcUrl" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
-<!-- 		<property name="jdbcUrl" value="jdbc:hsqldb:file:/tmp/oic;sql.syntax_mys=true" /> -->
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />
 	</bean>
 
-	<!-- Use the following to set up the OIC tables in the in-memory DB
- 		   If you are using a file based HSQLDB you should not run this every time. -->
 	<jdbc:initialize-database data-source="dataSource">
 		<jdbc:script location="classpath:/db/hsql/hsql_database_tables.sql"/>
-		<!-- The following file is for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/hsql/security-schema.sql"/>
-		<!-- The following files are for safely bootstrapping users and clients into the database -->
 		<jdbc:script location="classpath:/db/hsql/init.sql"/>
 		<jdbc:script location="classpath:/db/hsql/users.sql"/>
 		<jdbc:script location="classpath:/db/hsql/clients.sql"/>
@@ -48,19 +43,31 @@
 		<property name="showSql" value="true" />
 	</bean>
 
+	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="jdbcUrl" value="jdbc:hsqldb:hsql://localhost:9001/oic" />
+		<property name="username" value="OIC" />
+		<property name="password" value="OIC" />
+	</bean>
+
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+ 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.HSQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean> -->
+
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/mysql/mysql_database_tables.sql -->
-<!-- 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close"> -->
-<!-- 		<property name="driverClassName" value="com.mysql.jdbc.Driver" /> -->
-<!-- 		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/oic" /> -->
-<!-- 		<property name="username" value="oic" /> -->
-<!-- 		<property name="password" value="oic" /> -->
-<!--  	</bean> -->
+	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/kopenid" />
+		<property name="username" value="kerp" />
+		<property name="password" value="123456" />
+ 	</bean>
 
-<!-- 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"> -->
-<!-- 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" /> -->
-<!-- 		<property name="showSql" value="true" /> -->
-<!-- 	</bean> -->
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean> -->
 
 	<!-- You can optionally initialize the database with test values here, 
 		but this is not recommended for real systems -->

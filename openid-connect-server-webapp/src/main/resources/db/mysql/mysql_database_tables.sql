@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS approved_site (
 	creation_date TIMESTAMP NULL,
 	access_date TIMESTAMP NULL,
 	timeout_date TIMESTAMP NULL,
-	whitelisted_site_uuid BIGINT
+	whitelisted_site_uuid VARCHAR(64)
 );
 
 CREATE TABLE IF NOT EXISTS approved_site_scope (
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 );
 
 CREATE TABLE IF NOT EXISTS client_authority (
-	client_uuid BIGINT,
+	client_uuid VARCHAR(64),
 	authority VARCHAR(255)
 );
 
@@ -287,12 +287,13 @@ CREATE TABLE IF NOT EXISTS user_info (
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
 	uuid VARCHAR(64) PRIMARY KEY,
+	host_uuid VARCHAR(64),
 	creator_user_uuid VARCHAR(64),
 	client_uuid VARCHAR(64)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site_scope (
-	whitelisted_site_uuid BIGINT,
+	whitelisted_site_uuid VARCHAR(64),
 	scope VARCHAR(255)
 );
 
@@ -316,7 +317,7 @@ CREATE TABLE IF NOT EXISTS resource_set (
 );
 
 CREATE TABLE IF NOT EXISTS resource_set_scope (
-	resource_set_uuid BIGINT NOT NULL,
+	resource_set_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(255) NOT NULL
 );
 
@@ -330,11 +331,11 @@ CREATE TABLE IF NOT EXISTS permission_ticket (
 
 CREATE TABLE IF NOT EXISTS permission (
 	uuid VARCHAR(64) PRIMARY KEY,
-	resource_set_uuid BIGINT
+	resource_set_uuid VARCHAR(64)
 );
 
 CREATE TABLE IF NOT EXISTS permission_scope (
-	permission_uuid BIGINT NOT NULL,
+	permission_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(255) NOT NULL
 );
 
@@ -348,8 +349,8 @@ CREATE TABLE IF NOT EXISTS claim (
 );
 
 CREATE TABLE IF NOT EXISTS claim_to_policy (
-	policy_uuid BIGINT NOT NULL,
-	claim_uuid BIGINT NOT NULL
+	policy_uuid VARCHAR(64) NOT NULL,
+	claim_uuid VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS claim_token_format (

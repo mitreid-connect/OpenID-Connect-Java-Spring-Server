@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS host_info (
 CREATE TABLE IF NOT EXISTS access_token (
 	uuid VARCHAR(64) PRIMARY KEY,
 	host_uuid VARCHAR(64),
-	token_value VARCHAR(4096),
+	token_value VARCHAR(8192),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
 	refresh_token_uuid VARCHAR(64),
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS access_token (
 );
 
 CREATE TABLE IF NOT EXISTS access_token_permissions (
-	access_token_uuid BIGINT NOT NULL,
-	permission_uuid BIGINT NOT NULL
+	access_token_uuid VARCHAR(64) NOT NULL,
+	permission_uuid VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS token_scope (
@@ -322,7 +322,6 @@ CREATE TABLE IF NOT EXISTS resource_set_scope (
 
 CREATE TABLE IF NOT EXISTS permission (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	resource_set_uuid VARCHAR(64)
 );
 

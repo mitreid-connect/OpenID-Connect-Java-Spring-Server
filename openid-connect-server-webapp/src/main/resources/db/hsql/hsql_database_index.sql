@@ -16,4 +16,4 @@ CREATE INDEX IF NOT EXISTS ahri_ahu_idx ON authentication_holder_resource_id(aut
 CREATE INDEX IF NOT EXISTS ahrt_ahu_idx ON authentication_holder_response_type(auth_holder_uuid);
 CREATE INDEX IF NOT EXISTS ahs_ahu_idx ON authentication_holder_scope(auth_holder_uuid);
 CREATE INDEX IF NOT EXISTS ac_ahu_idx ON authorization_code(auth_holder_uuid);
-CREATE INDEX IF NOT EXISTS suaa_suau_idx ON saved_user_auth_authority(saved_user_auth_uuid);
+CREATE INDEX IF NOT EXISTS suaa_suau_idx ON saved_user_auth_authority(user_auth_uuid);
