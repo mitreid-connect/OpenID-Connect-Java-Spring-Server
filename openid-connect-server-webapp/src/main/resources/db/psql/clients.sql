@@ -6,55 +6,30 @@
 
 START TRANSACTION;
 
---
--- Insert client information into the temporary tables. To add clients to the HSQL database, edit things here.
--- 
 
-INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
-	('client', 'secret', 'Test Client', false, null, 3600, 600, true);
+INSERT INTO client_details (uuid, host_uuid, client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'client', 'secret', 'Test Client', false, null, 3600, 600, true);
 
-INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
-	('client', 'openid'),
-	('client', 'profile'),
-	('client', 'email'),
-	('client', 'address'),
-	('client', 'phone'),
-	('client', 'offline_access');
+INSERT INTO client_scope (client_uuid, scope) VALUES
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'openid'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'profile'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'email'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'address'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'phone'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'offline_access');
 
-INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
-	('client', 'http://localhost/'),
-	('client', 'http://localhost:8080/');
+INSERT INTO client_redirect_uri (client_uuid, redirect_uri) VALUES
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'http://localhost/'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'http://localhost:8080/');
 	
-INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
-	('client', 'authorization_code'),
-	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
-	('client', 'implicit'),
-	('client', 'refresh_token');
+INSERT INTO client_grant_type (client_uuid, grant_type) VALUES
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'authorization_code'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'urn:ietf:params:oauth:grant-type:device_code'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'implicit'),
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'refresh_token');
 	
---
--- Merge the temporary clients safely into the database. This is a two-step process to keep clients from being created on every startup with a persistent store.
---
 
-INSERT INTO client_details (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection)
-  SELECT client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection FROM client_details_TEMP
-  ON CONFLICT
-  DO NOTHING;
-
-INSERT INTO client_scope (scope)
-  SELECT scope FROM client_scope_TEMP, client_details WHERE client_details.client_id = client_scope_TEMP.owner_id
-  ON CONFLICT
-  DO NOTHING;
-
-INSERT INTO client_redirect_uri (redirect_uri)
-  SELECT redirect_uri FROM client_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_redirect_uri_TEMP.owner_id
-  ON CONFLICT
-  DO NOTHING;
-
-INSERT INTO client_grant_type (grant_type)
-  SELECT grant_type FROM client_grant_type_TEMP, client_details WHERE client_details.client_id = client_grant_type_TEMP.owner_id
-  ON CONFLICT
-  DO NOTHING;
-    
 -- 
 -- Close the transaction and turn autocommit back on
 -- 
@@ -62,5 +37,3 @@ INSERT INTO client_grant_type (grant_type)
 COMMIT;
 
 --SET AUTOCOMMIT = ON;
-
-

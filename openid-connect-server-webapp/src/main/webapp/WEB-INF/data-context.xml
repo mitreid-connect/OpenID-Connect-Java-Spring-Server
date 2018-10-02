@@ -59,7 +59,7 @@
 			src/main/resources/db/mysql/mysql_database_tables.sql -->
 	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/kopenid" />
+		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/oic" />
 		<property name="username" value="kerp" />
 		<property name="password" value="123456" />
  	</bean>
@@ -72,9 +72,9 @@
 	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
 			src/main/resources/db/psql/psql_database_tables.sql -->
 	
-	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="jdbcUrl" value="jdbc:postgresql://localhost/oic" />
+		<property name="jdbcUrl" value="jdbc:postgresql://192.168.11.5/oic" />
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />
 	</bean>
@@ -83,11 +83,11 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean>	 -->
+	</bean>	
 
 	<!--  The following is for connecting to a Oracle database that has been initialized with
 			src/main/resources/db/oracle/oracle_database_tables.sql -->
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
 		<property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.11.5:1521:KERP" />
 		<property name="username" value="oauth" />
@@ -97,7 +97,7 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.OraclePlatform" />
 		<property name="showSql" value="true" />
-	</bean>
+	</bean> -->
 
 
 </beans>
