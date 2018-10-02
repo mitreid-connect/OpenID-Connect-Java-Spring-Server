@@ -115,15 +115,15 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	private JWSAlgorithm requestObjectSigningAlg = null; // request_object_signing_alg
 
-	private JWSAlgorithm userInfoSignedResponseAlg = null; // user_info_signed_response_alg
-	private JWEAlgorithm userInfoEncryptedResponseAlg = null; // user_info_encrypted_response_alg
-	private EncryptionMethod userInfoEncryptedResponseEnc = null; // user_info_encrypted_response_enc
+	private JWSAlgorithm userInfoSignedResponseAlg = null; // user_info_signed_resp_alg
+	private JWEAlgorithm userInfoEncryptedResponseAlg = null; // user_info_encrypted_resp_alg
+	private EncryptionMethod userInfoEncryptedResponseEnc = null; // user_info_encrypted_resp_enc
 
-	private JWSAlgorithm idTokenSignedResponseAlg = null; // id_token_signed_response_alg
-	private JWEAlgorithm idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
-	private EncryptionMethod idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
+	private JWSAlgorithm idTokenSignedResponseAlg = null; // id_token_signed_resp_alg
+	private JWEAlgorithm idTokenEncryptedResponseAlg = null; // id_token_encrypted_resp_alg
+	private EncryptionMethod idTokenEncryptedResponseEnc = null; // id_token_encrypted_resp_enc
 
-	private JWSAlgorithm tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
+	private JWSAlgorithm tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_sign_alg
 
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
@@ -246,8 +246,9 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.id = UUID.randomUUID().toString();
 	}
 
-	public ClientDetailsEntity(String uuid) {
-		this.id = uuid;
+	public ClientDetailsEntity(String clientId) {
+		this.id = UUID.randomUUID().toString();
+		this.clientId = clientId;
 	}
 
 	@PrePersist
@@ -754,7 +755,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name = "user_info_signed_response_alg")
+	@Column(name = "user_info_signed_resp_alg")
 	@Convert(converter = JWSAlgorithmStringConverter.class)
 	public JWSAlgorithm getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
@@ -765,7 +766,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name = "user_info_encrypted_response_alg")
+	@Column(name = "user_info_encrypted_resp_alg")
 	@Convert(converter = JWEAlgorithmStringConverter.class)
 	public JWEAlgorithm getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
@@ -776,7 +777,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name = "user_info_encrypted_response_enc")
+	@Column(name = "user_info_encrypted_resp_enc")
 	@Convert(converter = JWEEncryptionMethodStringConverter.class)
 	public EncryptionMethod getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
@@ -787,7 +788,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name="id_token_signed_response_alg")
+	@Column(name="id_token_signed_resp_alg")
 	@Convert(converter = JWSAlgorithmStringConverter.class)
 	public JWSAlgorithm getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
@@ -798,7 +799,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name = "id_token_encrypted_response_alg")
+	@Column(name = "id_token_encrypted_resp_alg")
 	@Convert(converter = JWEAlgorithmStringConverter.class)
 	public JWEAlgorithm getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
@@ -809,7 +810,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name = "id_token_encrypted_response_enc")
+	@Column(name = "id_token_encrypted_resp_enc")
 	@Convert(converter = JWEEncryptionMethodStringConverter.class)
 	public EncryptionMethod getIdTokenEncryptedResponseEnc() {
 		return idTokenEncryptedResponseEnc;
@@ -820,7 +821,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name="token_endpoint_auth_signing_alg")
+	@Column(name="token_endpoint_auth_sign_alg")
 	@Convert(converter = JWSAlgorithmStringConverter.class)
 	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
 		return tokenEndpointAuthSigningAlg;
@@ -855,7 +856,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="client_response_type",
+			name="client_resp_type",
 			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="response_type")
@@ -911,7 +912,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="client_post_logout_redirect_uri",
+			name="client_post_logout_redir_uri",
 			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="post_logout_redirect_uri")

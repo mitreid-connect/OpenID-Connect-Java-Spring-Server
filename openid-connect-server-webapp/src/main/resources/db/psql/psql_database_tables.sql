@@ -52,33 +52,33 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 	client_id VARCHAR(256)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_authority (
+CREATE TABLE IF NOT EXISTS auth_holder_authority (
 	owner_id BIGINT,
 	authority VARCHAR(256)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_resource_id (
+CREATE TABLE IF NOT EXISTS auth_holder_resource_id (
 	owner_id BIGINT,
 	resource_id VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_response_type (
+CREATE TABLE IF NOT EXISTS auth_holder_resp_type (
 	owner_id BIGINT,
 	response_type VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_extension (
+CREATE TABLE IF NOT EXISTS auth_holder_extension (
 	owner_id BIGINT,
 	extension VARCHAR(2048),
 	val VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_scope (
+CREATE TABLE IF NOT EXISTS auth_holder_scope (
 	owner_id BIGINT,
 	scope VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
+CREATE TABLE IF NOT EXISTS auth_holder_request_parameter (
 	owner_id BIGINT,
 	param VARCHAR(2048),
 	val VARCHAR(2048)
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS client_grant_type (
 	grant_type VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS client_response_type (
+CREATE TABLE IF NOT EXISTS client_resp_type (
 	owner_id BIGINT,
 	response_type VARCHAR(2000)
 );
@@ -154,15 +154,15 @@ CREATE TABLE IF NOT EXISTS client_details (
 
 	request_object_signing_alg VARCHAR(256),
 
-	user_info_signed_response_alg VARCHAR(256),
-	user_info_encrypted_response_alg VARCHAR(256),
-	user_info_encrypted_response_enc VARCHAR(256),
+	user_info_signed_resp_alg VARCHAR(256),
+	user_info_encrypted_resp_alg VARCHAR(256),
+	user_info_encrypted_resp_enc VARCHAR(256),
 
-	id_token_signed_response_alg VARCHAR(256),
-	id_token_encrypted_response_alg VARCHAR(256),
-	id_token_encrypted_response_enc VARCHAR(256),
+	id_token_signed_resp_alg VARCHAR(256),
+	id_token_encrypted_resp_alg VARCHAR(256),
+	id_token_encrypted_resp_enc VARCHAR(256),
 
-	token_endpoint_auth_signing_alg VARCHAR(256),
+	token_endpoint_auth_sign_alg VARCHAR(256),
 
 	default_max_age BIGINT,
 	require_auth_time BOOLEAN,
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS client_request_uri (
 	request_uri VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS client_post_logout_redirect_uri (
+CREATE TABLE IF NOT EXISTS client_post_logout_redir_uri (
 	owner_id BIGINT,
 	post_logout_redirect_uri VARCHAR(2000)
 );

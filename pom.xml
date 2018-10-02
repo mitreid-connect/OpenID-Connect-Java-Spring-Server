@@ -673,6 +673,10 @@
 			<id>spring-repo-snapshot</id>
 			<url>http://nexus.systeminventors.com/repository/spring-repo-snapshot/</url>
 		</repository>
+		<repository>
+			<id>misc_repo</id>
+			<url>http://nexus.systeminventors.com/repository/misc/</url>
+		</repository>
 	</repositories>
 
 	<distributionManagement>

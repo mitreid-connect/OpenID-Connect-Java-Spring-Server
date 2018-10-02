@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
@@ -255,6 +256,7 @@ public class ClientAPI {
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			client = gson.fromJson(json, ClientDetailsEntity.class);
+			client.setId(UUID.randomUUID().toString());
 			client = validateSoftwareStatement(client);
 		} catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
@@ -523,11 +525,15 @@ public class ClientAPI {
 			// get the image from cache
 			CachedImage image = clientLogoLoadingService.getLogo(client);
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.parseMediaType(image.getContentType()));
-			headers.setContentLength(image.getLength());
-
-			return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
+			if(image != null) {
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
+				headers.setContentLength(image.getLength());
+	
+				return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
 		}
 	}
 

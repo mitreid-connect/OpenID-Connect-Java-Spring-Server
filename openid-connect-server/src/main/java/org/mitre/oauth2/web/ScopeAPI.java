@@ -21,6 +21,7 @@
 package org.mitre.oauth2.web;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -137,6 +138,7 @@ public class ScopeAPI {
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
 
+		scope.setId(UUID.randomUUID().toString());
 		SystemScope alreadyExists = scopeService.getByValue(scope.getValue());
 		if (alreadyExists != null) {
 			//Error, cannot save a scope with the same value as an existing one

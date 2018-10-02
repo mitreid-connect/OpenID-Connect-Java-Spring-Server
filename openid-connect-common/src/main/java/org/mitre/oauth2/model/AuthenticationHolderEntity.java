@@ -172,7 +172,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_authority",
+			name="auth_holder_authority",
 			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
@@ -193,7 +193,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_resource_id",
+			name="auth_holder_resource_id",
 			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Column(name="resource_id")
@@ -245,7 +245,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_response_type",
+			name="auth_holder_resp_type",
 			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Column(name="response_type")
@@ -265,7 +265,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_extension",
+			name="auth_holder_extension",
 			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Column(name="val")
@@ -303,7 +303,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_scope",
+			name="auth_holder_scope",
 			joinColumns=@JoinColumn(name="auth_holder_uuid", referencedColumnName = "uuid")
 			)
 	@Column(name="scope")
@@ -323,7 +323,7 @@ public class AuthenticationHolderEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authentication_holder_request_parameter",
+			name="auth_holder_request_parameter",
 			joinColumns=@JoinColumn(name="auth_holder_uuid")
 			)
 	@Column(name="val")

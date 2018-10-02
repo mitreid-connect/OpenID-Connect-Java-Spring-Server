@@ -67,33 +67,33 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 	client_id VARCHAR(256)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_authority (
+CREATE TABLE IF NOT EXISTS auth_holder_authority (
 	auth_holder_uuid VARCHAR(64),
 	authority VARCHAR(256)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_resource_id (
+CREATE TABLE IF NOT EXISTS auth_holder_resource_id (
 	auth_holder_uuid VARCHAR(64),
 	resource_id VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_response_type (
+CREATE TABLE IF NOT EXISTS auth_holder_resp_type (
 	auth_holder_uuid VARCHAR(64),
 	response_type VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_extension (
+CREATE TABLE IF NOT EXISTS auth_holder_extension (
 	auth_holder_uuid VARCHAR(64),
 	extension VARCHAR(2048),
 	val VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_scope (
+CREATE TABLE IF NOT EXISTS auth_holder_scope (
 	auth_holder_uuid VARCHAR(64),
 	scope VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
+CREATE TABLE IF NOT EXISTS auth_holder_request_parameter (
 	auth_holder_uuid VARCHAR(64),
 	param VARCHAR(2048),
 	val VARCHAR(2048)
@@ -159,15 +159,15 @@ CREATE TABLE IF NOT EXISTS client_details (
 	
 	request_object_signing_alg VARCHAR(256),
 	
-	user_info_signed_response_alg VARCHAR(256),
-	user_info_encrypted_response_alg VARCHAR(256),
-	user_info_encrypted_response_enc VARCHAR(256),
+	user_info_signed_resp_alg VARCHAR(256),
+	user_info_encrypted_resp_alg VARCHAR(256),
+	user_info_encrypted_resp_enc VARCHAR(256),
 	
-	id_token_signed_response_alg VARCHAR(256),
-	id_token_encrypted_response_alg VARCHAR(256),
-	id_token_encrypted_response_enc VARCHAR(256),
+	id_token_signed_resp_alg VARCHAR(256),
+	id_token_encrypted_resp_alg VARCHAR(256),
+	id_token_encrypted_resp_enc VARCHAR(256),
 	
-	token_endpoint_auth_signing_alg VARCHAR(256),
+	token_endpoint_auth_sign_alg VARCHAR(256),
 	
 	default_max_age BIGINT,
 	require_auth_time BOOLEAN,
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS client_grant_type (
 	grant_type VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS client_response_type (
+CREATE TABLE IF NOT EXISTS client_resp_type (
 	client_uuid VARCHAR(64),
 	response_type VARCHAR(2000)
 );
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS client_request_uri (
 	request_uri VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS client_post_logout_redirect_uri (
+CREATE TABLE IF NOT EXISTS client_post_logout_redir_uri (
 	client_uuid VARCHAR(64),
 	post_logout_redirect_uri VARCHAR(2000)
 );
@@ -404,6 +404,6 @@ CREATE TABLE IF NOT EXISTS device_code_scope (
 
 CREATE TABLE IF NOT EXISTS device_code_request_parameter (
 	device_code_uuid VARCHAR(64) NOT NULL,
-	param VARCHAR(2048),
+	param VARCHAR(255),
 	val VARCHAR(2048)
 );

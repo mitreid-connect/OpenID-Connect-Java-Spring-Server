@@ -22,7 +22,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd">
 
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="jdbcUrl" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
 		<property name="username" value="oic" />
@@ -41,7 +41,7 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
  		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.HSQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean>
+	</bean> -->
 
 	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
@@ -69,21 +69,10 @@
 		<property name="showSql" value="true" />
 	</bean> -->
 
-	<!-- You can optionally initialize the database with test values here, 
-		but this is not recommended for real systems -->
-<!-- 	<jdbc:initialize-database data-source="dataSource"> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/mysql/users.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/mysql/clients.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/mysql/scopes.sql"/> -->
-<!-- 	</jdbc:initialize-database> -->
-
 	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
 			src/main/resources/db/psql/psql_database_tables.sql -->
-	<!--
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	
+	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="jdbcUrl" value="jdbc:postgresql://localhost/oic" />
 		<property name="username" value="oic" />
@@ -94,42 +83,21 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean>
-	-->
-	
-	<!-- You can optionally initialize the database with test values here, 
-		but this is not recommended for real systems -->
-<!-- 	<jdbc:initialize-database data-source="dataSource"> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/psql_database_tables.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/security-schema.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/loading_temp_tables.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/users.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/clients.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/psql/scopes.sql"/> -->
-<!-- 	</jdbc:initialize-database> -->
+	</bean>	 -->
 
 	<!--  The following is for connecting to a Oracle database that has been initialized with
 			src/main/resources/db/oracle/oracle_database_tables.sql -->
-	<!--<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE" />
-		<property name="username" value="oic" />
-		<property name="password" value="oic" />
-	</bean>-->
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.11.5:1521:KERP" />
+		<property name="username" value="oauth" />
+		<property name="password" value="test" />
+	</bean>
 
-	<!--<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.OraclePlatform" />
 		<property name="showSql" value="true" />
-	</bean>-->
+	</bean>
 
-	<!-- Use the following to set up the OIC tables in the Oracle DB
-		   Below scripts are intended to be run once at startup. -->
-	<!--<jdbc:initialize-database data-source="dataSource">
-		<jdbc:script location="classpath:/db/oracle/oracle_database_tables.sql"/>
-		<jdbc:script location="classpath:/db/oracle/security-schema_oracle.sql"/>
-		<jdbc:script location="classpath:/db/oracle/loading_temp_tables_oracle.sql"/>
-		<jdbc:script location="classpath:/db/oracle/users_oracle.sql"/>
-		<jdbc:script location="classpath:/db/oracle/clients_oracle.sql"/>
-		<jdbc:script location="classpath:/db/oracle/scopes_oracle.sql"/>
-	</jdbc:initialize-database>-->
+
 </beans>

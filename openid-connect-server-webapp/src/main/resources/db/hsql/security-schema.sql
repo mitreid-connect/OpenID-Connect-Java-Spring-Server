@@ -2,7 +2,7 @@
 -- Tables for Spring Security's user details service
 --
   
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE IF NOT EXISTS user_ (
 	  uuid VARCHAR(64) PRIMARY KEY,
 	  host_uuid VARCHAR(64),
       username VARCHAR(255) not null,

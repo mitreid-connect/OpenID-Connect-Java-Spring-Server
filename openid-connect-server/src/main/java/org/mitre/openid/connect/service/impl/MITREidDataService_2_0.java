@@ -141,7 +141,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 	private static final String SCOPE = "scope";
 	private static final String REFRESH_TOKEN_ID = "refreshTokenId";
 	private static final String VALUE = "value";
-	private static final String AUTHENTICATION_HOLDER_ID = "authenticationHolderId";
+	private static final String auth_holder_ID = "authenticationHolderId";
 	private static final String CLIENT_ID = "clientId";
 	private static final String EXPIRATION = "expiration";
 	private static final String CLAIMS_REDIRECT_URIS = "claimsRedirectUris";
@@ -253,7 +253,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
 			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name(AUTHENTICATION_HOLDER_ID)
+			writer.name(auth_holder_ID)
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
@@ -272,7 +272,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
 			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name(AUTHENTICATION_HOLDER_ID)
+			writer.name(auth_holder_ID)
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(REFRESH_TOKEN_ID)
 			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
@@ -669,7 +669,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 							}
 						} else if (name.equals(CLIENT_ID)) {
 							clientId = reader.nextString();
-						} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
+						} else if (name.equals(auth_holder_ID)) {
 							authHolderId = reader.nextString();
 						} else {
 							logger.debug("Found unexpected entry");
@@ -732,7 +732,7 @@ public class MITREidDataService_2_0 extends MITREidDataServiceSupport implements
 							}
 						} else if (name.equals(CLIENT_ID)) {
 							clientId = reader.nextString();
-						} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
+						} else if (name.equals(auth_holder_ID)) {
 							authHolderId = reader.nextString();
 						} else if (name.equals(REFRESH_TOKEN_ID)) {
 							refreshTokenId = reader.nextString();

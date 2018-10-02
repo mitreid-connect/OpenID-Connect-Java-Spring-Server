@@ -21,7 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity(name = "User")
-@Table(name = "user")
+@Table(name = "user_")
 @NamedQueries({
 		@NamedQuery(name = DefaultUser.QUERY_ALL, query = "select u from User u where u.hostUuid = :"
 				+ DefaultUser.PARAM_HOST_UUID),
