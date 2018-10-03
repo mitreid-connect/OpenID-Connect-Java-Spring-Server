@@ -7,7 +7,7 @@ SET AUTOCOMMIT FALSE;
 START TRANSACTION;
 
 
-INSERT INTO user (uuid, host_uuid, username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) VALUES
+INSERT INTO user_ (uuid, host_uuid, username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) VALUES
   ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'admin','$2a$11$ggXxcPPUfcC1vNVtoVPENuxkknUogsg.qdVMNnUxzH74X/DJBPmOC', true, true, true, true),
   ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'user','$2a$11$ggXxcPPUfcC1vNVtoVPENuxkknUogsg.qdVMNnUxzH74X/DJBPmOC', true, true, true, true);
 

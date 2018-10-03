@@ -1,55 +1,17 @@
---
--- Turn off autocommit and start a transaction so that we can use the temp tables
---
-
---SET AUTOCOMMIT FALSE;
-
-START TRANSACTION;
-
---
--- Insert user information into the temporary tables. To add users to the HSQL database, edit things here.
--- 
-
-INSERT INTO users_TEMP (username, password, enabled) VALUES
-  ('admin','password',true),
-  ('user','password',true);
 
 
-INSERT INTO authorities_TEMP (username, authority) VALUES
-  ('admin','ROLE_ADMIN'),
-  ('admin','ROLE_USER'),
-  ('user','ROLE_USER');
+INSERT INTO user_ (uuid, host_uuid, username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired) VALUES
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'admin','$2a$11$ggXxcPPUfcC1vNVtoVPENuxkknUogsg.qdVMNnUxzH74X/DJBPmOC', true, true, true, true),
+  ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'user','$2a$11$ggXxcPPUfcC1vNVtoVPENuxkknUogsg.qdVMNnUxzH74X/DJBPmOC', true, true, true, true);
+
+
+INSERT INTO user_authority (user_uuid, authority) VALUES
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', 'ROLE_ADMIN'),
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', 'ROLE_USER'),
+  ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', 'ROLE_USER');
     
 -- By default, the username column here has to match the username column in the users table, above
-INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
-  ('90342.ASDFJWFA','admin','Demo Admin','admin@example.com', true),
-  ('01921.FLANRJQW','user','Demo User','user@example.com', true);
-
- 
---
--- Merge the temporary users safely into the database. This is a two-step process to keep users from being created on every startup with a persistent store.
---
-
-INSERT INTO users
-  SELECT username, password, enabled FROM users_TEMP
-  ON CONFLICT(username)
-  DO NOTHING;
-
-INSERT INTO authorities
-  SELECT username, authority FROM authorities_TEMP
-  ON CONFLICT(username, authority)
-  DO NOTHING;
-
-INSERT INTO user_info (sub, preferred_username, name, email, email_verified)
-  SELECT sub, preferred_username, name, email, email_verified FROM user_info_TEMP
-  ON CONFLICT
-  DO NOTHING;
-    
--- 
--- Close the transaction and turn autocommit back on
--- 
-    
-COMMIT;
-
---SET AUTOCOMMIT TRUE;
+INSERT INTO user_info (user_uuid, host_uuid, sub, name, email, email_verified) VALUES
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '90342.ASDFJWFA', 'Demo Admin','admin@example.com', true),
+  ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '01921.FLANRJQW', 'Demo User','user@example.com', true);
 

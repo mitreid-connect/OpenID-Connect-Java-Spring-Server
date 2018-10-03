@@ -74,7 +74,7 @@
 	
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="jdbcUrl" value="jdbc:postgresql://192.168.11.5/oic" />
+		<property name="jdbcUrl" value="jdbc:postgresql://192.168.11.5:5432/oic" />
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />
 	</bean>

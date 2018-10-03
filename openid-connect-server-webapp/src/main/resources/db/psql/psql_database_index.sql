@@ -2,11 +2,11 @@
 -- Indexes for MySQL
 --
 
-CREATE INDEX at_tv_idx ON access_token(token_value;
+CREATE INDEX at_tv_idx ON access_token(token_value);
 CREATE INDEX ts_oi_idx ON token_scope(access_token_uuid);
 CREATE INDEX at_exp_idx ON access_token(expiration);
 CREATE INDEX rf_ahi_idx ON refresh_token(auth_holder_uuid);
-CREATE INDEX rf_tv_idx ON refresh_token(token_value;
+CREATE INDEX rf_tv_idx ON refresh_token(token_value);
 CREATE INDEX cd_ci_idx ON client_details(client_id);
 CREATE INDEX at_ahi_idx ON access_token(auth_holder_uuid);
 CREATE INDEX aha_oi_idx ON auth_holder_authority(auth_holder_uuid);

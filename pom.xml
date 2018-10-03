@@ -429,12 +429,12 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.0.0.jre7</version>
+				<version>42.2.5</version>
 			</dependency>
 			<dependency>
-				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc6</artifactId>
-				<version>11.1.0.7.0</version>
+				<groupId>com.oracle.jdbc</groupId>
+				<artifactId>ojdbc8</artifactId>
+				<version>18.3.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
