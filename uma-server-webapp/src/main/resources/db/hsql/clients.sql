@@ -6,67 +6,20 @@ SET AUTOCOMMIT FALSE;
 
 START TRANSACTION;
 
---
--- Insert client information into the temporary tables. To add clients to the HSQL database, edit things here.
--- 
+INSERT INTO client_details (uuid, host_uuid, client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
+	('1ad26bbc-b71a-444c-a197-806ca95b0619', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'rs', 'secret', 'Test UMA RS', false, null, null, 600, false),
+	('a279477e-d033-487d-8e47-3d2802ae1c9a', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'c', 'secret', 'Test UMA Client', false, null, null, 600, false);
 
-INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
-	('client', 'secret', 'Test Client', false, null, 3600, 600, true),
-	('rs', 'secret', 'Test UMA RS', false, null, null, 600, false),
-	('c', 'secret', 'Test UMA Client', false, null, null, 600, false);
+INSERT INTO client_scope (client_uuid, scope) VALUES
+	('1ad26bbc-b71a-444c-a197-806ca95b0619', 'uma_protection'),
+	('a279477e-d033-487d-8e47-3d2802ae1c9a', 'uma_authorization');
 
-INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
-	('client', 'openid'),
-	('client', 'profile'),
-	('client', 'email'),
-	('client', 'address'),
-	('client', 'phone'),
-	('client', 'offline_access'),
-	('rs', 'uma_protection'),
-	('c', 'uma_authorization');
+INSERT INTO client_grant_type (client_uuid, grant_type) VALUES
+	('1ad26bbc-b71a-444c-a197-806ca95b0619', 'authorization_code'),
+	('1ad26bbc-b71a-444c-a197-806ca95b0619', 'implicit'),
+	('a279477e-d033-487d-8e47-3d2802ae1c9a', 'authorization_code'),
+	('a279477e-d033-487d-8e47-3d2802ae1c9a', 'implicit');	
 
-INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
-	('client', 'http://localhost/'),
-	('client', 'http://localhost:8080/');
-
-INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
-	('client', 'authorization_code'),
-	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
-	('client', 'implicit'),
-	('client', 'refresh_token'),
-	('rs', 'authorization_code'),
-	('rs', 'implicit'),
-	('c', 'authorization_code'),
-	('c', 'implicit');
-	
---
--- Merge the temporary clients safely into the database. This is a two-step process to keep clients from being created on every startup with a persistent store.
---
-
-MERGE INTO client_details 
-  USING (SELECT client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection FROM client_details_TEMP) AS vals(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection)
-  ON vals.client_id = client_details.client_id
-  WHEN NOT MATCHED THEN 
-    INSERT (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection);
-
-MERGE INTO client_scope 
-  USING (SELECT id, scope FROM client_scope_TEMP, client_details WHERE client_details.client_id = client_scope_TEMP.owner_id) AS vals(id, scope)
-  ON vals.id = client_scope.owner_id AND vals.scope = client_scope.scope
-  WHEN NOT MATCHED THEN 
-    INSERT (owner_id, scope) values (vals.id, vals.scope);
-
-MERGE INTO client_redirect_uri 
-  USING (SELECT id, redirect_uri FROM client_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_redirect_uri_TEMP.owner_id) AS vals(id, redirect_uri)
-  ON vals.id = client_redirect_uri.owner_id AND vals.redirect_uri = client_redirect_uri.redirect_uri
-  WHEN NOT MATCHED THEN 
-    INSERT (owner_id, redirect_uri) values (vals.id, vals.redirect_uri);
-
-MERGE INTO client_grant_type 
-  USING (SELECT id, grant_type FROM client_grant_type_TEMP, client_details WHERE client_details.client_id = client_grant_type_TEMP.owner_id) AS vals(id, grant_type)
-  ON vals.id = client_grant_type.owner_id AND vals.grant_type = client_grant_type.grant_type
-  WHEN NOT MATCHED THEN 
-    INSERT (owner_id, grant_type) values (vals.id, vals.grant_type);
-    
 -- 
 -- Close the transaction and turn autocommit back on
 -- 
@@ -74,4 +27,5 @@ MERGE INTO client_grant_type
 COMMIT;
 
 SET AUTOCOMMIT TRUE;
+
 

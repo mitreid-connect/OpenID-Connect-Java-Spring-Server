@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS user_ (
 CREATE TABLE IF NOT EXISTS user_authority (
       user_uuid VARCHAR(64) not null,
       authority VARCHAR(255) not null,
-      constraint fk_user_authority foreign key(user_uuid) references user(uuid),
+      constraint fk_user_authority foreign key(user_uuid) references user_(uuid),
       constraint ix_user_authority unique (user_uuid, authority)
 );

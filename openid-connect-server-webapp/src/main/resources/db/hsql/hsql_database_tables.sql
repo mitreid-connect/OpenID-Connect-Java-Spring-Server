@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS host_info (
 
 CREATE TABLE IF NOT EXISTS access_token (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	token_value VARCHAR(8192),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS token_scope (
 
 CREATE TABLE IF NOT EXISTS address (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	formatted VARCHAR(256),
 	street_address VARCHAR(256),
 	locality VARCHAR(256),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS address (
 
 CREATE TABLE IF NOT EXISTS approved_site (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	user_id VARCHAR(256),
 	client_id VARCHAR(256),
 	creation_date TIMESTAMP,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS approved_site_scope (
 
 CREATE TABLE IF NOT EXISTS authentication_holder (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	user_auth_uuid VARCHAR(64),
 	approved BOOLEAN,
 	redirect_uri VARCHAR(2048),
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS auth_holder_request_parameter (
 
 CREATE TABLE IF NOT EXISTS saved_user_auth (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	name VARCHAR(1024),
 	authenticated BOOLEAN,
 	source_class VARCHAR(2048)
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS saved_user_auth_authority (
 
 CREATE TABLE IF NOT EXISTS authorization_code (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	auth_holder_uuid VARCHAR(64),
 	code VARCHAR(256),
 	expiration TIMESTAMP
@@ -124,13 +124,13 @@ CREATE TABLE IF NOT EXISTS authorization_code (
 
 CREATE TABLE IF NOT EXISTS blacklisted_site (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	uri VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS client_details (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	client_description VARCHAR(1024),
 	reuse_refresh_tokens BOOLEAN DEFAULT true NOT NULL,
 	dynamically_registered BOOLEAN DEFAULT false NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS client_claims_redirect_uri (
 
 CREATE TABLE IF NOT EXISTS refresh_token (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	client_uuid VARCHAR(64),
 	auth_holder_uuid VARCHAR(64),
 	token_value VARCHAR(4096),
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS system_scope (
 
 CREATE TABLE IF NOT EXISTS user_info (
 	user_uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),	
+	host_uuid VARCHAR(64) NOT NULL,	
 	sub VARCHAR(256),
 	name VARCHAR(256),
 	given_name VARCHAR(256),
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),	
+	host_uuid VARCHAR(64) NOT NULL,	
 	creator_user_uuid VARCHAR(64),
 	client_uuid VARCHAR(64)
 );
@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS whitelisted_site_scope (
 
 CREATE TABLE IF NOT EXISTS pairwise_identifier (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	identifier VARCHAR(256),
 	sub VARCHAR(256),
 	sector_identifier VARCHAR(2048)
@@ -306,7 +306,7 @@ CREATE TABLE IF NOT EXISTS pairwise_identifier (
 
 CREATE TABLE IF NOT EXISTS resource_set (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	name VARCHAR(1024) NOT NULL,
 	uri VARCHAR(1024),
 	icon_uri VARCHAR(1024),
@@ -322,12 +322,13 @@ CREATE TABLE IF NOT EXISTS resource_set_scope (
 
 CREATE TABLE IF NOT EXISTS permission (
 	uuid VARCHAR(64) PRIMARY KEY,
+	host_uuid VARCHAR(64) NOT NULL,	
 	resource_set_uuid VARCHAR(64)
 );
 
 CREATE TABLE IF NOT EXISTS permission_ticket (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	ticket VARCHAR(256) NOT NULL,
 	permission_uuid VARCHAR(64) NOT NULL,
 	expiration TIMESTAMP
@@ -340,7 +341,7 @@ CREATE TABLE IF NOT EXISTS permission_scope (
 
 CREATE TABLE IF NOT EXISTS claim (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	name VARCHAR(256),
 	friendly_name VARCHAR(1024),
 	claim_type VARCHAR(1024),
@@ -364,7 +365,7 @@ CREATE TABLE IF NOT EXISTS claim_to_permission_ticket (
 
 CREATE TABLE IF NOT EXISTS policy (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	name VARCHAR(1024),
 	resource_set_uuid VARCHAR(64)
 );
@@ -381,14 +382,14 @@ CREATE TABLE IF NOT EXISTS claim_to_policy (
 
 CREATE TABLE IF NOT EXISTS saved_registered_client (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	issuer VARCHAR(1024),
 	registered_client VARCHAR(8192)
 );
 
 CREATE TABLE IF NOT EXISTS device_code (
 	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
+	host_uuid VARCHAR(64) NOT NULL,
 	auth_holder_uuid VARCHAR(64),
 	device_code VARCHAR(1024),
 	user_code VARCHAR(1024),

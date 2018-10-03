@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.util.Set;
 import java.util.UUID;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
@@ -39,6 +40,9 @@ public class DefaultPermissionService implements PermissionService {
 
 	@Autowired
 	private PermissionRepository repository;
+	
+	@Autowired
+	private HostInfoService hostInfoService;
 
 	@Autowired
 	private SystemScopeService scopeService;
@@ -60,12 +64,15 @@ public class DefaultPermissionService implements PermissionService {
 		Permission perm = new Permission();
 		perm.setResourceSet(resourceSet);
 		perm.setScopes(scopes);
+		perm.setHostUuid(hostInfoService.getCurrentHostUuid());
 
 		PermissionTicket ticket = new PermissionTicket();
 		ticket.setPermission(perm);
 		ticket.setTicket(UUID.randomUUID().toString());
 		ticket.setExpiration(new Date(System.currentTimeMillis() + permissionExpirationSeconds * 1000L));
 
+		ticket.setHostUuid(hostInfoService.getCurrentHostUuid());
+		
 		return repository.save(ticket);
 
 	}
