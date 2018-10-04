@@ -16,7 +16,12 @@
 
 package org.mitre.uma.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anySetOf;
+import static org.mockito.Mockito.when;
 
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +29,7 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
@@ -39,14 +45,6 @@ import org.springframework.security.oauth2.common.exceptions.InsufficientScopeEx
 
 import com.google.common.collect.ImmutableSet;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-
-import static org.mockito.Mockito.when;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
 /**
  * @author jricher
  *
@@ -59,6 +57,9 @@ public class TestDefaultPermissionService {
 
 	@Mock
 	private SystemScopeService scopeService;
+	
+	@Mock
+	private HostInfoService hostInfoService;
 
 	@InjectMocks
 	private DefaultPermissionService permissionService;

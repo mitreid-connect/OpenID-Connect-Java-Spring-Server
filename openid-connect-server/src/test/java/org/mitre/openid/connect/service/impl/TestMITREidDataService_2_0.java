@@ -1166,7 +1166,7 @@ public class TestMITREidDataService_2_0 {
 		Set<ApprovedSite> allApprovedSites = ImmutableSet.of(site1, site2);
 
 		Mockito.when(clientRepository.getAllClients()).thenReturn(new HashSet<ClientDetailsEntity>());
-		Mockito.when(approvedSiteRepository.getAll()).thenReturn(allApprovedSites);
+		Mockito.when(approvedSiteRepository.getAllByHostUuid()).thenReturn(allApprovedSites);
 		Mockito.when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
 		Mockito.when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
 		Mockito.when(authHolderRepository.getAll()).thenReturn(new ArrayList<AuthenticationHolderEntity>());
