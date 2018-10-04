@@ -5,8 +5,8 @@
 CREATE TABLE IF NOT EXISTS host_info (
 	uuid VARCHAR(64) PRIMARY KEY,
 	owner_uuid VARCHAR(64),
-	host VARCHAR(256),
-	config VARCHAR(8192),
+	host VARCHAR(255),
+	config TEXT,
 	UNIQUE(host)
 );
 

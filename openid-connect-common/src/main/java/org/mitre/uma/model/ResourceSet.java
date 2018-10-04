@@ -75,7 +75,7 @@ public class ResourceSet {
 	}	
 
 	@Id
-	@Column(name = "id")	
+	@Column(name = "uuid")	
 	public String getId() {
 		return id;
 	}
@@ -85,7 +85,7 @@ public class ResourceSet {
 	}
 
 	@Basic
-	@Column(name = "host_id")	
+	@Column(name = "host_uuid")	
 	public String getHostUuid() {
 		return hostUuid;
 	}

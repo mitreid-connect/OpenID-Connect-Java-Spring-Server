@@ -312,7 +312,7 @@ CREATE TABLE IF NOT EXISTS resource_set (
 	icon_uri VARCHAR(1024),
 	rs_type VARCHAR(256),
 	owner VARCHAR(256) NOT NULL,
-	client_uuid VARCHAR(64)
+	client_id VARCHAR(64)
 );
 
 CREATE TABLE IF NOT EXISTS resource_set_scope (
