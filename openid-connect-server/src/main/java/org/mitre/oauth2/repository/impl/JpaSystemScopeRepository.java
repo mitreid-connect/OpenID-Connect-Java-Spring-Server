@@ -30,8 +30,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,9 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager em;
+	
+	@Autowired
+	private HostInfoService hostInfoService;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getAll()
@@ -52,7 +57,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
-
+		query.setParameter(SystemScope.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
@@ -62,7 +67,12 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope getById(String id) {
-		return em.find(SystemScope.class, id);
+		SystemScope entity = em.find(SystemScope.class, id);
+		if (entity == null) {
+			throw new IllegalArgumentException("SystemScope not found: " + id);
+		}
+		hostInfoService.validateHost(entity.getHostUuid());
+		return entity;
 	}
 
 	/* (non-Javadoc)
@@ -72,6 +82,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope getByValue(String value) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
+		query.setParameter(SystemScope.PARAM_HOST_UUID, hostInfoService.getCurrentHostUuid());
 		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}
@@ -83,11 +94,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public void remove(SystemScope scope) {
 		SystemScope found = getById(scope.getId());
-
-		if (found != null) {
-			em.remove(found);
-		}
-
+		em.remove(found);
 	}
 
 	/* (non-Javadoc)
@@ -96,6 +103,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope save(SystemScope scope) {
+		scope.setHostUuid(hostInfoService.getCurrentHostUuid());
 		return saveOrUpdate(scope.getId(), em, scope);
 	}
 

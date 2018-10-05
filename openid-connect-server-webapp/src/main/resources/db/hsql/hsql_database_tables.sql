@@ -251,6 +251,7 @@ CREATE TABLE IF NOT EXISTS client_scope (
 
 CREATE TABLE IF NOT EXISTS system_scope (
 	uuid VARCHAR(64) PRIMARY KEY,
+	host_uuid VARCHAR(64) NOT NULL,	
 	scope VARCHAR(256) NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),

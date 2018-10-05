@@ -52,3 +52,5 @@ DROP TABLE saved_registered_client;
 DROP TABLE device_code;
 DROP TABLE device_code_scope;
 DROP TABLE device_code_request_parameter;
+DROP TABLE user_authority;
+DROP TABLE user_;

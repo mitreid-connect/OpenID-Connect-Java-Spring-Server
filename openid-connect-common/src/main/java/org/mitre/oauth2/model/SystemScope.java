@@ -37,8 +37,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-		@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.value"),
-		@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :"
+		@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s where s.hostUuid = :hostUuid order by s.value"),
+		@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s where s.hostUuid = :hostUuid and s.value = :"
 				+ SystemScope.PARAM_VALUE) })
 public class SystemScope {
 
@@ -49,6 +49,7 @@ public class SystemScope {
 	public static final String PARAM_HOST_UUID = "value";
 
 	private String id;
+	private String hostUuid;
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page
@@ -78,6 +79,16 @@ public class SystemScope {
 
 	public void setId(String uuid) {
 		this.id = uuid;
+	}
+	
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
