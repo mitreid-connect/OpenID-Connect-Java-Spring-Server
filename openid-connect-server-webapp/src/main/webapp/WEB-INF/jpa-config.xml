@@ -41,14 +41,12 @@
 		<property name="jpaPropertyMap">
 			<map>
 				<entry key="eclipselink.weaving" value="false" />
-				<entry key="eclipselink.logging.level" value="INFO" />
-				<entry key="eclipselink.logging.level.sql" value="INFO" />
+				<entry key="eclipselink.logging.level" value="FINE" />
+				<entry key="eclipselink.logging.level.sql" value="FINE" />
 				<entry key="eclipselink.cache.shared.default" value="false" />
 			</map>
 		</property>
 		<property name="persistenceUnitName" value="defaultPersistenceUnit" />
-		<!-- uncomment for Oracle -->
-		<!--<property name="mappingResources" value="db/oracle/entity-mappings_oracle.xml" />-->
 	</bean>
 
 

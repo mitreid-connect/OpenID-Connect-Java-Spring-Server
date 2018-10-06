@@ -46,7 +46,7 @@ public class SystemScope {
 	public static final String QUERY_ALL = "SystemScope.findAll";
 
 	public static final String PARAM_VALUE = "value";
-	public static final String PARAM_HOST_UUID = "value";
+	public static final String PARAM_HOST_UUID = "hostUuid";
 
 	private String id;
 	private String hostUuid;

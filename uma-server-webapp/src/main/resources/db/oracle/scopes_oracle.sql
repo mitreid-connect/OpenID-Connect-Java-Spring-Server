@@ -1,5 +1,0 @@
-INSERT INTO system_scope (uuid, scope, description, icon, restricted, default_scope) VALUES
-  ('a69e2c8a-1644-4197-ab7e-04431b4250fe', 'uma_protection', 'manage protected resources', 'briefcase', 0, 0),
-INSERT INTO system_scope (uuid, scope, description, icon, restricted, default_scope) VALUES
-  ('deb7ab06-4b3e-4f51-b098-72467fb8274c', 'uma_authorization', 'request access to protected resources', 'share', 0, 0);
-

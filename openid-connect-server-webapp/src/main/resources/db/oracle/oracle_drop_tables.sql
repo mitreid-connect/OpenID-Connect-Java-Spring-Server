@@ -1,5 +1,3 @@
-DROP TABLE user_authority;
-DROP TABLE user_;
 DROP TABLE host_info;
 DROP TABLE access_token;
 DROP TABLE access_token_permissions;
