@@ -18,6 +18,8 @@
 package org.mitre.oauth2.service.impl;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import org.junit.Before;
@@ -588,14 +590,14 @@ public class TestDefaultOAuth2ProviderTokenService {
 	public void createAccessToken_CodeChallenge_alg_mismatch(){
 		Map<String, Serializable> extensions = new HashMap<>();
 		extensions.put("code_challenge","FOO");
-		extensions.put("code_challenge_method", "plain");
+		extensions.put("code_challenge_method", "sha-256");
 
 		Map<String,String> requestParameters = new HashMap<>();
 		requestParameters.put("code_verifier","FOO");
 		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
 		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 
-		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.S256);
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.plain);
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 	}
 }
