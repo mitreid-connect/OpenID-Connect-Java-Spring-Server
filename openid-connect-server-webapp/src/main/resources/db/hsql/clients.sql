@@ -23,7 +23,7 @@ INSERT INTO client_scope (client_uuid, scope) VALUES
 
 INSERT INTO client_redirect_uri (client_uuid, redirect_uri) VALUES
 	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'http://localhost/'),
-	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'http://localhost:8080/');
+	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'http://localhost:9080/');
 	
 INSERT INTO client_grant_type (client_uuid, grant_type) VALUES
 	('5fbe7dd6-2b5d-4d13-8096-a5f22d1dbf6d', 'authorization_code'),
