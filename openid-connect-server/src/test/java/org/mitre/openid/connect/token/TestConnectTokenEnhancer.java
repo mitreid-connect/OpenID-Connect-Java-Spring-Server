@@ -19,6 +19,7 @@ package org.mitre.openid.connect.token;
 
 import java.text.ParseException;
 
+import org.mitre.host.util.HostUtils;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -37,13 +38,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(HostUtils.class)
 public class TestConnectTokenEnhancer {
 
 	private static final String CLIENT_ID = "client";
@@ -73,7 +79,11 @@ public class TestConnectTokenEnhancer {
 
 	@Before
 	public void prepare() {
-		configBean.setIssuer("https://auth.example.org/");
+		
+		PowerMockito.mockStatic(HostUtils.class);
+		PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("https://auth.example.org/");
+		MockitoAnnotations.initMocks(this);
+		
 		enhancer.setConfigBean(configBean);
 
 		ClientDetailsEntity client = new ClientDetailsEntity();

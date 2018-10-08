@@ -20,8 +20,9 @@ public class HostFilter extends OncePerRequestFilter {
 	@Override
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
-	URL url = HttpUtils.getHost(request);
+		URL url = HttpUtils.getHost(request);
 		
+		HostUtils.setCurrentContextPath(request.getContextPath());
 		HostUtils.setCurrentHost(url);
 		filterChain.doFilter(request, response);
 	}

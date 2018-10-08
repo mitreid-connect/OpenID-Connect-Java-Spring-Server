@@ -20,17 +20,30 @@
  */
 package org.mitre.openid.connect.config;
 
-import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mitre.host.util.HostUtils;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.BeanCreationException;
 
 /**
  * @author jricher
  *
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(HostUtils.class)
 public class ConfigurationPropertiesBeanTest {
+	
+	@Before
+	public void setup() {
+		PowerMockito.mockStatic(HostUtils.class);
+	}
 
 	/**
 	 * Test getters and setters for configuration object.
@@ -41,11 +54,11 @@ public class ConfigurationPropertiesBeanTest {
 		// make sure the values that go in come back out unchanged
 		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
 
-		String iss = "http://localhost:8080/openid-connect-server/";
+		String iss = "https://localhost:8080/openid-connect-server/";
+		PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn(iss);
 		String title = "OpenID Connect Server";
 		String logoUrl = "/images/logo.png";
 
-		bean.setIssuer(iss);
 		bean.setTopbarTitle(title);
 		bean.setLogoImageUrl(logoUrl);
 		bean.setForceHttps(true);
@@ -63,8 +76,8 @@ public class ConfigurationPropertiesBeanTest {
 		// issuer is http
 		// leave as default, which is unset/false
 		try {
-			bean.setIssuer("http://localhost:8080/openid-connect-server/");
-			bean.checkConfigConsistency();
+			PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("http://localhost:8080/openid-connect-server/");
+			bean.getIssuer();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for http issuer with default forceHttps, message:" + e.getMessage());
 		}
@@ -76,9 +89,9 @@ public class ConfigurationPropertiesBeanTest {
 		// issuer is http
 		// set to false
 		try {
-			bean.setIssuer("http://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(false);
-			bean.checkConfigConsistency();
+			PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("http://localhost:8080/openid-connect-server/");
+			bean.getIssuer();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for http issuer with forceHttps=false, message:" + e.getMessage());
 		}
@@ -89,9 +102,9 @@ public class ConfigurationPropertiesBeanTest {
 		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
 		// issuer is http
 		// set to true
-		bean.setIssuer("http://localhost:8080/openid-connect-server/");
 		bean.setForceHttps(true);
-		bean.checkConfigConsistency();
+		PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("http://localhost:8080/openid-connect-server/");
+		bean.getIssuer();
 	}
 
 	@Test
@@ -100,8 +113,8 @@ public class ConfigurationPropertiesBeanTest {
 		// issuer is https
 		// leave as default, which is unset/false
 		try {
-			bean.setIssuer("https://localhost:8080/openid-connect-server/");
-			bean.checkConfigConsistency();
+			PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("https://localhost:8080/openid-connect-server/");
+			bean.getIssuer();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with default forceHttps, message:" + e.getMessage());
 		}
@@ -113,9 +126,9 @@ public class ConfigurationPropertiesBeanTest {
 		// issuer is https
 		// set to false
 		try {
-			bean.setIssuer("https://localhost:8080/openid-connect-server/");
+			PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("https://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(false);
-			bean.checkConfigConsistency();
+			bean.getIssuer();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with forceHttps=false, message:" + e.getMessage());
 		}
@@ -127,9 +140,9 @@ public class ConfigurationPropertiesBeanTest {
 		// issuer is https
 		// set to true
 		try {
-			bean.setIssuer("https://localhost:8080/openid-connect-server/");
+			PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("https://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(true);
-			bean.checkConfigConsistency();
+			bean.getIssuer();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with forceHttps=true, message:" + e.getMessage());
 		}

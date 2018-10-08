@@ -41,7 +41,7 @@
 	<bean id="clientAssertionValidator" class="org.mitre.jwt.assertion.impl.WhitelistedIssuerAssertionValidator">
 		<property name="whitelist">
 			<map>
-				<entry key="http://artemesia.local" value="http://localhost:8080/openid-connect-server-webapp/jwk" />
+				<entry key="http://artemesia.local" value="http://localhost:9080/openid-connect-server-webapp/jwk" />
 			</map>
 		</property>
 	</bean>
