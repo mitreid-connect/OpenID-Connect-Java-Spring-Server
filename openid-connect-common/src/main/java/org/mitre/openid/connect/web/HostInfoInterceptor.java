@@ -17,6 +17,7 @@ public class HostInfoInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		URL url = HttpUtils.getHost(request);
 		
+		HostUtils.setCurrentContextPath(request.getContextPath());
 		HostUtils.setCurrentHost(url);
 		return super.preHandle(request, response, handler);
 	}

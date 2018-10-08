@@ -17,27 +17,31 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Date;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mitre.host.util.HostUtils;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(HostUtils.class)
 public class TestDefaultOIDCTokenService {
+	
     private static final String CLIENT_ID = "client";
     private static final String KEY_ID = "key";
 
@@ -45,14 +49,16 @@ public class TestDefaultOIDCTokenService {
     private ClientDetailsEntity client = new ClientDetailsEntity();
     private OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
     private OAuth2Request request = new OAuth2Request(CLIENT_ID) { };
-
+    
     @Mock
     private JWTSigningAndValidationService jwtService;
 
     @Before
     public void prepare() {
-        configBean.setIssuer("https://auth.example.org/");
-
+		PowerMockito.mockStatic(HostUtils.class);
+		PowerMockito.when(HostUtils.getCurrentRunningFullPath()).thenReturn("https://auth.example.org/");
+		MockitoAnnotations.initMocks(this);
+		
         client.setClientId(CLIENT_ID);
         Mockito.when(jwtService.getDefaultSigningAlgorithm()).thenReturn(JWSAlgorithm.RS256);
         Mockito.when(jwtService.getDefaultSignerKeyId()).thenReturn(KEY_ID);

@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
+import org.mitre.host.util.HostUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
@@ -30,12 +31,10 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
-
-
 /**
- * Bean to hold configuration information that must be injected into various parts
- * of our application. Set all of the properties here, and autowire a reference
- * to this bean if you need access to any configuration properties.
+ * Bean to hold configuration information that must be injected into various
+ * parts of our application. Set all of the properties here, and autowire a
+ * reference to this bean if you need access to any configuration properties.
  *
  * @author AANGANES
  *
@@ -46,8 +45,6 @@ public class ConfigurationPropertiesBean {
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
-
-	private String issuer;
 
 	private String topbarTitle;
 
@@ -68,7 +65,7 @@ public class ConfigurationPropertiesBean {
 	private boolean dualClient = false;
 
 	private boolean heartMode = false;
-	
+
 	private boolean allowCompleteDeviceCodeUri = false;
 
 	public ConfigurationPropertiesBean() {
@@ -77,20 +74,11 @@ public class ConfigurationPropertiesBean {
 
 	/**
 	 * Endpoints protected by TLS must have https scheme in the URI.
+	 * 
 	 * @throws HttpsUrlRequiredException
 	 */
 	@PostConstruct
 	public void checkConfigConsistency() {
-		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
-			if (this.forceHttps) {
-				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
-				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
-			}
-			else {
-				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
-			}
-		}
-
 		if (languageNamespaces == null || languageNamespaces.isEmpty()) {
 			logger.error("No configured language namespaces! Text rendering will fail!");
 		}
@@ -100,14 +88,16 @@ public class ConfigurationPropertiesBean {
 	 * @return the issuer baseUrl
 	 */
 	public String getIssuer() {
+		String issuer = HostUtils.getCurrentRunningFullPath();
+		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
+			if (this.forceHttps) {
+				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
+				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
+			} else {
+				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
+			}
+		}
 		return issuer;
-	}
-
-	/**
-	 * @param iss the issuer to set
-	 */
-	public void setIssuer(String iss) {
-		issuer = iss;
 	}
 
 	/**
@@ -232,7 +222,9 @@ public class ConfigurationPropertiesBean {
 	}
 
 	/**
-	 * Get the list of namespaces as a JSON string, for injection into the JavaScript UI
+	 * Get the list of namespaces as a JSON string, for injection into the
+	 * JavaScript UI
+	 * 
 	 * @return
 	 */
 	public String getLanguageNamespacesString() {
