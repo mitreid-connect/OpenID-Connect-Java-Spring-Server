@@ -19,11 +19,11 @@ public class HostUtils {
 		return (URL) ThreadUtils.get(CURRENT_HOST_URL_ATTR);
 	}
 	
-	public static void setCurrentContextPath(String servletPath) {
-		ThreadUtils.set(CURRENT_CONTEXT_PATH, servletPath);
+	public static void setCurrentContextPath(String contextPath) {
+		ThreadUtils.set(CURRENT_CONTEXT_PATH, contextPath);
 	}
 
-	public static String getCurrentServletPath() {
+	public static String getCurrentContextPath() {
 		return (String) ThreadUtils.get(CURRENT_CONTEXT_PATH);
 	}
 	
@@ -32,7 +32,7 @@ public class HostUtils {
 		if(url == null) {
 			throw new SystemException("Current Host is not set");
 		}
-		String contextPath = getCurrentServletPath();
+		String contextPath = getCurrentContextPath();
 		if(contextPath == null) {
 			throw new SystemException("Current Servlet Path is not set");
 		}
