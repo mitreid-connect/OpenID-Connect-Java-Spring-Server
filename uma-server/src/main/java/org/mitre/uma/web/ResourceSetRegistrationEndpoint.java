@@ -18,7 +18,6 @@ package org.mitre.uma.web;
 
 import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import java.util.Collection;

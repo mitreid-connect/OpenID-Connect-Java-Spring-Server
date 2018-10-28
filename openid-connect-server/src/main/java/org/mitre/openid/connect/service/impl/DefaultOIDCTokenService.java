@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
@@ -77,6 +78,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(DefaultOIDCTokenService.class);
 
+	@Autowired
+	private HostInfoService hostInfoService;
+	
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 
@@ -269,7 +273,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setScope(scope);
 
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
+		authHolder.setAuthentication(authentication, hostInfoService.getCurrentHostUuid());
 		authHolder = authenticationHolderRepository.save(authHolder);
 		token.setAuthenticationHolder(authHolder);
 

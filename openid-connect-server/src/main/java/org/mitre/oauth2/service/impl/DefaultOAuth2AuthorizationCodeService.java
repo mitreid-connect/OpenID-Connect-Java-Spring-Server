@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.mitre.data.AbstractPageOperationTemplate;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
@@ -50,6 +51,9 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2AuthorizationCodeService.class);
 
 	@Autowired
+	private HostInfoService hostInfoService;
+	
+	@Autowired
 	private AuthorizationCodeRepository repository;
 
 	@Autowired
@@ -74,7 +78,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 		// attach the authorization so that we can look it up later
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
+		authHolder.setAuthentication(authentication, hostInfoService.getCurrentHostUuid());
 		authHolder = authenticationHolderRepository.save(authHolder);
 
 		// set the auth code to expire

@@ -15,6 +15,10 @@
  *******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -23,11 +27,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-
-import static org.junit.Assert.assertThat;
 
 public class TestOAuth2AccessTokenImpl {
 

@@ -18,6 +18,8 @@
 package org.mitre.openid.connect.service.impl;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,9 +43,6 @@ import org.springframework.test.annotation.Rollback;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultApprovedSiteService {

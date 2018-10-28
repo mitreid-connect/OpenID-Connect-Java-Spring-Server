@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -87,6 +88,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
+	
+	@Autowired
+	private HostInfoService hostInfoService;
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
 	@Autowired
@@ -377,7 +381,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 							}
 							reader.endObject();
 							OAuth2Authentication auth = new OAuth2Authentication(clientAuthorization, userAuthentication);
-							ahe.setAuthentication(auth);
+							ahe.setAuthentication(auth, hostInfoService.getCurrentHostUuid());
 						} else {
 							logger.debug("Found unexpected entry");
 							reader.skipValue();

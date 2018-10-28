@@ -17,16 +17,13 @@ package org.mitre.openid.connect.service.impl;
 
 import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
-import static org.mitre.util.JsonUtils.writeNullSafeArray;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;

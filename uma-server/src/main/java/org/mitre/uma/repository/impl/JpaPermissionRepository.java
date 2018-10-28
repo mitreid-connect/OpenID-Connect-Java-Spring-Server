@@ -78,7 +78,6 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public Permission saveRawPermission(Permission p) {
-		hostInfoService.validateHost(p.getHostUuid());
 		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
@@ -91,7 +90,6 @@ public class JpaPermissionRepository implements PermissionRepository {
 		if (entity == null) {
 			throw new IllegalArgumentException("Permission not found: " + uuid);
 		}
-		hostInfoService.validateHost(entity.getHostUuid());
 		return entity;
 	}
 

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.mitre.host.service.HostInfoService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -52,6 +53,9 @@ import com.nimbusds.jwt.SignedJWT;
 public class DefaultUmaTokenService implements UmaTokenService {
 
 	@Autowired
+	private HostInfoService hostInfoService;
+	
+	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
 
 	@Autowired
@@ -71,7 +75,7 @@ public class DefaultUmaTokenService implements UmaTokenService {
 	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket, Policy policy) {
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(o2auth);
+		authHolder.setAuthentication(o2auth, hostInfoService.getCurrentHostUuid());
 		authHolder = authenticationHolderRepository.save(authHolder);
 
 		token.setAuthenticationHolder(authHolder);

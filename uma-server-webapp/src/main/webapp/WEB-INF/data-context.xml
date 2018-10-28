@@ -59,7 +59,7 @@
 
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/mysql/mysql_database_tables.sql -->
-	<!-- <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" value="jdbc:mysql://default.centos:3306/oic" />
 		<property name="username" value="kerp" />
@@ -69,12 +69,12 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean> -->
+	</bean>
 
 	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
 			src/main/resources/db/psql/psql_database_tables.sql -->
 	
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+<!-- 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="jdbcUrl" value="jdbc:postgresql://192.168.11.5:5432/oic" />
 		<property name="username" value="oic" />
@@ -85,7 +85,7 @@
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean>	
+	</bean>	 -->
 
 	<!--  The following is for connecting to a Oracle database that has been initialized with
 			src/main/resources/db/oracle/oracle_database_tables.sql -->

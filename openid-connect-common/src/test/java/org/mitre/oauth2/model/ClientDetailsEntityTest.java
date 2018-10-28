@@ -20,6 +20,8 @@
  */
 package org.mitre.oauth2.model;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -27,8 +29,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author jricher

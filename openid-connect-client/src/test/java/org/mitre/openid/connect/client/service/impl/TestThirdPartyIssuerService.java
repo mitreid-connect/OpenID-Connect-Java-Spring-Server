@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
@@ -26,11 +30,6 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
