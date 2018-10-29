@@ -64,6 +64,7 @@ public class SavedUserAuthentication implements Authentication {
 	 * Create a Saved Auth from an existing Auth token
 	 */
 	public SavedUserAuthentication(Authentication src) {
+		this.id = UUID.randomUUID().toString();
 		setName(src.getName());
 		setAuthorities(new HashSet<>(src.getAuthorities()));
 		setAuthenticated(src.isAuthenticated());

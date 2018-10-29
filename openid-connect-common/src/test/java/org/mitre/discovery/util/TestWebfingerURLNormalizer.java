@@ -17,12 +17,12 @@
  *******************************************************************************/
 package org.mitre.discovery.util;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.springframework.web.util.UriComponents;
 
 import com.google.common.collect.ImmutableMap;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author wkim

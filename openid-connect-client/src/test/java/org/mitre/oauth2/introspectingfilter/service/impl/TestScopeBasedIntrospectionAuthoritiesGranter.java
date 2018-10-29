@@ -16,6 +16,8 @@
 
 package org.mitre.oauth2.introspectingfilter.service.impl;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +27,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.google.gson.JsonObject;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author jricher

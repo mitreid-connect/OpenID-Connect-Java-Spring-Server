@@ -18,6 +18,8 @@
 package org.mitre.openid.connect.util;
 
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 
 import org.junit.Before;
@@ -31,8 +33,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTParser;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *

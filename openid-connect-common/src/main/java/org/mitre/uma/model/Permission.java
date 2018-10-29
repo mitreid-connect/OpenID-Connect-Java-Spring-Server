@@ -38,7 +38,6 @@ import javax.persistence.Table;
 public class Permission {
 
 	private String id;
-	private String hostUuid;
 	private ResourceSet resourceSet;
 	private Set<String> scopes;
 
@@ -58,16 +57,6 @@ public class Permission {
 
 	public void setId(String uuid) {
 		this.id = uuid;
-	}
-	
-	@Basic
-	@Column(name = "host_uuid")	
-	public String getHostUuid() {
-		return hostUuid;
-	}
-
-	public void setHostUuid(String hostUuid) {
-		this.hostUuid = hostUuid;
 	}
 
 	/**

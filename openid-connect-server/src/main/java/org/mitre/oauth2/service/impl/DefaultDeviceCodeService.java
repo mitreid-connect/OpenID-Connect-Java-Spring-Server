@@ -93,7 +93,7 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 		found.setApproved(true);
 
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(auth);		
+		authHolder.setAuthentication(auth, hostInfoService.getCurrentHostUuid());		
 
 		found.setAuthenticationHolder(authHolder);
 

@@ -21,36 +21,6 @@
 package org.mitre.openid.connect;
 
 
-import static org.mitre.util.JsonUtils.getAsArray;
-import static org.mitre.util.JsonUtils.getAsDate;
-import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
-import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
-import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
-import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringSet;
-
-import java.text.ParseException;
-
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.mitre.oauth2.model.RegisteredClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
@@ -93,6 +63,35 @@ import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
+import static org.mitre.util.JsonUtils.getAsArray;
+import static org.mitre.util.JsonUtils.getAsDate;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
+import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
+import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
+
+import java.text.ParseException;
+
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.

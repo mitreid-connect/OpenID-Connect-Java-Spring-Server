@@ -22,7 +22,6 @@ package org.mitre.oauth2.service.impl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;

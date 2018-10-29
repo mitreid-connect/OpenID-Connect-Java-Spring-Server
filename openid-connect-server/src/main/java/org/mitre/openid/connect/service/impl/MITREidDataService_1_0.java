@@ -21,6 +21,7 @@ import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +32,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import javax.persistence.PersistenceException;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -87,6 +93,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
+	
+	@Autowired
+	private HostInfoService hostInfoService;
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
 	@Autowired
@@ -377,7 +386,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 							}
 							reader.endObject();
 							OAuth2Authentication auth = new OAuth2Authentication(clientAuthorization, userAuthentication);
-							ahe.setAuthentication(auth);
+							ahe.setAuthentication(auth, hostInfoService.getCurrentHostUuid());
 						} else {
 							logger.debug("Found unexpected entry");
 							reader.skipValue();
@@ -788,7 +797,21 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			clientRepository.saveClient(client);
+			try {
+				clientRepository.saveClient(client);
+			} catch(PersistenceException ex) {
+				if(ex.getCause() instanceof DatabaseException 
+						&& ex.getCause().getCause() instanceof SQLIntegrityConstraintViolationException) {
+					try {
+						client.setClientId(UUID.randomUUID().toString());
+						clientRepository.saveClient(client);
+					} catch (Throwable unhandled) {
+						logger.error(unhandled.getMessage());
+					}
+				} else {
+					logger.info("Done reading clients");
+				}
+			}
 		}
 		reader.endArray();
 		logger.info("Done reading clients");
@@ -837,7 +860,16 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			sysScopeRepository.save(scope);
+			try {
+				sysScopeRepository.save(scope);
+			} catch(Throwable ex) {
+				if(ex.getCause() instanceof DatabaseException 
+						&& ex.getCause().getCause() instanceof SQLIntegrityConstraintViolationException) {
+					logger.info(scope.getValue() + " already exists");
+				} else {
+					logger.error(ex.getMessage(), ex);
+				}
+			}
 		}
 		reader.endArray();
 		logger.info("Done reading system scopes");

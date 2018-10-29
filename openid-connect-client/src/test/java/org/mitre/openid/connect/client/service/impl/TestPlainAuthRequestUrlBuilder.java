@@ -17,6 +17,9 @@
  *******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.util.Map;
 
 import org.junit.Before;
@@ -28,10 +31,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim

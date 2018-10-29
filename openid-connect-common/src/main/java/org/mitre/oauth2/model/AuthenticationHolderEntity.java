@@ -130,8 +130,9 @@ public class AuthenticationHolderEntity {
 		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
 	}
 
-	public void setAuthentication(OAuth2Authentication authentication) {
-
+	public void setAuthentication(OAuth2Authentication authentication, String hostUuid) {
+		setHostUuid(hostUuid);
+		
 		// pull apart the request and save its bits
 		OAuth2Request o2Request = authentication.getOAuth2Request();
 		setAuthorities(o2Request.getAuthorities() == null ? null : new HashSet<>(o2Request.getAuthorities()));
@@ -143,9 +144,11 @@ public class AuthenticationHolderEntity {
 		setResponseTypes(o2Request.getResponseTypes() == null ? null : new HashSet<>(o2Request.getResponseTypes()));
 		setScope(o2Request.getScope() == null ? null : new HashSet<>(o2Request.getScope()));
 		setApproved(o2Request.isApproved());
+		
 
 		if (authentication.getUserAuthentication() != null) {
 			this.userAuth = new SavedUserAuthentication(authentication.getUserAuthentication());
+			this.userAuth.setHostUuid(hostUuid);
 		} else {
 			this.userAuth = null;
 		}

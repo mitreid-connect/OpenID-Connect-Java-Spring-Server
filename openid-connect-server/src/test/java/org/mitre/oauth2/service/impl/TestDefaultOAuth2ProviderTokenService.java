@@ -17,14 +17,35 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -50,27 +71,6 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * @author wkim
  *
@@ -80,6 +80,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 	// Grace period for time-sensitive tests.
 	private static final long DELTA = 100L;
+
+	private static final String MOCKED_HOST_UUID = "a40a3d15-5ca9-4d9e-9ddd-e4800694e10f";
 
 	// Test Fixture:
 	private OAuth2Authentication authentication;
@@ -100,6 +102,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private AuthenticationHolderEntity storedAuthHolder;
 	private Set<String> storedScope;
 
+	@Mock
+	private HostInfoService hostInfoService;
+	
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
 
@@ -123,7 +128,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 	 */
 	@Before
 	public void prepare() {
-		reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
+		reset(hostInfoService, tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
+		
+		when(hostInfoService.getCurrentHostUuid()).thenReturn(MOCKED_HOST_UUID);
 
 		authentication = Mockito.mock(OAuth2Authentication.class);
 		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null, null);

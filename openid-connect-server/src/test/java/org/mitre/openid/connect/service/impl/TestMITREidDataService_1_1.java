@@ -46,6 +46,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.host.service.HostInfoService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -86,6 +87,11 @@ import com.nimbusds.jwt.JWTParser;
 @SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class TestMITREidDataService_1_1 {
 
+	private static final String MOCKED_HOST_UUID = "a40a3d15-5ca9-4d9e-9ddd-e4800694e10f";
+
+	@Mock
+	private HostInfoService hostInfoService;
+	
 	@Mock
 	private OAuth2ClientRepository clientRepository;
 	@Mock
@@ -127,7 +133,8 @@ public class TestMITREidDataService_1_1 {
 		formatter = new DateFormatter();
 		formatter.setIso(ISO.DATE_TIME);
 
-		Mockito.reset(clientRepository, approvedSiteRepository, authHolderRepository, tokenRepository, sysScopeRepository, wlSiteRepository, blSiteRepository);
+		Mockito.reset(hostInfoService, clientRepository, approvedSiteRepository, authHolderRepository, tokenRepository, sysScopeRepository, wlSiteRepository, blSiteRepository);
+		when(hostInfoService.getCurrentHostUuid()).thenReturn(MOCKED_HOST_UUID);
 	}
 
 
@@ -720,7 +727,7 @@ public class TestMITREidDataService_1_1 {
 
 		AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
 		holder1.setId("1");
-		holder1.setAuthentication(auth1);
+		holder1.setAuthentication(auth1, hostInfoService.getCurrentHostUuid());
 
 		OAuth2Request req2 = new OAuth2Request(new HashMap<String, String>(), "client2", new ArrayList<GrantedAuthority>(),
 				true, new HashSet<String>(), new HashSet<String>(), "http://bar.com",
@@ -730,7 +737,7 @@ public class TestMITREidDataService_1_1 {
 
 		AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
 		holder2.setId("2");
-		holder2.setAuthentication(auth2);
+		holder2.setAuthentication(auth2, hostInfoService.getCurrentHostUuid());
 
 		String configJson = "{" +
 				"\"" + MITREidDataService.CLIENTS + "\": [], " +
@@ -866,7 +873,7 @@ public class TestMITREidDataService_1_1 {
 
 		AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
 		holder1.setId("1");
-		holder1.setAuthentication(auth1);
+		holder1.setAuthentication(auth1, hostInfoService.getCurrentHostUuid());
 
 		OAuth2RefreshTokenEntity token1 = new OAuth2RefreshTokenEntity();
 		token1.setId("1");
@@ -889,7 +896,7 @@ public class TestMITREidDataService_1_1 {
 
 		AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
 		holder2.setId("2");
-		holder2.setAuthentication(auth2);
+		holder2.setAuthentication(auth2, hostInfoService.getCurrentHostUuid());
 
 		OAuth2RefreshTokenEntity token2 = new OAuth2RefreshTokenEntity();
 		token2.setId("2");

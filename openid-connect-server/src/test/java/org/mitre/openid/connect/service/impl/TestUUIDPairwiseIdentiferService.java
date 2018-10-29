@@ -20,6 +20,9 @@
  */
 package org.mitre.openid.connect.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,9 +42,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 
 /**
  * @author jricher

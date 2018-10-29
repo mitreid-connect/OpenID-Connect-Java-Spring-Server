@@ -17,6 +17,9 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.HashSet;
 import java.util.Map;
 
@@ -32,10 +35,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.is;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim

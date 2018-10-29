@@ -64,7 +64,6 @@ public class DefaultPermissionService implements PermissionService {
 		Permission perm = new Permission();
 		perm.setResourceSet(resourceSet);
 		perm.setScopes(scopes);
-		perm.setHostUuid(hostInfoService.getCurrentHostUuid());
 
 		PermissionTicket ticket = new PermissionTicket();
 		ticket.setPermission(perm);

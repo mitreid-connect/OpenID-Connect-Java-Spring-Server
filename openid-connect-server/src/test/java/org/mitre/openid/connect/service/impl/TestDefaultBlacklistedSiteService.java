@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+
 import java.util.Set;
 
 import org.junit.Before;
@@ -30,11 +34,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
-
-import static org.mockito.Mockito.times;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author wkim

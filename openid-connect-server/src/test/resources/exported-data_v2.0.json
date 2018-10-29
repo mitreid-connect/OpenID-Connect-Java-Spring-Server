@@ -1,0 +1,126 @@
+{
+	"clients": [
+		{
+			"clientId": "client",
+			"resourceIds": [],
+			"secret": "secret",
+			"scope": [
+				"address",
+				"phone",
+				"openid",
+				"email",
+				"profile",
+				"offline_access"
+			],
+			"authorities": [],
+			"accessTokenValiditySeconds": 3600,
+			"refreshTokenValiditySeconds": null,
+			"idTokenValiditySeconds": 600,
+			"deviceCodeValiditySeconds": null,
+			"redirectUris": [
+				"http://localhost/",
+				"http://localhost:9080/"
+			],
+			"claimsRedirectUris": [],
+			"name": "Test Client",
+			"uri": null,
+			"logoUri": null,
+			"contacts": [],
+			"tosUri": null,
+			"tokenEndpointAuthMethod": null,
+			"grantTypes": [
+				"implicit",
+				"refresh_token",
+				"urn:ietf:params:oauth:grant_type:redelegate",
+				"urn:ietf:params:oauth:grant-type:device_code",
+				"authorization_code"
+			],
+			"responseTypes": [],
+			"policyUri": null,
+			"jwksUri": null,
+			"jwks": null,
+			"applicationType": null,
+			"sectorIdentifierUri": null,
+			"subjectType": null,
+			"requestObjectSigningAlg": null,
+			"idTokenSignedResponseAlg": null,
+			"idTokenEncryptedResponseAlg": null,
+			"idTokenEncryptedResponseEnc": null,
+			"userInfoSignedResponseAlg": null,
+			"userInfoEncryptedResponseAlg": null,
+			"userInfoEncryptedResponseEnc": null,
+			"tokenEndpointAuthSigningAlg": null,
+			"defaultMaxAge": null,
+			"defaultACRValues": [],
+			"intitateLoginUri": null,
+			"postLogoutRedirectUri": [],
+			"requestUris": [],
+			"description": null,
+			"allowIntrospection": true,
+			"reuseRefreshToken": true,
+			"clearAccessTokensOnRefresh": true,
+			"dynamicallyRegistered": false,
+			"codeChallengeMethod": null,
+			"softwareId": null,
+			"softwareVersion": null,
+			"softwareStatement": null,
+			"creationDate": null
+		}
+	],
+	"grants": [],
+	"whitelistedSites": [],
+	"blacklistedSites": [],
+	"authenticationHolders": [],
+	"accessTokens": [],
+	"refreshTokens": [],
+	"systemScopes": [
+		{
+			"id": "f478d5a7-c57e-4083-b1c9-21e91b93500f",
+			"description": "physical address",
+			"icon": "home",
+			"value": "address",
+			"restricted": false,
+			"defaultScope": true
+		},
+		{
+			"id": "5b6a969b-9d7f-43cc-8844-3a0e6932b7f2",
+			"description": "email address",
+			"icon": "envelope",
+			"value": "email",
+			"restricted": false,
+			"defaultScope": true
+		},
+		{
+			"id": "2602cc29-5934-44a6-8f37-5f01d9faddb3",
+			"description": "offline access",
+			"icon": "time",
+			"value": "offline_access",
+			"restricted": false,
+			"defaultScope": false
+		},
+		{
+			"id": "16d82057-47a9-4c65-b6b0-d5d5770c4d6b",
+			"description": "log in using your identity",
+			"icon": "user",
+			"value": "openid",
+			"restricted": false,
+			"defaultScope": true
+		},
+		{
+			"id": "aca1bde1-c453-4fd4-9bc1-2b1e20251eeb",
+			"description": "telephone number",
+			"icon": "bell",
+			"value": "phone",
+			"restricted": false,
+			"defaultScope": true
+		},
+		{
+			"id": "a61a2be1-09be-409c-9f89-7309a4f058e4",
+			"description": "basic profile information",
+			"icon": "list-alt",
+			"value": "profile",
+			"restricted": false,
+			"defaultScope": true
+		}
+	]
+}
