@@ -365,7 +365,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>4.3.17.RELEASE</version>
+				<version>4.3.20.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -564,7 +564,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>21.0</version>
+				<version>26.0-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
