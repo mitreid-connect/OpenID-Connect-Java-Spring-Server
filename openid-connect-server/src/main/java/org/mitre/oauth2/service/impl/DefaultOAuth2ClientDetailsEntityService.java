@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
@@ -100,7 +101,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
-	// map of sector URI -> list of redirect URIs
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+
+    // map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.HOURS)
 			.maximumSize(100)
@@ -144,6 +149,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 
 		ensureNoReservedScopes(client);
+
+		if(!Strings.isNullOrEmpty(client.getClientSecret())) {
+		    client.setClientSecret(this.passwordEncoder.encode(client.getClientSecret()));
+        }
 
 		ClientDetailsEntity c = clientRepository.saveClient(client);
 
@@ -422,6 +431,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
+
+            if(!Strings.isNullOrEmpty(newClient.getClientSecret())) {
+                newClient.setClientSecret(this.passwordEncoder.encode(newClient.getClientSecret()));
+            }
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
