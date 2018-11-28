@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2017 The MIT Internet Trust Consortium
+    Copyright 2018 The MIT Internet Trust Consortium
    
     Portions copyright 2011-2013 The MITRE Corporation
    
@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>openid-connect-parent</artifactId>
 		<groupId>org.mitre</groupId>
-		<version>1.3.4.cnaf</version>
+		<version>1.3.5.cnaf</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>openid-connect-common</artifactId>

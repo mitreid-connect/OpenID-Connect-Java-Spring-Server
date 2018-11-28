@@ -1,0 +1,536 @@
+{
+    "admin": {
+        "blacklist": "Liste noire",
+        "blacklist-form": {
+            "blacklisted-uris": "URIs sur liste noire"
+        },
+        "home": "Accueil",
+        "list-widget": {
+            "empty": "Il n'y a aucun élément dans cette liste.",
+            "tooltip": "Cliquer pour afficher la valeur."
+        },
+        "manage-blacklist": "Gérer les Clients sur liste noire",
+        "self-service-client": "Enregistrement du Client en Libre-service",
+        "self-service-resource": "Enregistrement des Ressources Protégées en Libre-service",
+        "user-profile": {
+            "claim": "Nom revendiqué:",
+            "show": "Voir le profil utilisateur",
+            "text": "Votre profil utilisateur a les informations suivantes:",
+            "value": "Valeur revendiquée:"
+        }
+    },
+    "client": {
+        "client-form": {
+            "access": "Accès",
+            "access-token-no-timeout": "Les jetons d'accès n'expirent pas",
+            "access-token-timeout": "Délai d'expiration du jeton d'accès",
+            "access-token-timeout-help": "Entrer ce temps en secondes, minutes, ou heures.",
+            "acr-values": "Valeurs ACR par défaut",
+            "acr-values-placeholder": "nouvelle valeur ACR",
+            "acr-values-help": "Référence de contexte d'authentification par défaut à demander pour ce client",
+            "allow-introspection": "Autoriser les appels au point final du jeton d'introspection ?",
+            "authentication-method": "Méthode d'Identification du point final du Jeton d'Introspection",
+            "authorization-code": "code d'autorisation",
+            "client-credentials": "informations d'identification du client",
+            "client-description": "Description",
+            "client-description-help": "Texte descriptif lisible par l'homme",
+            "client-description-placeholder": "Tapez une description",
+            "client-id": "ID du client",
+            "client-id-help": "ID unique. Si vous laissez ce champ vide, il sera automatiquement généré.",
+            "client-id-placeholder": "L'ID du Client sera généré automatiquement",
+            "client-name": "Nom du client",
+            "client-name-help": "Nom d'application lisible par l'homme",
+            "client-name-placeholder": "Taper quelque chose",
+            "client-secret": "Mot de passe du client",
+            "client-secret-placeholder": "Taper un mot de passe",
+            "contacts": "Contacts",
+            "contacts-help": "Liste des contacts pour les administrateurs de ce client.",
+            "contacts-placeholder": "nouveau contact",
+            "credentials": "Informations d'identification",
+            "crypto": {
+                "a128cbc-hs256": "Algorithme de Chiffrement Authentifié Composite utilisant AES en mode CBC (Cipher Block Chaining) avec PKCS #5 incluant un calcul d'intégrité utilisant HMAC SHA-256, utilisant un CMK 256 bits (et un CEK 128 bits)",
+                "a256cbc-hs512": "Algorithme de Chiffrement Authentifié Composite utilisant AES en mode CBC avec PKCS #5 incluant un calcul d'intégrité utilisant HMAC SHA-512, utilisant un CMK 512 bits (et un CEK 256 bits)",
+                "a128gcm": "AES GCM utilisant des clés 128 bit",
+                "a256gcm": "AES GCM utilisant des clés 256 bit",
+                "a128kw": "Algorithme d'envoloppe de clé AES utilisant des clés 128 bit",
+                "a256kw": "Algorithme d'envoloppe de clé AES utilisant des clés 256 bit",
+                "default": "Utiliser la valeur par défaut du serveur",
+                "dir": "Utilisation directe d'une clé symétrique partagée en tant que Clé Maîtresse de Contenu (CMK) pour l'étape de chiffrement en bloc",
+                "ecdh-es": "Accord par Clé statique éphémère Diffie-Hellman basée sur les courbes elliptiques utilisant Concat KDF, avec la clé convenue étant utilisée directement comme Clé Maîtresse de Contenu",
+                "ecdh-es-a128kw": "Accord par Clé statique éphémère Diffie-Hellman basée sur les courbes elliptiques par ECDH-ES et Section 4.7, mais où la clé convenue est utilisée pour envolpper la Clé Maîtresse de Contenu (CMK) avec la fonction A128KW",
+                "ecdh-es-a256kw": "Accord par Clé statique éphémère Diffie-Hellman basée sur les courbes elliptiques par ECDH-ES et Section 4.7, mais où la clé convenue est utilisée pour envolpper la Clé Maîtresse de Contenu (CMK) avec la fonction A256KW",
+                "none": "Pas de chiffrement",
+                "rsa-oaep": "RSAES à l'aide du tampon de cryptage asymétrique optimal (OAEP)",
+                "rsa1-5": "RSAES-PKCS1-V1_5"
+            },
+            "cryptography": "Crypto",
+            "device": "appareil",
+            "device-code-timeout": "Délai d'expiration du code de l'appareil",
+            "display-secret": "Afficher/editer le mot de passe du client:",
+            "edit": "Editer le Client",
+            "generate-new-secret": "Generer un nouveau mot de passe pour le client ?",
+            "generate-new-secret-help": "Le nouveau mot de passe sera généré quand vous cliquerez sur 'Sauvergarder'",
+            "generate-on-save": "Générer en Sauvegardant",
+            "grant-types": "Types d'allocation",
+            "home": "Page d'Accueil",
+            "home-help": "L'URI pour la page d'accueil du client sera affichée à l'utilisateur",
+            "hours": "heures",
+            "id": "ID:",
+            "id-token-crypto-algorithm": "Algorithme de Cryptage du Jeton d'Identification",
+            "id-token-crypto-method": "Méthode de cryptage du Jeton d'Identification",
+            "id-token-signing-algorithm": "Algorithme de Signature du Jeton d'Identification",
+            "id-token-timeout": "Délai d'expiration du Jeton d'Identification",
+            "implicit": "implicite",
+            "initiate-login": "Lancer la connexion",
+            "initiate-login-help": "URI pour initier la connexion sur le client",
+            "introspection": "Introspection",
+            "jwk-set": "Jeu de Clés publique",
+            "jwk-set-help": "URI du jeu de clés Web JSON pour le client (doit être accessible par le serveur)",
+            "jwk-set-value-help": "URI du jeu de clés Web JSON pour le client (doit être accessible par le serveur)",
+            "logo": "Logo",
+            "logo-help": "L'URI qui pointe vers une image de logo sera affichée sur la page d'approbation",
+            "main": "Principal",
+            "max-age": "Age Maximum par Défaut",
+            "max-age-help": "Âge de session maximal par défaut avant une nouvelle invite",
+            "minutes": "minutes",
+            "new": "Nouveau Client",
+            "other": "Autre",
+            "pairwise": "Par paire",
+            "password": "mot de passe",
+            "policy": "Déclaration de Politique",
+            "policy-help": "L'URI la déclaration de polituque de ce client sera affichée à l'utilisateur",
+            "post-logout": "Redirection après déconnexion",
+            "post-logout-help": "URI pour rediriger le client après une opération de déconnexion",
+            "public": "Public",
+            "redelegation": "redélégation",
+            "redirect-uris": "URI(s) de Redirection",
+            "redirect-uris-help": "URI(s) de redirection pour le client après la page d'autorisation",
+            "claims-redirect-uris": "URI(s) de redirection des revendications",
+            "claims-redirect-uris-help": "URI(s) de redirection pour le client après le flux de collecte des revendications",
+            "refresh": "actualiser",
+            "refresh-tokens": "Jetons d'Actualisation",
+            "refresh-tokens-issued": "Les Jetons d'actualisation sont publiés pour ce client",
+			      "refresh-tokens-issued-help": "Ceci ajoute le champ offline_access aux champs d'application du client.",
+            "refresh-tokens-reused": "Les Jetons d'Actualisation pour ce client sont réutilisés",
+            "clear-access-tokens": "Les jetons d'accès actifs sont automatiquement révoqués lorsque le jeton d'actualisation est utilisé",
+            "refresh-tokens-no-expire": "Les Jetons d'actualisation n'expirent pas",
+            "registered": "Enregistré à",
+            "registration-token": "Jeton d'enregistrement:",
+            "registration-access-token": "Jeton d'Accès à l'Enregistrement",
+            "registration-token-error": "Un problème est survenu lors du chargement du jeton d'accès d'enregistrement pour ce client.",
+            "request-object-signing-algorithm": "Demander un algorithme de signature d'objet",
+            "request-uri": "Demander des URIs",
+            "request-uri-help": "URIs contenant des objets de requête utilisés par ce client",
+            "require-auth-time": "Exiger l'heure d'authentification",
+            "require-auth-time-label": "Toujours exiger que la réclamation auth_time soit envoyée dans le jeton d'identification",
+            "response-types": "Types de Réponse",
+            "rotate-registration-token": "Faire pivoter le jeton d'enregistrement",
+            "rotate-registration-token-confirm": "Êtes-vous sûr de vouloir faire pivoter le jeton d'enregistrement du client ?",
+            "rotate-registration-token-error": "Il y a eu un problème en pivotant le jeton d'enregistrement pour ce client.",
+            "saved": {
+                "no-secret": "Aucun mot de passe client",
+                "saved": "Client Sauvegardé",
+                "secret": "Mot de passe:",
+                "show-secret": "Montrer le Mot de Passe",
+                "unchanged": "inchangé"
+            },
+            "scope-placeholder": "nouveau scope",
+            "scope-help": "Scopes OAuth que le client est autorisé à demander",
+            "seconds": "secondes",
+            "secret-asymmetric-jwt": "Affirmation Signée Asymétrique JWT",
+            "secret-http": "Mot de Passe Client via HTTP Basic",
+            "secret-none": "Pas d'identification",
+            "secret-post": "Mot de Passe Client via HTTP POST",
+            "secret-symmetric-jwt": "Mot de Passe Client via Affirmation Signée Asymétrique JWT",
+            "sector-identifier": "Identifcateur de Secteur URI",
+            "signing": {
+                "any": "Tout est autorisé",
+                "default": "Utiliser la valeur par défaut du serveur",
+                "es256": "Algorithme de Hachage ECDSA using P-256 curve and SHA-256",
+                "es384": "Algorithme de Hachage ECDSA using P-384 curve and SHA-384",
+                "es512": "Algorithme de Hachage ECDSA using P-512 curve and SHA-512",
+                "hs256": "Algorithme de Hachage HMAC using SHA-256",
+                "hs384": "Algorithme de Hachage HMAC using SHA-384",
+                "hs512": "Algorithme de Hachage HMAC using SHA-512",
+                "none": "Pas de signature digitale",
+                "rs256": "Algorithme de Hachage RSASSA using SHA-256",
+                "rs384": "Algorithme de Hachage RSASSA using SHA-384",
+                "rs512": "Algorithme de Hachage RSASSA using SHA-512",
+				"ps256": "RSASSA-PSS using SHA-256 and MGF1 with SHA-256",
+				"ps384": "RSASSA-PSS using SHA-384 and MGF1 with SHA-384",
+				"ps512": "RSASSA-PSS using SHA-512 and MGF1 with SHA-512"
+            },
+            "software-id": "ID du Logiciel",
+            "software-id-placeholder": "ID du logiciel...",
+            "software-id-help": "Identificateur du logiciel de ce client",
+            "software-statement": "Déclaration du Logiciel",
+            "software-statement-placeholder": "eyj0...",
+            "software-statement-help": "Une déclaration de logiciel est émise par un tiers de confiance et verrouille certains éléments de l'enregistrement d'un client.",
+            "software-version": "Version du Logiciel",
+            "software-version-placeholder": "1.0...",
+            "software-version-help": "Version du Logiciel pour ce client",
+            "subject-type": "Type de sujet",
+            "terms": "Conditions d'utilisation",
+            "terms-help": "L'URI pour les conditions d'utilisation de ce client sera affichée à l'utilisateur",
+            "token-signing-algorithm": "Algorithme de signature des points finaux de jeton d'identification",
+            "tokens": "Jetons",
+            "type": "Type d'Application ",
+            "type-native": "Native",
+            "type-web": "Web",
+            "unknown": "(Inconnu)",
+            "user-info-crypto-algorithm": "Algorithme de cryptage des points finaux d'information utilisateur",
+            "user-info-crypto-method": "Méthode de cryptage des points finaux d'information utilisateur",
+            "user-info-signing-algorithm": "Algorithme de signature des points finaux d'information utilisateur",
+            "error": {
+            	"consistency": "Erreur de cohérence",
+            	"pairwise-sector": "Les identificateurs par paires ne peuvent pas être utilisés avec des URI à redirection multiple, sauf si un URI d'identificateur de secteur est également enregistré.",
+            	"jwk-set": "Erreur de réglage JWK",
+            	"jwk-set-parse": "Il y a eu une erreur en analysant la clé publique du jeu de clés Web JSON. Vérifiez la valeur et réessayez."
+            }
+        },
+        "client-table": {
+            "allow-introspection-tooltip": "Ce client peut effectuer une introspection de jeton",
+            "confirm": "Êtes-vous sûr de vouloir supprimer ce client?",
+            "dynamically-registered-tooltip": "Ce client a été enregistré dynamiquement. Cliquez pour voir le jeton d'accès à l'enregistrement",
+            "match": {
+                "contacts": "contacts",
+                "description": "description",
+                "homepage": "page d'accueil",
+                "id": "id",
+                "logo": "logo",
+                "name": "nom",
+                "policy": "politique",
+                "redirect": "uri de redirection",
+                "scope": "scope",
+                "terms": "conditions d'utilisation",
+                "software-id": "ID logiciel",
+                "software-version": "version"
+            },
+            "matched-search": "Recherche de correspondances :",
+            "new": "Nouveau Client",
+            "no-clients": "Il n' y a aucun client enregistré sur ce serveur.",
+            "no-matches": "Il n'y a aucun client qui corresponde à vos critères de recherche.",
+            "no-redirect": "PAS D'URI DE REDIRECTION",
+            "registered": "Enregistré",
+            "search": "Rechercher...",
+            "whitelist": "Liste blanche",
+            "unknown": "à un moment inconnu"
+        },
+        "manage": "Gérer les Clients",
+        "more-info": {
+            "contacts": "Contacts Administratifs :",
+            "home": "Page d'Accueil :",
+            "more": "Plus d'informations",
+            "policy": "Politique:",
+            "terms": "Conditions d'Utilisation :"
+        },
+        "newClient": "Nouveau Client"
+    },
+    "common": {
+        "cancel": "Annuler",
+        "client": "Client",
+        "clients": "Clients",
+        "close": "Fermer",
+        "delete": "Supprimer",
+        "description": "Description",
+        "dynamically-registered": "Ce client a été enr dynamiquement",
+        "edit": "Editer",
+        "expires": "Expire :",
+        "information": "Information",
+        "new": "Nouveau",
+        "not-yet-implemented": "Pas encore mis en oeuvre",
+        "not-yet-implemented-content": "La valeur de ce champ sera sauvegardée avec le client, mais le serveur ne traite actuellement rien avec lui. Les versions futures de la bibliothèque du serveur en feront usage.",
+        "revoke": "Révoquer",
+        "save": "Sauvegarder",
+        "scopes": "Scopes",
+        "statistics": "Statistiques"
+    },
+    "dynreg": {
+        "client-id-placeholder": "Entrer l'ID du Client",
+        "configuration-URI": "URI de Configuration Client",
+        "edit-dynamically-registered": "Editer un Client Enregistré Dynamiquement",
+        "edit-existing": "Editer un client existant",
+        "edit-existing-help": "Utiliser ce formulaire pour éditer un client enregistré précédemment. Coller votre ID client and jeton d'accés d'enregistrement pour accéder au client.",
+        "edit-existing-button": "Editer le Client",
+        "invalid-access-token": "Client ou Jeton d'Accès à l'Enregistrement invalide.",
+        "new-client": "Enregister un nouveau client",
+        "new-client-help": "Utiliser ce formulaire pour enregistrer un nouveau client avec le server d'autorisation. Vous recevrez un ID client et un jeton d'accès à l'enregistrement pour gérer votre client.",
+        "new-client-button": "Nouveau Client",
+        "regtoken-placeholder": "Entrer le Jeton d'Accès à l'Enregistrement",
+        "warning": "<strong>Attention!</strong> Vous DEVEZ protéger votre <b>ID Client</b>, <b>Mot de Passe Client (si fourni)</b>, et votre <b>Jeton d'Accès à l'Enregistrement</b>. Si vous perdez votre numéro de client ou votre jeton d'accès à l'enregistrement, vous n'aurez plus accès aux données d'enregistrement de votre client et vous devrez enregistrer un nouveau client.",
+        "will-be-generated": "Sera généré par le serveur lors de la sauvegarde du client"
+    },
+    "grant": {
+        "manage-approved-sites": "Gérr les Sites Approuvés",
+        "refresh": "Rafraîchir",
+        "grant-table": {
+            "active-tokens": "Nombre de jetons d'accès actuellement actifs",
+            "application": "Application",
+            "approved-sites": "Sites Approuvés",
+            "authorized": "Autorisé:",
+            "dynamically-registered": "Ce client a été enregistré dynamiquement",
+            "expires": "Expire:",
+            "last-accessed": "Dernier accès :",
+            "never": "Jamais",
+            "no-sites": "Vous n'avez approuvé aucun site.",
+            "no-whitelisted": "Vous n'avez accédé à aucun site inscrit sur une liste blanche.",
+            "pre-approved": "Ce sont des sites qui ont été pré-approuvés par un administrateur.",
+            "text": "Il s'agit de sites que vous avez approuvés manuellement. Si le même site demande le même accès à l'avenir, il sera accordé sans invitation.",
+            "unknown": "Inconnu",
+            "whitelist-note": "<b>NOTE:</b> Si vous les révoquez ici, ils seront automatiquement ré-approuvés lors de votre prochaine visite, sans invitation.",
+            "whitelisted-site": "Ce site a été placé sur liste blanche par un administrateur",
+            "whitelisted-sites": "Sites sur liste blanche"
+        }
+    },
+    "rsreg": {
+        "resource-id-placeholder": "Entrer l'ID de Ressource",
+        "configuration-URI": "URI de Configuration Client",
+        "edit": "Editer la Ressource Protégée",
+        "edit-existing": "Editer une ressource protégée existante",
+        "edit-existing-help": "Utiliser ce formulaire pour éditer une ressource précédemment enregistrée. Coller votre ID client et le jeton d'accès d'enregistrement pour accéder au client.",
+        "edit-existing-button": "Editer la Ressource",
+        "invalid-access-token": "Client ou Jeton d'Accès à l'Enregistrement invalide.",
+        "new-client": "Enregistrer une nouvelle ressource protégée",
+        "new-client-help": "Utiliser ce formulaire pour enregistrer une nouvelle ressource avec le serveur d'autorisation. Vous recevrez un numéro de client et un jeton d'accès à l'enregistrement pour gérer votre ressource.",
+        "new-client-button": "Nouvelle Ressource",
+        "regtoken-placeholder": "Entrer un Jeton d'Accès d'Enregistrement",
+        "will-be-generated": "Sera généré par le serveur lorsque la ressource est sauvegardée",
+        "warning": "<strong>Attention!</strong> Vous DEVEZ protéger votre <b>ID Client</b>, <b>Mot de Passe Client (si fourni)</b>, et votre <b>Jeton d'Accès à l'Enregistrement</b>. Si vous perdez votre numéro de client ou votre jeton d'accès à l'enregistrement, vous n'aurez plus accès aux données d'enregistrement de votre client et vous devrez enregistrer un nouveau client.",
+        "client-form": {
+        	"scope-help": "Scopes pour lesquels cette ressource sera capable d'introspecter des jetons."
+        }
+    },
+    "scope": {
+        "manage": "Gérer les Scopes du Système",
+        "scope-list": {
+            "no-scopes": "PAS DE SCOPES"
+        },
+        "system-scope-form": {
+            "default": "scope par défaut",
+            "default-help": "Les clients nouvellement créés obtiennent ce scope par défaut?",
+            "description-help": "Texte descriptif lisible par l'humain",
+            "description-placeholder": "Taper une description",
+            "restricted": "restreint",
+            "restricted-help": "Les scopes restreints ne sont utilisables que par les administrateurs système et ne sont pas disponibles pour les clients enregistrés dynamiquement et les ressources protégées.",
+            "edit": "Editer le Scope",
+            "icon": "Icône",
+            "new": "Nouveau Scope",
+            "select-icon": "Sélectionner un icône",
+            "subject-type": "Type de Sujet",
+            "value": "Valeur du Scope",
+            "value-help": "Chaîne seule sans espaces",
+            "value-placeholder": "scope"
+        },
+        "system-scope-table": {
+            "confirm": "Êtes-vous sûr de vouloir supprimer ce scope ? Les clients qui ont ce scope pourront toujours la demander.",
+            "new": "Nouveau Scope",
+            "text": "Aucun scope du système n'est défini. Les clients peuvent toujours avoir des scopes personnalisés.",
+            "tooltip-restricted": "Ce scope ne peut être utilisé que par les administrateurs. Ce n'est pas disponible pour l'enregistrement dynamique.",
+            "tooltip-default": "Ce scope est automatiquement assigné aux nouveaux clients enregitrés."
+        }
+    },
+    "token": {
+        "manage": "Gérer les Jetons Actifs",
+        "token-table": {
+            "access-tokens": "Jetons d'Accès",
+            "associated-id": "Ce jeton d'accès a été émis avec un jeton d'identification associé.",
+            "associated-refresh": "Ce jeton d'accès a été émis avec un jeton de rafraîchissement associé.",
+            "click-to-display": "Cliquez pour afficher la valeur complète du jeton",
+            "confirm": "Etes-vous sûr de vouloir révoquer ce jeton?",
+            "confirm-refresh": "Êtes-vous sûr de vouloir révoquer ce jeton de rafraîchissement et les jetons d'accès associés ?",
+            "expires": "Expire",
+            "no-access": "Il n'y a pas de jetons d'accès actif.",
+            "no-refresh": "Il n'y a pas de jetons de rafraîchissement actifs.",
+            "number-of-tokens": "Nombre de jetons d'accès associés",
+            "refresh-tokens": "Jetons de Rafraîchissement",
+            "text": "Les jetons d'accès sont habituellement de courte durée et permettent aux clients d'accéder à des ressources spécifiques. Les Jetons ID sont des jetons d'accès spécialisés pour faciliter la connexion en utilisant OpenID Connect.",
+            "text-refresh": "Les jetons de rafraîchissement ont généralement une longue durée de vie et offrent aux clients la possibilité d'obtenir de nouveaux jetons d'accès sans la participation de l'utilisateur final.",
+            "token-info": "Information sur le Jeton"
+        }
+    },
+    "whitelist": {
+        "confirm": "Êtes-vous sûr de vouloir supprimer cette entrée de la liste blanche ?",
+        "edit": "Editer la Liste Blanche",
+        "manage": "Gérer Les Sites sur liste blanche",
+        "new": "Nouvelle Liste Blanche",
+        "whitelist": "Liste Blanche",
+        "whitelist-form": {
+            "allowed-scopes": "Scopes Autorisés",
+            "edit": "Editer le Site sur Liste Blanche",
+            "new": "Nouveau Site sur Liste Blanche",
+            "scope-help": "Liste des scopes qui sera automatiquement approuvée quand ce client fera une requête",
+            "scope-placeholder": "nouveau scope"
+        },
+        "whitelist-table": {
+            "no-sites": "Il n' y a pas de sites sur la liste blanche. Utilisez le bouton <strong>liste blanche</strong> de la page de gestion du client pour en créer un."
+        }
+    },
+    "blacklist": {
+    	"text": "Les URIs sur liste noire ne peuvent pas être utilisés en tant qu'URIs de redirection par des clients enregistrés, que ce soit dans l'interface d'administration ou dans l'enregistrement dynamique.",
+    	"blacklist-uri-placeholder": "uri de la liste noire",
+    	"add": "Ajouter une URI à la liste noire",
+    	"empty": "Il n'y a pas d'URIs sur liste noire sur ce serveur.",
+    	"uri": "URI"
+    },
+	"copyright": "Propulsé par <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2018 The MIT Internet Trust Consortium.</span>.",
+	"about": {
+		"title": "A Propos",
+		"body": "\nCe Service OpenID Connect est construit à partir du projet Open Source MITREid Connect, du \n<a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nPour plus d'informations sur le projet, voir \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect sur GitHub</a>. \nVous pouvez y soumettre des rapports de bogues, donner des retours d'informations ou même contribuer à des correctifs de code pour des fonctionnalités supplémentaires que vous aimeriez voir apparaître."
+	},
+	"statistics": {
+		"title": "Statistiques",
+		"number_users": "Nombre d'utilisateurs : <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+		"number_clients": "Clients autorisés : <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+		"number_approvals": "Sites approuvés : <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+	},
+    "home": {
+    	"title": "Accueil",
+    	"welcome": {
+    		"title": "Bienvenue !",
+			"body": "\nOpenID Connect est un protocole d'identité fédérée à l'échelle de l'Internet basé sur le framework d'autorisation OAuth2. \nOpenID Connect vous permet de vous connecter à un site distant en utilisant votre identité sans révéler vos identifiants, comme un nom d'utilisateur et un mot de passe.</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">En savoir plus &raquo;</a>"
+		},
+		"more": "Plus",
+		"about": {
+			"title": "A prppos",
+			"body": "Ce service OpenID Connect est construit à partir du projet Open Source MITREid Connect, du \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
+		},
+		"contact": {
+			"title": "Contact",
+			"body": "\nPour plus d'informations ou du support, contactez les administrateurs de ce système.</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">Email &raquo;</a>"
+		},
+		"statistics": {
+			"title": "Statistiques actuelles",
+			"loading": "Chargement en cours...",
+			"number_users": "Nombre d'utilisateurs : <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+			"number_clients": "Clients autorisés : <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+			"number_approvals": "Sites approuvés : <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+		}
+	},
+	"contact": {
+		"title": "Contact",
+		"body": "Pour signaler des bogues avec le logiciel MITREid Connect lui-même, utilisez \n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue tracker</a>. \nPour les problèmes relatifs à ce serveur, contactez l'administrateur du serveur."
+	},
+	"topbar": {
+		"about": "A propos",
+		"contact": "Contact",
+		"statistics": "Statistiques",
+		"home": "Accueil",
+		"login": "Se connecter",
+		"logout": "Se déconnecter"
+	},
+	"sidebar": {
+		"administrative": {
+			"title": "Administratif",
+			"manage_clients": "Gérer les Clients",
+			"whitelisted_clients": "Clients sur liste blanche",
+			"blacklisted_clients": "Clients sur liste noire",
+			"system_scopes": "Scopes Système"
+		},
+		"personal": {
+			"title": "Personnel",
+			"approved_sites": "Gérer les Sites Approuvés",
+			"active_tokens": "Gérer les Jetons Actifs",
+			"profile_information": "Voir les Informations du Profil"
+		},
+		"developer": {
+			"title": "Développeur",
+			"client_registration": "Inscription en libre-service de clients",
+			"resource_registration": "Enregistrement en libre-service de ressources protégées"
+		}
+	},
+	"manage": {
+		"ok": "OK",
+		"loading": "Chargement en cours",
+		"title": "Console de Gestion"
+	},
+    "approve": {
+    	"dynamically-registered-unknown": "à un moment inconnu",
+		"title": "Autoriser l'accès",
+		"error": {
+			"not_granted": "L'accès ne pouvait pas être accordé."
+		},
+		"required_for": "Approbation requise pour",
+		"dynamically_registered": "Ce client a été enregistré dynamiquement <span class=\"label label-info\" id=\"registrationTime\">{0}</span>.",
+		"caution": {
+			"title": "Attention",
+			"message": {
+				"none": "Cela n'a <span class=\"label label-important\">jamais</span> été approuvé préalablement.",
+				"singular": "Cela a été approuvé <span class=\"label label-warning\">{0}</span> fois préalablement.",
+				"plural": "Cela a été approuvé <span class=\"label\">{0}</span> fois préalablement."
+			}
+		},
+		"more_information": "Plus d'information",
+		"home_page": "Page d'Accueil",
+		"policy": "Politique",
+		"terms": "Conditions d'utilisation",
+		"contacts": "Contacts Administratifs",
+		"warning": "Avertissement",
+		"no_redirect_uri": "Ce client n' a pas d'URIs de redirection enregistrées et quelqu'un pourrait utiliser un URI malveillant ici.",
+		"redirect_uri": "Vous serez redirigé vers la page suivante si vous cliquez sur Approuver: <code>{0}</code>",
+		"pairwise": "Ce client utilise un identificateur <b>de pair</b>, ce qui rend plus difficile la corrélation de votre identité entre les sites.",
+		"no_scopes": "Ce client n' a pas de scopes enregistrés et est donc autorisés à demander <em>tous</em> les scopes disponibles sur le système. Procédez avec prudence.",
+		"access_to": "Accéder à",
+		"remember": {
+			"title": "Se souvenir de cette décision",
+			"until_revoke": "Se souvenir de cette décision jusqu'à ce que je la révoque",
+			"one_hour": "Se souvenir de cette décision pour une heure",
+			"next_time": "Me le redemander la prochaine fois"
+		},
+		"do_authorize": "Autorisez-vous",
+		"label": {
+			"authorize": "Autoriser",
+			"deny": "Refuser"
+		}
+	},
+	"error": {
+		"title": "Erreur",
+		"header": "Erreur",
+		"header-with-message": "Erreur : ",
+		"reload": "De plus, on dirait que vous n'êtes pas connecté. Rechargez la page pour réessayer. Vous risquez de perdre tout travail non sauvegardé.",
+		"reload-button": "Recharger",
+		"message": "Il y a eu une erreur dans le traitement de votre demande.",
+		"server-message": "Le serveur a dit : "
+	},
+	"login": {
+		"login_with_username_and_password": "Se connecter avec nom d'utilisateur et mot de passe",
+		"username": "Nom d'utilisateur",
+		"password": "Mot de passe",
+		"login-button": "Se connecter",
+		"error": "Le système n'a pas pu vous identifier. Veuillez réessayer."
+	},
+	"device": {
+		"request_code": {
+			"title": "Entrez le Code",
+			"header": "Entrez le Code",
+			"description": "Entrez le code afficher sur votre appareil dans le champ ci-dessous et pressez Envoyer",
+			"submit": "Envoyer"
+		},
+		"error": {
+			"noUserCode": "Le code que vous avez entré n'a pas été trouvé.",
+			"expiredUserCode": "Le code que vous avez entré a expiré. Retournez sur votre appareil et demandez un nouveau code.",
+			"userCodeAlreadyApproved": "Le code que vous avez entré a déjà été utilisé.",
+			"userCodeMismatch": "Il y a eu une erreur dans le traitement du code que vous avez entré. Essayez de rafraîchir la page et revenez sur votre appareil pour demander un nouveau code.",
+			"error": "Il y a eu une erreur dans le traitement du code que vous avez entré. Retourner à votre appareil et demander un nouveau code."
+		},
+		"approve": {
+			"approved": "L'appareil a été approuvé.",
+			"notApproved": "L'appareil n'a pas été approuvé."
+		}
+	},
+	"logout": {
+		"confirmation": {
+			"title": "Déconnexion demandée",
+			"header": "Déconnexion demandée",
+			"requested": "La déconnexion a été demandée par ",
+			"explanation": "Voulez-vous vous déconnecter du fournisseur d'identité ? Cela n'affectera pas votre session sur d'autres systèmes.",
+			"submit": "Se déconnecter",
+			"deny": "Rester connecté"
+		},
+		"post": {
+			"title": "Se déconnecter",
+			"header": "Se déconnecter",
+			"notLoggedOut": "Vous n'avez pas été déconnecté du serveur d'identité. Vous pouvez fermer ce navigateur ou vous reconnecter.",
+			"loggedOut": "Vous avez été déconnecté du serveur d'identité."
+		}
+	}
+}

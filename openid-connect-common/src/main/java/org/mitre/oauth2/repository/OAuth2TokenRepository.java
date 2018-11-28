@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 The MIT Internet Trust Consortium
+ * Copyright 2018 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
  *
@@ -52,6 +52,10 @@ public interface OAuth2TokenRepository {
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
 
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
+	
+	public Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String name);
+	
+	public Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String name);
 
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 

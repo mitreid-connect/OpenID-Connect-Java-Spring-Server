@@ -35,4 +35,4 @@
 
 
 
-版权所有 &copy;2017 [MIT因特网信任联盟](http://www.mit-trust.org/). 采用Apache 2.0许可证, 详见 `LICENSE.txt`. 
+版权所有 &copy;2018 [MIT因特网信任联盟](http://www.mit-trust.org/). 采用Apache 2.0许可证, 详见 `LICENSE.txt`. 
