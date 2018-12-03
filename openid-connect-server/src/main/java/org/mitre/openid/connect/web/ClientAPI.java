@@ -278,6 +278,8 @@ public class ClientAPI {
 			client = clientService.generateClientId(client);
 		}
 
+		String plaintextSecret = client.getClientSecret();
+
 		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
@@ -292,6 +294,7 @@ public class ClientAPI {
 			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
+				plaintextSecret = client.getClientSecret();
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
@@ -320,6 +323,10 @@ public class ClientAPI {
 
 		try {
 			ClientDetailsEntity newClient = clientService.saveNewClient(client);
+
+			//Set the client secret to the plaintext from the request
+			newClient.setClientSecret(plaintextSecret);
+
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 			if (AuthenticationUtilities.isAdmin(auth)) {
@@ -385,6 +392,7 @@ public class ClientAPI {
 		}
 
 		ClientDetailsEntity oldClient = clientService.getClientById(id);
+		String plaintextSecret = client.getClientSecret();
 
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
@@ -408,10 +416,10 @@ public class ClientAPI {
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
 
-			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
-					|| Strings.isNullOrEmpty(client.getClientSecret())) {
+			// Once a client has been created, we only update the secret when asked to
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()) {
 				client = clientService.generateClientSecret(client);
+				plaintextSecret = client.getClientSecret();
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
@@ -438,6 +446,10 @@ public class ClientAPI {
 
 		try {
 			ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
+
+			//Set the client secret to the plaintext from the request
+			newClient.setClientSecret(plaintextSecret);
+
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 			if (AuthenticationUtilities.isAdmin(auth)) {
@@ -496,6 +508,9 @@ public class ClientAPI {
 			model.addAttribute(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
+
+		//We don't want the UI to get the secret
+		client.setClientSecret(null);
 
 		model.addAttribute(JsonEntityView.ENTITY, client);
 

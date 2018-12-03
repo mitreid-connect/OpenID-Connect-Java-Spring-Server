@@ -432,9 +432,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
 
-            if(!Strings.isNullOrEmpty(newClient.getClientSecret())) {
+			if (Strings.isNullOrEmpty(newClient.getClientSecret())){
+				newClient.setClientSecret(oldClient.getClientSecret());
+			}else{
                 newClient.setClientSecret(this.passwordEncoder.encode(newClient.getClientSecret()));
-            }
+			}
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
