@@ -229,6 +229,9 @@ public class ClientAPI {
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
+
+		clients.forEach(client -> client.setClientSecret(null));
+
 		model.addAttribute(JsonEntityView.ENTITY, clients);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
