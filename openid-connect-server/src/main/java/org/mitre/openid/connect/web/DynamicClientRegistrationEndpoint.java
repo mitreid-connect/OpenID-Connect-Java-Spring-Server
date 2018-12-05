@@ -167,8 +167,6 @@ public class DynamicClientRegistrationEndpoint {
 		if (newClient != null) {
 			// it parsed!
 
-			String plaintextSecret = newClient.getClientSecret();
-
 			//
 			// Now do some post-processing consistency checks on it
 			//
@@ -203,7 +201,6 @@ public class DynamicClientRegistrationEndpoint {
 
 				// we need to generate a secret
 				newClient = clientService.generateClientSecret(newClient);
-				plaintextSecret = newClient.getClientSecret();
 			}
 
 			// set some defaults for token timeouts
@@ -245,8 +242,6 @@ public class DynamicClientRegistrationEndpoint {
 				// send it all out to the view
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
-
-				registered.setClientSecret(plaintextSecret);
 
 				m.addAttribute("client", registered);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201

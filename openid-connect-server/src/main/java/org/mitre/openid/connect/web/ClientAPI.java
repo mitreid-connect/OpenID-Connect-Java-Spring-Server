@@ -281,8 +281,6 @@ public class ClientAPI {
 			client = clientService.generateClientId(client);
 		}
 
-		String plaintextSecret = client.getClientSecret();
-
 		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
@@ -297,7 +295,6 @@ public class ClientAPI {
 			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
-				plaintextSecret = client.getClientSecret();
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
@@ -328,8 +325,6 @@ public class ClientAPI {
 			ClientDetailsEntity newClient = clientService.saveNewClient(client);
 
 			//Set the client secret to the plaintext from the request
-			newClient.setClientSecret(plaintextSecret);
-
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 			if (AuthenticationUtilities.isAdmin(auth)) {
