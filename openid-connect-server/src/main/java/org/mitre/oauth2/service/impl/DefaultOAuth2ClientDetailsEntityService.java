@@ -150,11 +150,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		ensureNoReservedScopes(client);
 
+		String plaintextSecret = client.getClientSecret();
+
 		if(!Strings.isNullOrEmpty(client.getClientSecret())) {
 		    client.setClientSecret(this.passwordEncoder.encode(client.getClientSecret()));
         }
 
 		ClientDetailsEntity c = clientRepository.saveClient(client);
+
+		c.setClientSecret(plaintextSecret);
 
 		statsService.resetCache();
 
@@ -432,9 +436,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
 
-            if(!Strings.isNullOrEmpty(newClient.getClientSecret())) {
+			if (Strings.isNullOrEmpty(newClient.getClientSecret())){
+				newClient.setClientSecret(oldClient.getClientSecret());
+			}else{
                 newClient.setClientSecret(this.passwordEncoder.encode(newClient.getClientSecret()));
-            }
+			}
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
