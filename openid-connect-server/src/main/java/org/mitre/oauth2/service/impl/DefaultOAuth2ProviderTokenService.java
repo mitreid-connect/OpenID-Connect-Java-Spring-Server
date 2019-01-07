@@ -55,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -290,17 +291,17 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, TokenRequest authRequest) throws AuthenticationException {
-		
+
 		if (Strings.isNullOrEmpty(refreshTokenValue)) {
-			// throw an invalid token exception if there's no refresh token value at all
-			throw new InvalidTokenException("Invalid refresh token: " + refreshTokenValue);
+			// throw an invalid grant exception if we couldn't find the token (as defined in RFC 6749)
+			throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
 		}
 
 		OAuth2RefreshTokenEntity refreshToken = clearExpiredRefreshToken(tokenRepository.getRefreshTokenByValue(refreshTokenValue));
 
 		if (refreshToken == null) {
-			// throw an invalid token exception if we couldn't find the token
-			throw new InvalidTokenException("Invalid refresh token: " + refreshTokenValue);
+			// throw an invalid grant exception if we couldn't find the token (as defined in RFC 6749)
+			throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
 		}
 
 		ClientDetailsEntity client = refreshToken.getClient();
@@ -311,7 +312,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		ClientDetailsEntity requestingClient = clientDetailsService.loadClientByClientId(authRequest.getClientId());
 		if (!client.getClientId().equals(requestingClient.getClientId())) {
 			tokenRepository.removeRefreshToken(refreshToken);
-			throw new InvalidClientException("Client does not own the presented refresh token");
+			throw new InvalidGrantException("Wrong client for this refresh token: " + refreshTokenValue);
 		}
 
 		//Make sure this client allows access token refreshing
@@ -326,7 +327,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		if (refreshToken.isExpired()) {
 			tokenRepository.removeRefreshToken(refreshToken);
-			throw new InvalidTokenException("Expired refresh token: " + refreshTokenValue);
+			throw new InvalidGrantException("Expired refresh token: " + refreshTokenValue);
 		}
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();

@@ -42,6 +42,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -147,7 +148,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
 		when(refreshToken.getClient()).thenReturn(client);
 		when(refreshToken.isExpired()).thenReturn(false);
-		
+
 		accessToken = Mockito.mock(OAuth2AccessTokenEntity.class);
 
 		tokenRequest = new TokenRequest(null, clientId, null, null);
@@ -352,7 +353,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
 	}
 
-	@Test(expected = InvalidTokenException.class)
+	@Test(expected = InvalidGrantException.class)
 	public void refreshAccessToken_noRefreshToken() {
 		when(tokenRepository.getRefreshTokenByValue(anyString())).thenReturn(null);
 
@@ -366,14 +367,14 @@ public class TestDefaultOAuth2ProviderTokenService {
 		service.refreshAccessToken(refreshTokenValue, tokenRequest);
 	}
 
-	@Test(expected = InvalidClientException.class)
+	@Test(expected = InvalidGrantException.class)
 	public void refreshAccessToken_clientMismatch() {
 		tokenRequest = new TokenRequest(null, badClientId, null, null);
 
 		service.refreshAccessToken(refreshTokenValue, tokenRequest);
 	}
 
-	@Test(expected = InvalidTokenException.class)
+	@Test(expected = InvalidGrantException.class)
 	public void refreshAccessToken_expired() {
 		when(refreshToken.isExpired()).thenReturn(true);
 
@@ -525,20 +526,20 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 	}
-	
+
 	@Test
 	public void getAllAccessTokensForUser(){
 		when(tokenRepository.getAccessTokensByUserName(userName)).thenReturn(newHashSet(accessToken));
-		
+
 		Set<OAuth2AccessTokenEntity> tokens = service.getAllAccessTokensForUser(userName);
 		assertEquals(1, tokens.size());
 		assertTrue(tokens.contains(accessToken));
 	}
-	
+
 	@Test
 	public void getAllRefreshTokensForUser(){
 		when(tokenRepository.getRefreshTokensByUserName(userName)).thenReturn(newHashSet(refreshToken));
-		
+
 		Set<OAuth2RefreshTokenEntity> tokens = service.getAllRefreshTokensForUser(userName);
 		assertEquals(1, tokens.size());
 		assertTrue(tokens.contains(refreshToken));
