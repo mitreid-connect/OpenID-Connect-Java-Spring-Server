@@ -8,7 +8,6 @@ CREATE INDEX IF NOT EXISTS ts_oi_idx ON token_scope(owner_id);
 CREATE INDEX IF NOT EXISTS at_exp_idx ON access_token(expiration);
 CREATE INDEX IF NOT EXISTS rf_ahi_idx ON refresh_token(auth_holder_id);
 CREATE INDEX IF NOT EXISTS rf_tv_idx ON refresh_token(token_value);
-CREATE INDEX IF NOT EXISTS cd_ci_idx ON client_details(client_id);
 CREATE INDEX IF NOT EXISTS at_ahi_idx ON access_token(auth_holder_id);
 CREATE INDEX IF NOT EXISTS aha_oi_idx ON authentication_holder_authority(owner_id);
 CREATE INDEX IF NOT EXISTS ahe_oi_idx ON authentication_holder_extension(owner_id);
