@@ -2,7 +2,8 @@
 -- Indexes for Oracle
 --
 
-CREATE INDEX at_tv_idx ON access_token(token_value);
+CREATE INDEX ac_rti_idx ON access_token(refresh_token_id);
+CREATE INDEX atp_rti_idx ON access_token_permissions(access_token_id, permission_id);
 CREATE INDEX ts_oi_idx ON token_scope(owner_id);
 CREATE INDEX at_exp_idx ON access_token(expiration);
 CREATE INDEX rf_ahi_idx ON refresh_token(auth_holder_id);
