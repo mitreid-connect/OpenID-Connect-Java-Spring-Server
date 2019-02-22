@@ -17,24 +17,22 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Date;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOIDCTokenService {
@@ -67,6 +65,7 @@ public class TestDefaultOIDCTokenService {
                 idClaims.claim("test", "foo");
             }
         };
+        
         configure(s);
 
         JWT token = s.createIdToken(client, request, new Date(), "sub", accessToken);

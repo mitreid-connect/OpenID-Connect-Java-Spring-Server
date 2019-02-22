@@ -1,0 +1,536 @@
+{
+    "admin": {
+        "blacklist": "Blacklist",
+        "blacklist-form": {
+            "blacklisted-uris": "Blacklisted URIs"
+        },
+        "home": "Home",
+        "list-widget": {
+            "empty": "There are no items in this list.",
+            "tooltip": "Click to display full value."
+        },
+        "manage-blacklist": "Manage Blacklisted Clients",
+        "self-service-client": "Self-service Client Registration",
+        "self-service-resource": "Self-service Protected Resource Registration",
+        "user-profile": {
+            "claim": "Claim name:",
+            "show": "View User Profile",
+            "text": "Your user profile has the following information:",
+            "value": "Claim value:"
+        }
+    },
+    "client": {
+        "client-form": {
+            "access": "Access",
+            "access-token-no-timeout": "Access tokens do not time out",
+            "access-token-timeout": "Access Token Timeout",
+            "access-token-timeout-help": "Enter this time in seconds, minutes, or hours.",
+            "acr-values": "Default ACR Values",
+            "acr-values-placeholder": "new ACR value",
+            "acr-values-help": "Default Authentication Context Reference to request for this client",
+            "allow-introspection": "Allow calls to the Introspection Endpoint?",
+            "authentication-method": "Token Endpoint Authentication Method",
+            "authorization-code": "authorization code",
+            "client-credentials": "client credentials",
+            "client-description": "Description",
+            "client-description-help": "Human-readable text description",
+            "client-description-placeholder": "Type a description",
+            "client-id": "Client ID",
+            "client-id-help": "Unique identifier. If you leave this blank it will be automatically generated.",
+            "client-id-placeholder": "Client ID will be automatically generated",
+            "client-name": "Client name",
+            "client-name-help": "Human-readable application name",
+            "client-name-placeholder": "Type something",
+            "client-secret": "Client Secret",
+            "client-secret-placeholder": "Type a secret",
+            "contacts": "Contacts",
+            "contacts-help": "List of contacts for administrators of this client.",
+            "contacts-placeholder": "new contact",
+            "credentials": "Credentials",
+            "crypto": {
+                "a128cbc-hs256": "Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)",
+                "a256cbc-hs512": "Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)",
+                "a128gcm": "AES GCM using 128 bit keys",
+                "a256gcm": "AES GCM using 256 bit keys",
+                "a128kw": "AES Key Wrap Algorithm using 128 bit keys",
+                "a256kw": "AES Key Wrap Algorithm using 256 bit keys",
+                "default": "Use server default",
+                "dir": "Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step",
+                "ecdh-es": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key",
+                "ecdh-es-a128kw": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function",
+                "ecdh-es-a256kw": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function",
+                "none": "No encryption",
+                "rsa-oaep": "RSAES using Optimal Asymmetric Encryption Padding (OAEP)",
+                "rsa1-5": "RSAES-PKCS1-V1_5"
+            },
+            "cryptography": "Crypto",
+            "device": "device",
+            "device-code-timeout": "Device Code Timeout",
+            "display-secret": "Display/edit client secret:",
+            "edit": "Edit Client",
+            "generate-new-secret": "Generate a new client secret?",
+            "generate-new-secret-help": "New secret will be generated when you click 'Save'",
+            "generate-on-save": "Generate on Save",
+            "grant-types": "Grant Types",
+            "home": "Home Page",
+            "home-help": "URL for the client's home page, will be displayed to the user",
+            "hours": "hours",
+            "id": "ID:",
+            "id-token-crypto-algorithm": "ID Token Encryption Algorithm",
+            "id-token-crypto-method": "ID Token Encryption Method",
+            "id-token-signing-algorithm": "ID Token Signing Algorithm",
+            "id-token-timeout": "ID Token Timeout",
+            "implicit": "implicit",
+            "initiate-login": "Initiate Login",
+            "initiate-login-help": "URL to initiate login on the client",
+            "introspection": "Introspection",
+            "jwk-set": "Public Key Set",
+            "jwk-set-help": "URL for the client's JSON Web Key set (must be reachable by the server)",
+            "jwk-set-value-help": "URL for the client's JSON Web Key set (must be reachable by the server)",
+            "logo": "Logo",
+            "logo-help": "URL that points to a logo image, will be displayed on approval page",
+            "main": "Main",
+            "max-age": "Default Max Age",
+            "max-age-help": "Default maximum session age before re-prompting",
+            "minutes": "minutes",
+            "new": "New Client",
+            "other": "Other",
+            "pairwise": "Pairwise",
+            "password": "password",
+            "policy": "Policy Statement",
+            "policy-help": "URL for the Policy Statement of this client, will be displayed to the user",
+            "post-logout": "Post-Logout Redirect",
+            "post-logout-help": "URL to redirect the client to after a logout operation",
+            "public": "Public",
+            "redelegation": "redelegation",
+            "redirect-uris": "Redirect URI(s)",
+            "redirect-uris-help": "URIs that the client can be redirected to after the authorization page",
+            "claims-redirect-uris": "Claims Redirect URI(s)",
+            "claims-redirect-uris-help": "URIs that the client can be redirected to after the claims gathering flow",
+            "refresh": "refresh",
+            "refresh-tokens": "Refresh Tokens",
+            "refresh-tokens-issued": "Refresh tokens are issued for this client",
+			"refresh-tokens-issued-help": "This will add the offline_access scope to the client's scopes.",
+            "refresh-tokens-reused": "Refresh tokens for this client are re-used",
+            "clear-access-tokens": "Active access tokens are automatically revoked when the refresh token is used",
+            "refresh-tokens-no-expire": "Refresh tokens do not time out",
+            "registered": "Registered at",
+            "registration-token": "Registration Token:",
+            "registration-access-token": "Registration Access Token",
+            "registration-token-error": "There was a problem loading the registration access token for this client.",
+            "request-object-signing-algorithm": "Request Object Signing Algorithm",
+            "request-uri": "Request URIs",
+            "request-uri-help": "URIs containing request objects used by this client",
+            "require-auth-time": "Require Authentication Time",
+            "require-auth-time-label": "Always require that the auth_time claim be sent in the id token",
+            "response-types": "Response Types",
+            "rotate-registration-token": "Rotate registration token",
+            "rotate-registration-token-confirm": "Are you sure you want to rotate this client's registration token?",
+            "rotate-registration-token-error": "There was a problem rotating the registration access token for this client.",
+            "saved": {
+                "no-secret": "No client secret",
+                "saved": "Client Saved",
+                "secret": "Secret:",
+                "show-secret": "Show Secret",
+                "unchanged": "unchanged"
+            },
+            "scope-placeholder": "new scope",
+            "scope-help": "OAuth scopes this client is allowed to request",
+            "seconds": "seconds",
+            "secret-asymmetric-jwt": "Asymmetrically-signed JWT assertion",
+            "secret-http": "Client Secret over HTTP Basic",
+            "secret-none": "No authentication",
+            "secret-post": "Client Secret over HTTP POST",
+            "secret-symmetric-jwt": "Client Secret via symmetrically-signed JWT assertion",
+            "sector-identifier": "Sector Identifier URI",
+            "signing": {
+                "any": "Any allowed",
+                "default": "Use server default",
+                "es256": "ECDSA using P-256 curve and SHA-256 hash algorithm",
+                "es384": "ECDSA using P-384 curve and SHA-384 hash algorithm",
+                "es512": "ECDSA using P-512 curve and SHA-512 hash algorithm",
+                "hs256": "HMAC using SHA-256 hash algorithm",
+                "hs384": "HMAC using SHA-384 hash algorithm",
+                "hs512": "HMAC using SHA-512 hash algorithm",
+                "none": "No digital signature",
+                "rs256": "RSASSA using SHA-256 hash algorithm",
+                "rs384": "RSASSA using SHA-384 hash algorithm",
+                "rs512": "RSASSA using SHA-512 hash algorithm",
+				"ps256": "RSASSA-PSS using SHA-256 and MGF1 with SHA-256",
+				"ps384": "RSASSA-PSS using SHA-384 and MGF1 with SHA-384",
+				"ps512": "RSASSA-PSS using SHA-512 and MGF1 with SHA-512"
+            },
+            "software-id": "Software ID",
+            "software-id-placeholder": "software ID...",
+            "software-id-help": "Identifier for the software in this client",
+            "software-statement": "Software Statement",
+            "software-statement-placeholder": "eyj0...",
+            "software-statement-help": "A software statement is issued by a trusted third party and locks certain elements of a client's registration",
+            "software-version": "Software Version",
+            "software-version-placeholder": "1.0...",
+            "software-version-help": "Version of the software in this client",
+            "subject-type": "Subject Type",
+            "terms": "Terms of Service",
+            "terms-help": "URL for the Terms of Service of this client, will be displayed to the user",
+            "token-signing-algorithm": "Token Endpoint Authentication Signing Algorithm",
+            "tokens": "Tokens",
+            "type": "Application Type",
+            "type-native": "Native",
+            "type-web": "Web",
+            "unknown": "(Unknown)",
+            "user-info-crypto-algorithm": "User Info Endpoint Encryption Algorithm",
+            "user-info-crypto-method": "User Info Endpoint Encryption Method",
+            "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm",
+            "error": {
+            	"consistency": "Consistency error",
+            	"pairwise-sector": "Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.",
+            	"jwk-set": "JWK set error",
+            	"jwk-set-parse": "There was an error parsing the public key from the JSON Web Key set. Check the value and try again."
+            }
+        },
+        "client-table": {
+            "allow-introspection-tooltip": "This client can perform token introspection",
+            "confirm": "Are you sure sure you would like to delete this client?",
+            "dynamically-registered-tooltip": "This client was dynamically registered. Click to view registration access token",
+            "match": {
+                "contacts": "contacts",
+                "description": "description",
+                "homepage": "home page",
+                "id": "id",
+                "logo": "logo",
+                "name": "name",
+                "policy": "policy",
+                "redirect": "redirect uri",
+                "scope": "scope",
+                "terms": "terms of service",
+                "software-id": "software ID",
+                "software-version": "version"
+            },
+            "matched-search": "Matched search:",
+            "new": "New Client",
+            "no-clients": "There are no registered clients on this server.",
+            "no-matches": "There are no clients that match your search criteria.",
+            "no-redirect": "NO REDIRECT URI",
+            "registered": "Registered",
+            "search": "Search...",
+            "whitelist": "Whitelist",
+            "unknown": "at an unknown time"
+        },
+        "manage": "Manage Clients",
+        "more-info": {
+            "contacts": "Administrative Contacts:",
+            "home": "Home Page:",
+            "more": "more information",
+            "policy": "Policy:",
+            "terms": "Terms of Service:"
+        },
+        "newClient": "New Client"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "client": "Client",
+        "clients": "Clients",
+        "close": "Close",
+        "delete": "Delete",
+        "description": "Description",
+        "dynamically-registered": "This client was dynamically registered",
+        "edit": "Edit",
+        "expires": "Expires:",
+        "information": "Information",
+        "new": "New",
+        "not-yet-implemented": "Not Yet Implemented",
+        "not-yet-implemented-content": "The value of this field will be saved with the client, but the server does not currently process anything with it. Future versions of the server library will make use of this.",
+        "revoke": "Revoke",
+        "save": "Save",
+        "scopes": "Scopes",
+        "statistics": "Statistics"
+    },
+    "dynreg": {
+        "client-id-placeholder": "Enter Client ID",
+        "configuration-url": "Client Configuration URL",
+        "edit-dynamically-registered": "Edit a Dynamically Registered Client",
+        "edit-existing": "Edit an existing client",
+        "edit-existing-help": "Use this form to edit a previously-registered client. Paste in your client ID and registration access token to access the client.",
+        "edit-existing-button": "Edit Client",
+        "invalid-access-token": "Invalid client or registration access token.",
+        "new-client": "Register a new client",
+        "new-client-help": "Use this form to register a new client with the authorization server. You will be given a client ID and a registration access token to manage your client.",
+        "new-client-button": "New Client",
+        "regtoken-placeholder": "Enter Registration Access Token",
+        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client.",
+        "will-be-generated": "Will be generated by the server when the client is saved"
+    },
+    "grant": {
+        "manage-approved-sites": "Manage Approved Sites",
+        "refresh": "Refresh",
+        "grant-table": {
+            "active-tokens": "Number of currently active access tokens",
+            "application": "Application",
+            "approved-sites": "Approved Sites",
+            "authorized": "Authorized:",
+            "dynamically-registered": "This client was dynamically registered",
+            "expires": "Expires:",
+            "last-accessed": "Last accessed:",
+            "never": "Never",
+            "no-sites": "You have not approved any sites.",
+            "no-whitelisted": "You have not accessed any whitelisted sites.",
+            "pre-approved": "These are sites that have been pre-approved by an administrator.",
+            "text": "These are sites you have approved manually. If the same site asks for the same access in the future, it will be granted without prompting.",
+            "unknown": "Unknown",
+            "whitelist-note": "<b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.",
+            "whitelisted-site": "This site was whitelisted by an adminstrator",
+            "whitelisted-sites": "Whitelisted Sites"
+        }
+    },
+    "rsreg": {
+        "resource-id-placeholder": "Enter Resource ID",
+        "configuration-url": "Client Configuration URL",
+        "edit": "Edit Protected Resource",
+        "edit-existing": "Edit an existing protected resource",
+        "edit-existing-help": "Use this form to edit a previously-registered resource. Paste in your client ID and registration access token to access the client.",
+        "edit-existing-button": "Edit Resource",
+        "invalid-access-token": "Invalid client or registration access token.",
+        "new-client": "Register a new protected resource",
+        "new-client-help": "Use this form to register a new resource with the authorization server. You will be given a client ID and a registration access token to manage your resource.",
+        "new-client-button": "New Resource",
+        "regtoken-placeholder": "Enter Registration Access Token",
+        "will-be-generated": "Will be generated by the server when the resource is saved",
+        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client.",
+        "client-form": {
+        	"scope-help": "Scopes that this resource will be able to introspect tokens for."
+        }
+    },
+    "scope": {
+        "manage": "Manage System Scopes",
+        "scope-list": {
+            "no-scopes": "NO SCOPES"
+        },
+        "system-scope-form": {
+            "default": "default scope",
+            "default-help": "Newly-created clients get this scope by default?",
+            "description-help": "Human-readable text description",
+            "description-placeholder": "Type a description",
+            "restricted": "restricted",
+            "restricted-help": "Restricted scopes are only usable by system administrators and are unavailable to dynamically registered clients and protected resources",
+            "edit": "Edit Scope",
+            "icon": "Icon",
+            "new": "New Scope",
+            "select-icon": "Select an icon",
+            "subject-type": "Subject Type",
+            "value": "Scope value",
+            "value-help": "Single string with no spaces",
+            "value-placeholder": "scope"
+        },
+        "system-scope-table": {
+            "confirm": "Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.",
+            "new": "New Scope",
+            "text": "There are no system scopes defined. Clients may still have custom scopes.",
+            "tooltip-restricted": "This scope can be used only by administrators. It is not available for dynamic registration.",
+            "tooltip-default": "This scope is automatically assigned to newly registered clients."
+        }
+    },
+    "token": {
+        "manage": "Manage Active Tokens",
+        "token-table": {
+            "access-tokens": "Access Tokens",
+            "associated-id": "This access token was issued with an associated ID token.",
+            "associated-refresh": "This access token was issued with an associated refresh token.",
+            "click-to-display": "Click to display full token value",
+            "confirm": "Are you sure sure you would like to revoke this token?",
+            "confirm-refresh": "Are you sure you would like to revoke this refresh token and its associated access tokens?",
+            "expires": "Expires",
+            "no-access": "There are no active access tokens.",
+            "no-refresh": "There are no active refresh tokens.",
+            "number-of-tokens": "Number of associated access tokens",
+            "refresh-tokens": "Refresh Tokens",
+            "text": "Access tokens are usually short-lived and provide clients with access to specific resources. ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.",
+            "text-refresh": "Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.",
+            "token-info": "Token Information"
+        }
+    },
+    "whitelist": {
+        "confirm": "Are you sure you want to delete this whitelist entry?",
+        "edit": "Edit Whitelist",
+        "manage": "Manage Whitelisted Sites",
+        "new": "New Whitelist",
+        "whitelist": "Whitelist",
+        "whitelist-form": {
+            "allowed-scopes": "Allowed Scopes",
+            "edit": "Edit Whitelisted Site",
+            "new": "New Whitelisted Site",
+            "scope-help": "List of scopes that will be automatically approved when this client makes a request",
+            "scope-placeholder": "new scope"
+        },
+        "whitelist-table": {
+            "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
+        }
+    },
+    "blacklist": {
+    	"text": "Blacklisted URIs cannot be used as redirect URIs by any registered clients, whether in the admin interface or in dynamic registration.",
+    	"blacklist-uri-placeholder": "blacklist uri",
+    	"add": "Add URI to blacklist",
+    	"empty": "There are no blacklisted URIs on this server.",
+    	"uri": "URI"
+    },
+	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2018 The MIT Internet Trust Consortium.</span>.",
+	"about": {
+		"title": "About",
+		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
+	},
+	"statistics": {
+		"title": "Statistics",
+		"number_users": "Number of users: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+		"number_clients": "Authorized clients: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+		"number_approvals": "Approved sites: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+	},
+    "home": {
+    	"title": "Home",
+    	"welcome": {
+    		"title": "Welcome!",
+			"body": "\nOpenID Connect is an internet-scale federated identity protocol built on top of the OAuth2 authorization framework. \nOpenID Connect lets you log into a remote site using your identity without exposing your credentials, like a username and password.</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">Learn more &raquo;</a>"
+		},
+		"more": "More",
+		"about": {
+			"title": "About",
+			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
+		},
+		"contact": {
+			"title": "Contact",
+			"body": "\nFor more information or support, contact the administrators of this system.</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">Email &raquo;</a>"
+		},
+		"statistics": {
+			"title": "Current Statistics",
+			"loading": "Loading...",
+			"number_users": "Number of users: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+			"number_clients": "Authorized clients: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+			"number_approvals": "Approved sites: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+		}
+	},
+	"contact": {
+		"title": "Contact",
+		"body": "To report bugs with the MITREid Connect software itself, use the \n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue tracker</a>. \nFor problems relating to this server, contact the server's administrator."
+	},
+	"topbar": {
+		"about": "About",
+		"contact": "Contact",
+		"statistics": "Statistics",
+		"home": "Home",
+		"login": "Log in",
+		"logout": "Log out"
+	},
+	"sidebar": {
+		"administrative": {
+			"title": "Administrative",
+			"manage_clients": "Manage Clients",
+			"whitelisted_clients": "Whitelisted Clients",
+			"blacklisted_clients": "Blacklisted Clients",
+			"system_scopes": "System Scopes"
+		},
+		"personal": {
+			"title": "Personal",
+			"approved_sites": "Manage Approved Sites",
+			"active_tokens": "Manage Active Tokens",
+			"profile_information": "View Profile Information"
+		},
+		"developer": {
+			"title": "Developer",
+			"client_registration": "Self-service client registration",
+			"resource_registration": "Self-service protected resource registration"
+		}
+	},
+	"manage": {
+		"ok": "OK",
+		"loading": "Loading",
+		"title": "Management Console"
+	},
+    "approve": {
+    	"dynamically-registered-unknown": "at an unknown time",
+		"title": "Approve Access",
+		"error": {
+			"not_granted": "Access could not be granted."
+		},
+		"required_for": "Approval Required for",
+		"dynamically_registered": "This client was dynamically registered <span class=\"label label-info\" id=\"registrationTime\">{0}</span>.",
+		"caution": {
+			"title": "Caution",
+			"message": {
+				"none": "It has <span class=\"label label-important\">never</span> been approved previously.",
+				"singular": "It has been approved <span class=\"label label-warning\">{0}</span> time previously.",
+				"plural": "It has been approved <span class=\"label\">{0}</span> times previously."
+			}
+		},
+		"more_information": "more information",
+		"home_page": "Home page",
+		"policy": "Policy",
+		"terms": "Terms of Service",
+		"contacts": "Administrative Contacts",
+		"warning": "Warning",
+		"no_redirect_uri": "This client does not have any redirect URIs registered and someone could be using a malicious URI here.",
+		"redirect_uri": "You will be redirected to the following page if you click Approve: <code>{0}</code>",
+		"pairwise": "This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.",
+		"no_scopes": "This client does not have any scopes registered and is therefore allowed to request <em>any</em> scopes available on the system. Proceed with caution.",
+		"access_to": "Access to",
+		"remember": { 
+			"title": "Remember this decision",
+			"until_revoke": "remember this decision until I revoke it",
+			"one_hour": "remember this decision for one hour",
+			"next_time": "prompt me again next time"
+		},
+		"do_authorize": "Do you authorize",
+		"label": {
+			"authorize": "Authorize",
+			"deny": "Deny"
+		}
+	},
+	"error": {
+		"title": "Error",
+		"header": "Error",
+		"header-with-message": "Error: ",
+		"reload": "Additionally, it looks like you're not logged in. Reload the page to try again. You will likely lose any unsaved work.",
+		"reload-button": "Reload",
+		"message": "There was an error processing your request.",
+		"server-message": "The server said: "
+	},
+	"login": {
+		"login_with_username_and_password": "Login with Username and Password",
+		"username": "Username",
+		"password": "Password",
+		"login-button": "Login",
+		"error": "The system was unable to log you in. Please try again."
+	},
+	"device": {
+		"request_code": {
+			"title": "Enter Code",
+			"header": "Enter Code",
+			"description": "Enter the code displayed on your device into the box below and press submit",
+			"submit": "Submit"
+		},
+		"error": {
+			"noUserCode": "The code that you entered was not found.",
+			"expiredUserCode": "The code that you entered has expired. Return to your device and request a new code.",
+			"userCodeAlreadyApproved": "The code that you entered has already been used.",
+			"userCodeMismatch": "There was an error processing the code you entered. Try refreshing the page and returning to your device to request a new code.",
+			"error": "There was an error processing the code you entered. Return to your device and request a new code."
+		},
+		"approve": {
+			"approved": "The device has been approved.",
+			"notApproved": "The device has not been approved."
+		}
+	},
+	"logout": {
+		"confirmation": {
+			"title": "Logout requested",
+			"header": "Logout Requested",
+			"requested": "Logout has been requested by ",
+			"explanation": "Do you want to log out of the identity provider? This will not affect your session at any other systems.",
+			"submit": "Log Out",
+			"deny": "Stay Logged In"
+		},
+		"post": {
+			"title": "Log out",
+			"header": "Log Out",
+			"notLoggedOut": "You have not been logged out of the identity server. You may close this browser or log in again.",
+			"loggedOut": "You have been logged out of the identity server."
+		}
+	}
+}

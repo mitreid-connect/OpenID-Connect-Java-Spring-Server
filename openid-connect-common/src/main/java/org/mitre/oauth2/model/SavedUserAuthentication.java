@@ -54,7 +54,7 @@ public class SavedUserAuthentication implements Authentication {
 
   private String name;
 
-  private Collection<? extends GrantedAuthority> authorities;
+  private Collection<GrantedAuthority> authorities;
 
   private boolean authenticated;
 
@@ -117,7 +117,7 @@ public class SavedUserAuthentication implements Authentication {
       joinColumns = @JoinColumn(name = "owner_id") )
   @Convert(converter = SimpleGrantedAuthorityStringConverter.class)
   @Column(name = "authority")
-  public Collection<? extends GrantedAuthority> getAuthorities() {
+  public Collection<GrantedAuthority> getAuthorities() {
     return authorities;
   }
 

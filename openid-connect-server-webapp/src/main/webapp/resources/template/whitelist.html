@@ -1,0 +1,109 @@
+<!-- 
+ Copyright 2018 The MIT Internet Trust Consortium
+ 
+ Portions copyright 2011-2013 The MITRE Corporation
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- whitelist -->
+
+<script type="text/html" id="tmpl-whitelist">
+	<td>
+		<% if (client.dynamicallyRegistered) { %>
+			<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+		<% } %>
+	</td>
+
+    <td>
+        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		<div class="client-more-info-block"></div>
+   </td>
+
+    <td>
+		<div class="scope-list"></div>
+    </td>
+
+    <td>
+		<div class="btn-group pull-right">
+	        <button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="common.edit">Edit</span></button> &nbsp; 
+			<button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+		</div>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-whitelist-table">
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+
+	<div id="whitelist-table-empty" class="alert alert-info" data-i18n="[html]whitelist.whitelist-table.no-sites">
+		There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one.
+	</div>
+
+    <table id="whitelist-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th data-i18n="common.client">Client</th>
+            <th data-i18n="common.scopes">Scopes</th>
+            <th><i class="icon-edit"></i></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-whitelist-form">
+
+    <% if (whiteList.id == null) { %>
+        <h1 data-i18n="whitelist.whitelist-form.new">New Whitelisted Site</h1>
+    <% } else { %>
+        <h1 data-i18n="whitelist.whitelist-form.edit">Edit Whitelisted Site</h1>
+    <% } %>
+
+    <form class="form-horizontal">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>
+
+			<div class="control-group" id="clientId">
+				<label class="control-label" data-i18n="common.client">Client</label>
+				<div class="controls">
+			        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+				</div>
+			</div>
+
+            <div class="control-group" id="scope">
+                <label class="control-label" data-i18n="whitelist.whitelist-form.allowed-scopes">Allowed Scopes</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>

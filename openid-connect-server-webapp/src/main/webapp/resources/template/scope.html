@@ -1,0 +1,228 @@
+<!-- 
+ Copyright 2018 The MIT Internet Trust Consortium
+ 
+ Portions copyright 2011-2013 The MITRE Corporation
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- system scope -->
+<script type="text/html" id="tmpl-system-scope-table">
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> <span data-i18n="scope.system-scope-table.new">New Scope</span></button>
+    </div>
+
+	<div id="scope-table-empty" class="alert alert-info" data-i18n="scope.system-scope-table.text">
+		There are no system scopes defined. Clients may still have custom scopes.
+	</div>
+
+    <table id="scope-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th data-i18n="common.scope">Scope</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp; 
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> <span data-i18n="scope.system-scope-table.new">New Scope</span></button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-system-scope">
+	<td>
+		<% if (defaultScope) { %>
+			<span class="label label-success default"><i class="icon-flag icon-white"></i></span>
+		<% } %>
+		<% if (restricted) { %>
+			<span class="label label-warning restricted"><i class="icon-ban-circle icon-white"></i></span>
+		<% } %>
+	</td>
+
+    <td>
+        <span class="badge badge-info">
+		<% if (icon) { %>
+			<i class="icon-<%- icon %> icon-white"></i>
+		<% } %>
+		<%- value %>
+		</span>
+        <p><small><%- description %></small></p>
+    </td>
+
+    <td>
+		<div class="btn-group pull-right">
+	        <button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="common.edit">Edit</span></button> &nbsp;
+    	    <button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+		</div>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-system-scope-form">
+    <% if (id == null) { %>
+        <h1 data-i18n="scope.system-scope-form.new">New Scope</h1>
+    <% } else { %>
+        <h1 data-i18n="scope.system-scope-form.edit">Edit Scope</h1>
+    <% } %>
+
+	<form class="form-horizontal">
+		<fieldset>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>			
+
+			<div class="control-group" id="value">
+				<label class="control-label" data-i18n="scope.system-scope-form.value">Scope value</label>
+				<div class="controls">
+					<input value="<%-value != null ? value : ''%>" type="text" class="" placeholder="scope" data-i18n="[placeholder]scope.system-scope-form.value-placeholder">
+					<p class="help-block" data-i18n="scope.system-scope-form.value-help">Single string with no spaces</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="description">
+				<label class="control-label" data-i18n="common.description">Description</label>
+				<div class="controls">
+					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3" data-i18n="[placeholder]scope.system-scope-form.description-placeholder"><%-description != null ? description : ''%></textarea>
+					<p class="help-block" data-i18n="[placeholder]scope.system-scope-form.description-help">Human-readable text description</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="icon">
+				<label class="control-label" data-i18n="scope.system-scope-form.icon">Icon</label>
+				<div class="controls">
+
+					<span id="iconDisplay">
+						<span class="badge badge-info"><i class="icon-<%-icon%> icon-white"></i> 
+							<span id="iconName"><%-icon%></span>
+						</span>
+
+						<input type="hidden" value="<%-icon%>">
+					</span>
+
+					<a href="#iconSelector" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-white icon-picture"></i> <span data-i18n="scope.system-scope-form.select-icon">Select an icon</span></a>
+
+					<div id="iconSelector" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="iconSelectorLabel" aria-hidden="true" style="display: none;">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h3 id="iconSelectorLabel" data-i18n="scope.system-scope-form.select-icon">Select an Icon</h3>
+						</div>
+						<div class="modal-body">
+
+						</div>
+						<div class="modal-footer">
+							<button class="btn" data-dismiss="modal" aria-hidden="true" data-i18n="common.close">Close</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="control-group" id="defaultScope">
+				<label class="control-label"><span class="label label-success default"><i class="icon-flag icon-white"></i></span></label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%-defaultScope ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.default">default scope</span>
+					</label>
+					<p class="help-block" data-i18n="scope.system-scope-form.default-help">Newly-created clients get this scope by default?</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="restricted">
+				<label class="control-label"><span class="label label-warning restricted"><i class="icon-ban-circle icon-white"></i></span></label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%-restricted ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.restricted">restricted</span>
+					</label>
+					<p class="help-block" data-i18n="scope.system-scope-form.restricted-help">Restricted scopes are only usable by system administrators and are unavailable to dynamically registered clients and protected resources</p>
+				</div>
+			</div>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>			
+
+		</fieldset>
+	</form>
+</script>
+
+<script type="text/html" id="tmpl-system-scope-icon">
+
+	<div class="row-fluid">
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[0]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[0]%>"><i class="icon-<%-items[0]%>"></i> <%-items[0]%>
+			<% } %>
+		</div>
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[1]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[1]%>"><i class="icon-<%-items[1]%>"></i> <%-items[1]%>
+			<% } %>
+		</div>
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[2]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[2]%>"><i class="icon-<%-items[2]%>"></i> <%-items[2]%>
+			<% } %>
+		</div>
+	</div>
+
+</script>
+
+<script type="text/html" id="tmpl-scope-list">
+
+<% 
+if (_.isEmpty(scopes)) {
+%>
+	<span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> <span data-i18n="scope.scope-list.no-scopes">NO SCOPES</span></span>
+<%
+
+} else {
+
+_.each(scopes, function(s) {
+	var ss = systemScopes.getByValue(s);
+	
+	if (ss) {
+%>
+	<span class="badge badge-<%-ss.get('restricted') ? 'warning' : 'info'%>" 
+<% if (ss.get('description')) { %>
+	title="<%- ss.get('description') %>"
+<% } %>
+
+style="cursor: default;" >
+<% if (ss.get('icon')) { %>
+	<i class="icon-<%-ss.get('icon')%> icon-white"></i>
+<% } %>
+<%-s%>
+</span>
+<%
+	} else {
+%>
+	<span class="badge" style="cursor: default;"><%-s%></span>
+<%
+	}
+
+});
+
+}
+%>
+
+</script>

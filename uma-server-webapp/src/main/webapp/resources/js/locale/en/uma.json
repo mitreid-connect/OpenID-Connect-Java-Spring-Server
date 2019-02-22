@@ -1,0 +1,59 @@
+{
+	"admin": {
+		"policies": "Manage Protected Resource Policies"
+	},
+	"policy" : {
+    	"resource-sets": "Resource Sets",
+    	"edit-policies": "Edit Policies",
+    	"new-policy": "New Policy",
+    	"edit-policy": "Edit Policy",
+    	"loading-policies": "Policies",
+    	"loading-policy": "Policy",
+    	"loading-rs": "Resource Set",
+    	"rs-table": {
+    		"confirm": "Are you sure you want to delete this resource set?",
+    		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some.",
+    		"scopes": "Scopes",
+    		"shared-with": "Shared with:",
+    		"shared-nobody": "NOBODY",
+    		"shared-nobody-tooltip": "This resource is not accessible by anyone else, edit the policies and share it with someone.",
+    		"sharing": "Sharing Policies"
+    	},
+    	"policy-table": {
+    		"new": "Add New Policy",
+    		"return": "Return to list",
+    		"edit": "Edit Policy",
+    		"confirm": "Are you sure you want to delete this policy?",
+    		"delete": "Delete",
+    		"no-policies": "There are no policies for this resource set: This resource set is inaccessible by others.",
+    		"required-claims": "Required Claims",
+    		"required-claims-info": "Users that you share this resource will with need to be able to present the following claims in order to access the resource.",
+    		"remove": "Remove",
+    		"issuers": "Issuers",
+    		"claim": "Claim",
+    		"value": "Value"
+    	},
+    	"policy-form": {
+    		"email-address": "email address",
+    		"share-email": "Share with email address",
+    		"new": "New Policy",
+    		"edit": "Edit Policy",
+    		"claim-name": "claim name",
+    		"friendly-claim-name": "friendly claim name",
+    		"claim-value": "claim value",
+    		"value-type-text": "Text",
+    		"value-type-number": "Number",
+    		"clear-all": "Clear all claims",
+    		"clear-all-confirm": "Are you sure you want to clear all claims from this policy?"
+    	},
+    	"webfinger-error": "Error",
+    	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>.",
+    	"advanced-error": "Error",
+    	"advanced-error-description": "There was an error saving your advanced claim. Did you fill in all required fields?"
+    },
+    "sidebar": {
+    	"personal": {
+    		"resource_policies": "Manage Protected Resource Policies"
+    	}
+    }
+}

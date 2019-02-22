@@ -1,0 +1,907 @@
+<!-- 
+ Copyright 2018 The MIT Internet Trust Consortium
+ 
+ Portions copyright 2011-2013 The MITRE Corporation
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- client -->
+
+<script type="text/html" id="tmpl-client-table-item">
+	<td class="count">
+
+	</td>
+
+    <td>
+
+		<div class="media">
+			<% if (client.logoUri) { %>
+				<span class="pull-left"><img class="media-object client-logo" src="api/clients/<%- client.id %>/logo"></span>
+			<% } %>
+
+			<div class="media-body">
+		        <span class="clientid-substring" title="<%- client.clientId %> (click to display client ID)"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+			</div>
+			<div>
+				<input type="text" readonly style="cursor: text" class="clientid-full input-xxlarge" value="<%- client.clientId %>" />
+			</div>
+			<div>
+				<% if (client.dynamicallyRegistered) { %>
+					<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+				<% } %>
+				<% if (client.allowIntrospection) { %>
+					<span class="label allow-introspection"><i class="icon-eye-open icon-white"></i></span>
+				<% } %>
+			</div>
+		</div>
+
+
+		<div>
+			<small class="muted" title="<%- hoverCreationDate %>"><i class="icon-time"></i> <span data-i18n="client.client-table.registered">Registered</span> <%- displayCreationDate %></small>
+		</div>
+		<div class="matched text-info">
+			<small><i><span data-i18n="client.client-table.matched-search">Matched search:</span> <span class="label label-matched"></span></i></small>
+		</div>
+    </td>
+
+    <td>
+		<% if (_.isEmpty(client.redirectUris)) { 
+			if (_.contains(client.grantTypes, 'authorization_code') ||
+				_.contains(client.grantTypes, 'implicit')) {
+		%>
+			<div><span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> <span data-i18n="client.client-table.no-redirect">NO REDIRECT URI</span></span></div>
+		<% 		}
+			} else { %>
+		<div><span class="muted">
+			<% for (var i in client.redirectUris) {
+				var uri = $.url(client.redirectUris[i]);
+				if (!uri.attr('protocol')) {
+					%><b class="text-error" title="unknown protocol scheme">?</b><%
+				} else if (uri.attr('protocol') == 'http' && (uri.attr('host') != 'localhost' && uri.attr('host') != '127.0.0.1')) {
+					%><b class="text-error"><%- uri.attr('protocol') %></b>://<%
+				} else if (uri.attr('protocol') != 'https' && uri.attr('protocol') != 'http') {
+					%><span class="text-warning"><%- uri.attr('protocol') %></span>://<%
+				} else {
+					%><span class="text-success"><%- uri.attr('protocol') %></span>://<%
+				}
+			%><b><%- uri.attr('host') %><%- uri.attr('port') ? ':' + uri.attr('port') : ''%></b><%- uri.attr('relative') %>
+				
+			<% } %>
+		</span></div>
+		<% } %>
+		<div class="scope-list"></div>
+		<div class="client-more-info-block"></div>
+    </td>
+
+    <td>
+		<div class="btn-group pull-right">
+        	<button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="common.edit">Edit</span></button> &nbsp;
+			<% if (whiteList != null) { %> 
+				<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> <span data-i18n="client.client-table.whitelist">Whitelist</span></button> &nbsp;
+			<% } else { %>
+				<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> <span data-i18n="client.client-table.whitelist">Whitelist</span></button> &nbsp;
+			<% } %>
+			<button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+		</div>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-client-more-info-block">
+					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts != null && client.contacts.length > 0) { %>
+						<div class="muted moreInformationContainer">
+							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+								<div class="toggleMoreInformation" style="cursor: pointer;">
+									<i class="icon-chevron-right"></i> <small data-i18n="client.more-info.more">more information</small>
+								</div>
+								<div class="moreInformation hide">
+									<%-client.clientDescription%>
+									<ul>
+										<% if (client.clientUri) { %>
+											<li><span data-i18n="client.more-info.home">Home Page:</span> <a href="<%- client.clientUri %>"><%- client.clientUri %></a></li>
+										<% } %>
+										<% if (client.policyUri) { %>
+											<li><span data-i18n="client.more-info.policy">Policy:</span> <a href="<%- client.policyUri %>"><%- client.policyUri %></a></li>
+										<% } %>
+										<% if (client.tosUri) { %>
+											<li><span data-i18n="client.more-info.terms">Terms of Service:</span> <a href="<%- client.tosUri %>"><%- client.tosUri %></a></li>
+										<% } %>
+										<% if (client.contacts != null && client.contacts.length > 0) { %>
+											<li><span data-i18n="client.more-info.contacts">Administrative Contacts:</span> <%- client.contacts.join(', ') %></li>
+										<% } %>
+									</ul>
+								</div>
+							<% } %>
+						</div>
+					<% } %>
+</script>
+
+<script type="text/html" id="tmpl-client-table">
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> <span data-i18n="client.client-table.new">New Client</span></button>
+		<div class="form-search pull-right">
+			<div class="input-append">
+				<input type="text" class="search-query" placeholder="Search..." data-i18n="[placeholder]client.client-table.search">
+				<button class="btn">&times;</button>
+			</div>
+		</div>
+    </div>
+
+
+	<div id="client-table-search-empty" class="alert alert-warning" data-i18n="client.client-table.no-matches">
+		There are no clients that match your search criteria.
+	</div>
+
+	<div id="client-table-empty" class="alert alert-info" data-i18n="client.client-table.no-clients">
+		There are no registered clients on this server.
+	</div>
+
+	<div class="pagination paginator"></div>
+
+    <table id="client-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th data-i18n="common.client">Client</th>
+            <th data-i18n="common.information">Information</th>
+            <th><i class="icon-edit"></i></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+	<div class="pagination paginator"></div>
+
+    <div class="well well-small">
+        <button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> <span data-i18n="client.client-table.new">New Client</span></button>
+    </div>
+</script>
+
+<script type="text/html" id="tmpl-client-form">
+    <% if (client.id == null) { %>
+        <h1 data-i18n="client.client-form.new"></h1>
+    <% } else { %>
+        <h1 data-i18n="client.client-form.edit"></h1>
+    <% } %>
+
+    <form class="form-horizontal tabbable">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
+					<li><a data-target="#client-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
+					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab" href="#" data-i18n="client.client-form.tokens">Tokens</a></li>
+					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#" data-i18n="client.client-form.cryptography">Crypto</a></li>
+					<li><a data-target="#client-other-tab" data-toggle="tab" href="#" data-i18n="client.client-form.other">Other</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="client-main-tab">
+
+			<div class="control-group" id="createdAt">
+				<label class="control-label" data-i18n="client.client-form.registered">Registered at</label>
+				<div class="controls">
+					<% if (client.createdAt) { %>
+						<%-client.createdAt%>
+					<% } else { %>
+						<span data-i18n="client.client-form.unknown">Unknown</span>
+					<% } %>
+				</div>
+			</div>
+
+            <div class="control-group" id="clientName">
+                <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
+                <div class="controls">
+                    <input value="<%-client.clientName ? client.clientName : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
+                <div class="controls">
+                    <input value="<%-client.clientId ? client.clientId : ''%>" maxlength="100" type="text" class="" placeholder="Client ID will be generated automatically" data-i18n="[placeholder]client.client-form.client-id-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.client-id-help">Unique identifier. If you leave this blank it will be automatically generated.</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="redirectUris">
+                <label class="control-label" data-i18n="client.client-form.redirect-uris">Redirect URI(s)</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="clientDescription">
+                <label class="control-label" data-i18n="client.client-form.description">Description</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
+                              rows="3" data-i18n="[placeholder]client.client-form.description-placeholder"><%-client.clientDescription%></textarea>
+                    <p class="help-block" data-i18n="client.client-form.description-help">Human-readable text description</p>
+                </div>
+            </div>
+
+			<div class="control-group" id="logoUri">
+				<label class="control-label" data-i18n="client.client-form.logo">Logo</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.logoUri ? client.logoUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="logoBlock">
+				<div class="controls">
+					<img src="resources/images/logo_placeholder.gif" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
+				</div>
+			</div>
+
+			<div class="control-group" id="tosUri">
+				<label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.tosUri ? client.tosUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="policyUri">
+				<label class="control-label" data-i18n="client.client-form.policy">Policy Statement</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.policyUri ? client.policyUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="clientUri">
+				<label class="control-label" data-i18n="client.client-form.home">Home Page</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.clientUri ? client.clientUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
+				</div>
+			</div>
+
+           <div class="control-group" id="softwareId">
+                <label class="control-label" data-i18n="client.client-form.software-id">Software ID</label>
+                <div class="controls">
+                    <input value="<%-client.softwareId ? client.softwareId : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-id-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-id-help">Identifier for the software in this client</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="softwareVersion">
+                <label class="control-label" data-i18n="client.client-form.software-version">Software Version</label>
+                <div class="controls">
+                    <input value="<%-client.softwareVersion ? client.softwareVersion : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-version-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-version-help">Version of the software in this client</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="contacts">
+                <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="softwareStatement">
+                <label class="control-label" data-i18n="client.client-form.software-statement">Software Statement</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="ejy0..." maxlength="4096"
+                              rows="3" data-i18n="[placeholder]client.client-form.software-statement-placeholder"><%-client.softwareStatement%></textarea>
+                    <p class="help-block" data-i18n="client.client-form.software-statement-help">A software statement is issued by a trusted third party and locks certain elements of a client's registration</p>
+                </div>
+            </div>
+
+	</div>
+	
+	<div class="tab-pane" id="client-access-tab">
+
+            <div class="control-group" id="scope">
+                <label class="control-label" data-i18n="common.scope">Scope</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="grantTypes">
+                <label class="control-label" data-i18n="client.client-form.grant-types">Grant Types</label>
+
+                <div class="controls">
+                    <div>
+                        <input id="grantTypes-authorization_code" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("authorization_code", client.grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-authorization_code" class="checkbox" data-i18n="client.client-form.authorization-code">authorization code</label>
+                    </div>
+
+                    <div>
+                        <input id="grantTypes-client_credentials" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("client_credentials", client.grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-client_credentials" class="checkbox" data-i18n="client.client-form.client-credentials">client credentials</label>
+                    </div>
+
+					<% if (!heartMode) { // disable password on heart mode %>
+                    <div>
+                        <input id="grantTypes-password" type="checkbox"
+                            <%-($.inArray("password", client.grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-password" class="checkbox" data-i18n="client.client-form.password">password</label>
+                    </div>
+					<% } %>
+
+                    <div>
+                        <input id="grantTypes-implicit" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("implicit", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-implicit" class="checkbox" data-i18n="client.client-form.implicit">implicit</label>
+                    </div>
+<!--
+                    <div>
+                        <input id="grantTypes-refresh_token" type="checkbox"
+                            <%-($.inArray("refresh_token", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-refresh_token" class="checkbox" data-i18n="client.client-form.refresh">refresh</label>
+                    </div>
+-->
+                    <div>
+                        <input id="grantTypes-redelegate" type="checkbox"
+                            <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-redelegate" class="checkbox" data-i18n="client.client-form.redelegation">redelegate</label>
+                    </div>
+ 
+                    <div>
+                        <input id="grantTypes-device" type="checkbox"
+                            <%-($.inArray("urn:ietf:params:oauth:grant-type:device_code", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-device" class="checkbox" data-i18n="client.client-form.device">device</label>
+                    </div>
+               </div>
+            </div>
+
+			<div class="control-group" id="responseTypes">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.response-types">Response Types</span></label>
+
+				<div class="controls">
+                    <div>
+                        <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-code" class="checkbox">code</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-token" class="checkbox">token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-idtoken" class="checkbox">id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-token-idtoken" class="checkbox">token id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-code-idtoken" class="checkbox">code id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-code-token" class="checkbox">code token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
+                        <label for="responseTypes-code-token-idtoken" class="checkbox">code token id_token</label>
+                    </div>
+				</div>
+			</div>
+
+			<div class="control-group" id="allowIntrospection">
+				<label class="control-label" client.client.form.introspection" data-i18n="client.client-form.introspection">Introspection</label>
+				<div class="controls">
+                    <div>
+                        <label class="checkbox" data-i18n="client.client-form.allow-introspection">Allow calls to the Introspection Endpoint?</label>
+                        <input type="checkbox" <%-(client.allowIntrospection == true ? 'checked' : '')%>>
+                    </div>
+				</div>
+			</div>
+
+			<div class="control-group" id="subjectType">
+				<label class="control-label" data-i18n="client.client-form.subject-type">Subject Type</label>
+				<div class="controls">
+                    <div>
+                        <input id="control-label-public" type="radio" name="subjectType" value="PUBLIC" <%-(client.subjectType == 'PUBLIC' ? 'checked' : '')%>>
+                        <label for="control-label-public" class="radio inline" data-i18n="client.client-form.public">Public</label>
+                        <input id="control-label-pairwise" type="radio" name="subjectType" value="PAIRWISE" <%-(client.subjectType == 'PAIRWISE' ? 'checked' : '')%>>
+                        <label for="control-label-pairwise" class="radio inline" data-i18n="client.client-form.pairwise">Pairwise</label>
+                    </div>
+				</div>
+			</div>
+
+			<div class="control-group" id="sectorIdentifierUri">
+				<label class="control-label" data-i18n="client.client-form.sector-identifier">Sector Identifier URI</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.sectorIdentifierUri ? client.sectorIdentifierUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.sector-identifier-help">Sector Identifier for JavaScript</p>
+				</div>
+			</div>
+
+	</div>
+	
+	<div class="tab-pane" id="client-secret-tab">
+
+			<div class="control-group" id="tokenEndpointAuthMethod">
+				<label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
+				<div class="controls">
+					<% if (!heartMode) { %>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((client.tokenEndpointAuthMethod == 'SECRET_BASIC') || (!client.tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodPost" name="tokenEndpointAuthMethod" value="SECRET_POST" <%-(client.tokenEndpointAuthMethod == 'SECRET_POST' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodPost" class="radio" data-i18n="client.client-form.secret-post">Client Secret over HTTP POST</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%-(client.tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodSymm" class="radio" data-i18n="client.client-form.secret-symmetric-jwt">Client Secret via symmetrically-signed JWT assertion</label>
+                    </div>
+					<% } %>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-((client.tokenEndpointAuthMethod == 'PRIVATE_KEY')  || (heartMode && !client.tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodNone" name="tokenEndpointAuthMethod" value="NONE" <%-(client.tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodNone" class="radio" data-i18n="client.client-form.secret-none">No authentication</label>
+                    </div>
+				</div>
+			</div>
+
+			<div id="clientSecretPanel">
+				<label class="control-label" data-i18n="client.client-form.client-secret">Client Secret</label>
+
+				<div class="control-group" id="generateClientSecret">
+					<div class="controls">
+                        <div>
+                            <input id="clientSecretPanelInput" type="checkbox" <%-(client.generateClientSecret == true ? 'checked' : '')%>>
+                            <label for="clientSecretPanelInput" class="checkbox" data-i18n="client.client-form.generate-new-secret">Generate a new client secret?</label>
+                        </div>
+						<p class="help-block" data-i18n="client.client-form.generate-new-secret-help">New secret will be generated when you click 'Save'</p>
+					</div>
+				</div>
+	
+				<div class="control-group" id="displayClientSecret">
+					<div class="controls">
+                        <div>
+                            <label id="displayClientSecretInput" class="checkbox" data-i18n="client.client-form.display-secret">Display/edit client secret:</label>
+                            <input for="displayClientSecretInput" type="checkbox" <%-(client.displayClientSecret == true ? 'checked' : '')%>>
+                        </div>
+					</div>
+				</div>
+	
+    	        <div class="control-group">
+            	    <div class="controls">
+						<div id="clientSecret" class="span3">
+                	    	<input value="<%-client.clientSecret ? client.clientSecret : ''%>" maxlength="100" type="text" placeholder="Type a secret" data-i18n="[placeholder]client.client-form.client-secret-placeholder">
+						</div>
+						<div id="clientSecretGenerated" class="span3">
+							<span class="uneditable-input" data-i18n="client.client-form.generate-on-save">Generate on Save</span>
+						</div>
+						<div id="clientSecretHidden" class="span3"> 
+							<span class="uneditable-input span3">* * * * * * * * * * * *</span>
+						</div>
+	                </div>
+    	        </div>
+
+			</div>
+
+            <div class="control-group" id="tokenEndpointAuthSigningAlg">
+                <label class="control-label" data-i18n="client.client-form.token-signing-algorithm">Token Endpoint Authentication Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.any">Any allowed</option>
+						<option value="HS256" <%-client.tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.tokenEndpointAuthSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.tokenEndpointAuthSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.tokenEndpointAuthSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group">
+				<label class="control-label" data-i18n="client.client-form.jwk-set">Public Key Set</label>
+				<div class="controls" id="jwkSelector">
+					<div>
+                        <input id="jwkstype-uri" type="radio" name="jwksType" value="URI" <%-(client.jwksType == 'URI' ? 'checked' : '')%>>
+                        <label for="jwkstype-uri" class="radio inline" data-i18n="client.client-form.jwks-by-uri">By URI</label>
+                        <input id="jwkstype-value" type="radio" name="jwksType" value="VAL" <%-(client.jwksType == 'VAL' ? 'checked' : '')%>>
+                        <label for="jwkstype-value" class="radio inline" data-i18n="client.client-form.jwks-by-value">By Value</label>
+					</div>
+				</div>
+				<div class="controls" id="jwksUri">
+					<input placeholder="https://" value="<%-client.jwksUri ? client.jwksUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set (must be reachable by the server)</p>
+				</div>
+				<div class="controls" id="jwks">
+					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-value-help">Key set value (must be a valid JWK Set formatted key)</p>
+				</div>
+			</div>
+	</div>
+
+	<div class="tab-pane" id="client-token-tab">
+            <div class="control-group" id="accessTokenValidityTime">
+                <label class="control-label" data-i18n="client.client-form.access-token-timeout">Access Token Timeout</label>
+                <div class="controls">
+					<div>
+                        <input type="checkbox" id="disableAccessTokenTimeout" <%-(client.accessTokenValiditySeconds == null ? 'checked' : '')%>/>
+                        <label for="disableAccessTokenTimeout" class="checkbox" data-i18n="client.client-form.access-token-no-timeout">Access tokens do not time out</label>
+					</div>
+                    <div>
+                        <input type="text" class="" value="<%-(client.accessTokenValiditySeconds == null ? '' : client.accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
+						<select id="access-token-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+                    </div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
+
+            <div class="control-group" id="idTokenValidityTime">
+                <label class="control-label" data-i18n="client.client-form.id-token-timeout">ID Token Timeout</label>
+                <div class="controls">
+                    <div>
+                        <input type="text" class="" value="<%-(client.idTokenValiditySeconds == null ? '' : client.idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
+						<select id="id-token-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+                    </div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" data-i18n="client.client-form.refresh-tokens">Refresh Tokens</label>
+                <div class="controls">
+                    <div>
+                        <input type="checkbox" id="allowRefresh" <%-(client.allowRefresh == true ? 'checked' : '')%>>
+                        <label for="allowRefresh" class="checkbox" data-i18n="client.client-form.refresh-tokens-issued">Refresh tokens are issued for this client</label>
+	                    <p class="help-block" data-i18n="client.client-form.refresh-tokens-issued-help">This will add the offline_access scope to the client's scopes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group" id="refreshTokenValidityTime">
+                <div class="controls">
+					<div>
+                        <input type="checkbox" id="reuseRefreshToken" <%-(client.reuseRefreshToken == true ? 'checked' : '')%>>
+                        <label for="reuseRefreshToken" class="checkbox" data-i18n="client.client-form.refresh-tokens-reused">Refresh tokens for this client are re-used</label>
+					</div>
+					<div>
+                        <input type="checkbox" id="clearAccessTokensOnRefresh" <%-(client.clearAccessTokensOnRefresh == true ? 'checked' : '')%>>
+                        <label for="clearAccessTokensOnRefresh" class="checkbox" data-i18n="client.client-form.clear-access-tokens">Active access tokens are revoked when the refresh token is used</label>
+					</div>
+					<div>
+                        <input type="checkbox" id="disableRefreshTokenTimeout" <%-(client.refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
+                        <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
+					</div>
+                    <div>
+                        <input type="text" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : client.refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
+						<select id="refresh-token-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+					</div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="deviceCodeValidityTime">
+                <label class="control-label" data-i18n="client.client-form.device-code-timeout">Device Code Timeout</label>
+                <div class="controls">
+                    <div>
+                        <input type="text" class="" value="<%-(client.deviceCodeValiditySeconds == null ? '' : client.deviceCodeValiditySeconds)%>" id="device-code-timeout-time" size="16" style="width:8em;">
+						<select id="device-code-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+                    </div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
+	</div>
+
+	<div class="tab-pane" id="client-crypto-tab">
+            <div class="control-group" id="requestObjectSigningAlg">
+                <label class="control-label" data-i18n="client.client-form.request-object-signing-algorithm">Request Object Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.requestObjectSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.requestObjectSigningAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.requestObjectSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.requestObjectSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.requestObjectSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.requestObjectSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.requestObjectSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.requestObjectSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.requestObjectSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.requestObjectSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.requestObjectSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.requestObjectSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.requestObjectSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.requestObjectSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+            <div class="control-group" id="userInfoSignedResponseAlg">
+                <label class="control-label" data-i18n="client.client-form.user-info-signing-algorithm">User Info Endpoint Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.userInfoSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.userInfoSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.userInfoSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.userInfoSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.userInfoSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group" id="userInfoEncryptedResponseAlg">
+                <label class="control-label" data-i18n="client.client-form.user-info-crypto-algorithm">User Info Endpoint Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.userInfoEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.userInfoEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="RSA1_5" <%-client.userInfoEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%-client.userInfoEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%-client.userInfoEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">AES Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%-client.userInfoEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%-client.userInfoEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="userInfoEncryptedResponseEnc">
+                <label class="control-label" data-i18n="client.client-form.user-info-crypto-method">User Info Endpoint Encryption Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.userInfoEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.userInfoEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="A128CBC+HS256" <%-client.userInfoEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%-client.userInfoEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%-client.userInfoEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%-client.userInfoEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
+            <div class="control-group" id="idTokenSignedResponseAlg">
+                <label class="control-label" data-i18n="client.client-form.id-token-signing-algorithm">ID Token Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.idTokenSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.idTokenSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.idTokenSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.idTokenSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.idTokenSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.idTokenSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.idTokenSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.idTokenSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.idTokenSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.idTokenSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.idTokenSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.idTokenSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.idTokenSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.idTokenSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group" id="idTokenEncryptedResponseAlg">
+                <label class="control-label" data-i18n="client.client-form.id-token-crypto-algorithm">ID Token Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.idTokenEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.idTokenEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="RSA1_5" <%-client.idTokenEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%-client.idTokenEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%-client.idTokenEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%-client.idTokenEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%-client.idTokenEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="idTokenEncryptedResponseEnc">
+                <label class="control-label" data-i18n="client.client-form.id-token-crypto-method">ID Token Encryption Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.idTokenEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.idTokenEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="A128CBC+HS256" <%-client.idTokenEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%-client.idTokenEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%-client.idTokenEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%-client.idTokenEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
+            <div class="control-group" id="codeChallengeMethod">
+                <label class="control-label" data-i18n="client.client-form.code-challenge-method">Proof Key for Code Exchange (PKCE) Code Challenge Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.codeChallengeMethod == null ? 'selected ' : ''%> data-i18n="client.client-form.code-challenge-none">No code challenge</option>
+						<option value="plain" <%-client.codeChallengeMethod == "plain" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-plain">Plain code challenge</option>
+						<option value="S256" <%-client.codeChallengeMethod == "S256" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-s256">SHA-256 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+	</div>
+
+	<div class="tab-pane" id="client-other-tab">
+
+			<div class="control-group" id="initiateLoginUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.initiate-login">Initiate Login</span></label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.initiateLoginUri ? client.initiateLoginUri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.initiate-login-help">URL to initiate login on the client</p>
+				</div>
+			</div>
+
+            <div class="control-group" id="claimsRedirectUris">
+                <label class="control-label" data-i18n="client.client-form.claims-redirect-uris">Claims Redirect URI(s)</label>
+                <div class="controls">
+                </div>
+            </div>
+
+			<div class="control-group" id="postLogoutRedirectUris">
+				<label class="control-label"><span data-i18n="client.client-form.post-logout">Post-Logout Redirect</span></label>
+				<div class="controls">
+				</div>
+			</div>
+
+
+            <div class="control-group" id="requireAuthTime">
+                <label class="control-label" data-i18n="client.client-form.require-auth-time">Require Authentication Time</label>
+                <div class="controls">
+                    <div>
+                        <input type="checkbox" <%-(client.requireAuthTime == true ? 'checked' : '')%>/>
+                        <label class="checkbox" data-i18n="client.client-form.require-auth-time-label">Always require that the auth_time claim be sent in the id token</label>
+                    </div>
+                </div>
+            </div>
+
+			<div class="control-group" id="defaultMaxAge">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.max-age">Default Max Age</span></label>
+				<div class="controls">
+					<input placeholder="" value="<%-client.defaultMaxAge ? client.defaultMaxAge : ''%>" maxlength="10" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.max-age-help">Default maximum session age before re-prompting</p>
+				</div>
+			</div>
+
+            <div class="control-group" id="requestUris">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.request-uri">Request URIs</span></label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="defaultAcrValues">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.acr-values">Default ACR Values</span></label>
+                <div class="controls">
+                </div>
+            </div>			
+
+			<div class="control-group" id="applicationType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
+				<div class="controls">
+                    <div>
+                    <input id="app-type-native" type="radio" name="applicationType" value="NATIVE" <%-(client.applicationType == 'NATIVE' ? 'checked' : '')%>>
+                    <label for="app-type-native" class="radio inline" data-i18n="client.client-form.type-native">Native</label>
+                    <input id="app-type-web" type="radio" name="applicationType" value="WEB" <%-(client.applicationType == 'WEB' ? 'checked' : '')%>>
+                    <label for="app-type-web" class="radio inline" data-i18n="client.client-form.type-web">Web</label>
+                    </div>
+				</div>
+			</div>
+			
+ 	</div>
+
+
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>
+
+<script type="text/html" id="tmpl-client-saved">
+
+	<div>
+		<strong><span data-i18n="client.client-form.id">ID:</span></strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
+	</div>
+	<% if (secretChanged) { %>
+	<div>
+		<strong><span data-i18n="client.client-form.saved.secret">Secret:</span></strong> <button class="btn btn-mini" id="clientSaveShow" data-i18n="client.client-form.saved.show-secret">Show Secret</button>
+		<input type="text" id="savedClientSecret" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientSecret %>" />
+	</div>
+	<% } else if (clientSecret == null || clientSecret == '') { %>
+	<div>
+		<i><span data-i18n="client.client-form.saved.no-secret">No client secret</span></i>
+	</div>
+	<% } else { %>
+	<div>
+		<strong><span data-i18n="client.client-form.saved.secret">Secret:</span></strong> <i><span data-i18n="client.client-form.saved.unchanged">unchanged</span></i>
+	</div>
+	<% } %>
+
+</script>
+
+<script type="text/html" id="tmpl-client-registration-token">
+
+	<div>
+		<strong><span data-i18n="client.client-form.id">ID:</span></strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
+
+	</div>
+	<div>
+		<strong><span data-i18n="client.client-form.registration-token">Registration Token:</span></strong>
+		<input type="text" id="registrationToken" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- registrationToken %>" />
+	</div>
+
+	<div>
+		<button class="btn btn-warning" id="rotate-token"><i class="icon-retweet icon-white"></i> <span data-i18n="client.client-form.rotate-registration-token">Rotate registration token</span></button>
+	</div>
+
+</script>
+
+<script type="text/html" id="tmpl-client-count">
+		<% if (count == 0) { %>
+			<span class="label label-important">0</span>
+		<% } else if (count != null) { %>
+			<span class="label label-info"><%- count %></span>
+		<% } else { %>
+			<span class="label label-warning">?</span>
+		<% } %>
+</script>

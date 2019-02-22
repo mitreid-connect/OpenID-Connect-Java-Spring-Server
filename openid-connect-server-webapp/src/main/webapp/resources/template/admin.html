@@ -1,0 +1,160 @@
+<!-- 
+ Copyright 2018 The MIT Internet Trust Consortium
+ 
+ Portions copyright 2011-2013 The MITRE Corporation
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!-- breadcrumbs -->
+
+<script type="text/html" id="tmpl-breadcrumbs">
+    <% if (active == false) { %>
+    <li><a href="<%-href%>"><%-text%></a> <span class="divider">/</span></li>
+    <% } else { %>
+    <li class="active"><%-text%></li>
+    <% } %>
+</script>
+
+<!-- list widget -->
+
+<script type="text/html" id="tmpl-list-widget-child">
+    <td>
+		<span class="item-short"><%-(model.item.length > 30) ? model.item.substr(0,27) + '...' : model.item %></span>
+		<input type="text" readonly style="cursor: text" class="item-full input-xxlarge" value="<%- model.item %>" />
+	</td>
+   	<td>
+		<% if (!opt.toggle) { %>
+			<a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a>
+		<% } else { %>
+			<input class="checkbox checkbox-list-item" type="checkbox" <%- opt.checked ? 'checked="checked"' : '' %> />
+		<% } %>
+	</td>
+</script>
+
+<script type="text/html" id="tmpl-list-widget-child-empty">
+	<tr class="info">
+		<td colspan="2" data-i18n="admin.list-widget.empty">There are no items in this list.</td>
+	</tr>
+</script>
+
+<script type="text/html" id="tmpl-list-widget">
+<div class="control-group">
+	<table class="table table-condensed table-hover table-striped span4">
+	    <thead>
+		    <tr>
+		        <th>
+            		<input type="text" value="" placeholder="<%-(placeholder) ? placeholder : ''%>"></th>
+        		<th><a class="btn btn-small btn-add-list-item" href="#"><i class="icon-plus-sign"></i></a></th>
+		    </tr>
+    	</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+<% if (typeof(helpBlockText) !== 'undefined') { %>
+	<p class="help-block"><%-helpBlockText%></p>
+<% } %>
+</script>
+
+
+<!-- blacklist form -->
+<script type="text/html" id="tmpl-blacklist-form">
+
+    <form class="form-horizontal">
+        <fieldset>
+            <div class="well well-small">
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+            </div>
+
+            <div class="control-group" id="blacklist">
+                <label class="control-label" data-i18n="admin.blacklist-form.blacklisted-uris">Blacklisted URIs</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="well well-small">
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>
+
+<!-- user profile -->
+<script type="text/html" id="tmpl-user-profile">
+
+	<div data-i18n="admin.user-profile.text">Your user profile has the following information:</div>
+
+    <dl class="dl-horizontal user-profile">
+		<dt><span class="text-info" data-i18n="admin.user-profile.claim">Claim name:</span></dt>
+		<dd><span class="text-info" data-i18n="admin.user-profile.value">Claim value:</span></dt>
+    </dl>
+
+</script>
+
+<script type="text/html" id="tmpl-user-profile-element">
+
+            <dt><% if (typeof(category) !== 'undefined') { %>
+				<small class="muted"><%- category %>.</small><% } %><%- key %></dt>
+            <dd><%- value %></dd>
+
+</script>
+
+<!-- error box -->
+
+<script type="text/html" id="tmpl-error-box">
+
+<p>
+	<span data-i18n="error.message">There was an error processing your request.</span>
+
+<% if (response.responseJSON) { %>
+	<span data-i18n="error.server-message">The server said: </span><span class="text-error"><%- response.responseJSON.error_description %></span>
+<% } %>
+
+</p>
+
+<p>
+
+<% if (message.message) { %>
+	<span class="text-info"><%- message.message %></span>
+<% } %>
+
+</p>
+	
+<% if (response.status == 401) { %>
+	<div>
+		<span data-i18n="error.reload">Additionally, it looks like you're not logged in. Reload the page to try again. You will likely lose any unsaved work.</span>
+		<p>
+			<button class="btn btn-inverse btn-mini page-reload"><i class="icon-refresh icon-white"></i> <span data-i18n="error.reload-button">Reload</span></button>
+		</p>
+	</div>
+<% } %>
+
+</script>
+
+<script type="text/html" id="tmpl-error-header">
+
+	<span class="label label-inverse"><%- response.status %>: <%- response.statusText %></span>
+			
+	<b>
+	<% if (response.responseJSON) { %>
+		<span data-i18n="error.header-with-message">Error: </span><%- response.responseJSON.error %>
+	<% } else { %>
+		<span data-i18n="error.header">Error</span>
+	<% } %>
+	</b>
+
+
+</script>

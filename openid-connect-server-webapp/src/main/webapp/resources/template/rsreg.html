@@ -1,0 +1,305 @@
+<!-- 
+ Copyright 2018 The MIT Internet Trust Consortium
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- self-service resource registration -->
+
+<script type="text/html" id="tmpl-rsreg">
+
+<div class="row-fluid">
+
+<div class="span6 well">
+	<h2 data-i18n="rsreg.new-client">Register a new resource</h2>
+	<p data-i18n="rsreg.new-client-help">Use this form to register a new protected with the authorization server. You will be given a client ID and a registration access token to manage your resource.</p>
+	<button class="btn btn-success" id="newreg"><i class="icon-plus icon-white"></i> <span data-i18n="rsreg.new-client-button">New Resource</span></button>
+</div>
+<div class="span6 well">
+	<h2 data-i18n="rsreg.edit-existing">Edit an existing protected resource</h2>
+	<p class="help-block" data-i18n="rsreg.edit-existing-help">Use this form to edit a previously-registered resource. Paste in your client ID and registration access token to access the resource.</p>
+
+	<input type="text" id="clientId" placeholder="Enter Client ID" data-i18n="[placeholder]rsreg.client-id-placeholder"> 
+	<input type="text" id="regtoken" placeholder="Enter Registration Access Token" data-i18n="[placeholder]rsreg.regtoken-placeholder"> 
+	<button class="btn btn-info" id="editreg"><i class="icon-edit icon-white"></i> <span data-i18n="rsreg.edit-existing-button">Edit Resource</span></button>
+</div>
+
+</script>
+
+
+<script type="text/html" id="tmpl-rsreg-resource-form">
+
+    <% if (client.client_id == null) { %>
+        <h1 data-i18n="rsreg.new"></h1>
+    <% } else { %>
+        <h1 data-i18n="rsreg.edit"></h1>
+    <% } %>
+
+
+    <form class="form-horizontal tabbable">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+                <% if (client.client_id) { %>
+                <button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+                <% } %>
+            </div>
+
+				<ul class="nav nav-tabs">
+                    <li class="active"><a data-target="#resource-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
+                    <li><a data-target="#resource-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
+                    <li><a data-target="#resource-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
+                    <li><a data-target="#resource-json-tab" data-toggle="tab" href="#">JSON</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="resource-main-tab">
+
+			<% if (client.client_id) { %>
+			<div class="control-group">
+				<div class="controls">
+					<div class="alert alert-error" data-i18n="[html]rsreg.warning">
+						<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. 
+						If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration
+						records and you will need to register a new client.
+					</div>
+				</div>
+
+			</div>
+			<% } %>
+		<div class="well">
+            <div class="control-group" id="clientId">
+                <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
+                <div class="controls">
+                <% if (client.client_id) { %>
+                    <pre><%-client.client_id%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
+                </div>
+            </div>
+
+
+			<div class="control-group" id="requireClientSecret">
+				<label class="control-label">Client Secret</label>
+    	        <div class="control-group">
+            	    <div class="controls">
+						<% if (client.client_id) { %>
+							<% if (client.client_secret) { %>
+								<pre><%- client.client_secret %></pre>
+							<% } else { %>
+								<% if (client.token_endpoint_auth_method == 'none') { %>
+									<pre>None (public client)</pre>
+								<% } else if (client.token_endpoint_auth_method == 'private_key_jwt') { %>
+									<pre>None (private key authentication)</pre>
+								<% } else { %>
+									<p class="text-error"><b>Unknown error:</b> no client secret and unknown auth method.</p>
+								<% } %>
+							<% } %>
+						<% } else { %>
+                            <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+						<% } %>
+	                </div>
+    	        </div>
+
+			</div>
+
+            <div class="control-group" id="clientConfigurationUri">
+                <label class="control-label" data-i18n="dynreg.configuration-url">Client Configuration URL</label>
+                <div class="controls">
+                <% if (client.registration_client_uri) { %>
+                    <pre><%-client.registration_client_uri%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
+                </div>
+            </div>
+
+            <div class="control-group" id="registrationAccessToken">
+                <label class="control-label" data-i18n="client.client-form.registration-access-token">Registration Access Token</label>
+                <div class="controls">
+                <% if (client.registration_access_token) { %>
+                    <pre><%-client.registration_access_token%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
+                </div>
+            </div>
+
+		</div>
+
+            <div class="control-group" id="clientName">
+                <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
+                <div class="controls">
+                    <input value="<%-client.client_name ? client.client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
+                </div>
+            </div>
+
+			<div class="control-group" id="logoUri">
+                <label class="control-label" data-i18n="client.client-form.logo">Logo</label>
+                <div class="controls">
+                    <input placeholder="https://" value="<%-client.logo_uri ? client.logo_uri : ''%>" maxlength="1000" type="text" class=""/>
+                    <p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
+                </div>
+			</div>
+
+			<div class="control-group" id="logoBlock">
+				<div class="controls">
+					<img src="resources/images/logo_placeholder.gif" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
+				</div>
+			</div>
+
+			<div class="control-group" id="tosUri">
+                <label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
+                <div class="controls">
+                    <input placeholder="https://" value="<%-client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
+                    <p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
+                </div>
+			</div>
+
+			<div class="control-group" id="policyUri">
+                <label class="control-label" data-i18n="client.client-form.policy">Policy</label>
+                <div class="controls">
+                    <input placeholder="https://" value="<%-client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
+                    <p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
+                </div>
+			</div>
+
+			<div class="control-group" id="clientUri">
+                <label class="control-label" data-i18n="client.client-form.home">Home Page</label>
+                <div class="controls">
+                    <input placeholder="https://" value="<%-client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
+                    <p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
+                </div>
+			</div>
+
+			<div class="control-group" id="applicationType">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
+                <div class="controls">
+                    <label class="radio inline">
+                        <input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-native">Native</span>
+                    </label>
+                    <label class="radio inline">
+                        <input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-web">Web</span>
+                    </label>
+                </div>
+			</div>
+			
+            <div class="control-group" id="contacts">
+                <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
+                <div class="controls">
+                </div>
+            </div>
+
+	</div>
+	
+	<div class="tab-pane" id="resource-access-tab">
+
+            <div class="control-group" id="scope">
+                <label class="control-label" data-i18n="common.scope">Scope</label>
+                <div class="controls">
+                </div>
+            </div>
+	</div>
+	
+	<div class="tab-pane" id="resource-secret-tab">
+
+			<div class="control-group" id="tokenEndpointAuthMethod">
+                <label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
+                <div class="controls">
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="client_secret_basic" <%-(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodPost" name="tokenEndpointAuthMethod" value="client_secret_post" <%-(client.token_endpoint_auth_method == 'client_secret_post' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodPost" class="radio" data-i18n="client.client-form.secret-post">Client Secret over HTTP POST</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%-(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodSymm" class="radio" data-i18n="client.client-form.secret-symmetric-jwt">Client Secret via symmetrically-signed JWT assertion</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodNone" name="tokenEndpointAuthMethod" value="none" <%-(client.token_endpoint_auth_method == 'none' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodNone" class="radio" data-i18n="client.client-form.secret-none">No authentication</label>
+                    </div>
+                </div>
+			</div>
+
+            <div class="control-group" id="tokenEndpointAuthSigningAlg">
+                <label class="control-label" data-i18n="client.client-form.token-signing-algorithm">Token Endpoint Authentication Signing Algorithm</label>
+                <div class="controls">
+                    <select>
+                        <option value="default" <%-client.token_endpoint_auth_signing_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.any">Any allowed</option>
+                        <option value="HS256" <%-client.token_endpoint_auth_signing_alg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hmac-256">HMAC using SHA-256 hash algorithm</option>
+                        <option value="HS384" <%-client.token_endpoint_auth_signing_alg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hmac-384">HMAC using SHA-384 hash algorithm</option>
+                        <option value="HS512" <%-client.token_endpoint_auth_signing_alg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hmac-512">HMAC using SHA-512 hash algorithm</option>
+                        <option value="RS256" <%-client.token_endpoint_auth_signing_alg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rsassa-256">RSASSA using SHA-256 hash algorithm</option>
+                        <option value="RS384" <%-client.token_endpoint_auth_signing_alg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rsassa-384">RSASSA using SHA-384 hash algorithm</option>
+                        <option value="RS512" <%-client.token_endpoint_auth_signing_alg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rsassa-512">RSASSA using SHA-512 hash algorithm</option>
+                        <option value="ES256" <%-client.token_endpoint_auth_signing_alg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ecdsa-256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+                        <option value="ES384" <%-client.token_endpoint_auth_signing_alg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ecdsa-384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+                        <option value="ES512" <%-client.token_endpoint_auth_signing_alg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ecdsa-512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+                    </select>
+                </div>
+            </div>
+
+			<div class="control-group">
+				<label class="control-label" data-i18n="client.client-form.jwk-set">Public Key Set</label>
+				<div class="controls" id="jwkSelector">
+					<div>
+                        <input id="jwkstype-uri" type="radio" name="jwksType" value="URI" <%-(client.jwksType == 'URI' ? 'checked' : '')%>>
+                        <label for="jwkstype-uri" class="radio inline" data-i18n="client.client-form.jwks-by-uri">By URI</label>
+                        <input id="jwkstype-value" type="radio" name="jwksType" value="VAL" <%-(client.jwksType == 'VAL' ? 'checked' : '')%>>
+                        <label for="jwkstype-value" class="radio inline" data-i18n="client.client-form.jwks-by-value">By Value</label>
+					</div>
+				</div>
+				<div class="controls" id="jwksUri">
+					<input placeholder="https://" value="<%-client.jwks_uri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set (must be reachable by the server)</p>
+				</div>
+				<div class="controls" id="jwks">
+					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks != null ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-value-help">JSON Web Key set</p>
+				</div>
+			</div>
+
+	</div>
+
+	<div class="tab-pane" id="resource-json-tab">
+
+<pre>
+<%- JSON.stringify(client, undefined, 2) %>
+</pre>
+
+	</div>
+
+
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+                <% if (client.client_id) { %>
+                <button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+                <% } %>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>

@@ -1,0 +1,436 @@
+{
+    "admin": {
+        "blacklist": "Svartlista",
+        "blacklist-form": {
+            "blacklisted-uris": "Svarlistade länkar"
+        },
+        "home": "Hem",
+        "manage-blacklist": "Administrera svartlistade klienter",
+        "list-widget": {
+            "empty": "Det finns inget innehåll i denna lista."
+        },
+        "self-service-client": "Self-service klientregistrering",
+        "self-service-resource": "Self-service registrering av skyddad resurs",
+        "user-profile": {
+            "claim": "Claim-namn:",
+            "show": "Visa profilinformation",
+            "text": "Din användarprofil innehåller följande information:",
+            "value": "Claim-värde:"
+        }
+    },
+    "client": {
+        "client-form": {
+            "access": "Behörigheter",
+            "access-token-timeout": "Livslängd för access-token",
+            "access-token-no-timeout": "Access-token har oändlig livslängd",
+            "acr-values": "Default ACR-värden",
+            "acr-values-placeholder": "nytt ACR-värde",
+            "token-timeout-help": "Ange tiden i sekunder, timmar eller minuter.",
+            "allow-introspection": "Tillåt anrop till introspektionsfunktionen?",
+            "authorization-code": "auktoriseringskod",
+            "authentication-method": "Autentiseringsmetod för att hämta ut nycklar (token endpoint)",
+            "client-credentials": "klienthemligheter",
+            "client-description": "Beskrivning",
+            "client-description-help": "Läsbar och begriplig text som beskriver klienten",
+            "client-description-placeholder": "Mata in en beskrivning",
+            "client-id": "Klient-ID",
+            "client-id-help": "Unik identifierare. Om du lämnar detta fält tomt kommer ett nytt ID genereras automatiskt",
+            "client-id-placeholder": "Skriv någonting",
+            "client-name": "Klientnamn",
+            "client-name-help": "Läsbart och begripligt namn på klienten",
+            "client-name-placeholder": "Skriv någonting",
+            "client-password": "lösenord",
+            "client-secret": "Klienthemlighet",
+            "client-secret-placeholder": "Mata in en hemlighet",
+            "contacts": "Kontakter",
+            "contacts-help": "Lista med e-postadresser till administratörer av denna klient.",
+            "contacts-placeholder": "ny kontakt",
+            "credentials": "Hemligheter",
+            "crypto": {
+                "a128cbc-hs256": "Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)",
+                "a128gcm": "AES GCM using 128 bit keys",
+                "a128kw": "AES Key Wrap algoritm med 128-bitars nycklar",
+                "a256cbc-hs512": "Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)",
+                "a256gcm": "AES GCM using 256 bit keys",
+                "a256kw": "AES Key Wrap algoritm med 256-bitars nycklar",
+                "default": "Använd serverns standard-algoritm",
+                "dir": "Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step",
+                "ecdh-es": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key",
+                "ecdh-es-a128kw": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function",
+                "ecdh-es-a256kw": "Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function",
+                "none": "Ingen kryptering",
+                "rsa-oaep": "RSAES med Optimal Asymmetric Encryption Padding (OAEP)",
+                "rsa1-5": "RSAES-PKCS1-V1_5"
+            },
+            "cryptography": "Kryptografi",
+            "display-secret": "Visa/editera klientens hemlighet:",
+            "edit": "Ändra klient",
+            "generate-new-secret": "Generera en ny klienthemlighet?",
+            "generate-new-secret-help": "En ny hemlighet kommer att genereras när du klickar på 'Save'",
+            "generate-on-save": "Genereras vid sparande",
+            "grant-types": "Grant-typer",
+            "home": "Hemsida",
+            "home-help": "Länk till tjänstens hemsida. Den visas på bekräftelsesidan.",
+            "hours": "timmar",
+            "id": "ID:",
+            "id-token-crypto-algorithm": "Krypteringsalgoritm för ID-token",
+            "id-token-crypto-method": "Krypteringsmetod för ID-token",
+            "id-token-signing-algorithm": "Signeringsalgoritm för ID-token",
+            "id-token-timeout": "Livslängd för ID-token",
+            "implicit": "implicit",
+            "intiate-login": "Initiera inloggning",
+             "intiate-login-help": "Länk för att initiera inloggning i klienten",
+            "introspection": "Introspektion",
+            "jwk-set": "JWK Set",
+            "jwk-set-help": "Länk till klientens JSON Webb-nyckel-set",
+            "logo": "Logotyp",
+            "logo-help": "Länk till en logotyp. Den visas på bekräftelsesidan.",
+            "main": "Basinformation",
+            "max-age": "Max sessions-längd",
+            "max-age-help": "Default maximal sessions-längd innan användaren tillfrågas igen",
+            "minutes": "minuter",
+            "new": "Ny klient",
+            "other": "Övrigt",
+            "pairwise": "Parvis",
+            "policy": "Policy-information",
+            "policy-help": "Länk till en sida som beskriver tjänstens policy. Den visas på bekräftelsesidan.",
+            "post-logout": "Omdirigering efter utloggning",
+            "post-logout-help": "Länk att omdirigera användaren till efter en utloggning",
+            "public": "Publik",
+            "redelegation": "redelegation",
+            "redirect-uris": "Omdirigieringslänkar",
+            "refresh": "refresh",
+            "refresh-tokens": "Refresh-tokens",
+            "refresh-tokens-issued": "Refresh-tokens delas ut till denna klient",
+            "refresh-tokens-reused": "Refresh-tokens återanvänds för denna klient",
+            "refresh-tokens-no-expire": "Refresh-tokens har oändlig livslängd",
+            "registered": "Registrerad",
+            "registration-token": "Registerings-token:",
+            "registration-access-token": "Registrerings-access-token",
+            "registration-token-error": "Något problem uppstod när denna klients registrerings-access-token skulle hämtas.",
+            "request-object-signing-algorithm": "Signeringsalgoritm för request-object ",
+            "request-uri": "Request-länkar",
+            "require-auth-time": "Kräv authentication-time",
+            "require-auth-time-label": "Kräv att auth_time-claim alltid skickas med id_token",
+            "response-types": "Svarstyper",
+            "rotate-registration-token": "Rotera registerings-token",
+            "rotate-registration-token-confirm": "Är du säker på att du vill rotera denna klients registerings-token?",
+            "rotate-registration-token-error": "Något problem uppstod när denna klients registrerings-token skulle roteras.",
+            "saved": {
+                "no-secret": "Ingen klienthemlighet",
+                "saved": "Klienten är sparad",
+                "secret": "Hemlighet:",
+                "show-secret": "Visa hemlighet",
+                "unchanged": "oförändrad"
+            },
+            "scope-placeholder": "new scope",
+            "seconds": "sekunder",
+            "secret-asymmetric-jwt": "Asymmetriskt signerad JWT assertion",
+            "secret-http": "Klienthemlighet över HTTP Basic",
+            "secret-none": "Ingen autentisering",
+            "secret-post": "Klienthemlighet över HTTP POST",
+            "secret-symmetric-jwt": "Klienthemlighet via symmetriskt signerad JWT assertion",
+            "sector-identifier": "Sector Identifier-länk",
+            "sector-identifier-help": "Sector Identifier för JavaScript.",
+            "signing": {
+                "any": "Valfri tillåten",
+                "default": "Använd serverns standard-algoritm",
+                "es256": "ECDSA med P-256-kurva och SHA-256 hash-algoritm",
+                "es384": "ECDSA med P-384-kurva och SHA-384 hash-algoritm",
+                "es512": "ECDSA med P-512-kurva och SHA-512 hash-algoritm",
+                "hs256": "HMAC med SHA-256 hash-algoritm",
+                "hs384": "HMAC med SHA-384 hash-algoritm",
+                "hs512": "HMAC med SHA-512 hash-algoritm",
+                "none": "Ingen digital signatur",
+                "rs256": "RSASSA med SHA-256 hash-algoritm",
+                "rs384": "RSASSA med SHA-384 hash-algoritm",
+                "rs512": "RSASSA med SHA-512 hash-algoritm"
+            },
+            "subject-type": "Subjekttyp",
+            "terms": "Villkor för tjänsten",
+            "terms-help": "Länk till en sida som beskriver villkor för tjänsten. Den visas på bekräftelsesidan.",
+            "token-signing-algorithm": "Signeringsalgoritm för vald autentiseringsmetod",
+            "token-timeout-help": "Ange tiden i sekunder, timmar eller minuter.",
+            "tokens": "Nycklar",
+            "type": "Typ av tjänst",
+            "type-native": "App",
+            "type-web": "Webb",
+            "user-info-crypto-algorithm": "Krypteringsalgoritm för user-info",
+            "user-info-crypto-method": "Krypteringsmetod för user-info",
+            "user-info-signing-algorithm": "Signeringsalgoritm för user-info"
+        },
+        "client-table": {
+            "allow-introspection-tooltip": "Denna klient kan utföra token-introspektion",
+            "confirm": "Är du säker på att du vill ta bort denna klient?",
+            "dynamically-registered-tooltip": "Denna klient registrerades dynamiskt. Klicka för att se registrerings-access-token",
+            "match": {
+                "contacts": "kontakter",
+                "description": "beskrivning",
+                "homepage": "hemsida",
+                "id": "id",
+                "logo": "logotyp",
+                "name": "namn",
+                "policy": "policy",
+                "redirect": "omdirigeringslänk",
+                "scope": "scope",
+                "terms": "villkor för tjänsten"
+            },
+            "matched-search": "Matchade sökning:",
+            "new": "Ny klient",
+            "no-clients": "Det finns inga klienter registrerade.",
+            "no-matches": "Det finns inga klienter som matchar din sökning.",
+            "no-redirect": "REDIRECT-LÄNK SAKNAS",
+            "registered": "Registrerad",
+            "search": "Sök...",
+            "whitelist": "Vitlista"
+        },
+        "manage": "Administrera klienter",
+        "more-info": {
+            "contacts": "Administrativ kontakt:",
+            "home": "Webbplats:",
+            "more": "mer information",
+            "policy": "Policy:",
+            "terms": "Villkor för tjänsten"
+        },
+        "newClient": "Ny klient"
+    },
+    "common": {
+        "cancel": "Avbryt",
+        "client": "Klient",
+        "clients": "Klienter",
+        "close": "Stäng",
+        "delete": "Ta bort",
+        "description": "Beskrivning",
+        "dynamically-registered": "Denna klient registrerades dynamiskt",
+        "edit": "Ändra",
+        "expires": "Går ut:",
+        "information": "Information",
+        "new": "Ny",
+        "not-yet-implemented": "Ännu inte implementerad",
+        "not-yet-implemented-content": "Värdet i detta fält kommer att sparas i databasen, men servern gör för närvarande ingenting med det. Framtida versioner av server-biblioteket kommer att använda detta fält.",
+        "refresh": "Uppdatera",
+        "revoke": "Återkalla",
+        "save": "Spara",
+        "scopes": "Scope",
+        "statistics": "Statistik"
+    },
+    "dynreg": {
+        "client-id-placeholder": "Mata in klient-ID",
+        "configuration-url": "Konfigurationslänk för klienten",
+        "edit-dynamically-registered": "Ändra en dynamiskt registrerad klient",
+        "edit-existing": "Ändra en befintlig klient",
+        "edit-existing-help": "Klistra in ditt klient-ID och registrerings-access-token för att komma åt klienten.",
+        "invalid-access-token": "Ogiltig klient eller registration-access-token.",
+        "new-client": "Registrera en ny klient",
+        "or": " - ELLER - ",
+        "regtoken-placeholder": "Mata in registration-access-token",
+        "warning": "<strong>Varning!</strong> Du MÅSTE bevara <b>ditt klient-ID</b>, <b>din klienthemlighet (om sådan tillhandahålls)</b> och <b>din registrerings-access-token</b>. Om du tappar bort ditt klient-ID eller regstrerings-access-token kommer du inte längre att ha tillgång till din klients registerinformation och måste då skapa en ny klient",
+        "will-be-generated": "Kommer att genereras"
+    },
+    "grant": {
+        "manage-approved-sites": "Administrera godkända webbplatser",
+        "refresh": "Uppdatera",
+        "grant-table": {
+            "active-tokens": "Antal nu aktiva åtkomst-tokens",
+            "application": "Webbplats",
+            "approved-sites": "Godkända webbplatser",
+            "authorized": "Auktoriserad:",
+            "dynamically-registered": "Denna klient registrerades dynamiskt",
+            "last-accessed": "Senast använd:",
+            "never": "Aldrig",
+            "no-sites": "Du har inte godkänt någon webbplats.",
+            "no-whitelisted": "Du har inte besökt några vitlistade webbplatser.",
+            "pre-approved": "Detta är webbplatser som är godkända i förväg av en administratör.",
+            "text": "Det här är webbplatser som du själv har godkänt. Om en av dessa webbplatser begär samma information igen blir det medgivet utan att du blir tillfrågad.",
+            "unknown": "Okänt",
+            "whitelist-note": "<b>OBS:</b> Om du återkallar dem kommer de automatiskt att godkännas igen nästa gång du besöker dem utan att du blir tillfrågad.",
+            "whitelisted-site": "Denna webbplats är vitlistad av en administratör",
+            "whitelisted-sites": "Vitlistade webbplatser"
+        }
+    },
+    "rsreg": {
+        "resource-id-placeholder": "Mata in resurs-ID",
+        "configuration-url": "Konfigurationslänk för resursen",
+        "edit-existing": "Ändra en befintlig resurs",
+        "edit-existing-help": "Klistra in ditt resurs-ID och registrerings-access-token för att komma åt resursens egenskaper.",
+        "invalid-access-token": "Ogiltig resurs eller registration-access-token.",
+        "new": "Registrera en ny resurs",
+        "edit": "Ändra en befintlig resurs",
+        "new-resource": "Registrera en ny resurs",
+        "regtoken-placeholder": "Mata in registration-access-token",
+        "warning": "<strong>Varning!</strong> Du MÅSTE bevara <b>ditt klient-ID</b>, <b>din klienthemlighet (om sådan tillhandahålls)</b> och <b>din registrerings-access-token</b>. Om du tappar bort ditt klient-ID eller regstrerings-access-token kommer du inte längre att ha tillgång till din klients registerinformation och måste då skapa en ny klient"
+    },
+    "scope": {
+        "manage": "Administrera system-scope",
+        "scope-list": {
+            "no-scopes": "INGA SCOPE"
+        },
+        "system-scope-form": {
+            "default": "default scope",
+            "default-help": "Ny klienter får detta scope per default?",
+            "description-help": "En begriplig, läsbar beskrivning",
+            "description-placeholder": "Mata in en beskrivning",
+            "dynamic": "tillåt dynamisk registrering",
+            "dynamic-help": "Tillåt dynamiskt registrerade klienter att begära detta scope?",
+            "edit": "Ändra scope",
+            "icon": "Ikon",
+            "new": "Nytt scope",
+            "select-icon": "Välj en ikon",
+            "structured": "är ett scope med struktur",
+            "structured-help": "Har detta scope strukturerade värden som <code>base:extension</code>?",
+            "structured-param-help": "Läsbar och begriplig beskrivning av den strukturerade parametern",
+            "value": "Scope-värde",
+            "value-help": "Ett ord utan mellanslag",
+            "value-placeholder": "scope"
+        },
+        "system-scope-table": {
+            "confirm": "Är du säker på att du vill ta bort detta scope? Klienter som har detta scope kommer att kunna fortsätta att begära det.",
+            "new": "Nytt scope",
+            "text": "Det finns inga system-scope definierade. Klienter kan ändå ha speciellt anpassade scope.",
+            "tooltip-dynamic": "Detta scope är tillgängligt för dynamiskt registrerade klienter"
+        }
+    },
+    "token": {
+        "manage": "Administrera aktiva tokens",
+        "token-table": {
+            "access-tokens": "Access-token",
+            "associated-id": "Denna access-token utfärdades med en tillhörande ID-token.",
+            "associated-refresh": "Denna access-token utfärdades med en tillhörande refresh-token.",
+            "click-to-display": "Klicka för att visa hela biljettvärdet",
+            "confirm": "Är du säker på att du vill återkalla denna biljett?",
+            "confirm-refresh": "Är du säker på att du vill återkalla denna refresh-token och de access-token som tillhör?",
+            "no-access": "Det finns inga aktuella access-tokens.",
+            "no-refresh": "Det finns inga aktiva refresh-tokens.",
+            "number-of-tokens": "Antal utfärdade access-tokens",
+            "refresh-tokens": "Refresh-token",
+            "text": "Biljetter för åtkomst (access-tokens) är vanligtvis kortlivade och ger klienter tillgång till specifika resurser. ID-tokens är speciella åtkomstbiljetter för att underlätta autentisering med OpenID Connect.",
+            "text-refresh": "Biljetter för förnyelse (refresh-tokens) är vanligtvis långlivade och ger klienter möjligheten att skaffa nya åtkomstbiljetter utan att involvera slutanvändaren.",
+            "token-info": "Biljettinformation"
+        }
+    },
+    "whitelist": {
+        "confirm": "Är du säker på att du vill ta bort den här klienten ifrån vitlistan?",
+        "edit": "Redigera vitlista",
+        "manage": "Administrera vitlistade webbplatser",
+        "new": "Ny vitlista",
+        "whitelist": "Vitlista",
+        "whitelist-form": {
+            "allowed-scopes": "Tillåtna scope",
+            "edit": "Ändra vitlistad webbplats",
+            "new": "Ny vitlistad webbplats"
+        },
+        "whitelist-table": {
+            "no-sites": "Det finns inga vitlistade webbplatser. Använd knappen <strong>vitlista</strong> på klientadminstrationssidan för att skapa en."
+        }
+    },
+	"copyright": "Levererat av <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2016 MITRE Corporation och MIT Internet Trust Consortium.</span>.",
+	"about": {
+		"title": "Om&nbsp;tjänsten",
+		"body": "\nDenna OpenID Connect-tjänst är baserad på öppen källkod ifrån projektet MITREid, skapat av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMer information om projektet kan finns i projektet \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect på GitHub</a>. \nDär kan du skicka in felrapporter, komma med återkoppling, eller till och med bidra med kodtillägg för ytterligare funktioner du skulle vilja ha."
+	},
+	"statistics": {
+		"title": "Statistik",
+		"number_users": "Antal användare: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+		"number_clients": "Auktoriserade klienter: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+		"number_approvals": "Godkända webbplatser: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+	},
+    "home": {
+		"title": "Hem",
+		"welcome": {
+			"title": "Välkommen!",
+			"body": "\nOpenID Connect är ett internet-kapabelt federerat identitetsprotokoll byggt ovanpå autentiseringsramverket OAuth2. \nOpenID Connect låter dig logga in på en webbplats med din identitet utan att avslöja dina inloggningshemligheter, som ett användarnamn och lösenord.</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">Lär dig mer &raquo;</a>"
+		},
+		"more": "Mer",
+		"about": {
+			"title": "Om&nbsp;tjänsten",
+			"body": "\nDenna OpenID Connect-tjänst är byggd från det öpnna källkodsprojektet MITREid, av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
+		},
+		"contact": {
+			"title": "Kontakt",
+			"body": "\nFör mer information eller användarstöd, kontakta administratörerna av detta system.</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">E-post &raquo;</a>"
+		},
+		"statistics": {
+			"title": "Nuvarande statistik",
+			"loading": "Laddar...",
+			"number_users": "Antal användare: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+			"number_clients": "Auktoriserade klienter: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+			"number_approvals": "Godkända webbplatser: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+		}
+    },
+	"contact": {
+		"title": "Kontakt",
+		"body": "\nFör att rapportera fel i själva programvaran MITREid Connect, använd \n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue tracker</a>. \nFör problem som är specifika för denna server, kontakta tjänstens administrator."
+	},
+	"topbar": {
+		"about": "Om&nbsp;tjänsten",
+		"contact": "Kontakt",
+		"statistics": "Statistik",
+		"home": "Hem",
+		"login": "Logga in",
+		"logout": "Logga ut"
+	},
+	"sidebar": {
+		"administrative": {
+			"title": "Administrativt",
+			"manage_clients": "Hantera klienter",
+			"whitelisted_clients": "Vitlistade klienter",
+			"blacklisted_clients": "Svartlistade klienter",
+			"system_scopes": "System-scope"
+		},
+		"personal": {
+			"title": "Personligt",
+			"approved_sites": "Hantera godkända platser",
+			"active_tokens": "Hantera aktiva biljetter",
+			"profile_information": "Visa profilinformation"
+		},
+		"developer": {
+			"title": "Utvecklare",
+			"client_registration": "Self-service klientregistering",
+			"resource_registration": "Self-service registrering av skyddad resurs"
+		}
+	},
+	"manage": {
+		"ok": "OK",
+		"loading": "Laddar",
+		"title": "Administrationsgränssnitt"
+	},
+    "approve": {
+    	"dynamically-registered-unknown": "(Okänt)",
+		"title": "Medge åtkomst",
+		"error": {
+			"not_granted": "Åtkomst kunde inte medges."
+		},
+		"required_for": "Åtkomst måste medges för",
+		"dynamically_registered": "Denna klient blev registrerad dynamiskt <span class=\"label label-info\" id=\"registrationTime\">{0}</span>.",
+		"caution": {
+			"title": "Försiktigt",
+			"message": {
+				"none": "Den har <span class=\"label label-important\">aldrig</span> tidigare blivit medgiven åtkomst.",
+				"singular": "Den har tidigare blivit medgiven åtkomst <span class=\"label label-warning\">{0}</span> gång.",
+				"plural": "Den har tidigare blivit medgiven åtkomst <span class=\"label\">{0}</span> gånger."
+			}
+		},
+		"more_information": "mer information",
+		"home_page": "Hemsida",
+		"policy": "Policy",
+		"terms": "Användarvillkor",
+		"contacts": "Administrativ kontakt",
+		"warning": "Varning",
+		"no_redirect_uri": "Denna klient har inte någon omdirigerings URI registrerad och någon kan använda en skadlig URI hit.",
+		"redirect_uri": "Du kommer att omdirigeras till denna sida om du medger åtkomst: <code>{0}</code>",
+		"pairwise": "Denna klient använder en <b>pairwise</b>-identifierare, vilket gör det svårare att koppla samman dina identititer mellan olika webbplatser.",
+		"no_scopes": "Denna klient har inga \"scopes\" registrerade och kan därför begära <em>alla</em> scope som finns tillgängliga i systemet. Iakttag försiktighet.",
+		"access_to": "Åtkomst till",
+		"remember": { 
+			"title": "Kom ihåg detta val",
+			"until_revoke": "tills jag återkallar det",
+			"one_hour": "i en timme",
+			"next_time": "fråga igen nästa gång"
+		},
+		"do_authorize": "Medger du åtkomst för",
+		"label": {
+			"authorize": "Medge åtkomst",
+			"deny": "Avbryt"
+		}
+	}
+}

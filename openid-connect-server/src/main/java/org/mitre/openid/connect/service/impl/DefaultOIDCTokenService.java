@@ -32,11 +32,10 @@ import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.service.AuthenticationHolderEntityService;
+import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.service.IDTokenClaimsEnhancer;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.util.IdTokenHashUtils;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
@@ -81,7 +80,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
-	private AuthenticationHolderEntityService authenticationHolderService;
+	private AuthenticationHolderRepository authenticationHolderRepository;
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
@@ -94,9 +93,6 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-
-	@Autowired
-	private IDTokenClaimsEnhancer idTokenClaimsEnhancer;
 
 	@Override
 	public JWT createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
@@ -145,9 +141,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (!Strings.isNullOrEmpty(nonce)) {
 			idClaims.claim("nonce", nonce);
 		}
-
-		idTokenClaimsEnhancer.enhanceIdTokenClaims(idClaims, request, issueTime, sub, accessToken);
-
+		
 		Set<String> responseTypes = request.getResponseTypes();
 
 		if (responseTypes.contains("token")) {
@@ -273,8 +267,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setClient(client);
 		token.setScope(scope);
 
-		AuthenticationHolderEntity authHolder = authenticationHolderService.create(authentication);	
-		
+		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+		authHolder.setAuthentication(authentication);
+		authHolder = authenticationHolderRepository.save(authHolder);
 		token.setAuthenticationHolder(authHolder);
 
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -329,11 +324,17 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	/**
 	 * @return the authenticationHolderRepository
 	 */
-	public AuthenticationHolderEntityService getAuthenticationHolderService() {
-		return authenticationHolderService;
+	public AuthenticationHolderRepository getAuthenticationHolderRepository() {
+		return authenticationHolderRepository;
 	}
 
-	
+	/**
+	 * @param authenticationHolderRepository the authenticationHolderRepository to set
+	 */
+	public void setAuthenticationHolderRepository(
+			AuthenticationHolderRepository authenticationHolderRepository) {
+		this.authenticationHolderRepository = authenticationHolderRepository;
+	}
 
 	/**
 	 * Hook for subclasses that allows adding custom claims to the JWT
