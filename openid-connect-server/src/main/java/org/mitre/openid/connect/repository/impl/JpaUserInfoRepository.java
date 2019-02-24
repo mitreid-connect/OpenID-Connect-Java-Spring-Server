@@ -26,7 +26,9 @@ import javax.persistence.TypedQuery;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA UserInfo repository implementation
@@ -61,6 +63,12 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
 
 		return getSingleResult(query.getResultList());
+	}
+
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public UserInfo saveUser(UserInfo userInfo) {
+		return JpaUtil.saveOrUpdate(Long.valueOf(0), manager, userInfo);
 	}
 
 }
