@@ -304,7 +304,7 @@ public class DiscoveryEndpoint {
 				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512,
 				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512,
 				Algorithm.NONE);
-		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate", "urn:ietf:params:oauth:grant-type:device_code");
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate", "urn:ietf:params:oauth:grant-type:device_code","refresh_token");
 
 		Map<String, Object> m = new HashMap<>();
 		m.put("issuer", config.getIssuer());
