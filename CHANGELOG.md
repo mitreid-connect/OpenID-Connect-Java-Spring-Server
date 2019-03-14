@@ -1,5 +1,12 @@
 Unreleased:
 
+*1.3.3-GRESHAM:
+- Upgraded libraries with known vulnerabilities
+- Added a Gresham specific Jenkinsfile
+- Added a password encoder to the client entity service
+- Fixes a bug by specifying the name of the scope columnn
+- Removed functionality that passed the client secret down to the UI
+
 *1.3.2:
 - Added changelog
 - Set default redirect URI resolver strict matching to true
