@@ -93,8 +93,7 @@ CREATE TABLE saved_user_auth (
   id NUMBER(19) NOT NULL PRIMARY KEY,
   name VARCHAR2(1024),
   authenticated NUMBER(1),
-  source_class VARCHAR2(2048),
-
+  source_class VARCHAR2(2048)
   CONSTRAINT authenticated_check CHECK (authenticated in (1,0))
 );
 CREATE SEQUENCE saved_user_auth_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
