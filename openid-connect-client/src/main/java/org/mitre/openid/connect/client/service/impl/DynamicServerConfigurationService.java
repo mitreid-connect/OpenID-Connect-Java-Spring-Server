@@ -27,6 +27,7 @@ import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringList;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +38,11 @@ import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.RestTemplate;
@@ -141,7 +147,9 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 		@Override
 		public ServerConfiguration load(String issuer) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
-
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+			
 			// data holder
 			ServerConfiguration conf = new ServerConfiguration();
 
@@ -149,7 +157,8 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 			String url = issuer + "/.well-known/openid-configuration";
 
 			// fetch the value
-			String jsonString = restTemplate.getForObject(url, String.class);
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+			String jsonString = response.getBody();
 
 			JsonElement parsed = parser.parse(jsonString);
 			if (parsed.isJsonObject()) {
