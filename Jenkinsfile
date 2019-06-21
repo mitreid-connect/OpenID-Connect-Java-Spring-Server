@@ -1,7 +1,14 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  agent { label 'maven' }
+  agent {
+      kubernetes {
+          label "oidc-java-sprint-server-${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}"
+          cloud 'Kube mwdevel'
+          defaultContainer 'jnlp'
+          inheritFrom 'ci-template'
+      }
+  }
 
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -14,7 +21,7 @@ pipeline {
 
     stage('deploy'){
       steps {
-        container('maven-runner'){
+        container('runner'){
           sh "mvn -U -B clean deploy"
         }
       }
