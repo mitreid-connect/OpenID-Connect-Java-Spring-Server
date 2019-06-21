@@ -29,8 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.mitre.openid.connect.filter.AuthorizationRequestFilter;
+import org.mitre.openid.connect.web.sessionstate.SessionStateManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -52,6 +54,13 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 
 	public static final String AUTH_TIMESTAMP = "AUTH_TIMESTAMP";
 
+	private final SessionStateManagementService sessionStateManagementService;
+
+	@Autowired
+	public AuthenticationTimeStamper(SessionStateManagementService sessionStateManagementService) {
+		this.sessionStateManagementService = sessionStateManagementService;
+	}
+
 	/**
 	 * Set the timestamp on the session to mark when the authentication happened,
 	 * useful for calculating authentication age. This gets stored in the sesion
@@ -70,6 +79,9 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 			session.setAttribute(AuthorizationRequestFilter.PROMPTED, Boolean.TRUE);
 			session.removeAttribute(AuthorizationRequestFilter.PROMPT_REQUESTED);
 		}
+
+		// Set additional session state cookie for tracking session changes with session management extensions
+		sessionStateManagementService.writeSessionStateCookie(request, response, session);
 
 		logger.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp.toString());
 

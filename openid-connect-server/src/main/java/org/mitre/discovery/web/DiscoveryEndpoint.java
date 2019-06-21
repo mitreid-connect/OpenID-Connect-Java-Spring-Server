@@ -38,6 +38,7 @@ import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
 import org.mitre.openid.connect.web.EndSessionEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
+import org.mitre.openid.connect.web.sessionstate.SessionStateManagementController;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -285,6 +286,19 @@ public class DiscoveryEndpoint {
 		    op_tos_uri
 		        OPTIONAL. URL that the OpenID Provider provides to the person registering the Client to read about OpenID Provider's terms of service.
 		        The registration process SHOULD display this URL to the person registering the Client if it is given.
+
+		 	Session Management
+		 	@see http://openid.net/specs/openid-connect-session-1_0.html
+
+		    check_session_iframe
+		    	REQUIRED (only if session state is enabled in the configuration).
+		    	URL of an OP iframe that supports cross-origin communications for session state information with the RP Client, using the
+		    	HTML5 postMessage API. The page is loaded from an invisible iframe embedded in an RP page so that it can run in the OP's security
+		    	context. It accepts postMessage requests from the relevant RP iframe and uses postMessage to post back the login status of the
+		    	End-User at the OP.
+			end_session_endpoint
+				REQUIRED (only if session state is enabled in the configuration).
+				URL at the OP to which an RP can perform a redirect to request that the End-User be logged out at the OP.
 		 */
 		String baseUrl = config.getIssuer();
 
@@ -371,6 +385,12 @@ public class DiscoveryEndpoint {
 		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
 
 		m.put("device_authorization_endpoint", baseUrl + DeviceEndpoint.URL);
+
+		// Session management endpoints as defined in the specification
+		if (config.isSessionStateEnabled()) {
+			m.put("check_session_iframe", baseUrl + SessionStateManagementController.FRAME_URL);
+			m.put("end_session_endpoint", baseUrl + EndSessionEndpoint.URL);
+		}
 
 		model.addAttribute(JsonEntityView.ENTITY, m);
 
