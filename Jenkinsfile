@@ -1,11 +1,14 @@
 #!/usr/bin/env groovy
+@Library('sd')_
+def kubeLabel = getKubeLabel()
 
 pipeline {
+
   agent {
       kubernetes {
-          label "oidc-java-sprint-server-${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}"
+          label "${kubeLabel}"
           cloud 'Kube mwdevel'
-          defaultContainer 'jnlp'
+          defaultContainer 'runner'
           inheritFrom 'ci-template'
       }
   }

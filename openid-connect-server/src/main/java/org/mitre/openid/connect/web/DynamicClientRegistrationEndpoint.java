@@ -231,11 +231,9 @@ public class DynamicClientRegistrationEndpoint {
 				newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
 				newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
 				newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+				newClient.setDeviceCodeValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10));
 			}
 			
-			if (newClient.getGrantTypes().contains("urn:ietf:params:oauth:grant-type:device_code")) {
-			  newClient.setDeviceCodeValiditySeconds(600);
-			}
 			
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
@@ -394,8 +392,6 @@ public class DynamicClientRegistrationEndpoint {
 			    if (!oldClientGrantedGrantTypes.isEmpty()) {
 			      newClient.getGrantTypes().addAll(oldClientGrantedGrantTypes);
 			    }
-			    
-			    
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
