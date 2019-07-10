@@ -246,10 +246,6 @@ public class DynamicClientRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
@@ -293,7 +289,7 @@ public class DynamicClientRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
+			} catch (IllegalArgumentException e) {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
@@ -319,7 +315,7 @@ public class DynamicClientRegistrationEndpoint {
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
+	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) throws UnsupportedEncodingException {
 
 
 		ClientDetailsEntity newClient = null;
@@ -382,10 +378,6 @@ public class DynamicClientRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 

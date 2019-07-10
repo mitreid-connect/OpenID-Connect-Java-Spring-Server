@@ -142,8 +142,8 @@ public class TestMITREidDataService_1_3 {
 
 	@Before
 	public void prepare() {
-		formatter = new DateFormatter();
-		formatter.setIso(ISO.DATE_TIME);
+		formatter = new DateFormatter(MITREidDataServiceSupport.DATE_TIME_ISO);
+		//formatter.setIso(ISO.DATE_TIME);
 
 		Mockito.reset(clientRepository, approvedSiteRepository, authHolderRepository, tokenRepository, sysScopeRepository, wlSiteRepository, blSiteRepository);
 	}
