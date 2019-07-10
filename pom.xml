@@ -72,7 +72,7 @@
 	</mailingLists>
 
 	<properties>
-		<java-version>11</java-version>
+		<java-version>1.8</java-version>
 		<org.slf4j-version>1.7.26</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on
