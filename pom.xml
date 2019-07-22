@@ -47,9 +47,9 @@
 	</modules>
 
 	<scm>
-		<connection>scm:git:https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git</connection>
-		<developerConnection>scm:git:git@github.com:mitreid-connect/OpenID-Connect-Java-Spring-Server.git</developerConnection>
-		<url>https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git</url>
+		<connection>scm:git:https://github.com/PolarisAlpha/OpenID-Connect-Java-Spring-Server.git</connection>
+		<developerConnection>scm:git:git@github.com:PolarisAlpha/OpenID-Connect-Java-Spring-Server.git</developerConnection>
+		<url>https://github.com/PolarisAlpha/OpenID-Connect-Java-Spring-Server.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -74,7 +74,7 @@
 		<org.slf4j-version>1.7.25</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
-	<url>https://github.com/mitreid-connect</url>
+	<url>https://github.com/PolarisAlpha</url>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -143,6 +143,16 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>2.9</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
@@ -279,85 +289,86 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<reportPlugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-project-info-reports-plugin</artifactId>
-							<configuration>
-								<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-								<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-							</configuration>
-							<reports>
-								<report>index</report>
-								<report>cim</report>
-								<report>dependencies</report>
-								<report>dependency-convergence</report>
-<!-- 								<report>dependency-info</report> -->
-								<report>dependency-management</report>
-								<report>help</report>
-								<report>issue-tracking</report>
-								<report>license</report>
-								<report>mailing-list</report>
-								<report>modules</report>
-								<report>plugin-management</report>
-								<report>plugins</report>
-								<report>project-team</report>
-								<report>scm</report>
-								<report>summary</report>
-							</reports>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-javadoc-plugin</artifactId>
-							<configuration>
-								<author>true</author>
-								<version>true</version>
-								<use>true</use>
-								<linksource>true</linksource>
-								<windowtitle>MITREid Connect ${project.name} v. ${project.version}</windowtitle>
-								<doctitle>MITREid Connect ${project.name} v. ${project.version}</doctitle>
-								<overview>${basedir}/src/main/javadoc/overview.html</overview>
-								<additionalparam>-Xdoclint:none</additionalparam>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-checkstyle-plugin</artifactId>
-							<configuration>
-								<configLocation>checkstyle.xml</configLocation>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-surefire-plugin</artifactId>
-							<configuration>
-								<junitArtifactName>junit:junit</junitArtifactName>
-								<excludes>
-									<exclude>**/*_Roo_*</exclude>
-								</excludes>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.jacoco</groupId>
-							<artifactId>jacoco-maven-plugin</artifactId>
-						</plugin>
-					</reportPlugins>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 	<issueManagement>
-		<url>https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues</url>
+		<url>https://github.com/PolarisAlpha/OpenID-Connect-Java-Spring-Server/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
+		<url>https://travis-ci.org/PolarisAlpha/OpenID-Connect-Java-Spring-Server</url>
 	</ciManagement>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<configuration>
+					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>cim</report>
+							<report>dependencies</report>
+							<report>dependency-convergence</report>
+		<!-- 								<report>dependency-info</report> -->
+							<report>dependency-management</report>
+							<report>help</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>mailing-list</report>
+							<report>modules</report>
+							<report>plugin-management</report>
+							<report>plugins</report>
+							<report>project-team</report>
+							<report>scm</report>
+							<report>summary</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<author>true</author>
+					<version>true</version>
+					<use>true</use>
+					<linksource>true</linksource>
+					<windowtitle>MITREid Connect ${project.name} v. ${project.version}</windowtitle>
+					<doctitle>MITREid Connect ${project.name} v. ${project.version}</doctitle>
+					<overview>${basedir}/src/main/javadoc/overview.html</overview>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<junitArtifactName>junit:junit</junitArtifactName>
+					<excludes>
+						<exclude>**/*_Roo_*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<dependencyManagement>
 		<dependencies>
@@ -609,7 +620,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 
 	<dependencies>
 		<dependency>
