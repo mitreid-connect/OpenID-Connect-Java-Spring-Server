@@ -100,7 +100,7 @@
 		</plugins>
 	</build>
 	<dependencies>
-  		<dependency>
+		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-server</artifactId>
 		</dependency>
