@@ -20,8 +20,10 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
@@ -32,7 +34,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
@@ -64,24 +65,6 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		@Override
 		public boolean apply(SystemScope input) {
 			return (input != null && getReserved().contains(input));
-		}
-	};
-
-	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
-		@Override
-		public SystemScope apply(String input) {
-			if (Strings.isNullOrEmpty(input)) {
-				return null;
-			} else {
-				// get the real scope if it's available
-				SystemScope s = getByValue(input);
-				if (s == null) {
-					// make a fake one otherwise
-					s = new SystemScope(input);
-				}
-
-				return s;
-			}
 		}
 	};
 
@@ -120,6 +103,10 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		return repository.getByValue(value);
 	}
 
+	private Set<SystemScope> getByValues(Set<String> values) {
+		return repository.getByValues(values);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.SystemScopeService#remove(org.mitre.oauth2.model.SystemScope)
 	 */
@@ -149,7 +136,19 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			return new LinkedHashSet<>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
+			Set<String> scopeValues = scope.stream().filter(s -> s != null).collect(Collectors.toSet());
+			Set<SystemScope> scopesFromDB = getByValues(scopeValues);
+			Set<String> scopesFromDBValues = scopesFromDB.stream().map(SystemScope::getValue).collect(Collectors.toSet());
+			Set<SystemScope> missingScopesFromDB = scopesFromDB
+					.stream()
+					.map(SystemScope::getValue)
+					.filter(sv -> !scopesFromDBValues.contains(sv))
+					.map(sv -> new SystemScope(sv))
+					.collect(Collectors.toSet());
+			Set<SystemScope> allScopes = new HashSet<SystemScope>();
+			allScopes.addAll(scopesFromDB);
+			allScopes.addAll(missingScopesFromDB);
+			return allScopes;
 		}
 	}
 
