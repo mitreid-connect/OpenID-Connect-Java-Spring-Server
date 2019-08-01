@@ -45,6 +45,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -238,6 +239,19 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		return authorizationRequest;
 	}
 
+	private Date getAuthTime(AuthorizationRequest authorizationRequest) {
+		RequestAttributes attr = RequestContextHolder.currentRequestAttributes();
+		if(attr instanceof ServletRequestAttributes) {
+			ServletRequestAttributes sattr = (ServletRequestAttributes) attr;
+			HttpSession session = sattr.getRequest().getSession(false);
+			if (session != null) {
+				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+				return authTime;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Get the auth time out of the current session and add it to the
 	 * auth request in the extensions map.
@@ -245,17 +259,10 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	 * @param authorizationRequest
 	 */
 	private void setAuthTime(AuthorizationRequest authorizationRequest) {
-		// Get the session auth time, if we have it, and store it in the request
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		if (attr != null) {
-			HttpSession session = attr.getRequest().getSession();
-			if (session != null) {
-				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-				if (authTime != null) {
-					String authTimeString = Long.toString(authTime.getTime());
-					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTimeString);
-				}
-			}
+		Date authTime = getAuthTime(authorizationRequest);
+		if (authTime != null) {
+			String authTimeString = Long.toString(authTime.getTime());
+			authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTimeString);
 		}
 	}
 
