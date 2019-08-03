@@ -29,7 +29,7 @@ public class ErrorController {
 	}
 
 	private void processError(HttpServletRequest request) {
-		if (request.getAttribute("error") != null && request.getAttribute("error") instanceof OAuth2Exception) {
+		if (request.getAttribute("error") instanceof OAuth2Exception) {
 			request.setAttribute("errorCode", ((OAuth2Exception)request.getAttribute("error")).getOAuth2ErrorCode());
 			request.setAttribute("message", ((OAuth2Exception)request.getAttribute("error")).getMessage());
 		} else if (request.getAttribute(RequestDispatcher.ERROR_EXCEPTION) != null) {
