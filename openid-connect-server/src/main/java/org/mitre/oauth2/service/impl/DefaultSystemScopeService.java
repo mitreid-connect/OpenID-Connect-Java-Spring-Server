@@ -22,6 +22,7 @@ package org.mitre.oauth2.service.impl;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -136,15 +137,15 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			Set<String> scopeValues = scope.stream().filter(s -> s != null).collect(Collectors.toSet());
+			Set<String> scopeValues = scope.stream().filter(Objects::nonNull).collect(Collectors.toSet());
 			Set<SystemScope> scopesFromDB = getByValues(scopeValues);
 			Set<String> scopesFromDBValues = scopesFromDB.stream().map(SystemScope::getValue).collect(Collectors.toSet());
-			Set<SystemScope> missingScopesFromDB = scopesFromDB
+			Set<SystemScope> missingScopesFromDB = scopeValues
 					.stream()
-					.map(SystemScope::getValue)
 					.filter(sv -> !scopesFromDBValues.contains(sv))
 					.map(sv -> new SystemScope(sv))
 					.collect(Collectors.toSet());
+
 			Set<SystemScope> allScopes = new HashSet<SystemScope>();
 			allScopes.addAll(scopesFromDB);
 			allScopes.addAll(missingScopesFromDB);
