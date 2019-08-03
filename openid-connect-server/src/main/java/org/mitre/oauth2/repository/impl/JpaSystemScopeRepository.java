@@ -23,6 +23,7 @@ package org.mitre.oauth2.repository.impl;
 import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -79,6 +80,10 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 
 	@Override
 	public Set<SystemScope> getByValues(Set<String> values) {
+		if(values.isEmpty()) {
+			return Collections.emptySet();
+		}
+
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUES, SystemScope.class);
 		query.setParameter(SystemScope.PARAM_VALUE, values);
 		return new HashSet<>(query.getResultList());
