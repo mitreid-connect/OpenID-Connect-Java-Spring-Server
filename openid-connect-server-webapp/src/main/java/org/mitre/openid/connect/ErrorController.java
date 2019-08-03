@@ -13,7 +13,7 @@ public class ErrorController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
 
-	@RequestMapping("/errorController")
+	@RequestMapping("/error")
 	public String handle(HttpServletRequest req) {
 		Throwable errorException = (Throwable) req.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
 		String message = (String) req.getAttribute(RequestDispatcher.ERROR_MESSAGE);
@@ -22,6 +22,6 @@ public class ErrorController {
 		logger.error("request {} failed with {}", requestUri, message);
 		logger.error("exception", errorException);
 
-		return "/error";
+		return "/error-view";
 	}
 }
