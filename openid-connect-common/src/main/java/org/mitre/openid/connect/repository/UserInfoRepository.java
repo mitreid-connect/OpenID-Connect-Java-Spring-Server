@@ -42,5 +42,7 @@ public interface UserInfoRepository {
 	 * @return
 	 */
 	public UserInfo getByEmailAddress(String email);
+	
+	public UserInfo saveUser(UserInfo userInfo);
 
 }
