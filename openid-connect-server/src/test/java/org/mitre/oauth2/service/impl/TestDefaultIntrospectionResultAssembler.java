@@ -37,13 +37,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
+
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-
+import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import static org.junit.Assert.assertThat;
@@ -175,7 +178,8 @@ public class TestDefaultIntrospectionResultAssembler {
 				.build();
 		assertThat(result, is(equalTo(expected)));
 	}
-
+	
+	
 	@Test
 	public void shouldAssembleExpectedResultForAccessTokenWithoutUserAuthentication() throws ParseException {
 		// given
@@ -256,7 +260,7 @@ public class TestDefaultIntrospectionResultAssembler {
 	}
 
 	@Test
-	public void shouldAssembleExpectedResultForRefreshTokenWithoutExpiry() {
+	public void shouldAssembleExpectedResultForRefreshTokenWithoutExpiry(){
 
 		// given
 		OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
@@ -302,7 +306,75 @@ public class TestDefaultIntrospectionResultAssembler {
 				.build();
 		assertThat(result, is(equalTo(expected)));
 	}
+	
+	
+	@Test(expected= ParseException.class)
+	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() throws ParseException{
+		
+		// given
+				OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
+						oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
 
+				UserInfo userInfo = userInfo("sub");
+
+				Set<String> authScopes = scopes("foo", "bar", "baz");
+
+				// when
+				Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo, authScopes);
+
+
+				// then
+				Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+						.put("sub", "sub")
+						.put("exp",123L)
+						.put("scope", "bar foo")
+						.put("active", Boolean.TRUE)
+						.put("user_id", "name")
+						.put("client_id", "clientId")
+						.put("token_type", "Bearer")
+						.build();
+				
+				
+				doThrow(ParseException.class).when(accessToken).getExpiration();
+				accessToken.getExpiration();
+				
+				//not reachable
+				assertThat(result, is(not(equalTo(expected))));
+	}
+	
+	@Test(expected=ParseException.class)
+	public void testAssembleFrom_OAuth2RefreshTokenEntityExpiration() throws ParseException{
+
+		// given
+		OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
+				oauth2AuthenticationWithUser(oauth2Request("clientId", scopes("foo",  "bar")), "name"));
+
+		UserInfo userInfo = userInfo("sub");
+
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
+		// when
+		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo, authScopes);
+
+
+		// then
+		Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+				.put("sub", "sub")
+				.put("exp", 123L)
+				.put("scope", "bar foo")
+				.put("active", Boolean.TRUE)
+				.put("user_id", "name")
+				.put("client_id", "clientId")
+				.build();
+		
+		doThrow(ParseException.class).when(refreshToken).getExpiration();
+		refreshToken.getExpiration();
+		
+		//not reachable
+		assertThat(result, is(not(equalTo(expected))));
+	}
+
+		
 
 
 	private UserInfo userInfo(String sub) {

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -34,6 +35,8 @@ import com.google.common.collect.Sets;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 
 import static org.junit.Assert.assertThat;
 
@@ -51,19 +54,23 @@ public class TestDefaultSystemScopeService {
 	private SystemScope defaultScope2;
 	private SystemScope dynScope1;
 	private SystemScope restrictedScope1;
-
+	private SystemScope mySystemScope;
+	private SystemScope mySavedSystemScope;
+	
 	private String defaultDynScope1String = "defaultDynScope1";
 	private String defaultDynScope2String = "defaultDynScope2";
 	private String defaultScope1String = "defaultScope1";
 	private String defaultScope2String = "defaultScope2";
 	private String dynScope1String = "dynScope1";
 	private String restrictedScope1String = "restrictedScope1";
+	private String mySavedSystemScopeString = "mySavedSystemScope";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
 	private Set<SystemScope> allScopesWithValue;
 	private Set<String> allScopeStringsWithValue;
 
+	
 	@Mock
 	private SystemScopeRepository repository;
 
@@ -83,7 +90,10 @@ public class TestDefaultSystemScopeService {
 		defaultDynScope2 = new SystemScope(defaultDynScope2String);
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
+	    mySystemScope = new SystemScope();
+	    mySavedSystemScope = new SystemScope(mySavedSystemScopeString);
 
+		
 		// two strictly default scopes (restricted)
 		defaultScope1 = new SystemScope(defaultScope1String);
 		defaultScope2 = new SystemScope(defaultScope2String);
@@ -114,6 +124,8 @@ public class TestDefaultSystemScopeService {
 		Mockito.when(repository.getByValue(restrictedScope1String)).thenReturn(restrictedScope1);
 
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
+		Mockito.when(repository.save(mySystemScope)).thenReturn(mySavedSystemScope);
+
 	}
 
 	@Test
@@ -185,5 +197,55 @@ public class TestDefaultSystemScopeService {
 		// extra scope (fail)
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
 	}
+	
+	@Test
+	public void removeRestrictedAndReservedScopes() {
+						
+		Set<SystemScope> unRestrictedScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
+		assertThat(service.removeRestrictedAndReservedScopes(allScopes),equalTo(unRestrictedScopes));
+	}
+	
+	@Test
+	public void removeReservedScopes() {
+		Set<SystemScope> unReservedScopes = Sets.newHashSet(defaultDynScope2, defaultDynScope1, defaultScope2,restrictedScope1,defaultScope1,dynScope1);
+		assertThat(service.removeReservedScopes(allScopes), equalTo(unReservedScopes));
+	}
+	
+	@Test 
+	public void getById_notfound() {
+		
+		// check null condition
 
+		assertThat(service.getById((long) 60), is(nullValue()));
+
+		
+	}
+	
+	@Test 
+	public void getByValue_notfound() {
+		
+		// check null condition
+		
+		assertThat(service.getByValue("defaultDynScope1String"), is(nullValue()));		
+		
+		
+	}
+	
+	@Test
+	public void save_null() {
+		// check null condition 
+		assertThat(service.save(defaultScope1), is(nullValue()));
+		
+	}
+	
+	@Test
+	public void save_value() {
+		assertThat(service.save(mySystemScope), equalTo(mySavedSystemScope));
+	}
+	
+	@Test
+	public void getReserveScopes() {
+		assertThat(service.getReserved(), equalTo(SystemScopeService.reservedScopes));
+
+	}
 }
