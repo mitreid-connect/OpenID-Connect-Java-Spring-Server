@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -255,7 +256,7 @@ public class AuthenticationHolderEntity {
 	@MapKeyColumn(name="extension")
 	@Convert(converter=SerializableStringConverter.class)
 	public Map<String, Serializable> getExtensions() {
-		return extensions;
+		return filterNullValues(extensions);
 	}
 
 	/**
@@ -322,6 +323,41 @@ public class AuthenticationHolderEntity {
 		this.requestParameters = requestParameters;
 	}
 
-
+	/**
+	 * Filter out null values from a map. <br>
+	 * A local utility method. <br>
+	 * Default visibility allows individual unit test. <br>
+	 * Creates a new map only if needed.
+	 * If the input map is clean, it is simply returned unchanged. <br>
+	 * Motivated by observing that a null value causes a failure when
+	 * fetched from the database by JPA.
+	 * @param input
+	 * @return a map guaranteed to contain null values,
+	 * either the original map or a replacement with null values omitted. 	
+	 */
+	static Map<String, Serializable> filterNullValues(Map<String, Serializable> input) {
+		if (input == null) {
+			return null; // a bit of bullet proofing
+		}
+		// Test for null value.
+		boolean hasNull = false;
+		for (Entry<String, Serializable> entry : input.entrySet()) {
+			if (entry.getValue() == null) {
+				hasNull = true; // found one
+				break;
+			}
+		}
+		if (hasNull == false) {
+			return input; // no change needed; nothing to do
+		}
+		// construct a new map, omitting null values
+		Map<String, Serializable> output = new HashMap<>(input.size());
+		for (Entry<String, Serializable> entry : input.entrySet()) {
+			if (entry.getValue() != null) {
+				output.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return output;
+	}
 
 }
