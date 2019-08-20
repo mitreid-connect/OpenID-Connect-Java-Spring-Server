@@ -21,9 +21,9 @@ INSERT INTO authorities_TEMP (username, authority) VALUES
   ('user','ROLE_USER');
     
 -- By default, the username column here has to match the username column in the users table, above
-INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
-  ('90342.ASDFJWFA','admin','Demo Admin','admin@example.com', true),
-  ('01921.FLANRJQW','user','Demo User','user@example.com', true);
+INSERT INTO user_info_TEMP (id, sub, preferred_username, name, email, email_verified) VALUES
+  ('1','90342.ASDFJWFA','admin','Demo Admin','admin@example.com', true),
+  ('2','01921.FLANRJQW','user','Demo User','user@example.com', true);
 
  
 --
@@ -38,8 +38,8 @@ INSERT INTO authorities (username,authority)
   SELECT username, authority FROM authorities_TEMP
   ON DUPLICATE KEY UPDATE authorities.username = authorities.username;
 
-INSERT INTO user_info (sub, preferred_username, name, email, email_verified)
-  SELECT sub, preferred_username, name, email, email_verified FROM user_info_TEMP
+INSERT INTO user_info (id, sub, preferred_username, name, email, email_verified)
+  SELECT id, sub, preferred_username, name, email, email_verified FROM user_info_TEMP
   ON DUPLICATE KEY UPDATE user_info.preferred_username = user_info.preferred_username;
     
 -- 
