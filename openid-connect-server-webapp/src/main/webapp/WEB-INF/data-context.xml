@@ -48,6 +48,33 @@
 		<property name="showSql" value="true" />
 	</bean>
 
+
+<!--Use the following datasource configuration if you are going t use dual datasource. One fo read and another for write  -->
+<!--	<bean id="dataSource" class="org.mitre.openid.connect.datasource.RoutingDataSource">
+		<property name="targetDataSources">
+			<map key-type="org.mitre.openid.connect.datasource.DbType">
+				<entry key="MASTER" value-ref="masterDataSource"/>
+				<entry key="READ_REPLICA" value-ref="readReplicaDataSource"/>
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="masterDataSource"/>
+	</bean>
+
+	<bean id="masterDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="jdbcUrl" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
+		<property name="username" value="oic" />
+		<property name="password" value="oic" />
+	</bean>
+
+	<bean id="readReplicaDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="jdbcUrl" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
+		<property name="username" value="oic" />
+		<property name="password" value="oic" />
+	</bean> 
+-->
+
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/mysql/mysql_database_tables.sql -->
 <!-- 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close"> -->

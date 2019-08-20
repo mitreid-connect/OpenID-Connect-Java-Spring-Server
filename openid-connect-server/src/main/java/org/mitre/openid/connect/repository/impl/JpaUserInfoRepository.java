@@ -23,6 +23,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
@@ -44,6 +46,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its username
 	 */
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public UserInfo getByUsername(String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
@@ -56,6 +59,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its email address
 	 */
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public UserInfo getByEmailAddress(String email) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);

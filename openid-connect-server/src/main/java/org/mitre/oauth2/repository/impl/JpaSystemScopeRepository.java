@@ -32,6 +32,8 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
@@ -61,6 +64,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public SystemScope getById(Long id) {
 		return em.find(SystemScope.class, id);
 	}
@@ -70,6 +74,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public SystemScope getByValue(String value) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
 		query.setParameter(SystemScope.PARAM_VALUE, value);

@@ -27,6 +27,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.PairwiseIdentifier;
 import org.mitre.openid.connect.repository.PairwiseIdentifierRepository;
 import org.springframework.stereotype.Repository;
@@ -46,6 +48,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#getBySectorIdentifier(java.lang.String, java.lang.String)
 	 */
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri) {
 		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery(PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, PairwiseIdentifier.class);
 		query.setParameter(PairwiseIdentifier.PARAM_SUB, sub);

@@ -30,6 +30,8 @@ import javax.persistence.TypedQuery;
 import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +65,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public AuthorizationCodeEntity getByCode(String code) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_BY_VALUE, AuthorizationCodeEntity.class);
 		query.setParameter("code", code);
@@ -86,6 +89,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#getExpiredCodes()
 	 */
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<AuthorizationCodeEntity> getExpiredCodes() {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
@@ -94,6 +98,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
