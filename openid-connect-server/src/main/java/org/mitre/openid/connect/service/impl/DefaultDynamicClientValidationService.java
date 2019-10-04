@@ -77,21 +77,28 @@ public class DefaultDynamicClientValidationService implements DynamicClientValid
   public static final Logger LOG =
       LoggerFactory.getLogger(DefaultDynamicClientValidationService.class);
 
-  @Autowired
-  private SystemScopeService scopeService;
+
+  protected final SystemScopeService scopeService;
+
+  protected final AssertionValidator assertionValidator;
+
+  protected final BlacklistedSiteService blacklistService;
+
+  protected final ConfigurationPropertiesBean config;
+
+  protected final ClientDetailsEntityService clientService;
 
   @Autowired
-  @Qualifier("clientAssertionValidator")
-  private AssertionValidator assertionValidator;
-
-  @Autowired
-  private BlacklistedSiteService blacklistService;
-
-  @Autowired
-  private ConfigurationPropertiesBean config;
-
-  @Autowired
-  private ClientDetailsEntityService clientService;
+  public DefaultDynamicClientValidationService(SystemScopeService scopeService,
+      @Qualifier("clientAssertionValidator") AssertionValidator assertionValidator,
+      BlacklistedSiteService blacklistService, ConfigurationPropertiesBean config,
+      ClientDetailsEntityService clientService) {
+    this.scopeService = scopeService;
+    this.assertionValidator = assertionValidator;
+    this.blacklistService = blacklistService;
+    this.config = config;
+    this.clientService = clientService;
+  }
 
   public static final ImmutableSet<String> ALLOWED_GRANT_TYPES =
       ImmutableSet.of("authorization_code", "implicit", "client_credentials", "refresh_token",
