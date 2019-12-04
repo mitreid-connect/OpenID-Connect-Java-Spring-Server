@@ -29,3 +29,7 @@ The authors and key contributors of the project include:
 
 
 Copyright &copy;2017, [MIT Internet Trust Consortium](http://www.trust.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
+
+## Note for releasing
+
+Releases are made off of branch 1.3.x - the version released used to depend on the Jenkins build number but this is ineffective as the Jenkins history can vanish leaving you back at build number 1.  Therefore, in the Jenkinsfile, the version to be released needs altering on line 26 and incrementing by 1.
