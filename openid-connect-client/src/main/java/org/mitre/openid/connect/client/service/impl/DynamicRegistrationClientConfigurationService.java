@@ -207,6 +207,17 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
 
+					// make sure the redirect URI wasn't replaced by the AS
+					if (client.getRedirectUris() != null) {
+						if (!client.getRedirectUris().equals(template.getRedirectUris())) {
+							throw new InvalidClientException("Redirect URI did not match requested value");
+						}
+					} else {
+						if (template.getRedirectUris() != null) {
+							throw new InvalidClientException("Redirect URI did not match requested value");
+						}
+					}
+
 					// save this client for later
 					registeredClientService.save(serverConfig.getIssuer(), client);
 
