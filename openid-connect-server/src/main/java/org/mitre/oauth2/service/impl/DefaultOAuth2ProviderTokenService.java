@@ -360,23 +360,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		  token.setScope(authorizedScopes);
 		}
 
-//		if (scope != null && !scope.isEmpty()) {
-//			// ensure a proper subset of scopes
-//		    // FIXME: ugly and inefficient translation to/from strings for no added value, just to work around
-//		    // a terribly designed API
-//			if (refreshScopes != null && scopeService.scopesMatch(scopeService.toStrings(refreshScopes), scopeService.toStrings(scope))) {
-//				// set the scope of the new access token if requested
-//				token.setScope(scopeService.toStrings(scope));
-//			} else {
-//				String errorMsg = "Up-scoping is not allowed.";
-//				logger.error(errorMsg);
-//				throw new InvalidScopeException(errorMsg);
-//			}
-//		} else {
-//			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
-//			token.setScope(scopeService.toStrings(refreshScopes));
-//		}
-
 		token.setClient(client);
 
 		if (client.getAccessTokenValiditySeconds() != null) {
@@ -397,6 +380,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 
 		token.setAuthenticationHolder(authHolder);
+		
+		OAuth2Authentication auth = authHolder.getAuthentication();
+		
+		// Pass down the audience to IAM specific logic
+		if (authRequest.getRequestParameters().containsKey("audience")) {
+		  auth.getOAuth2Request().getExtensions().put("aud", authRequest.getRequestParameters().get("audience"));
+		}
 
 		tokenEnhancer.enhance(token, authHolder.getAuthentication());
 
