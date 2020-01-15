@@ -29,7 +29,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -66,6 +65,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -330,33 +330,52 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		
+		Set<String> reservedScopes = scopeService.toStrings(scopeService.getReserved());
 
-		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
-		Set<String> refreshScopesRequested = new HashSet<>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
-		Set<SystemScope> refreshScopes = scopeService.fromStrings(refreshScopesRequested);
-		// remove any of the special system scopes
-		refreshScopes = scopeService.removeReservedScopes(refreshScopes);
-
-		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<>(authRequest.getScope());
-		Set<SystemScope> scope = scopeService.fromStrings(scopeRequested);
-
-		// remove any of the special system scopes
-		scope = scopeService.removeReservedScopes(scope);
-
-		if (scope != null && !scope.isEmpty()) {
-			// ensure a proper subset of scopes
-			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
-				// set the scope of the new access token if requested
-				token.setScope(scopeService.toStrings(scope));
-			} else {
-				String errorMsg = "Up-scoping is not allowed.";
-				logger.error(errorMsg);
-				throw new InvalidScopeException(errorMsg);
-			}
-		} else {
-			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
-			token.setScope(scopeService.toStrings(refreshScopes));
+		// Scopes linked to the refresh token, i.e. authorized by the user
+		Set<String> authorizedScopes = Sets.newHashSet(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
+		authorizedScopes.removeAll(reservedScopes);
+		
+		// Scopes requested in this refresh token flow
+		Set<String> requestedScopes = Sets.newHashSet();
+		if (authRequest.getScope() != null) {
+		  requestedScopes.addAll(authRequest.getScope());
 		}
+		
+		requestedScopes.removeAll(reservedScopes);
+		
+		if (!requestedScopes.isEmpty()) {
+		  // Check for upscoping
+		  if (scopeService.scopesMatch(authorizedScopes, requestedScopes)) {
+		    token.setScope(requestedScopes);
+		  } else {
+		    String errorMsg = "Up-scoping is not allowed.";
+            logger.error(errorMsg);
+            throw new InvalidScopeException(errorMsg);
+		  }
+		  
+		} else {
+		  // Preserve scopes linked to the original refresh token
+		  token.setScope(authorizedScopes);
+		}
+
+//		if (scope != null && !scope.isEmpty()) {
+//			// ensure a proper subset of scopes
+//		    // FIXME: ugly and inefficient translation to/from strings for no added value, just to work around
+//		    // a terribly designed API
+//			if (refreshScopes != null && scopeService.scopesMatch(scopeService.toStrings(refreshScopes), scopeService.toStrings(scope))) {
+//				// set the scope of the new access token if requested
+//				token.setScope(scopeService.toStrings(scope));
+//			} else {
+//				String errorMsg = "Up-scoping is not allowed.";
+//				logger.error(errorMsg);
+//				throw new InvalidScopeException(errorMsg);
+//			}
+//		} else {
+//			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
+//			token.setScope(scopeService.toStrings(refreshScopes));
+//		}
 
 		token.setClient(client);
 
