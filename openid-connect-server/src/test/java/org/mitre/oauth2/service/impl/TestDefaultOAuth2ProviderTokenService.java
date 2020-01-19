@@ -409,7 +409,6 @@ public class TestDefaultOAuth2ProviderTokenService {
     assertThat(token.getRefreshToken(), equalTo(refreshToken));
     assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
 
-    verify(tokenEnhancer).enhance(token, storedAuthentication);
     verify(tokenRepository).saveAccessToken(token);
 
   }
@@ -426,7 +425,6 @@ public class TestDefaultOAuth2ProviderTokenService {
     assertThat(token.getRefreshToken(), not(equalTo(refreshToken)));
     assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
 
-    verify(tokenEnhancer).enhance(token, storedAuthentication);
     verify(tokenRepository).saveAccessToken(token);
     verify(tokenRepository).removeRefreshToken(refreshToken);
 
@@ -444,7 +442,6 @@ public class TestDefaultOAuth2ProviderTokenService {
     assertThat(token.getRefreshToken(), equalTo(refreshToken));
     assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
 
-    verify(tokenEnhancer).enhance(token, storedAuthentication);
     verify(tokenRepository).saveAccessToken(token);
 
   }
