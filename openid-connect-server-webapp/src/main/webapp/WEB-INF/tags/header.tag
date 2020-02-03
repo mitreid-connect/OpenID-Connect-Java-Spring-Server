@@ -55,7 +55,7 @@
     	
 		// get the info of the current user, if available (null otherwise)
     	function getUserInfo() {
-    		return ${userInfoJson};
+    		return ${fn:escapeXml(userInfoJson)};
     	}
 		
 		// get the authorities of the current user, if available (null otherwise)
