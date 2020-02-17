@@ -54,9 +54,7 @@ import com.google.gson.JsonSerializer;
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
-	private final Whitelist whitelist = Whitelist.relaxed()
-		.removeTags("a")
-		.removeProtocols("img", "src", "http", "https");
+	private final Whitelist whitelist = Whitelist.none();
 
 	private Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
