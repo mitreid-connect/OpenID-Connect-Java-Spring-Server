@@ -25,6 +25,9 @@ import java.lang.reflect.Type;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.mitre.openid.connect.model.Address;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -78,9 +81,11 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			if (auth instanceof OIDCAuthenticationToken) {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
-				if (oidc.getUserInfo() != null) {
-					request.setAttribute("userInfo", oidc.getUserInfo());
-					request.setAttribute("userInfoJson", oidc.getUserInfo().toJson());
+				UserInfo userInfo = oidc.getUserInfo();
+				if (userInfo != null) {
+					santiseUserInfo(userInfo);
+					request.setAttribute("userInfo", userInfo);
+					request.setAttribute("userInfoJson", userInfo.toJson());
 				} else {
 					request.setAttribute("userInfo", null);
 					request.setAttribute("userInfoJson", "null");
@@ -94,6 +99,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 					// if we have one, inject it so views can use it
 					if (user != null) {
+						santiseUserInfo(user);
 						request.setAttribute("userInfo", user);
 						request.setAttribute("userInfoJson", user.toJson());
 					}
@@ -102,6 +108,49 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 		}
 
 		return true;
+	}
+
+	private UserInfo santiseUserInfo(final UserInfo userInfo) {
+		userInfo.setSub(nullCheckClean(userInfo.getSub()));
+		userInfo.setPreferredUsername(nullCheckClean(userInfo.getPreferredUsername()));
+		userInfo.setName(nullCheckClean(userInfo.getName()));
+		userInfo.setGivenName(nullCheckClean(userInfo.getGivenName()));
+		userInfo.setFamilyName(nullCheckClean(userInfo.getFamilyName()));
+		userInfo.setMiddleName(nullCheckClean(userInfo.getMiddleName()));
+		userInfo.setNickname(nullCheckClean(userInfo.getNickname()));
+		userInfo.setProfile(nullCheckClean(userInfo.getProfile()));
+		userInfo.setPicture(nullCheckClean(userInfo.getPicture()));
+		userInfo.setWebsite(nullCheckClean(userInfo.getWebsite()));
+		userInfo.setEmail(nullCheckClean(userInfo.getEmail()));
+		userInfo.setGender(nullCheckClean(userInfo.getGender()));
+		userInfo.setLocale(nullCheckClean(userInfo.getLocale()));
+		userInfo.setPhoneNumber(nullCheckClean(userInfo.getPhoneNumber()));
+		userInfo.setUpdatedTime(nullCheckClean(userInfo.getUpdatedTime()));
+		userInfo.setBirthdate(nullCheckClean(userInfo.getBirthdate()));
+
+		Address userInfoAddress = userInfo.getAddress();
+		if (userInfoAddress != null) {
+			userInfoAddress.setFormatted(nullCheckClean(userInfoAddress.getFormatted()));
+			userInfoAddress.setStreetAddress(nullCheckClean(userInfoAddress.getStreetAddress()));
+			userInfoAddress.setLocality(nullCheckClean(userInfoAddress.getLocality()));
+			userInfoAddress.setRegion(nullCheckClean(userInfoAddress.getRegion()));
+			userInfoAddress.setPostalCode(nullCheckClean(userInfoAddress.getPostalCode()));
+			userInfoAddress.setCountry(nullCheckClean(userInfoAddress.getCountry()));
+			userInfo.setAddress(userInfoAddress);
+		}
+
+		return userInfo;
+	}
+	
+	private String nullCheckClean(String elementToClean) {
+		final Whitelist whitelist = Whitelist.relaxed()
+			.removeTags("a")
+			.removeProtocols("img", "src", "http", "https");
+		
+		if (elementToClean != null) {
+			return Jsoup.clean(elementToClean, whitelist);
+		}
+		return null;
 	}
 
 }
