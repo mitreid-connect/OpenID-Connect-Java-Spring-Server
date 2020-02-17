@@ -23,19 +23,19 @@ class UserInfoInterceptorSpec extends Specification {
 
 		when: 'The user info object is passed through the sanitise method'
 
-		UserInfo sanitisedUserInfo = userInfoInterceptor.santiseUserInfo(userInfo)
+		userInfoInterceptor.sanitiseUserInfo(userInfo)
 
 		then: 'The malicious names have been sanitised'
 
-		sanitisedUserInfo.getName() == 'Test Test'
-		sanitisedUserInfo.getGivenName() == 'Test'
+		userInfo.getName() == 'Test Test'
+		userInfo.getGivenName() == 'Test'
 
 		and: 'The non malicious elements have been unaffected'
 
-		sanitisedUserInfo.getSub() == '12318767'
-		sanitisedUserInfo.getPreferredUsername() == 'Test'
-		sanitisedUserInfo.getFamilyName() == 'Test'
-		sanitisedUserInfo.getEmail() == 'test@test.com'
+		userInfo.getSub() == '12318767'
+		userInfo.getPreferredUsername() == 'Test'
+		userInfo.getFamilyName() == 'Test'
+		userInfo.getEmail() == 'test@test.com'
 	}
 
 }

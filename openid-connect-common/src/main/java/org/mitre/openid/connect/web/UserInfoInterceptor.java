@@ -83,7 +83,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
 				UserInfo userInfo = oidc.getUserInfo();
 				if (userInfo != null) {
-					santiseUserInfo(userInfo);
+					sanitiseUserInfo(userInfo);
 					request.setAttribute("userInfo", userInfo);
 					request.setAttribute("userInfoJson", userInfo.toJson());
 				} else {
@@ -99,7 +99,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 					// if we have one, inject it so views can use it
 					if (user != null) {
-						santiseUserInfo(user);
+						sanitiseUserInfo(user);
 						request.setAttribute("userInfo", user);
 						request.setAttribute("userInfoJson", user.toJson());
 					}
@@ -110,39 +110,38 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 		return true;
 	}
 
-	private UserInfo santiseUserInfo(final UserInfo userInfo) {
-		userInfo.setSub(nullCheckClean(userInfo.getSub()));
-		userInfo.setPreferredUsername(nullCheckClean(userInfo.getPreferredUsername()));
-		userInfo.setName(nullCheckClean(userInfo.getName()));
-		userInfo.setGivenName(nullCheckClean(userInfo.getGivenName()));
-		userInfo.setFamilyName(nullCheckClean(userInfo.getFamilyName()));
-		userInfo.setMiddleName(nullCheckClean(userInfo.getMiddleName()));
-		userInfo.setNickname(nullCheckClean(userInfo.getNickname()));
-		userInfo.setProfile(nullCheckClean(userInfo.getProfile()));
-		userInfo.setPicture(nullCheckClean(userInfo.getPicture()));
-		userInfo.setWebsite(nullCheckClean(userInfo.getWebsite()));
-		userInfo.setEmail(nullCheckClean(userInfo.getEmail()));
-		userInfo.setGender(nullCheckClean(userInfo.getGender()));
-		userInfo.setLocale(nullCheckClean(userInfo.getLocale()));
-		userInfo.setPhoneNumber(nullCheckClean(userInfo.getPhoneNumber()));
-		userInfo.setUpdatedTime(nullCheckClean(userInfo.getUpdatedTime()));
-		userInfo.setBirthdate(nullCheckClean(userInfo.getBirthdate()));
+	private void sanitiseUserInfo(final UserInfo userInfo) {
+		userInfo.setSub(sanitise(userInfo.getSub()));
+		userInfo.setPreferredUsername(sanitise(userInfo.getPreferredUsername()));
+		userInfo.setName(sanitise(userInfo.getName()));
+		userInfo.setGivenName(sanitise(userInfo.getGivenName()));
+		userInfo.setFamilyName(sanitise(userInfo.getFamilyName()));
+		userInfo.setMiddleName(sanitise(userInfo.getMiddleName()));
+		userInfo.setNickname(sanitise(userInfo.getNickname()));
+		userInfo.setProfile(sanitise(userInfo.getProfile()));
+		userInfo.setPicture(sanitise(userInfo.getPicture()));
+		userInfo.setWebsite(sanitise(userInfo.getWebsite()));
+		userInfo.setEmail(sanitise(userInfo.getEmail()));
+		userInfo.setGender(sanitise(userInfo.getGender()));
+		userInfo.setLocale(sanitise(userInfo.getLocale()));
+		userInfo.setPhoneNumber(sanitise(userInfo.getPhoneNumber()));
+		userInfo.setUpdatedTime(sanitise(userInfo.getUpdatedTime()));
+		userInfo.setBirthdate(sanitise(userInfo.getBirthdate()));
 
 		Address userInfoAddress = userInfo.getAddress();
 		if (userInfoAddress != null) {
-			userInfoAddress.setFormatted(nullCheckClean(userInfoAddress.getFormatted()));
-			userInfoAddress.setStreetAddress(nullCheckClean(userInfoAddress.getStreetAddress()));
-			userInfoAddress.setLocality(nullCheckClean(userInfoAddress.getLocality()));
-			userInfoAddress.setRegion(nullCheckClean(userInfoAddress.getRegion()));
-			userInfoAddress.setPostalCode(nullCheckClean(userInfoAddress.getPostalCode()));
-			userInfoAddress.setCountry(nullCheckClean(userInfoAddress.getCountry()));
+			userInfoAddress.setFormatted(sanitise(userInfoAddress.getFormatted()));
+			userInfoAddress.setStreetAddress(sanitise(userInfoAddress.getStreetAddress()));
+			userInfoAddress.setLocality(sanitise(userInfoAddress.getLocality()));
+			userInfoAddress.setRegion(sanitise(userInfoAddress.getRegion()));
+			userInfoAddress.setPostalCode(sanitise(userInfoAddress.getPostalCode()));
+			userInfoAddress.setCountry(sanitise(userInfoAddress.getCountry()));
 			userInfo.setAddress(userInfoAddress);
 		}
 
-		return userInfo;
 	}
 	
-	private String nullCheckClean(String elementToClean) {
+	private String sanitise(String elementToClean) {
 		final Whitelist whitelist = Whitelist.relaxed()
 			.removeTags("a")
 			.removeProtocols("img", "src", "http", "https");
