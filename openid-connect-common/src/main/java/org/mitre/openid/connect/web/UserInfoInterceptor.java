@@ -54,6 +54,10 @@ import com.google.gson.JsonSerializer;
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
+	private final Whitelist whitelist = Whitelist.relaxed()
+		.removeTags("a")
+		.removeProtocols("img", "src", "http", "https");
+
 	private Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
 				@Override
@@ -142,10 +146,6 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	}
 	
 	private String sanitise(String elementToClean) {
-		final Whitelist whitelist = Whitelist.relaxed()
-			.removeTags("a")
-			.removeProtocols("img", "src", "http", "https");
-		
 		if (elementToClean != null) {
 			return Jsoup.clean(elementToClean, whitelist);
 		}
