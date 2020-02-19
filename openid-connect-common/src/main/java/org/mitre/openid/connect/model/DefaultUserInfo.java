@@ -37,6 +37,7 @@ import javax.persistence.Table;
 
 import org.mitre.openid.connect.model.convert.JsonObjectStringConverter;
 
+import com.google.common.html.HtmlEscapers;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -102,7 +103,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name="sub")
 	public String getSub() {
-		return sub;
+		return escapeThis(sub);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setUserId(java.lang.String)
@@ -118,7 +119,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name="preferred_username")
 	public String getPreferredUsername() {
-		return this.preferredUsername;
+		return escapeThis(this.preferredUsername);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setPreferredUsername(java.lang.String)
@@ -134,7 +135,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name = "name")
 	public String getName() {
-		return name;
+		return escapeThis(name);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setName(java.lang.String)
@@ -150,7 +151,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name="given_name")
 	public String getGivenName() {
-		return givenName;
+		return escapeThis(givenName);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setGivenName(java.lang.String)
@@ -166,7 +167,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name="family_name")
 	public String getFamilyName() {
-		return familyName;
+		return escapeThis(familyName);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setFamilyName(java.lang.String)
@@ -182,7 +183,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name="middle_name")
 	public String getMiddleName() {
-		return middleName;
+		return escapeThis(middleName);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setMiddleName(java.lang.String)
@@ -198,7 +199,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Basic
 	@Column(name = "nickname")
 	public String getNickname() {
-		return nickname;
+		return escapeThis(nickname);
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setNickname(java.lang.String)
@@ -420,6 +421,13 @@ public class DefaultUserInfo implements UserInfo {
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
+
+    private String escapeThis(String original) {
+        if (original != null) {
+            original = HtmlEscapers.htmlEscaper().escape(original);
+        }
+        return original;
+    }
 
 	@Override
 	public JsonObject toJson() {
