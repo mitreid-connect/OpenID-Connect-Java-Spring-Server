@@ -178,7 +178,7 @@
 				<plugin>
 					<groupId>ro.isdc.wro4j</groupId>
 					<artifactId>wro4j-maven-plugin</artifactId>
-					<version>1.8.0</version>
+					<version>1.9.0</version>
 					<executions>
 						<execution>
 							<phase>compile</phase>
@@ -191,7 +191,7 @@
 						<dependency>
 							<groupId>ro.isdc.wro4j</groupId>
 							<artifactId>wro4j-extensions</artifactId>
-							<version>1.8.0</version>
+							<version>1.9.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -605,7 +605,7 @@
 			<dependency>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-extensions</artifactId>
-				<version>1.8.0</version>
+				<version>1.9.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
