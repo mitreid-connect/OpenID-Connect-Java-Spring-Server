@@ -87,6 +87,19 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<packaging>jar</packaging>
@@ -99,6 +112,37 @@
 				<configuration>
 					<source>${java-version}</source>
 					<target>${java-version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>1.8.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>addTestStubSources</goal>
+							<goal>compileTests</goal>
+							<goal>removeTestStubs</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<stubsOutputDirectory>${project.build.directory}/generated-groovy-stubs</stubsOutputDirectory>
+					<testStubsOutputDirectory>${project.build.directory}/generated-groovy-test-stubs</testStubsOutputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
+				<configuration>
+					<excludedGroups combine.self="override"/>
+					<testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*Spec.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<!--&lt;!&ndash; BUILD SOURCE FILES &ndash;&gt;

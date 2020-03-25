@@ -23,7 +23,7 @@ pipeline {
                 branch "1.3.x"
             }
             steps {
-                sh "mvn versions:set -DnewVersion=1.3.3.GRESHAM-18"
+                sh "mvn versions:set -DnewVersion=1.3.3.GRESHAM-19"
                 sh "mvn -N versions:update-child-modules"
 
                 timeout(time: 10, unit: 'MINUTES') {
