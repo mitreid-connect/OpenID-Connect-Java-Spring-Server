@@ -29,47 +29,47 @@ import org.mitre.uma.model.ResourceSet;
 
 public interface OAuth2TokenRepository {
 
-	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token);
+	OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue);
+	OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenById(Long Id);
+	OAuth2RefreshTokenEntity getRefreshTokenById(Long Id);
 
-	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
-	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
-	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
-	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue);
+	OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue);
 
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
+	OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
-	public void removeAccessToken(OAuth2AccessTokenEntity accessToken);
+	void removeAccessToken(OAuth2AccessTokenEntity accessToken);
 
-	public void clearTokensForClient(ClientDetailsEntity client);
+	void clearTokensForClient(ClientDetailsEntity client);
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
+	List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
 
-	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
+	List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 	
-	public Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String name);
+	Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String name);
 	
-	public Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String name);
+	Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String name);
 
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
+	Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
+	Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
 
-	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
+	Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
 
-	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
+	Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
 
-	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();
+	Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();
 
-	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
+	Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
 
-	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
+	Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
 
 	/**
 	 * removes duplicate access tokens.
@@ -78,10 +78,9 @@ public interface OAuth2TokenRepository {
 	 * so that {code removeAccessToken(OAuth2AccessTokenEntity o)} would not to fail. the
 	 * removeAccessToken method has been updated so as it will not fail in the event that an
 	 * accessToken has been duplicated, so this method is unnecessary.
-	 *
 	 */
 	@Deprecated
-	public void clearDuplicateAccessTokens();
+	void clearDuplicateAccessTokens();
 
 	/**
 	 * removes duplicate refresh tokens.
@@ -90,11 +89,10 @@ public interface OAuth2TokenRepository {
 	 * so that {code removeRefreshToken(OAuth2RefreshTokenEntity o)} would not to fail. the
 	 * removeRefreshToken method has been updated so as it will not fail in the event that
 	 * refreshToken has been duplicated, so this method is unnecessary.
-	 *
 	 */
 	@Deprecated
-	public void clearDuplicateRefreshTokens();
+	void clearDuplicateRefreshTokens();
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
+	List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
 
 }

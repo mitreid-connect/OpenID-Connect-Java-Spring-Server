@@ -27,47 +27,18 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * @author jricher
- *
  */
 public interface DeviceCodeService {
 
-	/**
-	 * @param userCode
-	 * @return
-	 */
-	public DeviceCode lookUpByUserCode(String userCode);
+	DeviceCode lookUpByUserCode(String userCode);
 
-	/**
-	 * @param dc
-	 * @param o2Auth
-	 */
-	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication o2Auth);
+	DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication o2Auth);
 
-	/**
-	 * @param deviceCode
-	 * @param client
-	 * @return
-	 */
-	public DeviceCode findDeviceCode(String deviceCode, ClientDetails client);
+	DeviceCode findDeviceCode(String deviceCode, ClientDetails client);
 
+	void clearDeviceCode(String deviceCode, ClientDetails client);
 
-	/**
-	 * 
-	 * @param deviceCode
-	 * @param client
-	 */
-	public void clearDeviceCode(String deviceCode, ClientDetails client);
-	
-	/**
-	 * @param deviceCode
-	 * @param userCode
-	 * @param requestedScopes
-	 * @param client
-	 * @param parameters
-	 * @return
-	 */
-	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) throws DeviceCodeCreationException;
+	DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) throws DeviceCodeCreationException;
 
-
-	public void clearExpiredDeviceCodes();
+	void clearExpiredDeviceCodes();
 }

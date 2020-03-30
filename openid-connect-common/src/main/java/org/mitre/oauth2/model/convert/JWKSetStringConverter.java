@@ -28,7 +28,6 @@ import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
- *
  */
 @Converter
 public class JWKSetStringConverter implements AttributeConverter<JWKSet, String> {
@@ -37,22 +36,14 @@ public class JWKSetStringConverter implements AttributeConverter<JWKSet, String>
 
 	@Override
 	public String convertToDatabaseColumn(JWKSet attribute) {
-		if (attribute != null) {
-			return attribute.toString();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.toString() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public JWKSet convertToEntityAttribute(String dbData) {
 		if (dbData != null) {
 			try {
-				JWKSet jwks = JWKSet.parse(dbData);
-				return jwks;
+				return JWKSet.parse(dbData);
 			} catch (ParseException e) {
 				logger.error("Unable to parse JWK Set", e);
 				return null;
@@ -60,7 +51,6 @@ public class JWKSetStringConverter implements AttributeConverter<JWKSet, String>
 		} else {
 			return null;
 		}
-
 	}
 
 }

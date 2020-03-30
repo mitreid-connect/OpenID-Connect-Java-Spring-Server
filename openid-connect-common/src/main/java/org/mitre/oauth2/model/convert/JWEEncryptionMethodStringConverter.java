@@ -26,22 +26,12 @@ public class JWEEncryptionMethodStringConverter implements AttributeConverter<En
 
 	@Override
 	public String convertToDatabaseColumn(EncryptionMethod attribute) {
-		if (attribute != null) {
-			return attribute.getName();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.getName() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public EncryptionMethod convertToEntityAttribute(String dbData) {
-		if (dbData != null) {
-			return EncryptionMethod.parse(dbData);
-		} else {
-			return null;
-		}
+		return dbData != null ? EncryptionMethod.parse(dbData) : null;
 	}
+
 }

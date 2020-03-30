@@ -36,7 +36,6 @@ import javax.persistence.Temporal;
  * Entity class for authorization codes
  *
  * @author aanganes
- *
  */
 @Entity
 @Table(name = "authorization_code")
@@ -52,35 +51,18 @@ public class AuthorizationCodeEntity {
 	public static final String PARAM_DATE = "date";
 
 	private Long id;
-
 	private String code;
-
 	private AuthenticationHolderEntity authenticationHolder;
-
 	private Date expiration;
 
-	/**
-	 * Default constructor.
-	 */
-	public AuthorizationCodeEntity() {
+	public AuthorizationCodeEntity() { }
 
-	}
-
-	/**
-	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
-	 *
-	 * @param code 			the authorization code
-	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
-	 */
 	public AuthorizationCodeEntity(String code, AuthenticationHolderEntity authenticationHolder, Date expiration) {
 		this.code = code;
 		this.authenticationHolder = authenticationHolder;
 		this.expiration = expiration;
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -88,42 +70,26 @@ public class AuthorizationCodeEntity {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the code
-	 */
 	@Basic
 	@Column(name = "code")
 	public String getCode() {
 		return code;
 	}
 
-	/**
-	 * @param code the code to set
-	 */
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	/**
-	 * The authentication in place when this token was created.
-	 * @return the authentication
-	 */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
 
-	/**
-	 * @param authentication the authentication to set
-	 */
 	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
 		this.authenticationHolder = authenticationHolder;
 	}
@@ -138,4 +104,5 @@ public class AuthorizationCodeEntity {
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
+
 }

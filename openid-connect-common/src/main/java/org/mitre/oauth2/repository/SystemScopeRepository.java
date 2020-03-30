@@ -26,18 +26,17 @@ import org.mitre.oauth2.model.SystemScope;
 
 /**
  * @author jricher
- *
  */
 public interface SystemScopeRepository {
 
-	public Set<SystemScope> getAll();
+	Set<SystemScope> getAll();
 
-	public SystemScope getById(Long id);
+	SystemScope getById(Long id);
 
-	public SystemScope getByValue(String value);
+	SystemScope getByValue(String value);
 
-	public void remove(SystemScope scope);
+	void remove(SystemScope scope);
 
-	public SystemScope save(SystemScope scope);
+	SystemScope save(SystemScope scope);
 
 }
