@@ -26,22 +26,12 @@ public class JWEAlgorithmStringConverter implements AttributeConverter<JWEAlgori
 
 	@Override
 	public String convertToDatabaseColumn(JWEAlgorithm attribute) {
-		if (attribute != null) {
-			return attribute.getName();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.getName() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public JWEAlgorithm convertToEntityAttribute(String dbData) {
-		if (dbData != null) {
-			return JWEAlgorithm.parse(dbData);
-		} else {
-			return null;
-		}
+		return dbData != null ? JWEAlgorithm.parse(dbData) : null;
 	}
+
 }

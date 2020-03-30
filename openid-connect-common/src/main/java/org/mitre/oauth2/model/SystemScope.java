@@ -32,7 +32,6 @@ import javax.persistence.Table;
 
 /**
  * @author jricher
- *
  */
 @Entity
 @Table(name = "system_scope")
@@ -54,114 +53,73 @@ public class SystemScope {
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
 	private boolean restricted = false; // is this scope restricted to admin-only registration access?
 
-	/**
-	 * Make a blank system scope with no value
-	 */
-	public SystemScope() {
+	public SystemScope() { }
 
-	}
-
-	/**
-	 * Make a system scope with the given scope value
-	 * @param value
-	 */
 	public SystemScope(String value) {
 		this.value = value;
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
-	/**
-	 * @param id the id to set
-	 */
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	/**
-	 * @return the value
-	 */
+
 	@Basic
 	@Column(name = "scope")
 	public String getValue() {
 		return value;
 	}
-	/**
-	 * @param value the value to set
-	 */
+
 	public void setValue(String value) {
 		this.value = value;
 	}
-	/**
-	 * @return the description
-	 */
+
 	@Basic
 	@Column(name = "description")
 	public String getDescription() {
 		return description;
 	}
-	/**
-	 * @param description the description to set
-	 */
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	/**
-	 * @return the icon
-	 */
+
 	@Basic
 	@Column(name = "icon")
 	public String getIcon() {
 		return icon;
 	}
-	/**
-	 * @param icon the icon to set
-	 */
+
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
 
-	/**
-	 * @return the defaultScope
-	 */
 	@Basic
 	@Column(name = "default_scope")
 	public boolean isDefaultScope() {
 		return defaultScope;
 	}
 
-	/**
-	 * @param defaultScope the defaultScope to set
-	 */
 	public void setDefaultScope(boolean defaultScope) {
 		this.defaultScope = defaultScope;
 	}
 
-	/**
-	 * @return the restricted
-	 */
 	@Basic
 	@Column(name = "restricted")
 	public boolean isRestricted() {
 		return restricted;
 	}
 
-	/**
-	 * @param restricted the restricted to set
-	 */
 	public void setRestricted(boolean restricted) {
 		this.restricted = restricted;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -176,9 +134,6 @@ public class SystemScope {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -219,18 +174,12 @@ public class SystemScope {
 			return false;
 		}
 		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		} else if (!value.equals(other.value)) {
-			return false;
+			return other.value == null;
+		} else {
+			return value.equals(other.value);
 		}
-		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "SystemScope [id=" + id + ", value=" + value + ", description="

@@ -45,7 +45,6 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher
- *
  */
 @Entity
 @Table(name = "refresh_token")
@@ -70,27 +69,13 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public static final String PARAM_NAME = "name";
 
 	private Long id;
-
 	private AuthenticationHolderEntity authenticationHolder;
-
 	private ClientDetailsEntity client;
-
-	//JWT-encoded representation of this access token entity
 	private JWT jwt;
-
-	// our refresh tokens might expire
 	private Date expiration;
 
-	/**
-	 *
-	 */
-	public OAuth2RefreshTokenEntity() {
+	public OAuth2RefreshTokenEntity() { }
 
-	}
-
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -98,35 +83,20 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * The authentication in place when the original access token was
-	 * created
-	 *
-	 * @return the authentication
-	 */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
 
-	/**
-	 * @param authentication the authentication to set
-	 */
 	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
 		this.authenticationHolder = authenticationHolder;
 	}
 
-	/**
-	 * Get the JWT-encoded value of this token
-	 */
 	@Override
 	@Transient
 	public String getValue() {
@@ -140,43 +110,25 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 		return expiration;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken#setExpiration(java.util.Date)
-	 */
-
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
 
-	/**
-	 * Has this token expired?
-	 * @return true if it has a timeout set and the timeout has passed
-	 */
 	@Transient
 	public boolean isExpired() {
-		return getExpiration() == null ? false : System.currentTimeMillis() > getExpiration().getTime();
+		return getExpiration() != null && System.currentTimeMillis() > getExpiration().getTime();
 	}
 
-	/**
-	 * @return the client
-	 */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "client_id")
 	public ClientDetailsEntity getClient() {
 		return client;
 	}
 
-	/**
-	 * @param client the client to set
-	 */
 	public void setClient(ClientDetailsEntity client) {
 		this.client = client;
 	}
 
-	/**
-	 * Get the JWT object directly
-	 * @return the jwt
-	 */
 	@Basic
 	@Column(name="token_value")
 	@Convert(converter = JWTStringConverter.class)
@@ -184,9 +136,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 		return jwt;
 	}
 
-	/**
-	 * @param jwt the jwt to set
-	 */
 	public void setJwt(JWT jwt) {
 		this.jwt = jwt;
 	}

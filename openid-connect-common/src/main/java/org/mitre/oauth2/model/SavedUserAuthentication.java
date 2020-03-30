@@ -41,7 +41,6 @@ import org.springframework.security.core.GrantedAuthority;
  * This class stands in for an original Authentication object.
  *
  * @author jricher
- *
  */
 @Entity
 @Table(name="saved_user_auth")
@@ -50,18 +49,11 @@ public class SavedUserAuthentication implements Authentication {
 	private static final long serialVersionUID = -1804249963940323488L;
 
 	private Long id;
-
 	private String name;
-
 	private Collection<GrantedAuthority> authorities;
-
 	private boolean authenticated;
-
 	private String sourceClass;
 
-	/**
-	 * Create a Saved Auth from an existing Auth token
-	 */
 	public SavedUserAuthentication(Authentication src) {
 		setName(src.getName());
 		setAuthorities(new HashSet<>(src.getAuthorities()));
@@ -75,16 +67,8 @@ public class SavedUserAuthentication implements Authentication {
 		}
 	}
 
-	/**
-	 * Create an empty saved auth
-	 */
-	public SavedUserAuthentication() {
+	public SavedUserAuthentication() { }
 
-	}
-
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -92,9 +76,6 @@ public class SavedUserAuthentication implements Authentication {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -108,10 +89,7 @@ public class SavedUserAuthentication implements Authentication {
 
 	@Override
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="saved_user_auth_authority",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
+	@CollectionTable(name="saved_user_auth_authority", joinColumns=@JoinColumn(name="owner_id"))
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
 	public Collection<GrantedAuthority> getAuthorities() {
@@ -148,35 +126,22 @@ public class SavedUserAuthentication implements Authentication {
 		this.authenticated = isAuthenticated;
 	}
 
-	/**
-	 * @return the sourceClass
-	 */
 	@Basic
 	@Column(name="source_class")
 	public String getSourceClass() {
 		return sourceClass;
 	}
 
-	/**
-	 * @param sourceClass the sourceClass to set
-	 */
 	public void setSourceClass(String sourceClass) {
 		this.sourceClass = sourceClass;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @param authorities the authorities to set
-	 */
 	public void setAuthorities(Collection<GrantedAuthority> authorities) {
 		this.authorities = authorities;
 	}
-
 
 }

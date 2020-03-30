@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * This class does allow some extension data to be lost.
  *
  * @author jricher
- *
  */
 @Converter
 public class SerializableStringConverter implements AttributeConverter<Serializable, String> {
@@ -51,7 +50,7 @@ public class SerializableStringConverter implements AttributeConverter<Serializa
 		} else if (attribute instanceof Date) {
 			return Long.toString(((Date)attribute).getTime());
 		} else {
-			logger.warn("Dropping data from request: " + attribute + " :: " + attribute.getClass());
+			logger.warn("Dropping data from request: {} :: {}", attribute, attribute.getClass());
 			return null;
 		}
 	}

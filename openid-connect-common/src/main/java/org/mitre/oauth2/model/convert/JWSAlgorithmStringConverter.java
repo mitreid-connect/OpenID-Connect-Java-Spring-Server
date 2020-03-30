@@ -26,22 +26,12 @@ public class JWSAlgorithmStringConverter implements AttributeConverter<JWSAlgori
 
 	@Override
 	public String convertToDatabaseColumn(JWSAlgorithm attribute) {
-		if (attribute != null) {
-			return attribute.getName();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.getName() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public JWSAlgorithm convertToEntityAttribute(String dbData) {
-		if (dbData != null) {
-			return JWSAlgorithm.parse(dbData);
-		} else {
-			return null;
-		}
+		return dbData != null ? JWSAlgorithm.parse(dbData) : null;
 	}
+
 }

@@ -30,23 +30,12 @@ public class PKCEAlgorithmStringConverter implements AttributeConverter<PKCEAlgo
 
 	@Override
 	public String convertToDatabaseColumn(PKCEAlgorithm attribute) {
-		if (attribute != null) {
-			return attribute.getName();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.getName() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public PKCEAlgorithm convertToEntityAttribute(String dbData) {
-		if (dbData != null) {
-			return PKCEAlgorithm.parse(dbData);
-		} else {
-			return null;
-		}
+		return dbData != null ? PKCEAlgorithm.parse(dbData) : null;
 	}
 
 }

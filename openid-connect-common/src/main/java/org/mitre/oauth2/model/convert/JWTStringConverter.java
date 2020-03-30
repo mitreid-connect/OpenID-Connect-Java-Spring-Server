@@ -29,7 +29,6 @@ import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
- *
  */
 @Converter
 public class JWTStringConverter implements AttributeConverter<JWT, String> {
@@ -38,22 +37,14 @@ public class JWTStringConverter implements AttributeConverter<JWT, String> {
 
 	@Override
 	public String convertToDatabaseColumn(JWT attribute) {
-		if (attribute != null) {
-			return attribute.serialize();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.serialize() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public JWT convertToEntityAttribute(String dbData) {
 		if (dbData != null) {
 			try {
-				JWT jwt = JWTParser.parse(dbData);
-				return jwt;
+				return JWTParser.parse(dbData);
 			} catch (ParseException e) {
 				logger.error("Unable to parse JWT", e);
 				return null;

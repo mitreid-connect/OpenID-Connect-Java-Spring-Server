@@ -30,16 +30,16 @@ import org.mitre.openid.connect.model.UserInfo;
  */
 public interface IntrospectionResultAssembler {
 
-	public String TOKEN_TYPE = "token_type";
-	public String CLIENT_ID = "client_id";
-	public String USER_ID = "user_id";
-	public String SUB = "sub";
-	public String EXP = "exp";
-	public String EXPIRES_AT = "expires_at";
-	public String SCOPE_SEPARATOR = " ";
-	public String SCOPE = "scope";
-	public String ACTIVE = "active";
-	public DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+	String TOKEN_TYPE = "token_type";
+	String CLIENT_ID = "client_id";
+	String USER_ID = "user_id";
+	String SUB = "sub";
+	String EXP = "exp";
+	String EXPIRES_AT = "expires_at";
+	String SCOPE_SEPARATOR = " ";
+	String SCOPE = "scope";
+	String ACTIVE = "active";
+	DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
 
 	/**
 	 * Assemble a token introspection result from the given access token and user info.
