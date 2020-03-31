@@ -23,7 +23,6 @@ import org.mitre.uma.model.SavedRegisteredClient;
 
 /**
  * @author jricher
- *
  */
 public interface SavedRegisteredClientService {
 

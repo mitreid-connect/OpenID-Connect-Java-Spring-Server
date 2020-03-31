@@ -44,7 +44,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ResourceSet save(ResourceSet rs) {
-		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
+		return JpaUtil.saveOrUpdate(em, rs);
 	}
 
 	@Override

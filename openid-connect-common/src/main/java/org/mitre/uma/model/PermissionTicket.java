@@ -66,9 +66,6 @@ public class PermissionTicket {
 	private Date expiration;
 	private Collection<Claim> claimsSupplied;
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -76,48 +73,30 @@ public class PermissionTicket {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the permission
-	 */
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "permission_id")
 	public Permission getPermission() {
 		return permission;
 	}
 
-	/**
-	 * @param permission the permission to set
-	 */
 	public void setPermission(Permission permission) {
 		this.permission = permission;
 	}
 
-	/**
-	 * @return the ticket
-	 */
 	@Basic
 	@Column(name = "ticket")
 	public String getTicket() {
 		return ticket;
 	}
 
-	/**
-	 * @param ticket the ticket to set
-	 */
 	public void setTicket(String ticket) {
 		this.ticket = ticket;
 	}
 
-	/**
-	 * @return the expiration
-	 */
 	@Basic
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "expiration")
@@ -125,32 +104,19 @@ public class PermissionTicket {
 		return expiration;
 	}
 
-	/**
-	 * @param expiration the expiration to set
-	 */
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
 
-	/**
-	 * @return the claimsSupplied
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "claim_to_permission_ticket",
-			joinColumns = @JoinColumn(name = "permission_ticket_id"),
-			inverseJoinColumns = @JoinColumn(name = "claim_id")
-			)
+	@JoinTable(name = "claim_to_permission_ticket", joinColumns = @JoinColumn(name = "permission_ticket_id"),
+			inverseJoinColumns = @JoinColumn(name = "claim_id"))
 	public Collection<Claim> getClaimsSupplied() {
 		return claimsSupplied;
 	}
 
-	/**
-	 * @param claimsSupplied the claimsSupplied to set
-	 */
 	public void setClaimsSupplied(Collection<Claim> claimsSupplied) {
 		this.claimsSupplied = claimsSupplied;
 	}
-
 
 }

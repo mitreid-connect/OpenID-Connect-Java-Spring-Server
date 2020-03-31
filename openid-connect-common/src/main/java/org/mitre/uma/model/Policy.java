@@ -38,7 +38,6 @@ import javax.persistence.Table;
  * A set of claims required to fulfill a given permission.
  *
  * @author jricher
- *
  */
 @Entity
 @Table(name = "policy")
@@ -49,9 +48,6 @@ public class Policy {
 	private Collection<Claim> claimsRequired;
 	private Set<String> scopes;
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -59,80 +55,47 @@ public class Policy {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	@Basic
 	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the claimsRequired
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "claim_to_policy",
-			joinColumns = @JoinColumn(name = "policy_id"),
-			inverseJoinColumns = @JoinColumn(name = "claim_id")
-			)
+	@JoinTable(name = "claim_to_policy", joinColumns = @JoinColumn(name = "policy_id"),
+			inverseJoinColumns = @JoinColumn(name = "claim_id"))
 	public Collection<Claim> getClaimsRequired() {
 		return claimsRequired;
 	}
 
-	/**
-	 * @param claimsRequired the claimsRequired to set
-	 */
 	public void setClaimsRequired(Collection<Claim> claimsRequired) {
 		this.claimsRequired = claimsRequired;
 	}
 
-	/**
-	 * @return the scopes
-	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
-	@CollectionTable(
-			name = "policy_scope",
-			joinColumns = @JoinColumn(name = "owner_id")
-			)
+	@CollectionTable(name = "policy_scope", joinColumns = @JoinColumn(name = "owner_id"))
 	public Set<String> getScopes() {
 		return scopes;
 	}
 
-	/**
-	 * @param scopes the scopes to set
-	 */
 	public void setScopes(Set<String> scopes) {
 		this.scopes = scopes;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "Policy [id=" + id + ", name=" + name + ", claimsRequired=" + claimsRequired + ", scopes=" + scopes + "]";
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -144,9 +107,6 @@ public class Policy {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

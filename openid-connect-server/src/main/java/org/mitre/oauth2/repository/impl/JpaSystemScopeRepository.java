@@ -96,7 +96,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope save(SystemScope scope) {
-		return saveOrUpdate(scope.getId(), em, scope);
+		return saveOrUpdate(em, scope);
 	}
 
 }

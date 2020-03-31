@@ -37,7 +37,6 @@ import com.google.gson.JsonElement;
 
 /**
  * @author jricher
- *
  */
 @Entity
 @Table(name = "claim")
@@ -51,129 +50,86 @@ public class Claim {
 	private Set<String> claimTokenFormat;
 	private Set<String> issuer;
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
-	/**
-	 * @param id the id to set
-	 */
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	/**
-	 * @return the name
-	 */
+
 	@Basic
 	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
-	/**
-	 * @param name the name to set
-	 */
+
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the friendlyName
-	 */
+
 	@Basic
 	@Column(name = "friendly_name")
 	public String getFriendlyName() {
 		return friendlyName;
 	}
-	/**
-	 * @param friendlyName the friendlyName to set
-	 */
+
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
 	}
 
-	/**
-	 * @return the claimType
-	 */
 	@Basic
 	@Column(name = "claim_type")
 	public String getClaimType() {
 		return claimType;
 	}
-	/**
-	 * @param claimType the claimType to set
-	 */
+
 	public void setClaimType(String claimType) {
 		this.claimType = claimType;
 	}
 
-	/**
-	 * @return the claimTokenFormat
-	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "claim_token_format")
-	@CollectionTable(
-			name = "claim_token_format",
-			joinColumns = @JoinColumn(name = "owner_id")
-			)
+	@CollectionTable(name = "claim_token_format", joinColumns = @JoinColumn(name = "owner_id"))
 	public Set<String> getClaimTokenFormat() {
 		return claimTokenFormat;
 	}
-	/**
-	 * @param claimTokenFormat the claimTokenFormat to set
-	 */
+
 	public void setClaimTokenFormat(Set<String> claimTokenFormat) {
 		this.claimTokenFormat = claimTokenFormat;
 	}
 
-	/**
-	 * @return the issuer
-	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "issuer")
-	@CollectionTable(
-			name = "claim_issuer",
-			joinColumns = @JoinColumn(name = "owner_id")
-			)
+	@CollectionTable(name = "claim_issuer", joinColumns = @JoinColumn(name = "owner_id"))
 	public Set<String> getIssuer() {
 		return issuer;
 	}
-	/**
-	 * @param issuer the issuer to set
-	 */
+
 	public void setIssuer(Set<String> issuer) {
 		this.issuer = issuer;
 	}
 
-	/**
-	 * @return the value
-	 */
 	@Basic
 	@Column(name = "claim_value")
 	@Convert(converter = JsonElementStringConverter.class)
 	public JsonElement getValue() {
 		return value;
 	}
-	/**
-	 * @param value the value to set
-	 */
+
 	public void setValue(JsonElement value) {
 		this.value = value;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+
 	@Override
 	public String toString() {
 		return "Claim [id=" + id + ", name=" + name + ", friendlyName=" + friendlyName + ", claimType=" + claimType + ", value=" + value + ", claimTokenFormat=" + claimTokenFormat + ", issuer=" + issuer + "]";
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -187,9 +143,7 @@ public class Claim {
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -253,4 +207,5 @@ public class Claim {
 		}
 		return true;
 	}
+
 }

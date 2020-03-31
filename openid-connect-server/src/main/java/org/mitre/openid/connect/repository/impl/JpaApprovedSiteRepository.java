@@ -70,7 +70,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
-		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
+		return saveOrUpdate(manager, approvedSite);
 	}
 
 	@Override
