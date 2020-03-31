@@ -32,13 +32,9 @@ import com.google.common.base.Strings;
  * Provides utility methods for normalizing and parsing URIs for use with Webfinger Discovery.
  *
  * @author wkim
- *
  */
 public class WebfingerURLNormalizer {
 
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
 
 	// pattern used to parse user input; we can't use the built-in java URI parser
@@ -55,14 +51,7 @@ public class WebfingerURLNormalizer {
 			"$"
 			);
 
-
-
-	/**
-	 * Private constructor to prevent instantiation.
-	 */
-	private WebfingerURLNormalizer() {
-		// intentionally blank
-	}
+	private WebfingerURLNormalizer() { }
 
 	/**
 	 * Normalize the resource string as per OIDC Discovery.
@@ -73,11 +62,10 @@ public class WebfingerURLNormalizer {
 		// try to parse the URI
 		// NOTE: we can't use the Java built-in URI class because it doesn't split the parts appropriately
 
-		if (Strings.isNullOrEmpty(identifier)) {
+		if (StringUtils.isEmpty(identifier)) {
 			logger.warn("Can't normalize null or empty URI: " + identifier);
-			return null; // nothing we can do
+			return null;
 		} else {
-
 			//UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
 			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
@@ -87,15 +75,14 @@ public class WebfingerURLNormalizer {
 				builder.userInfo(m.group(6));
 				builder.host(m.group(8));
 				String port = m.group(10);
-				if (!Strings.isNullOrEmpty(port)) {
+				if (!StringUtils.isEmpty(port)) {
 					builder.port(Integer.parseInt(port));
 				}
 				builder.path(m.group(11));
 				builder.query(m.group(13));
 				builder.fragment(m.group(15)); // we throw away the hash, but this is the group it would be if we kept it
 			} else {
-				// doesn't match the pattern, throw it out
-				logger.warn("Parser couldn't match input: " + identifier);
+				logger.warn("Parser couldn't match input: {}", identifier);
 				return null;
 			}
 
@@ -110,7 +97,6 @@ public class WebfingerURLNormalizer {
 					// scheme empty, userinfo is not empty, path/query/port are empty
 					// set to "acct" (rule 2)
 					builder.scheme("acct");
-
 				} else {
 					// scheme is empty, but rule 2 doesn't apply
 					// set scheme to "https" (rule 3)
@@ -123,39 +109,34 @@ public class WebfingerURLNormalizer {
 
 			return builder.build();
 		}
-
-
 	}
 
-
 	public static String serializeURL(UriComponents uri) {
-		if (uri.getScheme() != null &&
-				(uri.getScheme().equals("acct") ||
-						uri.getScheme().equals("mailto") ||
-						uri.getScheme().equals("tel") ||
-						uri.getScheme().equals("device")
-						)) {
-
+		String scheme = uri.getScheme();
+		if (scheme != null &&
+				(scheme.equals("acct") || scheme.equals("mailto") || scheme.equals("tel") || scheme.equals("device"))) {
 			// serializer copied from HierarchicalUriComponents but with "//" removed
-
 			StringBuilder uriBuilder = new StringBuilder();
 
-			if (uri.getScheme() != null) {
-				uriBuilder.append(uri.getScheme());
-				uriBuilder.append(':');
-			}
+			uriBuilder.append(scheme);
+			uriBuilder.append(':');
 
-			if (uri.getUserInfo() != null || uri.getHost() != null) {
-				if (uri.getUserInfo() != null) {
-					uriBuilder.append(uri.getUserInfo());
+			String userInfo = uri.getUserInfo();
+			String host = uri.getHost();
+			if (userInfo != null || host != null) {
+				if (userInfo != null) {
+					uriBuilder.append(userInfo);
 					uriBuilder.append('@');
 				}
-				if (uri.getHost() != null) {
-					uriBuilder.append(uri.getHost());
+
+				if (host != null) {
+					uriBuilder.append(host);
 				}
-				if (uri.getPort() != -1) {
+
+				int port = uri.getPort();
+				if (port != -1) {
 					uriBuilder.append(':');
-					uriBuilder.append(uri.getPort());
+					uriBuilder.append(port);
 				}
 			}
 
@@ -173,17 +154,16 @@ public class WebfingerURLNormalizer {
 				uriBuilder.append(query);
 			}
 
-			if (uri.getFragment() != null) {
+			String fragment = uri.getFragment();
+			if (fragment != null) {
 				uriBuilder.append('#');
-				uriBuilder.append(uri.getFragment());
+				uriBuilder.append(fragment);
 			}
 
 			return uriBuilder.toString();
 		} else {
 			return uri.toUriString();
 		}
-
 	}
-
 
 }

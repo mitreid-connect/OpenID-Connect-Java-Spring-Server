@@ -27,7 +27,6 @@ import com.nimbusds.jose.jwk.JWK;
 
 /**
  * @author wkim
- *
  */
 public interface JWTEncryptionAndDecryptionService {
 
@@ -37,7 +36,7 @@ public interface JWTEncryptionAndDecryptionService {
 	 * Otherwise, if JWT claims are the payload, then use the JWEObject subclass EncryptedJWT instead.
 	 * @param jwt
 	 */
-	public void encryptJwt(JWEObject jwt);
+	void encryptJwt(JWEObject jwt);
 
 	/**
 	 * Decrypts the JWT in place with the default decrypter.
@@ -45,24 +44,24 @@ public interface JWTEncryptionAndDecryptionService {
 	 *  Otherwise, if JWT claims are the payload, then use the JWEObject subclass EncryptedJWT instead.
 	 * @param jwt
 	 */
-	public void decryptJwt(JWEObject jwt);
+	void decryptJwt(JWEObject jwt);
 
 	/**
 	 * Get all public keys for this service, mapped by their Key ID
 	 */
-	public Map<String, JWK> getAllPublicKeys();
+	Map<String, JWK> getAllPublicKeys();
 
 	/**
 	 * Get the list of all encryption algorithms supported by this service.
-	 * @return
+	 * @return List of supported encryption algorithms.
 	 */
-	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported();
+	Collection<JWEAlgorithm> getAllEncryptionAlgsSupported();
 
 	/**
 	 * Get the list of all encryption methods supported by this service.
-	 * @return
+	 * @return List of supported encryption memthods.
 	 */
-	public Collection<EncryptionMethod> getAllEncryptionEncsSupported();
+	Collection<EncryptionMethod> getAllEncryptionEncsSupported();
 
 	/**
 	 * TODO add functionality for encrypting and decrypting using a specified key id.

@@ -133,8 +133,6 @@ public abstract class AbstractPageOperationTemplate<T> {
 		finalReport(operationsCompleted, exceptionsSwallowedCount, exceptionsSwallowedClasses);
 	}
 
-
-
 	/**
 	 * method responsible for fetching
 	 * a page of items.
@@ -188,18 +186,10 @@ public abstract class AbstractPageOperationTemplate<T> {
 		this.swallowExceptions = swallowExceptions;
 	}
 
-
-	/**
-	 * @return the operationName
-	 */
 	public String getOperationName() {
 		return operationName;
 	}
 
-
-	/**
-	 * @param operationName the operationName to set
-	 */
 	public void setOperationName(String operationName) {
 		this.operationName = operationName;
 	}

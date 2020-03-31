@@ -32,7 +32,6 @@ import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
@@ -50,43 +49,30 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.util.StringUtils;
 
 /**
  * @author wkim
- *
  */
 public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
 
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
-	// map of identifier to encrypter
 	private Map<String, JWEEncrypter> encrypters = new HashMap<>();
-
-	// map of identifier to decrypter
 	private Map<String, JWEDecrypter> decrypters = new HashMap<>();
-
 	private String defaultEncryptionKeyId;
-
 	private String defaultDecryptionKeyId;
-
 	private JWEAlgorithm defaultAlgorithm;
-
-	// map of identifier to key
 	private Map<String, JWK> keys = new HashMap<>();
 
 	/**
 	 * Build this service based on the keys given. All public keys will be used to make encrypters,
 	 * all private keys will be used to make decrypters.
 	 *
-	 * @param keys
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeySpecException
-	 * @throws JOSEException
+	 * @param keys Map of keys
+	 * @throws JOSEException Javascript Object Signing and Encryption (JOSE) exception.
 	 */
-	public DefaultJWTEncryptionAndDecryptionService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+	public DefaultJWTEncryptionAndDecryptionService(Map<String, JWK> keys) throws JOSEException {
 		this.keys = keys;
 		buildEncryptersAndDecrypters();
 	}
@@ -95,16 +81,12 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	 * Build this service based on the given keystore. All keys must have a key
 	 * id ({@code kid}) field in order to be used.
 	 *
-	 * @param keyStore
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeySpecException
-	 * @throws JOSEException
+	 * @param keyStore JWK KeyStore
+	 * @throws JOSEException Javascript Object Signing and Encryption (JOSE) exception.
 	 */
-	public DefaultJWTEncryptionAndDecryptionService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
-
-		// convert all keys in the keystore to a map based on key id
+	public DefaultJWTEncryptionAndDecryptionService(JWKSetKeyStore keyStore) throws JOSEException {
 		for (JWK key : keyStore.getKeys()) {
-			if (!Strings.isNullOrEmpty(key.getKeyID())) {
+			if (!StringUtils.isEmpty(key.getKeyID())) {
 				this.keys.put(key.getKeyID(), key);
 			} else {
 				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
@@ -112,25 +94,6 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		}
 
 		buildEncryptersAndDecrypters();
-
-	}
-
-
-	@PostConstruct
-	public void afterPropertiesSet() {
-
-		if (keys == null) {
-			throw new IllegalArgumentException("Encryption and decryption service must have at least one key configured.");
-		}
-		try {
-			buildEncryptersAndDecrypters();
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Encryption and decryption service could not find given algorithm.");
-		} catch (InvalidKeySpecException e) {
-			throw new IllegalArgumentException("Encryption and decryption service saw an invalid key specification.");
-		} catch (JOSEException e) {
-			throw new IllegalArgumentException("Encryption and decryption service was unable to process JOSE object.");
-		}
 	}
 
 	public String getDefaultEncryptionKeyId() {
@@ -171,9 +134,19 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		this.defaultAlgorithm = defaultAlgorithm;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#encryptJwt(com.nimbusds.jwt.EncryptedJWT)
-	 */
+	@PostConstruct
+	public void afterPropertiesSet() {
+		if (keys == null) {
+			throw new IllegalArgumentException("Encryption and decryption service must have at least one key configured.");
+		}
+
+		try {
+			buildEncryptersAndDecrypters();
+		} catch (JOSEException e) {
+			throw new IllegalArgumentException("Encryption and decryption service was unable to process JOSE object.");
+		}
+	}
+
 	@Override
 	public void encryptJwt(JWEObject jwt) {
 		if (getDefaultEncryptionKeyId() == null) {
@@ -185,15 +158,10 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.encrypt(encrypter);
 		} catch (JOSEException e) {
-
 			logger.error("Failed to encrypt JWT, error was: ", e);
 		}
-
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#decryptJwt(com.nimbusds.jwt.EncryptedJWT)
-	 */
 	@Override
 	public void decryptJwt(JWEObject jwt) {
 		if (getDefaultDecryptionKeyId() == null) {
@@ -205,88 +173,8 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.decrypt(decrypter);
 		} catch (JOSEException e) {
-
 			logger.error("Failed to decrypt JWT, error was: ", e);
 		}
-
-	}
-
-	/**
-	 * Builds all the encrypters and decrypters for this service based on the key map.
-	 * @throws
-	 * @throws InvalidKeySpecException
-	 * @throws NoSuchAlgorithmException
-	 * @throws JOSEException
-	 */
-	private void buildEncryptersAndDecrypters() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
-
-		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
-
-			String id = jwkEntry.getKey();
-			JWK jwk = jwkEntry.getValue();
-
-			if (jwk instanceof RSAKey) {
-				// build RSA encrypters and decrypters
-
-				RSAEncrypter encrypter = new RSAEncrypter((RSAKey) jwk); // there should always at least be the public key
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				encrypters.put(id, encrypter);
-
-				if (jwk.isPrivate()) { // we can decrypt!
-					RSADecrypter decrypter = new RSADecrypter((RSAKey) jwk);
-					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-					decrypters.put(id, decrypter);
-				} else {
-					logger.warn("No private key for key #" + jwk.getKeyID());
-				}
-			} else if (jwk instanceof ECKey) {
-
-				// build EC Encrypters and decrypters
-
-				ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				encrypters.put(id, encrypter);
-
-				if (jwk.isPrivate()) { // we can decrypt too
-					ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
-					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-					decrypters.put(id, decrypter);
-				} else {
-					logger.warn("No private key for key # " + jwk.getKeyID());
-				}
-
-			} else if (jwk instanceof OctetSequenceKey) {
-				// build symmetric encrypters and decrypters
-
-				DirectEncrypter encrypter = new DirectEncrypter((OctetSequenceKey) jwk);
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				DirectDecrypter decrypter = new DirectDecrypter((OctetSequenceKey) jwk);
-				decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-
-				encrypters.put(id, encrypter);
-				decrypters.put(id, decrypter);
-
-			} else {
-				logger.warn("Unknown key type: " + jwk);
-			}
-
-		}
-	}
-
-	@Override
-	public Map<String, JWK> getAllPublicKeys() {
-		Map<String, JWK> pubKeys = new HashMap<>();
-
-		// pull out all public keys
-		for (String keyId : keys.keySet()) {
-			JWK key = keys.get(keyId);
-			JWK pub = key.toPublicJWK();
-			if (pub != null) {
-				pubKeys.put(keyId, pub);
-			}
-		}
-
-		return pubKeys;
 	}
 
 	@Override
@@ -304,9 +192,6 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		return algs;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#getAllEncryptionEncsSupported()
-	 */
 	@Override
 	public Collection<EncryptionMethod> getAllEncryptionEncsSupported() {
 		Set<EncryptionMethod> encs = new HashSet<>();
@@ -322,5 +207,67 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		return encs;
 	}
 
+	@Override
+	public Map<String, JWK> getAllPublicKeys() {
+		Map<String, JWK> pubKeys = new HashMap<>();
+
+		for (String keyId : keys.keySet()) {
+			JWK key = keys.get(keyId);
+			JWK pub = key.toPublicJWK();
+			if (pub != null) {
+				pubKeys.put(keyId, pub);
+			}
+		}
+
+		return pubKeys;
+	}
+
+	/**
+	 * Builds all the encrypters and decrypters for this service based on the key map.
+	 * @throws
+	 * @throws JOSEException
+	 */
+	private void buildEncryptersAndDecrypters() throws JOSEException {
+		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
+			String id = jwkEntry.getKey();
+			JWK jwk = jwkEntry.getValue();
+
+			if (jwk instanceof RSAKey) {
+				RSAEncrypter encrypter = new RSAEncrypter((RSAKey) jwk);
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+				encrypters.put(id, encrypter);
+
+				if (jwk.isPrivate()) { // we can decrypt!
+					RSADecrypter decrypter = new RSADecrypter((RSAKey) jwk);
+					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+					decrypters.put(id, decrypter);
+				} else {
+					logger.warn("No private key for key #{}", jwk.getKeyID());
+				}
+			} else if (jwk instanceof ECKey) {
+				ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+				encrypters.put(id, encrypter);
+
+				if (jwk.isPrivate()) { // we can decrypt too
+					ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
+					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+					decrypters.put(id, decrypter);
+				} else {
+					logger.warn("No private key for key #{}", jwk.getKeyID());
+				}
+			} else if (jwk instanceof OctetSequenceKey) {
+				DirectEncrypter encrypter = new DirectEncrypter((OctetSequenceKey) jwk);
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+				DirectDecrypter decrypter = new DirectDecrypter((OctetSequenceKey) jwk);
+				decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+
+				encrypters.put(id, encrypter);
+				decrypters.put(id, decrypter);
+			} else {
+				logger.warn("Unknown key type: {}", jwk);
+			}
+		}
+	}
 
 }

@@ -16,28 +16,24 @@
 
 package org.mitre.jwt.assertion.impl;
 
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.SignedJWT;
+import org.mitre.jwt.assertion.AbstractAssertionValidator;
 import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
-import com.google.common.base.Strings;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Checks to see if the assertion was signed by a particular authority available from a whitelist
+ * Checks to see if the assertion has been signed by a particular authority available from a whitelist
  * @author jricher
- *
  */
-public class WhitelistedIssuerAssertionValidator implements AssertionValidator {
+public class WhitelistedIssuerAssertionValidator extends AbstractAssertionValidator implements AssertionValidator {
 
 	private static Logger logger = LoggerFactory.getLogger(WhitelistedIssuerAssertionValidator.class);
 
@@ -45,60 +41,43 @@ public class WhitelistedIssuerAssertionValidator implements AssertionValidator {
 	 * Map of issuer -> JWKSetUri
 	 */
 	private Map<String, String> whitelist = new HashMap<>();
+	private JWKSetCacheService jwkCache;
 
-	/**
-	 * @return the whitelist
-	 */
 	public Map<String, String> getWhitelist() {
 		return whitelist;
 	}
 
-	/**
-	 * @param whitelist the whitelist to set
-	 */
 	public void setWhitelist(Map<String, String> whitelist) {
 		this.whitelist = whitelist;
 	}
 
-	@Autowired
-	private JWKSetCacheService jwkCache;
+	public JWKSetCacheService getJwkCache() {
+		return jwkCache;
+	}
+
+	public void setJwkCache(JWKSetCacheService jwkCache) {
+		this.jwkCache = jwkCache;
+	}
 
 	@Override
 	public boolean isValid(JWT assertion) {
-
-		if (!(assertion instanceof SignedJWT)) {
-			// unsigned assertion
-			return false;
-		}
-
-		JWTClaimsSet claims;
-		try {
-			claims = assertion.getJWTClaimsSet();
-		} catch (ParseException e) {
-			logger.debug("Invalid assertion claims");
-			return false;
-		}
-
-		if (Strings.isNullOrEmpty(claims.getIssuer())) {
+		String issuer = extractIssuer(assertion);
+		if (StringUtils.isEmpty(issuer)) {
 			logger.debug("No issuer for assertion, rejecting");
 			return false;
-		}
-
-		if (!whitelist.containsKey(claims.getIssuer())) {
+		} else if (!whitelist.containsKey(issuer)) {
 			logger.debug("Issuer is not in whitelist, rejecting");
 			return false;
 		}
 
-		String jwksUri = whitelist.get(claims.getIssuer());
-
-		JWTSigningAndValidationService validator = jwkCache.getValidator(jwksUri);
-
-		if (validator.validateSignature((SignedJWT) assertion)) {
-			return true;
-		} else {
+		String jwksUri = whitelist.getOrDefault(issuer, null);
+		if (jwksUri == null) {
 			return false;
 		}
 
+		JWTSigningAndValidationService validator = jwkCache.getValidator(jwksUri);
+
+		return validator.validateSignature((SignedJWT) assertion);
 	}
 
 }

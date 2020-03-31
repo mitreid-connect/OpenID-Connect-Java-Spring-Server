@@ -47,4 +47,5 @@ public class DefaultPageCriteria implements PageCriteria {
 	public int getPageSize() {
 		return pageSize;
 	}
+
 }
