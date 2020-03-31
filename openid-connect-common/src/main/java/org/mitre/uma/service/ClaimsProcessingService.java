@@ -21,11 +21,9 @@ import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 
 /**
- *
  * Processes claims presented during an UMA transaction.
  *
  * @author jricher
- *
  */
 public interface ClaimsProcessingService {
 
@@ -39,6 +37,6 @@ public interface ClaimsProcessingService {
 	 * @param ticket the supplied claims to test
 	 * @return the result of the claims processing action
 	 */
-	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket);
+	ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket);
 
 }

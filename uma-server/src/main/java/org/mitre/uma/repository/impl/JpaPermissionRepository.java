@@ -43,7 +43,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public PermissionTicket save(PermissionTicket p) {
-		return JpaUtil.saveOrUpdate(p.getId(), em, p);
+		return JpaUtil.saveOrUpdate(em, p);
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +71,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public Permission saveRawPermission(Permission p) {
-		return JpaUtil.saveOrUpdate(p.getId(), em, p);
+		return JpaUtil.saveOrUpdate(em, p);
 	}
 
 	/* (non-Javadoc)

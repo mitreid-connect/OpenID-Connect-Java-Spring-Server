@@ -54,7 +54,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Transactional(value="defaultTransactionManager")
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode) {
 
-		return JpaUtil.saveOrUpdate(authorizationCode.getId(), manager, authorizationCode);
+		return JpaUtil.saveOrUpdate(manager, authorizationCode);
 
 	}
 

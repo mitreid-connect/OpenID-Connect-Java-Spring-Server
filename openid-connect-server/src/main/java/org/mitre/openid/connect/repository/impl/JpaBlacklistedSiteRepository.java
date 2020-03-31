@@ -84,7 +84,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public BlacklistedSite save(BlacklistedSite blacklistedSite) {
-		return saveOrUpdate(blacklistedSite.getId(), manager, blacklistedSite);
+		return saveOrUpdate(manager, blacklistedSite);
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +95,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	public BlacklistedSite update(BlacklistedSite oldBlacklistedSite, BlacklistedSite blacklistedSite) {
 
 		blacklistedSite.setId(oldBlacklistedSite.getId());
-		return saveOrUpdate(oldBlacklistedSite.getId(), manager, blacklistedSite);
+		return saveOrUpdate(manager, blacklistedSite);
 
 	}
 

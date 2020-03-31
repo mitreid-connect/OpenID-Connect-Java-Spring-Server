@@ -65,7 +65,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
-		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
+		return JpaUtil.saveOrUpdate(manager, a);
 	}
 
 	@Override

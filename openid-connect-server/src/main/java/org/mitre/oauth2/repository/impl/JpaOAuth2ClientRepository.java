@@ -68,7 +68,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public ClientDetailsEntity saveClient(ClientDetailsEntity client) {
-		return JpaUtil.saveOrUpdate(client.getClientId(), manager, client);
+		return JpaUtil.saveOrUpdate(manager, client);
 	}
 
 	/* (non-Javadoc)
@@ -89,7 +89,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 		// sanity check
 		client.setId(id);
 
-		return JpaUtil.saveOrUpdate(id, manager, client);
+		return JpaUtil.saveOrUpdate(manager, client);
 	}
 
 	@Override

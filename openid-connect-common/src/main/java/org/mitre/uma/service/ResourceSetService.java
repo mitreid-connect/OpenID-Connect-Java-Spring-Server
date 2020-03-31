@@ -21,26 +21,24 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.uma.model.ResourceSet;
 
 /**
- *
  * Manage registered resource sets at this authorization server.
  *
  * @author jricher
- *
  */
 public interface ResourceSetService {
 
-	public ResourceSet saveNew(ResourceSet rs);
+	ResourceSet saveNew(ResourceSet rs);
 
-	public ResourceSet getById(Long id);
+	ResourceSet getById(Long id);
 
-	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
+	ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
 
-	public void remove(ResourceSet rs);
+	void remove(ResourceSet rs);
 
-	public Collection<ResourceSet> getAllForOwner(String owner);
+	Collection<ResourceSet> getAllForOwner(String owner);
 
-	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId);
+	Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId);
 
-	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client);
+	Collection<ResourceSet> getAllForClient(ClientDetailsEntity client);
 
 }
