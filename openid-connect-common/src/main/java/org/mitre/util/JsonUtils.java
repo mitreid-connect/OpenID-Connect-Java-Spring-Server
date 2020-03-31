@@ -51,14 +51,10 @@ import com.nimbusds.jose.JWSAlgorithm;
  * A collection of null-safe converters from common classes and JSON elements, using GSON.
  *
  * @author jricher
- *
  */
 @SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class JsonUtils {
 
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
 	private static Gson gson = new Gson();
@@ -71,7 +67,6 @@ public class JsonUtils {
 	public static JsonElement getAsArray(Set<String> value) {
 		return getAsArray(value, false);
 	}
-
 
 	/**
 	 * Translate a set of strings to a JSON array, optionally preserving the empty array. Otherwise (default) empty array is returned as null.
@@ -109,11 +104,7 @@ public class JsonUtils {
 	 */
 	public static JWEAlgorithm getAsJweAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
-		if (s != null) {
-			return JWEAlgorithm.parse(s);
-		} else {
-			return null;
-		}
+		return s != null ? JWEAlgorithm.parse(s) : null;
 	}
 
 	/**
@@ -121,11 +112,7 @@ public class JsonUtils {
 	 */
 	public static EncryptionMethod getAsJweEncryptionMethod(JsonObject o, String member) {
 		String s = getAsString(o, member);
-		if (s != null) {
-			return EncryptionMethod.parse(s);
-		} else {
-			return null;
-		}
+		return s != null ? EncryptionMethod.parse(s) : null;
 	}
 
 	/**
@@ -133,11 +120,7 @@ public class JsonUtils {
 	 */
 	public static JWSAlgorithm getAsJwsAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
-		if (s != null) {
-			return JWSAlgorithm.parse(s);
-		} else {
-			return null;
-		}
+		return s != null ? JWSAlgorithm.parse(s) : null;
 	}
 
 	/**
@@ -148,11 +131,7 @@ public class JsonUtils {
 	 */
 	public static PKCEAlgorithm getAsPkceAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
-		if (s != null) {
-			return PKCEAlgorithm.parse(s);
-		} else {
-			return null;
-		}
+		return s != null ? PKCEAlgorithm.parse(s) : null;
 	}
 
 	/**
@@ -286,7 +265,7 @@ public class JsonUtils {
 		reader.beginObject();
 		while(reader.hasNext()) {
 			String name = reader.nextName();
-			Object value = null;
+			Object value;
 			switch(reader.peek()) {
 				case STRING:
 					value = reader.nextString();
@@ -309,7 +288,7 @@ public class JsonUtils {
 	}
 
 	public static Set readSet(JsonReader reader) throws IOException {
-		Set arraySet = null;
+		Set arraySet;
 		reader.beginArray();
 		switch (reader.peek()) {
 			case STRING:

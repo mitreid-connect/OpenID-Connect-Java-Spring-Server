@@ -30,6 +30,7 @@ import org.mitre.data.PageCriteria;
  *         Time: 2:13 PM
  */
 public class JpaUtil {
+
 	public static <T> T getSingleResult(List<T> list) {
 		switch(list.size()) {
 			case 0:
@@ -40,7 +41,6 @@ public class JpaUtil {
 				throw new IllegalStateException("Expected single result, got " + list.size());
 		}
 	}
-
 
 	/**
 	 * Get a page of results from the specified TypedQuery
@@ -60,9 +60,10 @@ public class JpaUtil {
 		return query.getResultList();
 	}
 
-	public static <T, I> T saveOrUpdate(I id, EntityManager entityManager, T entity) {
+	public static <T, I> T saveOrUpdate(EntityManager entityManager, T entity) {
 		T tmp = entityManager.merge(entity);
 		entityManager.flush();
 		return tmp;
 	}
+
 }

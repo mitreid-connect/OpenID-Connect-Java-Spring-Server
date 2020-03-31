@@ -71,7 +71,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
-		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
+		return saveOrUpdate(manager, whiteListedSite);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 		// sanity check
 		whitelistedSite.setId(oldWhitelistedSite.getId());
 
-		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
+		return saveOrUpdate(manager, whitelistedSite);
 	}
 
 	@Override

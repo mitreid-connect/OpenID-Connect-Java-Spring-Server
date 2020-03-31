@@ -60,7 +60,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void save(PairwiseIdentifier pairwise) {
-		saveOrUpdate(pairwise.getId(), manager, pairwise);
+		saveOrUpdate(manager, pairwise);
 	}
 
 }

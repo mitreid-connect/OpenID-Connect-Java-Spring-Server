@@ -93,7 +93,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
-		return JpaUtil.saveOrUpdate(token.getId(), manager, token);
+		return JpaUtil.saveOrUpdate(manager, token);
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-		return JpaUtil.saveOrUpdate(refreshToken.getId(), manager, refreshToken);
+		return JpaUtil.saveOrUpdate(manager, refreshToken);
 	}
 
 	@Override

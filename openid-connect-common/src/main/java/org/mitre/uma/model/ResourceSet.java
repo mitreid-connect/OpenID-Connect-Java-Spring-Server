@@ -59,15 +59,11 @@ public class ResourceSet {
 	private String type;
 	private Set<String> scopes = new HashSet<>();
 	private String iconUri;
-
 	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
 	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
 
 	private Collection<Policy> policies = new HashSet<>();
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -75,156 +71,96 @@ public class ResourceSet {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	@Basic
 	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the uri
-	 */
 	@Basic
 	@Column(name = "uri")
 	public String getUri() {
 		return uri;
 	}
 
-	/**
-	 * @param uri the uri to set
-	 */
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
-	/**
-	 * @return the type
-	 */
 	@Basic
 	@Column(name = "rs_type")
 	public String getType() {
 		return type;
 	}
 
-	/**
-	 * @param type the type to set
-	 */
 	public void setType(String type) {
 		this.type = type;
 	}
 
-	/**
-	 * @return the scopes
-	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
-	@CollectionTable(
-			name = "resource_set_scope",
-			joinColumns = @JoinColumn(name = "owner_id")
-			)
+	@CollectionTable(name = "resource_set_scope", joinColumns = @JoinColumn(name = "owner_id"))
 	public Set<String> getScopes() {
 		return scopes;
 	}
 
-	/**
-	 * @param scopes the scopes to set
-	 */
 	public void setScopes(Set<String> scopes) {
 		this.scopes = scopes;
 	}
 
-	/**
-	 * @return the iconUri
-	 */
 	@Basic
 	@Column(name = "icon_uri")
 	public String getIconUri() {
 		return iconUri;
 	}
 
-	/**
-	 * @param iconUri the iconUri to set
-	 */
 	public void setIconUri(String iconUri) {
 		this.iconUri = iconUri;
 	}
 
-	/**
-	 * @return the owner
-	 */
 	@Basic
 	@Column(name = "owner")
 	public String getOwner() {
 		return owner;
 	}
 
-	/**
-	 * @param owner the owner to set
-	 */
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
-	/**
-	 * @return the clientId
-	 */
 	@Basic
 	@Column(name = "client_id")
 	public String getClientId() {
 		return clientId;
 	}
 
-	/**
-	 * @param clientId the clientId to set
-	 */
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
-	/**
-	 * @return the claimsRequired
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "resource_set_id")
 	public Collection<Policy> getPolicies() {
 		return policies;
 	}
 
-	/**
-	 * @param policies the claimsRequired to set
-	 */
 	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "ResourceSet [id=" + id + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -321,9 +257,5 @@ public class ResourceSet {
 		}
 		return true;
 	}
-
-
-
-
 
 }

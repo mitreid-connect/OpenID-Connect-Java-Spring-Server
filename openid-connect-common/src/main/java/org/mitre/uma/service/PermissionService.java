@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.common.exceptions.InsufficientScopeEx
 
 /**
  * @author jricher
- *
  */
 public interface PermissionService {
 
@@ -35,16 +34,15 @@ public interface PermissionService {
 	 * @return the created (and stored) permission object, with ticket
 	 * @throws InsufficientScopeException if the scopes in scopes don't match those in resourceSet.getScopes
 	 */
-	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes);
+	PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes);
 
 	/**
-	 *
 	 * Read the permission associated with the given ticket.
 	 *
 	 * @param the ticket value to search on
 	 * @return the permission object, or null if none is found
 	 */
-	public PermissionTicket getByTicket(String ticket);
+	PermissionTicket getByTicket(String ticket);
 
 	/**
 	 * Save the updated permission ticket to the database. Does not create a new ticket.
@@ -52,6 +50,6 @@ public interface PermissionService {
 	 * @param ticket
 	 * @return
 	 */
-	public PermissionTicket updateTicket(PermissionTicket ticket);
+	PermissionTicket updateTicket(PermissionTicket ticket);
 
 }

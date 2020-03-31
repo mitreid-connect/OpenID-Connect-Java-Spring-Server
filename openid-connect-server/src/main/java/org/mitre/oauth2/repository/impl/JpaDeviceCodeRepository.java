@@ -89,7 +89,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public DeviceCode save(DeviceCode scope) {
-		return saveOrUpdate(scope.getId(), em, scope);
+		return saveOrUpdate(em, scope);
 	}
 
 	/* (non-Javadoc)

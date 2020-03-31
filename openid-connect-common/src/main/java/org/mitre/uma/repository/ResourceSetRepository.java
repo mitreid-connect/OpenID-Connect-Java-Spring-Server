@@ -22,22 +22,21 @@ import org.mitre.uma.model.ResourceSet;
 
 /**
  * @author jricher
- *
  */
 public interface ResourceSetRepository {
 
-	public ResourceSet save(ResourceSet rs);
+	ResourceSet save(ResourceSet rs);
 
-	public ResourceSet getById(Long id);
+	ResourceSet getById(Long id);
 
-	public void remove(ResourceSet rs);
+	void remove(ResourceSet rs);
 
-	public Collection<ResourceSet> getAllForOwner(String owner);
+	Collection<ResourceSet> getAllForOwner(String owner);
 
-	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId);
+	Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId);
 
-	public Collection<ResourceSet> getAll();
+	Collection<ResourceSet> getAll();
 
-	public Collection<ResourceSet> getAllForClient(String clientId);
+	Collection<ResourceSet> getAllForClient(String clientId);
 
 }
