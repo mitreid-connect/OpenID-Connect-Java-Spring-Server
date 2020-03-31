@@ -38,7 +38,7 @@ public interface StatsService {
 	 *
 	 * @return
 	 */
-	public Map<String, Integer> getSummaryStats();
+	Map<String, Integer> getSummaryStats();
 
 	/**
 	 * Calculate the usage count for a single client
@@ -46,11 +46,11 @@ public interface StatsService {
 	 * @param clientId the id of the client to search on
 	 * @return
 	 */
-	public ClientStat getCountForClientId(String clientId);
+	ClientStat getCountForClientId(String clientId);
 
 	/**
 	 * Trigger the stats to be recalculated upon next update.
 	 */
-	public void resetCache();
+	void resetCache();
 
 }

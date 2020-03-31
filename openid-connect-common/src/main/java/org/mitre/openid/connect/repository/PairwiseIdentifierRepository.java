@@ -35,13 +35,13 @@ public interface PairwiseIdentifierRepository {
 	 * @param sectorIdentifierUri
 	 * @return
 	 */
-	public PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri);
+	PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri);
 
 	/**
 	 * Save a pairwise identifier to the database.
 	 *
 	 * @param pairwise
 	 */
-	public void save(PairwiseIdentifier pairwise);
+	void save(PairwiseIdentifier pairwise);
 
 }

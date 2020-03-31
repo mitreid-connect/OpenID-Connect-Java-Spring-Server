@@ -28,8 +28,8 @@ import java.util.Set;
  */
 public interface ScopeClaimTranslationService {
 
-	public Set<String> getClaimsForScope(String scope);
+	Set<String> getClaimsForScope(String scope);
 
-	public Set<String> getClaimsForScopeSet(Set<String> scopes);
+	Set<String> getClaimsForScopeSet(Set<String> scopes);
 
 }

@@ -38,6 +38,6 @@ public interface PairwiseIdentiferService {
 	 * @param client
 	 * @return
 	 */
-	public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client);
+	String getIdentifier(UserInfo userInfo, ClientDetailsEntity client);
 
 }

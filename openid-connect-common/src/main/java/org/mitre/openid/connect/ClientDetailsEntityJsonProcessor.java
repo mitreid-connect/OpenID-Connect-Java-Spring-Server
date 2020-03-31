@@ -98,7 +98,6 @@ import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESP
  * Utility class to handle the parsing and serialization of ClientDetails objects.
  *
  * @author jricher
- *
  */
 public class ClientDetailsEntityJsonProcessor {
 
@@ -106,13 +105,6 @@ public class ClientDetailsEntityJsonProcessor {
 
 	private static JsonParser parser = new JsonParser();
 
-	/**
-	 *
-	 * Create an unbound ClientDetailsEntity from the given JSON string.
-	 *
-	 * @param jsonString
-	 * @return the entity if successful, null otherwise
-	 */
 	public static ClientDetailsEntity parse(String jsonString) {
 		JsonElement jsonEl = parser.parse(jsonString);
 		return parse(jsonEl);

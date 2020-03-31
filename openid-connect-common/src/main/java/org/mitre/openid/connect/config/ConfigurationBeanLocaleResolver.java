@@ -30,16 +30,18 @@ import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 
 /**
- *
  * Resolve the server's locale from the injected ConfigurationPropertiesBean.
  *
  * @author jricher
- *
  */
 public class ConfigurationBeanLocaleResolver extends AbstractLocaleContextResolver {
 
-	@Autowired
 	private ConfigurationPropertiesBean config;
+
+	@Autowired
+	public ConfigurationBeanLocaleResolver(ConfigurationPropertiesBean config) {
+		this.config = config;
+	}
 
 	@Override
 	protected Locale getDefaultLocale() {

@@ -36,14 +36,14 @@ public interface ApprovedSiteRepository {
 	 *            id the id of the ApprovedSite
 	 * @return a valid ApprovedSite if it exists, null otherwise
 	 */
-	public ApprovedSite getById(Long id);
+	ApprovedSite getById(Long id);
 
 	/**
 	 * Return a collection of all ApprovedSites managed by this repository
 	 *
 	 * @return the ApprovedSite collection, or null
 	 */
-	public Collection<ApprovedSite> getAll();
+	Collection<ApprovedSite> getAll();
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
@@ -53,7 +53,7 @@ public interface ApprovedSiteRepository {
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
+	Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
 
 	/**
 	 * Removes the given ApprovedSite from the repository
@@ -61,7 +61,7 @@ public interface ApprovedSiteRepository {
 	 * @param aggregator
 	 *            the ApprovedSite object to remove
 	 */
-	public void remove(ApprovedSite approvedSite);
+	void remove(ApprovedSite approvedSite);
 
 	/**
 	 * Persists an ApprovedSite
@@ -70,20 +70,20 @@ public interface ApprovedSiteRepository {
 	 *            valid ApprovedSite instance
 	 * @return the persisted entity
 	 */
-	public ApprovedSite save(ApprovedSite approvedSite);
+	ApprovedSite save(ApprovedSite approvedSite);
 
 	/**
 	 * Get all sites approved by this user
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByUserId(String userId);
+	Collection<ApprovedSite> getByUserId(String userId);
 
 	/**
 	 * Get all sites associated with this client
 	 * @param clientId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientId(String clientId);
+	Collection<ApprovedSite> getByClientId(String clientId);
 
 }
