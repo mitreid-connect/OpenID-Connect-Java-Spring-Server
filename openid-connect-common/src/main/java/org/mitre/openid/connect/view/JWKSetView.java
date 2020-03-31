@@ -39,39 +39,28 @@ import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
- *
  */
 @Component(JWKSetView.VIEWNAME)
 public class JWKSetView extends AbstractView {
 
-	public static final String VIEWNAME = "jwkSet";
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(JWKSetView.class);
+
+	public static final String VIEWNAME = "jwkSet";
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-
-		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
 		Map<String, JWK> keys = (Map<String, JWK>) model.get("keys");
 
 		JWKSet jwkSet = new JWKSet(new ArrayList<>(keys.values()));
 
 		try {
-
 			Writer out = response.getWriter();
 			out.write(jwkSet.toString());
-
 		} catch (IOException e) {
-
 			logger.error("IOException in JWKSetView.java: ", e);
-
 		}
-
 	}
 
 }

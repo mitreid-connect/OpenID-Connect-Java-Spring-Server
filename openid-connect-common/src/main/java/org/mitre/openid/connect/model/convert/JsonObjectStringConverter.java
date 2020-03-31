@@ -22,10 +22,10 @@ import javax.persistence.Converter;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.util.StringUtils;
 
 /**
  * @author jricher
- *
  */
 @Converter
 public class JsonObjectStringConverter implements AttributeConverter<JsonObject, String> {
@@ -34,23 +34,12 @@ public class JsonObjectStringConverter implements AttributeConverter<JsonObject,
 
 	@Override
 	public String convertToDatabaseColumn(JsonObject attribute) {
-		if (attribute != null) {
-			return attribute.toString();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.toString() : null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
-	 */
 	@Override
 	public JsonObject convertToEntityAttribute(String dbData) {
-		if (!Strings.isNullOrEmpty(dbData)) {
-			return parser.parse(dbData).getAsJsonObject();
-		} else {
-			return null;
-		}
+		return !StringUtils.isEmpty(dbData) ? parser.parse(dbData).getAsJsonObject() : null;
 	}
 
 }

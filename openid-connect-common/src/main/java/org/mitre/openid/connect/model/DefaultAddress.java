@@ -37,17 +37,8 @@ public class DefaultAddress implements Address {
 	private String postalCode;
 	private String country;
 
-	/**
-	 * Empty constructor
-	 */
-	public DefaultAddress() {
+	public DefaultAddress() { }
 
-	}
-
-	/**
-	 * Copy constructor from an existing address.
-	 * @param address
-	 */
 	public DefaultAddress(Address address) {
 		setFormatted(address.getFormatted());
 		setStreetAddress(address.getStreetAddress());
@@ -57,106 +48,79 @@ public class DefaultAddress implements Address {
 		setCountry(address.getCountry());
 	}
 
-	/**
-	 * @return the formatted address string
-	 */
 	@Override
 	@Basic
 	@Column(name = "formatted")
 	public String getFormatted() {
 		return formatted;
 	}
-	/**
-	 * @param formatted the formatted address to set
-	 */
+
 	@Override
 	public void setFormatted(String formatted) {
 		this.formatted = formatted;
 	}
-	/**
-	 * @return the streetAddress
-	 */
+
 	@Override
 	@Basic
 	@Column(name="street_address")
 	public String getStreetAddress() {
 		return streetAddress;
 	}
-	/**
-	 * @param streetAddress the streetAddress to set
-	 */
+
 	@Override
 	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = streetAddress;
 	}
-	/**
-	 * @return the locality
-	 */
+
 	@Override
 	@Basic
 	@Column(name = "locality")
 	public String getLocality() {
 		return locality;
 	}
-	/**
-	 * @param locality the locality to set
-	 */
+
 	@Override
 	public void setLocality(String locality) {
 		this.locality = locality;
 	}
-	/**
-	 * @return the region
-	 */
+
 	@Override
 	@Basic
 	@Column(name = "region")
 	public String getRegion() {
 		return region;
 	}
-	/**
-	 * @param region the region to set
-	 */
+
 	@Override
 	public void setRegion(String region) {
 		this.region = region;
 	}
-	/**
-	 * @return the postalCode
-	 */
+
 	@Override
 	@Basic
 	@Column(name="postal_code")
 	public String getPostalCode() {
 		return postalCode;
 	}
-	/**
-	 * @param postalCode the postalCode to set
-	 */
+
 	@Override
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
-	/**
-	 * @return the country
-	 */
+
 	@Override
 	@Basic
 	@Column(name = "country")
 	public String getCountry() {
 		return country;
 	}
-	/**
-	 * @param country the country to set
-	 */
+
 	@Override
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
-	/**
-	 * @return the id
-	 */
+
 	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -165,16 +129,12 @@ public class DefaultAddress implements Address {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
+
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -189,9 +149,7 @@ public class DefaultAddress implements Address {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

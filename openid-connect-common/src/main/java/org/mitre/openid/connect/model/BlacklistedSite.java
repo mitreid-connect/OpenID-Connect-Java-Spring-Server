@@ -32,7 +32,6 @@ import javax.persistence.Table;
 
 /**
  * @author jricher
- *
  */
 @Entity
 @Table(name="blacklisted_site")
@@ -43,19 +42,11 @@ public class BlacklistedSite {
 
 	public static final String QUERY_ALL = "BlacklistedSite.getAll";
 
-	// unique id
 	private Long id;
-
-	// URI pattern to black list
 	private String uri;
 
-	public BlacklistedSite() {
+	public BlacklistedSite() { }
 
-	}
-
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -63,9 +54,6 @@ public class BlacklistedSite {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -79,6 +67,5 @@ public class BlacklistedSite {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
-
 
 }

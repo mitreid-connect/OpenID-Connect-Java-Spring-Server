@@ -161,21 +161,13 @@ public class ServerConfiguration {
 	 */
 
 	private String authorizationEndpointUri;
-
 	private String tokenEndpointUri;
-
 	private String registrationEndpointUri;
-
 	private String issuer;
-
 	private String jwksUri;
-
 	private String userInfoUri;
-
 	private String introspectionEndpointUri;
-
 	private String revocationEndpointUri;
-
 	private String checkSessionIframe;
 	private String endSessionEndpoint;
 	private List<String> scopesSupported;
@@ -207,11 +199,6 @@ public class ServerConfiguration {
 	private String opPolicyUri;
 	private String opTosUri;
 
-	//
-	// extensions to the discoverable methods
-	//
-
-	// how do we send the access token to the userinfo endpoint?
 	private UserInfoTokenMethod userInfoTokenMethod;
 
 	public enum UserInfoTokenMethod {
@@ -220,447 +207,298 @@ public class ServerConfiguration {
 		QUERY;
 	}
 
-	/**
-	 * @return the authorizationEndpointUri
-	 */
 	public String getAuthorizationEndpointUri() {
 		return authorizationEndpointUri;
 	}
-	/**
-	 * @param authorizationEndpointUri the authorizationEndpointUri to set
-	 */
+
 	public void setAuthorizationEndpointUri(String authorizationEndpointUri) {
 		this.authorizationEndpointUri = authorizationEndpointUri;
 	}
-	/**
-	 * @return the tokenEndpointUri
-	 */
+
 	public String getTokenEndpointUri() {
 		return tokenEndpointUri;
 	}
-	/**
-	 * @param tokenEndpointUri the tokenEndpointUri to set
-	 */
+
 	public void setTokenEndpointUri(String tokenEndpointUri) {
 		this.tokenEndpointUri = tokenEndpointUri;
 	}
-	/**
-	 * @return the registrationEndpointUri
-	 */
+
 	public String getRegistrationEndpointUri() {
 		return registrationEndpointUri;
 	}
-	/**
-	 * @param registrationEndpointUri the registrationEndpointUri to set
-	 */
+
 	public void setRegistrationEndpointUri(String registrationEndpointUri) {
 		this.registrationEndpointUri = registrationEndpointUri;
 	}
-	/**
-	 * @return the issuer
-	 */
+
 	public String getIssuer() {
 		return issuer;
 	}
-	/**
-	 * @param issuer the issuer to set
-	 */
+
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
 	}
-	/**
-	 * @return the jwksUri
-	 */
+
 	public String getJwksUri() {
 		return jwksUri;
 	}
-	/**
-	 * @param jwksUri the jwksUri to set
-	 */
+
 	public void setJwksUri(String jwksUri) {
 		this.jwksUri = jwksUri;
 	}
-	/**
-	 * @return the userInfoUri
-	 */
+
 	public String getUserInfoUri() {
 		return userInfoUri;
 	}
-	/**
-	 * @param userInfoUri the userInfoUri to set
-	 */
+
 	public void setUserInfoUri(String userInfoUri) {
 		this.userInfoUri = userInfoUri;
 	}
-	/**
-	 * @return the introspectionEndpointUri
-	 */
+
 	public String getIntrospectionEndpointUri() {
 		return introspectionEndpointUri;
 	}
-	/**
-	 * @param introspectionEndpointUri the introspectionEndpointUri to set
-	 */
+
 	public void setIntrospectionEndpointUri(String introspectionEndpointUri) {
 		this.introspectionEndpointUri = introspectionEndpointUri;
 	}
-	/**
-	 * @return the checkSessionIframe
-	 */
+
 	public String getCheckSessionIframe() {
 		return checkSessionIframe;
 	}
-	/**
-	 * @param checkSessionIframe the checkSessionIframe to set
-	 */
+
 	public void setCheckSessionIframe(String checkSessionIframe) {
 		this.checkSessionIframe = checkSessionIframe;
 	}
-	/**
-	 * @return the endSessionEndpoint
-	 */
+
 	public String getEndSessionEndpoint() {
 		return endSessionEndpoint;
 	}
-	/**
-	 * @param endSessionEndpoint the endSessionEndpoint to set
-	 */
+
 	public void setEndSessionEndpoint(String endSessionEndpoint) {
 		this.endSessionEndpoint = endSessionEndpoint;
 	}
-	/**
-	 * @return the scopesSupported
-	 */
+
 	public List<String> getScopesSupported() {
 		return scopesSupported;
 	}
-	/**
-	 * @param scopesSupported the scopesSupported to set
-	 */
+
 	public void setScopesSupported(List<String> scopesSupported) {
 		this.scopesSupported = scopesSupported;
 	}
-	/**
-	 * @return the responseTypesSupported
-	 */
+
 	public List<String> getResponseTypesSupported() {
 		return responseTypesSupported;
 	}
-	/**
-	 * @param responseTypesSupported the responseTypesSupported to set
-	 */
+
 	public void setResponseTypesSupported(List<String> responseTypesSupported) {
 		this.responseTypesSupported = responseTypesSupported;
 	}
-	/**
-	 * @return the grantTypesSupported
-	 */
+
 	public List<String> getGrantTypesSupported() {
 		return grantTypesSupported;
 	}
-	/**
-	 * @param grantTypesSupported the grantTypesSupported to set
-	 */
+
 	public void setGrantTypesSupported(List<String> grantTypesSupported) {
 		this.grantTypesSupported = grantTypesSupported;
 	}
-	/**
-	 * @return the acrValuesSupported
-	 */
+
 	public List<String> getAcrValuesSupported() {
 		return acrValuesSupported;
 	}
-	/**
-	 * @param acrValuesSupported the acrValuesSupported to set
-	 */
+
 	public void setAcrValuesSupported(List<String> acrValuesSupported) {
 		this.acrValuesSupported = acrValuesSupported;
 	}
-	/**
-	 * @return the subjectTypesSupported
-	 */
+
 	public List<String> getSubjectTypesSupported() {
 		return subjectTypesSupported;
 	}
-	/**
-	 * @param subjectTypesSupported the subjectTypesSupported to set
-	 */
+
 	public void setSubjectTypesSupported(List<String> subjectTypesSupported) {
 		this.subjectTypesSupported = subjectTypesSupported;
 	}
-	/**
-	 * @return the userinfoSigningAlgValuesSupported
-	 */
+
 	public List<JWSAlgorithm> getUserinfoSigningAlgValuesSupported() {
 		return userinfoSigningAlgValuesSupported;
 	}
-	/**
-	 * @param userinfoSigningAlgValuesSupported the userinfoSigningAlgValuesSupported to set
-	 */
+
 	public void setUserinfoSigningAlgValuesSupported(List<JWSAlgorithm> userinfoSigningAlgValuesSupported) {
 		this.userinfoSigningAlgValuesSupported = userinfoSigningAlgValuesSupported;
 	}
-	/**
-	 * @return the userinfoEncryptionAlgValuesSupported
-	 */
+
 	public List<JWEAlgorithm> getUserinfoEncryptionAlgValuesSupported() {
 		return userinfoEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @param userinfoEncryptionAlgValuesSupported the userinfoEncryptionAlgValuesSupported to set
-	 */
+
 	public void setUserinfoEncryptionAlgValuesSupported(List<JWEAlgorithm> userinfoEncryptionAlgValuesSupported) {
 		this.userinfoEncryptionAlgValuesSupported = userinfoEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @return the userinfoEncryptionEncValuesSupported
-	 */
+
 	public List<EncryptionMethod> getUserinfoEncryptionEncValuesSupported() {
 		return userinfoEncryptionEncValuesSupported;
 	}
-	/**
-	 * @param userinfoEncryptionEncValuesSupported the userinfoEncryptionEncValuesSupported to set
-	 */
+
 	public void setUserinfoEncryptionEncValuesSupported(List<EncryptionMethod> userinfoEncryptionEncValuesSupported) {
 		this.userinfoEncryptionEncValuesSupported = userinfoEncryptionEncValuesSupported;
 	}
-	/**
-	 * @return the idTokenSigningAlgValuesSupported
-	 */
+
 	public List<JWSAlgorithm> getIdTokenSigningAlgValuesSupported() {
 		return idTokenSigningAlgValuesSupported;
 	}
-	/**
-	 * @param idTokenSigningAlgValuesSupported the idTokenSigningAlgValuesSupported to set
-	 */
+
 	public void setIdTokenSigningAlgValuesSupported(List<JWSAlgorithm> idTokenSigningAlgValuesSupported) {
 		this.idTokenSigningAlgValuesSupported = idTokenSigningAlgValuesSupported;
 	}
-	/**
-	 * @return the idTokenEncryptionAlgValuesSupported
-	 */
+
 	public List<JWEAlgorithm> getIdTokenEncryptionAlgValuesSupported() {
 		return idTokenEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @param idTokenEncryptionAlgValuesSupported the idTokenEncryptionAlgValuesSupported to set
-	 */
+
 	public void setIdTokenEncryptionAlgValuesSupported(List<JWEAlgorithm> idTokenEncryptionAlgValuesSupported) {
 		this.idTokenEncryptionAlgValuesSupported = idTokenEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @return the idTokenEncryptionEncValuesSupported
-	 */
+
 	public List<EncryptionMethod> getIdTokenEncryptionEncValuesSupported() {
 		return idTokenEncryptionEncValuesSupported;
 	}
-	/**
-	 * @param idTokenEncryptionEncValuesSupported the idTokenEncryptionEncValuesSupported to set
-	 */
+
 	public void setIdTokenEncryptionEncValuesSupported(List<EncryptionMethod> idTokenEncryptionEncValuesSupported) {
 		this.idTokenEncryptionEncValuesSupported = idTokenEncryptionEncValuesSupported;
 	}
-	/**
-	 * @return the requestObjectSigningAlgValuesSupported
-	 */
+
 	public List<JWSAlgorithm> getRequestObjectSigningAlgValuesSupported() {
 		return requestObjectSigningAlgValuesSupported;
 	}
-	/**
-	 * @param requestObjectSigningAlgValuesSupported the requestObjectSigningAlgValuesSupported to set
-	 */
+
 	public void setRequestObjectSigningAlgValuesSupported(List<JWSAlgorithm> requestObjectSigningAlgValuesSupported) {
 		this.requestObjectSigningAlgValuesSupported = requestObjectSigningAlgValuesSupported;
 	}
-	/**
-	 * @return the requestObjectEncryptionAlgValuesSupported
-	 */
+
 	public List<JWEAlgorithm> getRequestObjectEncryptionAlgValuesSupported() {
 		return requestObjectEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @param requestObjectEncryptionAlgValuesSupported the requestObjectEncryptionAlgValuesSupported to set
-	 */
+
 	public void setRequestObjectEncryptionAlgValuesSupported(List<JWEAlgorithm> requestObjectEncryptionAlgValuesSupported) {
 		this.requestObjectEncryptionAlgValuesSupported = requestObjectEncryptionAlgValuesSupported;
 	}
-	/**
-	 * @return the requestObjectEncryptionEncValuesSupported
-	 */
+
 	public List<EncryptionMethod> getRequestObjectEncryptionEncValuesSupported() {
 		return requestObjectEncryptionEncValuesSupported;
 	}
-	/**
-	 * @param requestObjectEncryptionEncValuesSupported the requestObjectEncryptionEncValuesSupported to set
-	 */
+
 	public void setRequestObjectEncryptionEncValuesSupported(List<EncryptionMethod> requestObjectEncryptionEncValuesSupported) {
 		this.requestObjectEncryptionEncValuesSupported = requestObjectEncryptionEncValuesSupported;
 	}
-	/**
-	 * @return the tokenEndpointAuthMethodsSupported
-	 */
+
 	public List<String> getTokenEndpointAuthMethodsSupported() {
 		return tokenEndpointAuthMethodsSupported;
 	}
-	/**
-	 * @param tokenEndpointAuthMethodsSupported the tokenEndpointAuthMethodsSupported to set
-	 */
+
 	public void setTokenEndpointAuthMethodsSupported(List<String> tokenEndpointAuthMethodsSupported) {
 		this.tokenEndpointAuthMethodsSupported = tokenEndpointAuthMethodsSupported;
 	}
-	/**
-	 * @return the tokenEndpointAuthSigningAlgValuesSupported
-	 */
+
 	public List<JWSAlgorithm> getTokenEndpointAuthSigningAlgValuesSupported() {
 		return tokenEndpointAuthSigningAlgValuesSupported;
 	}
-	/**
-	 * @param tokenEndpointAuthSigningAlgValuesSupported the tokenEndpointAuthSigningAlgValuesSupported to set
-	 */
+
 	public void setTokenEndpointAuthSigningAlgValuesSupported(List<JWSAlgorithm> tokenEndpointAuthSigningAlgValuesSupported) {
 		this.tokenEndpointAuthSigningAlgValuesSupported = tokenEndpointAuthSigningAlgValuesSupported;
 	}
-	/**
-	 * @return the displayValuesSupported
-	 */
+
 	public List<String> getDisplayValuesSupported() {
 		return displayValuesSupported;
 	}
-	/**
-	 * @param displayValuesSupported the displayValuesSupported to set
-	 */
+
 	public void setDisplayValuesSupported(List<String> displayValuesSupported) {
 		this.displayValuesSupported = displayValuesSupported;
 	}
-	/**
-	 * @return the claimTypesSupported
-	 */
+
 	public List<String> getClaimTypesSupported() {
 		return claimTypesSupported;
 	}
-	/**
-	 * @param claimTypesSupported the claimTypesSupported to set
-	 */
+
 	public void setClaimTypesSupported(List<String> claimTypesSupported) {
 		this.claimTypesSupported = claimTypesSupported;
 	}
-	/**
-	 * @return the claimsSupported
-	 */
+
 	public List<String> getClaimsSupported() {
 		return claimsSupported;
 	}
-	/**
-	 * @param claimsSupported the claimsSupported to set
-	 */
+
 	public void setClaimsSupported(List<String> claimsSupported) {
 		this.claimsSupported = claimsSupported;
 	}
-	/**
-	 * @return the serviceDocumentation
-	 */
+
 	public String getServiceDocumentation() {
 		return serviceDocumentation;
 	}
-	/**
-	 * @param serviceDocumentation the serviceDocumentation to set
-	 */
+
 	public void setServiceDocumentation(String serviceDocumentation) {
 		this.serviceDocumentation = serviceDocumentation;
 	}
-	/**
-	 * @return the claimsLocalesSupported
-	 */
+
 	public List<String> getClaimsLocalesSupported() {
 		return claimsLocalesSupported;
 	}
-	/**
-	 * @param claimsLocalesSupported the claimsLocalesSupported to set
-	 */
+
 	public void setClaimsLocalesSupported(List<String> claimsLocalesSupported) {
 		this.claimsLocalesSupported = claimsLocalesSupported;
 	}
-	/**
-	 * @return the uiLocalesSupported
-	 */
+
 	public List<String> getUiLocalesSupported() {
 		return uiLocalesSupported;
 	}
-	/**
-	 * @param uiLocalesSupported the uiLocalesSupported to set
-	 */
+
 	public void setUiLocalesSupported(List<String> uiLocalesSupported) {
 		this.uiLocalesSupported = uiLocalesSupported;
 	}
-	/**
-	 * @return the claimsParameterSupported
-	 */
+
 	public Boolean getClaimsParameterSupported() {
 		return claimsParameterSupported;
 	}
-	/**
-	 * @param claimsParameterSupported the claimsParameterSupported to set
-	 */
+
 	public void setClaimsParameterSupported(Boolean claimsParameterSupported) {
 		this.claimsParameterSupported = claimsParameterSupported;
 	}
-	/**
-	 * @return the requestParameterSupported
-	 */
+
 	public Boolean getRequestParameterSupported() {
 		return requestParameterSupported;
 	}
-	/**
-	 * @param requestParameterSupported the requestParameterSupported to set
-	 */
+
 	public void setRequestParameterSupported(Boolean requestParameterSupported) {
 		this.requestParameterSupported = requestParameterSupported;
 	}
-	/**
-	 * @return the requestUriParameterSupported
-	 */
+
 	public Boolean getRequestUriParameterSupported() {
 		return requestUriParameterSupported;
 	}
-	/**
-	 * @param requestUriParameterSupported the requestUriParameterSupported to set
-	 */
+
 	public void setRequestUriParameterSupported(Boolean requestUriParameterSupported) {
 		this.requestUriParameterSupported = requestUriParameterSupported;
 	}
-	/**
-	 * @return the requireRequestUriRegistration
-	 */
+
 	public Boolean getRequireRequestUriRegistration() {
 		return requireRequestUriRegistration;
 	}
-	/**
-	 * @param requireRequestUriRegistration the requireRequestUriRegistration to set
-	 */
+
 	public void setRequireRequestUriRegistration(Boolean requireRequestUriRegistration) {
 		this.requireRequestUriRegistration = requireRequestUriRegistration;
 	}
-	/**
-	 * @return the opPolicyUri
-	 */
+
 	public String getOpPolicyUri() {
 		return opPolicyUri;
 	}
-	/**
-	 * @param opPolicyUri the opPolicyUri to set
-	 */
+
 	public void setOpPolicyUri(String opPolicyUri) {
 		this.opPolicyUri = opPolicyUri;
 	}
-	/**
-	 * @return the opTosUri
-	 */
+
 	public String getOpTosUri() {
 		return opTosUri;
 	}
-	/**
-	 * @param opTosUri the opTosUri to set
-	 */
+
 	public void setOpTosUri(String opTosUri) {
 		this.opTosUri = opTosUri;
 	}
@@ -668,6 +506,7 @@ public class ServerConfiguration {
 	public String getRevocationEndpointUri() {
 		return revocationEndpointUri;
 	}
+
 	public void setRevocationEndpointUri(String revocationEndpointUri) {
 		this.revocationEndpointUri = revocationEndpointUri;
 	}
@@ -675,9 +514,11 @@ public class ServerConfiguration {
 	public UserInfoTokenMethod getUserInfoTokenMethod() {
 		return userInfoTokenMethod;
 	}
+
 	public void setUserInfoTokenMethod(UserInfoTokenMethod userInfoTokenMethod) {
 		this.userInfoTokenMethod = userInfoTokenMethod;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -819,6 +660,7 @@ public class ServerConfiguration {
 						: userinfoSigningAlgValuesSupported.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -1117,6 +959,5 @@ public class ServerConfiguration {
 		}
 		return true;
 	}
-
 
 }

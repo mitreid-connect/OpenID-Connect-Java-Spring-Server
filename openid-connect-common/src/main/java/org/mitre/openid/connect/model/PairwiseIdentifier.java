@@ -56,9 +56,6 @@ public class PairwiseIdentifier {
 	private String userSub;
 	private String sectorIdentifier;
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -66,58 +63,38 @@ public class PairwiseIdentifier {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the identifier
-	 */
 	@Basic
 	@Column(name = "identifier")
 	public String getIdentifier() {
 		return identifier;
 	}
 
-	/**
-	 * @param identifier the identifier to set
-	 */
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
 
-	/**
-	 * @return the userSub
-	 */
 	@Basic
 	@Column(name = PairwiseIdentifier.PARAM_SUB)
 	public String getUserSub() {
 		return userSub;
 	}
 
-	/**
-	 * @param userSub the userSub to set
-	 */
 	public void setUserSub(String userSub) {
 		this.userSub = userSub;
 	}
 
-	/**
-	 * @return the sectorIdentifier
-	 */
 	@Basic
 	@Column(name = "sector_identifier")
 	public String getSectorIdentifier() {
 		return sectorIdentifier;
 	}
 
-	/**
-	 * @param sectorIdentifier the sectorIdentifier to set
-	 */
 	public void setSectorIdentifier(String sectorIdentifier) {
 		this.sectorIdentifier = sectorIdentifier;
 	}
+
 }
