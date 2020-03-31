@@ -23,27 +23,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * @author jricher
- *
  */
 @Converter
 public class SimpleGrantedAuthorityStringConverter implements AttributeConverter<SimpleGrantedAuthority, String> {
 
 	@Override
 	public String convertToDatabaseColumn(SimpleGrantedAuthority attribute) {
-		if (attribute != null) {
-			return attribute.getAuthority();
-		} else {
-			return null;
-		}
+		return attribute != null ? attribute.getAuthority() : null;
 	}
 
 	@Override
 	public SimpleGrantedAuthority convertToEntityAttribute(String dbData) {
-		if (dbData != null) {
-			return new SimpleGrantedAuthority(dbData);
-		} else {
-			return null;
-		}
+		return dbData != null ? new SimpleGrantedAuthority(dbData) : null;
 	}
 
 }

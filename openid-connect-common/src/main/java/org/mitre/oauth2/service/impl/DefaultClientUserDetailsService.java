@@ -17,19 +17,12 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,55 +35,19 @@ import com.google.common.base.Strings;
  * Shim layer to convert a ClientDetails service into a UserDetails service
  *
  * @author AANGANES
- *
  */
 @Service("clientUserDetailsService")
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
-	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
+	private final ConfigurationPropertiesBean config;
 
 	@Autowired
-	private ConfigurationPropertiesBean config;
-
-	@Override
-	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
-
-		try {
-			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
-
-			if (client != null) {
-
-				String password = Strings.nullToEmpty(client.getClientSecret());
-
-				if (config.isHeartMode() || // if we're running HEART mode turn off all client secrets
-						(client.getTokenEndpointAuthMethod() != null &&
-						(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
-								client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)))) {
-
-					// Issue a random password each time to prevent password auth from being used (or skipped)
-					// for private key or shared key clients, see #715
-
-					password = new BigInteger(512, new SecureRandom()).toString(16);
-				}
-
-				boolean enabled = true;
-				boolean accountNonExpired = true;
-				boolean credentialsNonExpired = true;
-				boolean accountNonLocked = true;
-				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
-				authorities.add(ROLE_CLIENT);
-
-				return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-			} else {
-				throw new UsernameNotFoundException("Client not found: " + clientId);
-			}
-		} catch (InvalidClientException e) {
-			throw new UsernameNotFoundException("Client not found: " + clientId);
-		}
-
+	public DefaultClientUserDetailsService(ClientDetailsEntityService clientDetailsService, ConfigurationPropertiesBean config) {
+		this.clientDetailsService = clientDetailsService;
+		this.config = config;
 	}
 
 	public ClientDetailsEntityService getClientDetailsService() {
@@ -99,6 +56,22 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	public void setClientDetailsService(ClientDetailsEntityService clientDetailsService) {
 		this.clientDetailsService = clientDetailsService;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
+		try {
+			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
+			if (client != null) {
+				String password = Strings.nullToEmpty(client.getClientSecret());
+
+				return ServiceUtils.getUserDetails(clientId, client, password, config, ROLE_CLIENT);
+			} else {
+				throw new UsernameNotFoundException("Client not found: " + clientId);
+			}
+		} catch (InvalidClientException e) {
+			throw new UsernameNotFoundException("Client not found: " + clientId);
+		}
 	}
 
 }

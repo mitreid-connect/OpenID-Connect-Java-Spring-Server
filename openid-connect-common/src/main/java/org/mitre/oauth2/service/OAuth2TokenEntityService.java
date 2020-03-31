@@ -30,34 +30,34 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
 
 	@Override
-	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
+	OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
 
-	public OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue);
+	OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue);
 
-	public void revokeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	void revokeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
-	public void revokeAccessToken(OAuth2AccessTokenEntity accessToken);
+	void revokeAccessToken(OAuth2AccessTokenEntity accessToken);
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
+	List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
 
-	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
+	List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
-	public void clearExpiredTokens();
+	void clearExpiredTokens();
 
-	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken);
+	OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken);
 
-	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	@Override
-	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
+	OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
 
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
+	OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
+	OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
 
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
+	Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
 
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String name);
+	Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String name);
 
-	public OAuth2AccessTokenEntity getRegistrationAccessTokenForClient(ClientDetailsEntity client);
+	OAuth2AccessTokenEntity getRegistrationAccessTokenForClient(ClientDetailsEntity client);
 }
