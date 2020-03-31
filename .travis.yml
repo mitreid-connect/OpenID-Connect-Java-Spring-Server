@@ -1,7 +1,6 @@
 language: java
+dist: xenial
 jdk:
-  - oraclejdk8
-sudo: false
-
+  - openjdk8
 after_success:
   - bash <(curl -s https://codecov.io/bash)

@@ -44,25 +44,17 @@ import com.google.gson.JsonParseException;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
- *
  * Creates a caching map of JOSE signers/validators and encrypters/decryptors
  * keyed on the JWK Set URI. Dynamically loads JWK Sets to create the services.
  *
  * @author jricher
- *
  */
 @Service
 public class JWKSetCacheService {
 
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
-	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
 	private LoadingCache<String, JWTSigningAndValidationService> validators;
-
-	// map of jwk set uri -> encryption/decryption service built on the keys found in that jwk set
 	private LoadingCache<String, JWTEncryptionAndDecryptionService> encrypters;
 
 	public JWKSetCacheService() {
@@ -80,7 +72,6 @@ public class JWKSetCacheService {
 	 * @param jwksUri
 	 * @return
 	 * @throws ExecutionException
-	 * @see com.google.common.cache.Cache#get(java.lang.Object)
 	 */
 	public JWTSigningAndValidationService getValidator(String jwksUri) {
 		try {
@@ -100,22 +91,14 @@ public class JWKSetCacheService {
 		}
 	}
 
-	/**
-	 * @author jricher
-	 *
-	 */
-	private class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
-		private HttpComponentsClientHttpRequestFactory httpFactory;
+	private static class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
 		private RestTemplate restTemplate;
 
 		JWKSetVerifierFetcher(HttpClient httpClient) {
-			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 			this.restTemplate = new RestTemplate(httpFactory);
 		}
 
-		/**
-		 * Load the JWK Set and build the appropriate signing service.
-		 */
 		@Override
 		public JWTSigningAndValidationService load(String key) throws Exception {
 			String jsonString = restTemplate.getForObject(key, String.class);
@@ -123,29 +106,18 @@ public class JWKSetCacheService {
 
 			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
-			JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keyStore);
-
-			return service;
+			return new DefaultJWTSigningAndValidationService(keyStore);
 		}
-
 	}
 
-	/**
-	 * @author jricher
-	 *
-	 */
-	private class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
-		private HttpComponentsClientHttpRequestFactory httpFactory;
+	private static class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
 		private RestTemplate restTemplate;
 
 		public JWKSetEncryptorFetcher(HttpClient httpClient) {
-			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 			this.restTemplate = new RestTemplate(httpFactory);
 		}
 
-		/* (non-Javadoc)
-		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
-		 */
 		@Override
 		public JWTEncryptionAndDecryptionService load(String key) throws Exception {
 			try {
@@ -154,9 +126,7 @@ public class JWKSetCacheService {
 
 				JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
-				JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
-
-				return service;
+				return new DefaultJWTEncryptionAndDecryptionService(keyStore);
 			} catch (JsonParseException | RestClientException e) {
 				throw new IllegalArgumentException("Unable to load JWK Set");
 			}
