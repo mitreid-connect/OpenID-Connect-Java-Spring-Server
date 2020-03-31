@@ -29,6 +29,6 @@ public interface ClientLogoLoadingService {
 	 * @param client
 	 * @return
 	 */
-	public CachedImage getLogo(ClientDetailsEntity client);
+	CachedImage getLogo(ClientDetailsEntity client);
 
 }

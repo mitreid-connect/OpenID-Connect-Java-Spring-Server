@@ -26,6 +26,6 @@ public interface LoginHintExtracter {
 	 * @param loginHint
 	 * @return
 	 */
-	public String extractHint(String loginHint);
+	String extractHint(String loginHint);
 
 }

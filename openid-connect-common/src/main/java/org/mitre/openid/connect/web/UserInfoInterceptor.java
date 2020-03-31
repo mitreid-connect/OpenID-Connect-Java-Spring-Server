@@ -52,25 +52,20 @@ import com.google.gson.JsonSerializer;
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 	private Gson gson = new GsonBuilder()
-			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
-				@Override
-				public JsonElement serialize(GrantedAuthority src, Type typeOfSrc, JsonSerializationContext context) {
-					return new JsonPrimitive(src.getAuthority());
-				}
-			})
+			.registerTypeHierarchyAdapter(GrantedAuthority.class,
+				(JsonSerializer<GrantedAuthority>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getAuthority()))
 			.create();
 
-	@Autowired (required = false)
+	@Autowired(required = false)
 	private UserInfoService userInfoService;
 
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if (auth instanceof Authentication){
+		if (auth != null){
 			request.setAttribute("userAuthorities", gson.toJson(auth.getAuthorities()));
 		}
 
@@ -88,11 +83,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			} else {
 				// don't bother checking if we don't have a principal or a userInfoService to work with
 				if (auth != null && auth.getName() != null && userInfoService != null) {
-
-					// try to look up a user based on the principal's name
 					UserInfo user = userInfoService.getByUsername(auth.getName());
-
-					// if we have one, inject it so views can use it
 					if (user != null) {
 						request.setAttribute("userInfo", user);
 						request.setAttribute("userInfoJson", user.toJson());

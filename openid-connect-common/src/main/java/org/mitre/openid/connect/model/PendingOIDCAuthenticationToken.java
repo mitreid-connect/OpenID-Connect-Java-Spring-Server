@@ -34,7 +34,6 @@ import com.nimbusds.jwt.JWTParser;
  * AuthenticationToken for use as a data shuttle from the filter to the auth provider.
  *
  * @author jricher
- *
  */
 public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -49,19 +48,10 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 
 	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
 
-	/**
-	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider.
-	 *
-	 * Set to not-authenticated.
-	 *
-	 * Constructs a Principal out of the subject and issuer.
-	 * @param sub
-	 * @param idToken
-	 */
 	public PendingOIDCAuthenticationToken (String subject, String issuer,
 			ServerConfiguration serverConfiguration,
-			JWT idToken, String accessTokenValue, String refreshTokenValue) {
-
+			JWT idToken, String accessTokenValue, String refreshTokenValue)
+	{
 		super(new ArrayList<GrantedAuthority>(0));
 
 		this.principal = ImmutableMap.of("sub", subject, "iss", issuer);
@@ -73,23 +63,14 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 
 		this.serverConfiguration = serverConfiguration;
 
-
 		setAuthenticated(false);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.springframework.security.core.Authentication#getCredentials()
-	 */
 	@Override
 	public Object getCredentials() {
 		return accessTokenValue;
 	}
 
-	/**
-	 * Get the principal of this object, an immutable map of the subject and issuer.
-	 */
 	@Override
 	public Object getPrincipal() {
 		return principal;
@@ -99,44 +80,26 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 		return sub;
 	}
 
-	/**
-	 * @return the idTokenValue
-	 */
 	public JWT getIdToken() {
 		return idToken;
 	}
 
-	/**
-	 * @return the accessTokenValue
-	 */
 	public String getAccessTokenValue() {
 		return accessTokenValue;
 	}
 
-	/**
-	 * @return the refreshTokenValue
-	 */
 	public String getRefreshTokenValue() {
 		return refreshTokenValue;
 	}
 
-	/**
-	 * @return the serverConfiguration
-	 */
 	public ServerConfiguration getServerConfiguration() {
 		return serverConfiguration;
 	}
 
-	/**
-	 * @return the issuer
-	 */
 	public String getIssuer() {
 		return issuer;
 	}
 
-	/*
-	 * Custom serialization to handle the JSON object
-	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 		if (idToken == null) {
@@ -145,6 +108,7 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 			out.writeObject(idToken.serialize());
 		}
 	}
+
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, ParseException {
 		in.defaultReadObject();
 		Object o = in.readObject();

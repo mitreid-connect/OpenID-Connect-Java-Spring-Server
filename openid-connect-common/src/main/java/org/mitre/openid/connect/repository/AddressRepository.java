@@ -34,6 +34,6 @@ public interface AddressRepository {
 	 *            id the id of the Address
 	 * @return a valid Address if it exists, null otherwise
 	 */
-	public Address getById(Long id);
+	Address getById(Long id);
 
 }

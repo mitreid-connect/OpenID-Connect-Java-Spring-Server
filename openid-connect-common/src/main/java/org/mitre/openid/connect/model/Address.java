@@ -25,66 +25,66 @@ public interface Address extends Serializable {
 	 * Get the system-specific ID of the Address object
 	 * @return
 	 */
-	public Long getId();
+	Long getId();
 
 	/**
 	 * @return the formatted address
 	 */
-	public String getFormatted();
+	String getFormatted();
 
 	/**
 	 * @param formatted the formatted address to set
 	 */
-	public void setFormatted(String formatted);
+	void setFormatted(String formatted);
 
 	/**
 	 * @return the streetAddress
 	 */
-	public String getStreetAddress();
+	String getStreetAddress();
 
 	/**
 	 * @param streetAddress the streetAddress to set
 	 */
-	public void setStreetAddress(String streetAddress);
+	void setStreetAddress(String streetAddress);
 
 	/**
 	 * @return the locality
 	 */
-	public String getLocality();
+	String getLocality();
 
 	/**
 	 * @param locality the locality to set
 	 */
-	public void setLocality(String locality);
+	void setLocality(String locality);
 
 	/**
 	 * @return the region
 	 */
-	public String getRegion();
+	String getRegion();
 
 	/**
 	 * @param region the region to set
 	 */
-	public void setRegion(String region);
+	void setRegion(String region);
 
 	/**
 	 * @return the postalCode
 	 */
-	public String getPostalCode();
+	String getPostalCode();
 
 	/**
 	 * @param postalCode the postalCode to set
 	 */
-	public void setPostalCode(String postalCode);
+	void setPostalCode(String postalCode);
 
 	/**
 	 * @return the country
 	 */
-	public String getCountry();
+	String getCountry();
 
 	/**
 	 * @param country the country to set
 	 */
-	public void setCountry(String country);
+	void setCountry(String country);
 
 }

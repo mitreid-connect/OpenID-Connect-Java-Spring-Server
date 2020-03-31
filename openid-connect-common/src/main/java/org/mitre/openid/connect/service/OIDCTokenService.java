@@ -44,9 +44,8 @@ public interface OIDCTokenService {
 	 * @param accessToken
 	 * @return
 	 */
-	public JWT createIdToken(
-			ClientDetailsEntity client, OAuth2Request request, Date issueTime,
-			String sub, OAuth2AccessTokenEntity accessToken);
+	JWT createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub,
+					  OAuth2AccessTokenEntity accessToken);
 
 	/**
 	 * Create a registration access token for the given client.
@@ -54,7 +53,7 @@ public interface OIDCTokenService {
 	 * @param client
 	 * @return
 	 */
-	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client);
+	OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client);
 
 	/**
 	 * Create a resource access token for the given client (protected resource).
@@ -62,13 +61,13 @@ public interface OIDCTokenService {
 	 * @param client
 	 * @return
 	 */
-	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client);
+	OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client);
 
 	/**
 	 * Rotate the registration or resource token for a client
 	 * @param client
 	 * @return
 	 */
-	public OAuth2AccessTokenEntity rotateRegistrationAccessTokenForClient(ClientDetailsEntity client);
+	OAuth2AccessTokenEntity rotateRegistrationAccessTokenForClient(ClientDetailsEntity client);
 
 }

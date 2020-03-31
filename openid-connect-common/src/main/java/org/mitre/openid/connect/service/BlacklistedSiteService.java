@@ -30,16 +30,16 @@ import org.mitre.openid.connect.model.BlacklistedSite;
  */
 public interface BlacklistedSiteService {
 
-	public Collection<BlacklistedSite> getAll();
+	Collection<BlacklistedSite> getAll();
 
-	public BlacklistedSite getById(Long id);
+	BlacklistedSite getById(Long id);
 
-	public void remove(BlacklistedSite blacklistedSite);
+	void remove(BlacklistedSite blacklistedSite);
 
-	public BlacklistedSite saveNew(BlacklistedSite blacklistedSite);
+	BlacklistedSite saveNew(BlacklistedSite blacklistedSite);
 
-	public BlacklistedSite update(BlacklistedSite oldBlacklistedSite, BlacklistedSite blacklistedSite);
+	BlacklistedSite update(BlacklistedSite oldBlacklistedSite, BlacklistedSite blacklistedSite);
 
-	public boolean isBlacklisted(String uri);
+	boolean isBlacklisted(String uri);
 
 }
