@@ -36,6 +36,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -121,7 +122,7 @@ public class TestJWKSetKeyStore {
 		assertEquals(ks.getJwkSet(), jwkSet);
 
 		JWKSetKeyStore ks_empty= new JWKSetKeyStore();
-		assertEquals(ks_empty.getJwkSet(), null);
+		assertNull(ks_empty.getJwkSet());
 
 		boolean thrown = false;
 		try {

@@ -30,7 +30,7 @@ public interface JWTSigningAndValidationService {
 	/**
 	 * Get all public keys for this service, mapped by their Key ID
 	 */
-	public Map<String, JWK> getAllPublicKeys();
+	Map<String, JWK> getAllPublicKeys();
 
 	/**
 	 * Checks the signature of the given JWT against all configured signers,
@@ -41,7 +41,7 @@ public interface JWTSigningAndValidationService {
 	 * @return true if the signature is valid, false if not
 	 * @throws NoSuchAlgorithmException
 	 */
-	public boolean validateSignature(SignedJWT jwtString);
+	boolean validateSignature(SignedJWT jwtString);
 
 	/**
 	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
@@ -51,19 +51,19 @@ public interface JWTSigningAndValidationService {
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException
 	 */
-	public void signJwt(SignedJWT jwt);
+	void signJwt(SignedJWT jwt);
 
 	/**
 	 * Get the default signing algorithm for use when nothing else has been specified.
 	 * @return
 	 */
-	public JWSAlgorithm getDefaultSigningAlgorithm();
+	JWSAlgorithm getDefaultSigningAlgorithm();
 
 	/**
 	 * Get the list of all signing algorithms supported by this service.
 	 * @return
 	 */
-	public Collection<JWSAlgorithm> getAllSigningAlgsSupported();
+	Collection<JWSAlgorithm> getAllSigningAlgsSupported();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
@@ -73,9 +73,9 @@ public interface JWTSigningAndValidationService {
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
 	 */
-	public void signJwt(SignedJWT jwt, JWSAlgorithm alg);
+	void signJwt(SignedJWT jwt, JWSAlgorithm alg);
 
-	public String getDefaultSignerKeyId();
+	String getDefaultSignerKeyId();
 
 	/**
 	 * TODO: method to sign a jwt using a specified algorithm and a key id

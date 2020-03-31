@@ -16,6 +16,10 @@
 
 package org.mitre.jwt.signer.service.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -36,58 +40,57 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
+import org.springframework.util.StringUtils;
 
 /**
- *
  * Takes in a client and returns the appropriate validator or encrypter for
  * that client's registered key types.
  *
  * @author jricher
- *
  */
 @Service
 public class ClientKeyCacheService {
 
 	private static Logger logger = LoggerFactory.getLogger(ClientKeyCacheService.class);
 
-	@Autowired
-	private JWKSetCacheService jwksUriCache = new JWKSetCacheService();
-
-	@Autowired
-	private SymmetricKeyJWTValidatorCacheService symmetricCache = new SymmetricKeyJWTValidatorCacheService();
-
-	// cache of validators for by-value JWKs
+	private JWKSetCacheService jwksUriCache;
+	private SymmetricKeyJWTValidatorCacheService symmetricCache;
 	private LoadingCache<JWKSet, JWTSigningAndValidationService> jwksValidators;
-
-	// cache of encryptors for by-value JWKs
 	private LoadingCache<JWKSet, JWTEncryptionAndDecryptionService> jwksEncrypters;
 
-	public ClientKeyCacheService() {
+	@Autowired
+	public ClientKeyCacheService(JWKSetCacheService jwksUriCache, SymmetricKeyJWTValidatorCacheService symmetricCache) {
 		this.jwksValidators = CacheBuilder.newBuilder()
-				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
+				.expireAfterWrite(1, TimeUnit.HOURS)
 				.maximumSize(100)
 				.build(new JWKSetVerifierBuilder());
 		this.jwksEncrypters = CacheBuilder.newBuilder()
-				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
+				.expireAfterWrite(1, TimeUnit.HOURS)
 				.maximumSize(100)
 				.build(new JWKSetEncryptorBuilder());
+		if (jwksUriCache == null) {
+			this.jwksUriCache = new JWKSetCacheService();
+		} else {
+			this.jwksUriCache = jwksUriCache;
+		}
+
+		if (symmetricCache == null) {
+			this.symmetricCache = new SymmetricKeyJWTValidatorCacheService();
+		} else {
+			this.symmetricCache = symmetricCache;
+		}
 	}
-
-
+	
 	public JWTSigningAndValidationService getValidator(ClientDetailsEntity client, JWSAlgorithm alg) {
+		Set<JWSAlgorithm> asymmetric = new HashSet<>(Arrays.asList(JWSAlgorithm.RS256, JWSAlgorithm.RS384,
+			JWSAlgorithm.RS512, JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, JWSAlgorithm.PS256,
+			JWSAlgorithm.PS384, JWSAlgorithm.PS512));
+
+		Set<JWSAlgorithm> symmetric = new HashSet<>(Arrays.asList(JWSAlgorithm.HS256, JWSAlgorithm.HS384,
+			JWSAlgorithm.HS512));
 
 		try {
-			if (alg.equals(JWSAlgorithm.RS256)
-					|| alg.equals(JWSAlgorithm.RS384)
-					|| alg.equals(JWSAlgorithm.RS512)
-					|| alg.equals(JWSAlgorithm.ES256)
-					|| alg.equals(JWSAlgorithm.ES384)
-					|| alg.equals(JWSAlgorithm.ES512)
-					|| alg.equals(JWSAlgorithm.PS256)
-					|| alg.equals(JWSAlgorithm.PS384)
-					|| alg.equals(JWSAlgorithm.PS512)) {
-
-				// asymmetric key
+			if (asymmetric.contains(alg)) {
 				if (client.getJwks() != null) {
 					return jwksValidators.get(client.getJwks());
 				} else if (!Strings.isNullOrEmpty(client.getJwksUri())) {
@@ -95,32 +98,22 @@ public class ClientKeyCacheService {
 				} else {
 					return null;
 				}
-
-			} else if (alg.equals(JWSAlgorithm.HS256)
-					|| alg.equals(JWSAlgorithm.HS384)
-					|| alg.equals(JWSAlgorithm.HS512)) {
-
-				// symmetric key
-
+			} else if (symmetric.contains(alg)) {
 				return symmetricCache.getSymmetricValidtor(client);
-
 			} else {
-
 				return null;
 			}
 		} catch (UncheckedExecutionException | ExecutionException e) {
 			logger.error("Problem loading client validator", e);
 			return null;
 		}
-
 	}
 
 	public JWTEncryptionAndDecryptionService getEncrypter(ClientDetailsEntity client) {
-
 		try {
 			if (client.getJwks() != null) {
 				return jwksEncrypters.get(client.getJwks());
-			} else if (!Strings.isNullOrEmpty(client.getJwksUri())) {
+			} else if (!StringUtils.isEmpty(client.getJwksUri())) {
 				return jwksUriCache.getEncrypter(client.getJwksUri());
 			} else {
 				return null;
@@ -129,27 +122,20 @@ public class ClientKeyCacheService {
 			logger.error("Problem loading client encrypter", e);
 			return null;
 		}
-
 	}
 
-
-	private class JWKSetEncryptorBuilder extends CacheLoader<JWKSet, JWTEncryptionAndDecryptionService> {
-
+	private static class JWKSetEncryptorBuilder extends CacheLoader<JWKSet, JWTEncryptionAndDecryptionService> {
 		@Override
 		public JWTEncryptionAndDecryptionService load(JWKSet key) throws Exception {
 			return new DefaultJWTEncryptionAndDecryptionService(new JWKSetKeyStore(key));
 		}
-
 	}
 
-	private class JWKSetVerifierBuilder extends CacheLoader<JWKSet, JWTSigningAndValidationService> {
-
+	private static class JWKSetVerifierBuilder extends CacheLoader<JWKSet, JWTSigningAndValidationService> {
 		@Override
 		public JWTSigningAndValidationService load(JWKSet key) throws Exception {
 			return new DefaultJWTSigningAndValidationService(new JWKSetKeyStore(key));
 		}
-
 	}
-
 
 }

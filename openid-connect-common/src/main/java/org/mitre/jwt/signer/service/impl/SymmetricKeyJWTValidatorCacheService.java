@@ -15,19 +15,6 @@
  *******************************************************************************/
 package org.mitre.jwt.signer.service.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -37,23 +24,28 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.util.Base64URL;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Creates and caches symmetrical validators for clients based on client secrets.
  *
  * @author jricher
- *
  */
 @Service
 public class SymmetricKeyJWTValidatorCacheService {
 
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
 
 	private LoadingCache<String, JWTSigningAndValidationService> validators;
-
 
 	public SymmetricKeyJWTValidatorCacheService() {
 		validators = CacheBuilder.newBuilder()
@@ -62,59 +54,38 @@ public class SymmetricKeyJWTValidatorCacheService {
 				.build(new SymmetricValidatorBuilder());
 	}
 
-
-	/**
-	 * Create a symmetric signing and validation service for the given client
-	 *
-	 * @param client
-	 * @return
-	 */
 	public JWTSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
-
 		if (client == null) {
 			logger.error("Couldn't create symmetric validator for null client");
 			return null;
 		}
 
-		if (Strings.isNullOrEmpty(client.getClientSecret())) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
+		if (StringUtils.isEmpty(client.getClientSecret())) {
+			logger.error("Couldn't create symmetric validator for client {} without a client secret", client.getClientId());
 			return null;
 		}
 
 		try {
 			return validators.get(client.getClientSecret());
-		} catch (UncheckedExecutionException ue) {
+		} catch (UncheckedExecutionException | ExecutionException ue) {
 			logger.error("Problem loading client validator", ue);
 			return null;
-		} catch (ExecutionException e) {
-			logger.error("Problem loading client validator", e);
-			return null;
 		}
-
 	}
 
-	public class SymmetricValidatorBuilder extends CacheLoader<String, JWTSigningAndValidationService> {
+	public static class SymmetricValidatorBuilder extends CacheLoader<String, JWTSigningAndValidationService> {
 		@Override
-		public JWTSigningAndValidationService load(String key) throws Exception {
-			try {
+		public JWTSigningAndValidationService load(String key) {
 
-				String id = "SYMMETRIC-KEY";
-				JWK jwk = new OctetSequenceKey.Builder(Base64URL.encode(key))
-					.keyUse(KeyUse.SIGNATURE)
-					.keyID(id)
-					.build();
-				Map<String, JWK> keys = ImmutableMap.of(id, jwk);
-				JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keys);
+			String id = "SYMMETRIC-KEY";
+			JWK jwk = new OctetSequenceKey.Builder(Base64URL.encode(key))
+				.keyUse(KeyUse.SIGNATURE)
+				.keyID(id)
+				.build();
+			Map<String, JWK> keys = ImmutableMap.of(id, jwk);
 
-				return service;
-
-			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				logger.error("Couldn't create symmetric validator for client", e);
-			}
-
-			throw new IllegalArgumentException("Couldn't create symmetric validator for client");
+			return new DefaultJWTSigningAndValidationService(keys);
 		}
-
 	}
 
 }
