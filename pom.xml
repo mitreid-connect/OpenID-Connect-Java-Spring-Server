@@ -70,7 +70,7 @@
 	</mailingLists>
 
 	<properties>
-		<java-version>1.8</java-version>
+		<java-version>11</java-version>
 		<org.slf4j-version>1.7.25</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
@@ -178,7 +178,7 @@
 				<plugin>
 					<groupId>ro.isdc.wro4j</groupId>
 					<artifactId>wro4j-maven-plugin</artifactId>
-					<version>1.8.0</version>
+					<version>1.9.0</version>
 					<executions>
 						<execution>
 							<phase>compile</phase>
@@ -191,7 +191,7 @@
 						<dependency>
 							<groupId>ro.isdc.wro4j</groupId>
 							<artifactId>wro4j-extensions</artifactId>
-							<version>1.8.0</version>
+							<version>1.9.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -605,7 +605,7 @@
 			<dependency>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-extensions</artifactId>
-				<version>1.8.0</version>
+				<version>1.9.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
