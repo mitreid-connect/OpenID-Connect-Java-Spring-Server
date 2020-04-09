@@ -91,7 +91,7 @@ public class UriEncodedClientUserDetailsService implements UserDetailsService {
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);
 			}
-		} catch (UnsupportedEncodingException | InvalidClientException e) {
+		} catch ( InvalidClientException e) {
 			throw new UsernameNotFoundException("Client not found: " + clientId);
 		}
 
