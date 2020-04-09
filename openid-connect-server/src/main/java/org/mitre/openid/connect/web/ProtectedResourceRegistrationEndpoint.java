@@ -230,7 +230,7 @@ public class ProtectedResourceRegistrationEndpoint {
 
 
 
-
+			try {
 				// possibly update the token
 				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
 
@@ -241,7 +241,11 @@ public class ProtectedResourceRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
-
+			} catch (IllegalArgumentException e) {
+				logger.error("Unsupported encoding", e);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
+				return HttpCodeView.VIEWNAME;
+			}
 		} else {
 			// client mismatch
 			logger.error("readResourceConfiguration failed, client ID mismatch: "
