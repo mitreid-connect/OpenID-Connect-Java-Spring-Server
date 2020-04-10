@@ -1,24 +1,25 @@
 <%@attribute name="pageName" required="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <c:choose>
 	<c:when test="${ not empty userInfo.preferredUsername }">
-		<c:set var="shortName" value="${ userInfo.preferredUsername }" />
+		<c:set var="shortName" value="${ fn:escapeXml(userInfo.preferredUsername) }" />
 	</c:when>
 	<c:otherwise>
-		<c:set var="shortName" value="${ userInfo.sub }" />
+		<c:set var="shortName" value="${ fn:escapeXml(userInfo.sub) }" />
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${ not empty userInfo.name }">
-		<c:set var="longName" value="${ userInfo.name }" />
+		<c:set var="longName" value="${ fn:escapeXml(userInfo.name) }" />
 	</c:when>
 	<c:otherwise>
 		<c:choose>
 			<c:when test="${ not empty userInfo.givenName || not empty userInfo.familyName }">
-				<c:set var="longName" value="${ userInfo.givenName } ${ userInfo.familyName }" />
+				<c:set var="longName" value="${ fn:escapeXml(userInfo.givenName) } ${ fn:escapeXml(userInfo.familyName) }" />
 			</c:when>
 			<c:otherwise>
 				<c:set var="longName" value="${ shortName }" />
