@@ -10,3 +10,4 @@ bin
 /target
 .springBeans
 nb-configuration.xml
+.factorypath
