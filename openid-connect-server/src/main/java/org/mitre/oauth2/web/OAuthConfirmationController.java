@@ -221,6 +221,8 @@ public class OAuthConfirmationController {
 			model.put("gras", false);
 		}
 
+		model.put("form_target", "approve");
+
 		return "approve";
 	}
 
