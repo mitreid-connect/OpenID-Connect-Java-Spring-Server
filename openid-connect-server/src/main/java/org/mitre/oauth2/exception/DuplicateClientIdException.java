@@ -19,14 +19,10 @@ package org.mitre.oauth2.exception;
 
 public class DuplicateClientIdException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public DuplicateClientIdException(String clientId) {
 		super("Duplicate client id: " + clientId);
 	}
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
 
 }

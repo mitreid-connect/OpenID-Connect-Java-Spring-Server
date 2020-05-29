@@ -63,11 +63,6 @@ public class TestDefaultStatsService {
 	private ApprovedSite ap5 = Mockito.mock(ApprovedSite.class);
 	private ApprovedSite ap6 = Mockito.mock(ApprovedSite.class);
 
-	private ClientDetailsEntity client1 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client2 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client3 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client4 = Mockito.mock(ClientDetailsEntity.class);
-
 	@Mock
 	private ApprovedSiteService approvedSiteService;
 
@@ -102,12 +97,6 @@ public class TestDefaultStatsService {
 		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
 
 		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4));
-
-		Mockito.when(client1.getId()).thenReturn(1L);
-		Mockito.when(client2.getId()).thenReturn(2L);
-		Mockito.when(client3.getId()).thenReturn(3L);
-		Mockito.when(client4.getId()).thenReturn(4L);
-
 		Mockito.when(approvedSiteService.getByClientId(clientId1)).thenReturn(Sets.newHashSet(ap1, ap2));
 		Mockito.when(approvedSiteService.getByClientId(clientId2)).thenReturn(Sets.newHashSet(ap3));
 		Mockito.when(approvedSiteService.getByClientId(clientId3)).thenReturn(Sets.newHashSet(ap4));

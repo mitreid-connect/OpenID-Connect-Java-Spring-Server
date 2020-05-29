@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 @Component("selfAssertionValidator")
 public class SelfAssertionValidator extends AbstractAssertionValidator implements AssertionValidator {
 
-	private static Logger logger = LoggerFactory.getLogger(SelfAssertionValidator.class);
+	private static final Logger logger = LoggerFactory.getLogger(SelfAssertionValidator.class);
 
 	private final ConfigurationPropertiesBean config;
 	private final JWTSigningAndValidationService jwtService;

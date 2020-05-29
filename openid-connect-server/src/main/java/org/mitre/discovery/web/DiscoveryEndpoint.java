@@ -68,88 +68,61 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Controller
 public class DiscoveryEndpoint {
 
+	private static final Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
+
 	public static final String WELL_KNOWN_URL = ".well-known";
 	public static final String OPENID_CONFIGURATION_URL = WELL_KNOWN_URL + "/openid-configuration";
 	public static final String WEBFINGER_URL = WELL_KNOWN_URL + "/webfinger";
+	private static final String ISSUER_STRING = "http://openid.net/specs/connect/1.0/issuer";
 
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
-
-	@Autowired
-	private ConfigurationPropertiesBean config;
-
-	@Autowired
-	private SystemScopeService scopeService;
-
-	@Autowired
-	private JWTSigningAndValidationService signService;
-
-	@Autowired
-	private JWTEncryptionAndDecryptionService encService;
-
-	@Autowired
-	private UserInfoService userService;
-
+	private final ConfigurationPropertiesBean config;
+	private final SystemScopeService scopeService;
+	private final JWTSigningAndValidationService signService;
+	private final JWTEncryptionAndDecryptionService encService;
+	private final UserInfoService userService;
 
 	// used to map JWA algorithms objects to strings
-	private Function<Algorithm, String> toAlgorithmName = new Function<Algorithm, String>() {
-		@Override
-		public String apply(Algorithm alg) {
-			if (alg == null) {
-				return null;
-			} else {
-				return alg.getName();
-			}
-		}
-	};
+	private final Function<Algorithm, String> toAlgorithmName = alg -> alg == null ? null : alg.getName();
 
-	@RequestMapping(value={"/" + WEBFINGER_URL}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String webfinger(@RequestParam("resource") String resource, @RequestParam(value = "rel", required = false) String rel, Model model) {
+	@Autowired
+	public DiscoveryEndpoint(UserInfoService userService, ConfigurationPropertiesBean config,
+							 SystemScopeService scopeService, JWTSigningAndValidationService signService,
+							 JWTEncryptionAndDecryptionService encService) {
+		this.userService = userService;
+		this.config = config;
+		this.scopeService = scopeService;
+		this.signService = signService;
+		this.encService = encService;
+	}
 
-		if (!Strings.isNullOrEmpty(rel) && !rel.equals("http://openid.net/specs/connect/1.0/issuer")) {
-			logger.warn("Responding to webfinger request for non-OIDC relation: " + rel);
+	@RequestMapping(value = '/' + WEBFINGER_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String webfinger(@RequestParam("resource") String resource,
+							@RequestParam(value = "rel", required = false) String rel,
+							Model model) {
+		if (!Strings.isNullOrEmpty(rel) && !rel.equals(ISSUER_STRING)) {
+			logger.warn("Responding to webfinger request for non-OIDC relation: {}", rel);
 		}
 
 		if (!resource.equals(config.getIssuer())) {
 			// it's not the issuer directly, need to check other methods
-
 			UriComponents resourceUri = WebfingerURLNormalizer.normalizeResource(resource);
 			if (resourceUri != null
 					&& resourceUri.getScheme() != null
 					&& resourceUri.getScheme().equals("acct")) {
-				// acct: URI (email address format)
-
-				// check on email addresses first
-				UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
-
+				UserInfo user = extractUser(resourceUri);
 				if (user == null) {
-					// user wasn't found, see if the local part of the username matches, plus our issuer host
-
-					user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
-
-					if (user != null) {
-						// username matched, check the host component
-						UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
-						if (!Strings.nullToEmpty(issuerComponents.getHost())
-								.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
-							logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
-							model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-							return HttpCodeView.VIEWNAME;
-						}
-
-					} else {
-
-						// if the user's still null, punt and say we didn't find them
-
-						logger.info("User not found: " + resource);
-						model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-						return HttpCodeView.VIEWNAME;
-					}
-
+					logger.info("User not found: {}", resource);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+					return HttpCodeView.VIEWNAME;
 				}
 
+				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
+				if (!Strings.nullToEmpty(issuerComponents.getHost())
+					.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
+					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+					return HttpCodeView.VIEWNAME;
+				}
 			} else {
 				logger.info("Unknown URI format: " + resource);
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
@@ -157,11 +130,18 @@ public class DiscoveryEndpoint {
 			}
 		}
 
-		// if we got here, then we're good, return ourselves
 		model.addAttribute("resource", resource);
 		model.addAttribute("issuer", config.getIssuer());
 
 		return "webfingerView";
+	}
+
+	private UserInfo extractUser(UriComponents resourceUri) {
+		UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
+		if (user == null) {
+			user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
+		}
+		return user;
 	}
 
 	@RequestMapping("/" + OPENID_CONFIGURATION_URL)

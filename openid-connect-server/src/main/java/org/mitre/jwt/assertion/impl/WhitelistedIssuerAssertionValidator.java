@@ -35,12 +35,9 @@ import java.util.Map;
  */
 public class WhitelistedIssuerAssertionValidator extends AbstractAssertionValidator implements AssertionValidator {
 
-	private static Logger logger = LoggerFactory.getLogger(WhitelistedIssuerAssertionValidator.class);
+	private static final Logger logger = LoggerFactory.getLogger(WhitelistedIssuerAssertionValidator.class);
 
-	/**
-	 * Map of issuer -> JWKSetUri
-	 */
-	private Map<String, String> whitelist = new HashMap<>();
+	private Map<String, String> whitelist = new HashMap<>(); //Map of issuer -> JWKSetUri
 	private JWKSetCacheService jwkCache;
 
 	public Map<String, String> getWhitelist() {

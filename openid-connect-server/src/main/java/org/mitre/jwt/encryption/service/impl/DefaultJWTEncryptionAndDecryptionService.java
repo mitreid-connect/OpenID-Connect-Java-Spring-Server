@@ -17,8 +17,6 @@
  *******************************************************************************/
 package org.mitre.jwt.encryption.service.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +25,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.nimbusds.jose.KeyLengthException;
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.slf4j.Logger;
@@ -58,8 +57,8 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
-	private Map<String, JWEEncrypter> encrypters = new HashMap<>();
-	private Map<String, JWEDecrypter> decrypters = new HashMap<>();
+	private final Map<String, JWEEncrypter> encrypters = new HashMap<>();
+	private final Map<String, JWEDecrypter> decrypters = new HashMap<>();
 	private String defaultEncryptionKeyId;
 	private String defaultDecryptionKeyId;
 	private JWEAlgorithm defaultAlgorithm;
@@ -233,40 +232,52 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			JWK jwk = jwkEntry.getValue();
 
 			if (jwk instanceof RSAKey) {
-				RSAEncrypter encrypter = new RSAEncrypter((RSAKey) jwk);
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				encrypters.put(id, encrypter);
-
-				if (jwk.isPrivate()) { // we can decrypt!
-					RSADecrypter decrypter = new RSADecrypter((RSAKey) jwk);
-					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-					decrypters.put(id, decrypter);
-				} else {
-					logger.warn("No private key for key #{}", jwk.getKeyID());
-				}
+				handleRSAKey(id, jwk);
 			} else if (jwk instanceof ECKey) {
-				ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				encrypters.put(id, encrypter);
-
-				if (jwk.isPrivate()) { // we can decrypt too
-					ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
-					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-					decrypters.put(id, decrypter);
-				} else {
-					logger.warn("No private key for key #{}", jwk.getKeyID());
-				}
+				handleECKey(id, jwk);
 			} else if (jwk instanceof OctetSequenceKey) {
-				DirectEncrypter encrypter = new DirectEncrypter((OctetSequenceKey) jwk);
-				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-				DirectDecrypter decrypter = new DirectDecrypter((OctetSequenceKey) jwk);
-				decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
-
-				encrypters.put(id, encrypter);
-				decrypters.put(id, decrypter);
+				handleOctetSeqKey(id, jwk);
 			} else {
 				logger.warn("Unknown key type: {}", jwk);
 			}
+		}
+	}
+
+	private void handleOctetSeqKey(String id, JWK jwk) throws KeyLengthException {
+		DirectEncrypter encrypter = new DirectEncrypter((OctetSequenceKey) jwk);
+		encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+		DirectDecrypter decrypter = new DirectDecrypter((OctetSequenceKey) jwk);
+		decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+
+		encrypters.put(id, encrypter);
+		decrypters.put(id, decrypter);
+	}
+
+	private void handleECKey(String id, JWK jwk) throws JOSEException {
+		ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
+		encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+		encrypters.put(id, encrypter);
+
+		if (jwk.isPrivate()) { // we can decrypt too
+			ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
+			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+			decrypters.put(id, decrypter);
+		} else {
+			logger.warn("No private key for key #{}", jwk.getKeyID());
+		}
+	}
+
+	private void handleRSAKey(String id, JWK jwk) throws JOSEException {
+		RSAEncrypter encrypter = new RSAEncrypter((RSAKey) jwk);
+		encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+		encrypters.put(id, encrypter);
+
+		if (jwk.isPrivate()) { // we can decrypt!
+			RSADecrypter decrypter = new RSADecrypter((RSAKey) jwk);
+			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+			decrypters.put(id, decrypter);
+		} else {
+			logger.warn("No private key for key #{}", jwk.getKeyID());
 		}
 	}
 

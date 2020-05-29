@@ -16,6 +16,9 @@
 
 package org.mitre.uma.model;
 
+import com.google.gson.JsonElement;
+import org.mitre.oauth2.model.convert.JsonElementStringConverter;
+
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -30,10 +33,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-
-import org.mitre.oauth2.model.convert.JsonElementStringConverter;
-
-import com.google.gson.JsonElement;
 
 /**
  * @author jricher

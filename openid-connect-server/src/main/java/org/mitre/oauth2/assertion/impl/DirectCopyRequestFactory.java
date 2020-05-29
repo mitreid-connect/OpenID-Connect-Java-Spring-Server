@@ -36,27 +36,23 @@ import com.nimbusds.jwt.JWTClaimsSet;
  *  - aud, array of audience IDs
  *
  * @author jricher
- *
  */
 public class DirectCopyRequestFactory implements AssertionOAuth2RequestFactory {
 
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.assertion.AssertionOAuth2RequestFactory#createOAuth2Request(org.springframework.security.oauth2.provider.ClientDetails, org.springframework.security.oauth2.provider.TokenRequest, com.nimbusds.jwt.JWT)
-	 */
 	@Override
 	public OAuth2Request createOAuth2Request(ClientDetails client, TokenRequest tokenRequest, JWT assertion) {
-
 		try {
 			JWTClaimsSet claims = assertion.getJWTClaimsSet();
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
 
 			Set<String> resources = Sets.newHashSet(claims.getAudience());
 
-			return new OAuth2Request(tokenRequest.getRequestParameters(), client.getClientId(), client.getAuthorities(), true, scope, resources, null, null, null);
+			return new OAuth2Request(tokenRequest.getRequestParameters(), client.getClientId(),
+				client.getAuthorities(), true, scope, resources, null,
+				null, null);
 		} catch (ParseException e) {
 			return null;
 		}
-
 	}
 
 }

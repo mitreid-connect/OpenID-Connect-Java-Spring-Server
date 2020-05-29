@@ -24,21 +24,12 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
  */
 public class DeviceCodeExpiredException extends OAuth2Exception {
 
-	/**
-	 * @param msg
-	 */
+	private static final long serialVersionUID = -7078098692596870940L;
+
 	public DeviceCodeExpiredException(String msg) {
 		super(msg);
 	}
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -7078098692596870940L;
-
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.common.exceptions.OAuth2Exception#getOAuth2ErrorCode()
-	 */
 	@Override
 	public String getOAuth2ErrorCode() {
 		return "expired_token";

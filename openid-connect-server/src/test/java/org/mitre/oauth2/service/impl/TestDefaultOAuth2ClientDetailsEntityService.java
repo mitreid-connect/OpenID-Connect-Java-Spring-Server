@@ -17,15 +17,11 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
@@ -40,22 +36,23 @@ import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
-import com.google.common.collect.Sets;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.fail;
 
 /**
@@ -99,7 +96,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void prepare() {
 		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
 
-		Mockito.when(clientRepository.saveClient(Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+		Mockito.when(clientRepository.saveClient(ArgumentMatchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
@@ -107,15 +104,10 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 			}
 		});
 
-		Mockito.when(clientRepository.updateClient(Matchers.anyLong(), Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
-			@Override
-			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
-				Object[] args = invocation.getArguments();
-				return (ClientDetailsEntity) args[1];
-			}
-		});
+		Mockito.when(clientRepository.updateClient(ArgumentMatchers.nullable(Long.class), ArgumentMatchers.any(ClientDetailsEntity.class)))
+			.then(a -> a.getArgument(1));
 
-		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
+		Mockito.when(scopeService.fromStrings(ArgumentMatchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
 			@Override
 			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
@@ -128,7 +120,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 			}
 		});
 
-		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
+		Mockito.when(scopeService.toStrings(ArgumentMatchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
@@ -142,7 +134,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		});
 
 		// we're not testing reserved scopes here, just pass through when it's called
-		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(scopeService.removeReservedScopes(ArgumentMatchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
 		Mockito.when(config.isHeartMode()).thenReturn(false);
 
@@ -187,7 +179,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.saveNewClient(client);
 
-		Mockito.verify(client).setClientId(Matchers.anyString());
+		Mockito.verify(client).setClientId(ArgumentMatchers.anyString());
 	}
 
 	/**
@@ -217,7 +209,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.saveNewClient(client);
 
-		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(ArgumentMatchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
@@ -343,7 +335,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.updateClient(oldClient, client);
 
-		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(ArgumentMatchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
@@ -359,7 +351,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.updateClient(oldClient, client);
 
-		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(ArgumentMatchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
@@ -375,7 +367,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -396,7 +388,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.NONE);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -417,7 +409,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setJwksUri("https://foo.bar/jwks");
 
@@ -434,7 +426,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_POST);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_POST);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -453,7 +445,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -472,7 +464,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -491,7 +483,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		service.saveNewClient(client);
 
@@ -506,7 +498,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.NONE);
 
 		service.saveNewClient(client);
 
@@ -521,7 +513,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -538,7 +530,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -557,7 +549,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -578,7 +570,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -600,7 +592,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -620,7 +612,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://localhost/", "https://foo.bar", "foo://bar"));
 

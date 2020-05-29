@@ -10,7 +10,7 @@ import java.text.ParseException;
 
 public abstract class AbstractAssertionValidator implements AssertionValidator {
 
-	private static Logger logger = LoggerFactory.getLogger(AbstractAssertionValidator.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractAssertionValidator.class);
 
 	/**
 	 * Extract issuer from claims present in JWT assertion.

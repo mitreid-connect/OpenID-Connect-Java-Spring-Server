@@ -54,8 +54,8 @@ public class JWKSetCacheService {
 
 	private static final Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
-	private LoadingCache<String, JWTSigningAndValidationService> validators;
-	private LoadingCache<String, JWTEncryptionAndDecryptionService> encrypters;
+	private final LoadingCache<String, JWTSigningAndValidationService> validators;
+	private final LoadingCache<String, JWTEncryptionAndDecryptionService> encrypters;
 
 	public JWKSetCacheService() {
 		this.validators = CacheBuilder.newBuilder()
@@ -68,16 +68,11 @@ public class JWKSetCacheService {
 				.build(new JWKSetEncryptorFetcher(HttpClientBuilder.create().useSystemProperties().build()));
 	}
 
-	/**
-	 * @param jwksUri
-	 * @return
-	 * @throws ExecutionException
-	 */
 	public JWTSigningAndValidationService getValidator(String jwksUri) {
 		try {
 			return validators.get(jwksUri);
 		} catch (UncheckedExecutionException | ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
+			logger.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
 			return null;
 		}
 	}
@@ -86,13 +81,13 @@ public class JWKSetCacheService {
 		try {
 			return encrypters.get(jwksUri);
 		} catch (UncheckedExecutionException | ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
+			logger.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
 			return null;
 		}
 	}
 
 	private static class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
-		private RestTemplate restTemplate;
+		private final RestTemplate restTemplate;
 
 		JWKSetVerifierFetcher(HttpClient httpClient) {
 			HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -103,15 +98,13 @@ public class JWKSetCacheService {
 		public JWTSigningAndValidationService load(String key) throws Exception {
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JWKSet jwkSet = JWKSet.parse(jsonString);
-
 			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
-
 			return new DefaultJWTSigningAndValidationService(keyStore);
 		}
 	}
 
 	private static class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
-		private RestTemplate restTemplate;
+		private final RestTemplate restTemplate;
 
 		public JWKSetEncryptorFetcher(HttpClient httpClient) {
 			HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -123,9 +116,7 @@ public class JWKSetCacheService {
 			try {
 				String jsonString = restTemplate.getForObject(key, String.class);
 				JWKSet jwkSet = JWKSet.parse(jsonString);
-
 				JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
-
 				return new DefaultJWTEncryptionAndDecryptionService(keyStore);
 			} catch (JsonParseException | RestClientException e) {
 				throw new IllegalArgumentException("Unable to load JWK Set");

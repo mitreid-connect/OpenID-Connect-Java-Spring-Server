@@ -66,7 +66,6 @@ public class WebfingerURLNormalizer {
 			logger.warn("Can't normalize null or empty URI: " + identifier);
 			return null;
 		} else {
-			//UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
 			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
 			Matcher m = pattern.matcher(identifier);

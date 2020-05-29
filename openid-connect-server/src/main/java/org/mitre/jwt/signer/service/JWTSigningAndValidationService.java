@@ -27,17 +27,17 @@ import com.nimbusds.jwt.SignedJWT;
 
 public interface JWTSigningAndValidationService {
 
-	/**
-	 * Get all public keys for this service, mapped by their Key ID
-	 */
 	Map<String, JWK> getAllPublicKeys();
+
+	JWSAlgorithm getDefaultSigningAlgorithm();
+
+	Collection<JWSAlgorithm> getAllSigningAlgsSupported();
 
 	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
 	 *
-	 * @param jwtString
-	 *            the string representation of the JWT as sent on the wire
+	 * @param jwtString the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
 	 * @throws NoSuchAlgorithmException
 	 */
@@ -52,18 +52,6 @@ public interface JWTSigningAndValidationService {
 	 * @throws NoSuchAlgorithmException
 	 */
 	void signJwt(SignedJWT jwt);
-
-	/**
-	 * Get the default signing algorithm for use when nothing else has been specified.
-	 * @return
-	 */
-	JWSAlgorithm getDefaultSigningAlgorithm();
-
-	/**
-	 * Get the list of all signing algorithms supported by this service.
-	 * @return
-	 */
-	Collection<JWSAlgorithm> getAllSigningAlgsSupported();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified

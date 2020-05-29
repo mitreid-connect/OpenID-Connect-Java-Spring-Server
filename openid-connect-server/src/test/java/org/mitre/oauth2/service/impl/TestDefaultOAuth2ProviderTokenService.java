@@ -191,8 +191,6 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		// we're not testing restricted or reserved scopes here, just pass through
 		when(scopeService.removeReservedScopes(anySet())).then(returnsFirstArg());
-		when(scopeService.removeRestrictedAndReservedScopes(anySet())).then(returnsFirstArg());
-
 		when(tokenEnhancer.enhance(any(OAuth2AccessTokenEntity.class), any(OAuth2Authentication.class)))
 		.thenAnswer(new Answer<OAuth2AccessTokenEntity>(){
 			@Override

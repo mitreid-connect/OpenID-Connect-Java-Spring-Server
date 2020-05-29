@@ -48,30 +48,20 @@ import com.google.gson.JsonObject;
  */
 @Component("webfingerView")
 public class WebfingerView extends AbstractView {
-
-	/**
-	 * Logger for this class
-	 */
 	private static final Logger logger = LoggerFactory.getLogger(WebfingerView.class);
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
-
 				@Override
 				public boolean shouldSkipField(FieldAttributes f) {
-
 					return false;
 				}
 
 				@Override
 				public boolean shouldSkipClass(Class<?> clazz) {
 					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
+					return clazz.equals(BeanPropertyBindingResult.class);
 				}
-
 			})
 			.serializeNulls()
 			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -79,21 +69,17 @@ public class WebfingerView extends AbstractView {
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-
 		response.setContentType("application/jrd+json");
-
-
 		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
-			code = HttpStatus.OK; // default to 200
+			code = HttpStatus.OK;
 		}
 
 		response.setStatus(code.value());
 
 		try {
-
-			String resource = (String)model.get("resource");
-			String issuer = (String)model.get("issuer");
+			String resource = (String) model.get("resource");
+			String issuer = (String) model.get("issuer");
 
 			JsonObject obj = new JsonObject();
 			obj.addProperty("subject", resource);
@@ -108,11 +94,8 @@ public class WebfingerView extends AbstractView {
 
 			Writer out = response.getWriter();
 			gson.toJson(obj, out);
-
 		} catch (IOException e) {
-
-			logger.error("IOException in JsonEntityView.java: ", e);
-
+			logger.error("IOException in WebfingerView.java: ", e);
 		}
 	}
 

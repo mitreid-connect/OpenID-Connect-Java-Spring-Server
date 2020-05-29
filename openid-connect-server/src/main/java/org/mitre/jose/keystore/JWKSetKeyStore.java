@@ -91,11 +91,9 @@ public class JWKSetKeyStore {
 				throw new IllegalArgumentException("Key Set resource could not be read: " + location);
 			} catch (ParseException e) {
 				throw new IllegalArgumentException("Key Set resource could not be parsed: " + location);                    }
-
 		} else {
 			throw new IllegalArgumentException("Key Set resource could not be read: " + location);
 		}
-
 	}
 
 }

@@ -45,7 +45,7 @@ public class SymmetricKeyJWTValidatorCacheService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
 
-	private LoadingCache<String, JWTSigningAndValidationService> validators;
+	private final LoadingCache<String, JWTSigningAndValidationService> validators;
 
 	public SymmetricKeyJWTValidatorCacheService() {
 		validators = CacheBuilder.newBuilder()
@@ -54,13 +54,11 @@ public class SymmetricKeyJWTValidatorCacheService {
 				.build(new SymmetricValidatorBuilder());
 	}
 
-	public JWTSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
+	public JWTSigningAndValidationService getSymmetricValidator(ClientDetailsEntity client) {
 		if (client == null) {
 			logger.error("Couldn't create symmetric validator for null client");
 			return null;
-		}
-
-		if (StringUtils.isEmpty(client.getClientSecret())) {
+		} else if (StringUtils.isEmpty(client.getClientSecret())) {
 			logger.error("Couldn't create symmetric validator for client {} without a client secret", client.getClientId());
 			return null;
 		}
@@ -76,7 +74,6 @@ public class SymmetricKeyJWTValidatorCacheService {
 	public static class SymmetricValidatorBuilder extends CacheLoader<String, JWTSigningAndValidationService> {
 		@Override
 		public JWTSigningAndValidationService load(String key) {
-
 			String id = "SYMMETRIC-KEY";
 			JWK jwk = new OctetSequenceKey.Builder(Base64URL.encode(key))
 				.keyUse(KeyUse.SIGNATURE)

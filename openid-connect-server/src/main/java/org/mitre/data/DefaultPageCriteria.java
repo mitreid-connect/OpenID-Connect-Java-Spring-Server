@@ -26,8 +26,8 @@ public class DefaultPageCriteria implements PageCriteria {
 	private static final int DEFAULT_PAGE_NUMBER = 0;
 	private static final int DEFAULT_PAGE_SIZE = 100;
 
-	private int pageNumber;
-	private int pageSize;
+	private final int pageNumber;
+	private final int pageSize;
 
 	public DefaultPageCriteria(){
 		this(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
