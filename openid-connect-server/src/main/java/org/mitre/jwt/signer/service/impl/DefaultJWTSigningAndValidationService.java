@@ -18,6 +18,7 @@
 package org.mitre.jwt.signer.service.impl;
 
 import com.nimbusds.jose.JOSEException;
+
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSProvider;
 import com.nimbusds.jose.JWSSigner;
@@ -50,8 +51,9 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTSigningAndValidationService.class);
 
-	private Map<String, JWSSigner> signers = new HashMap<>();
-	private Map<String, JWSVerifier> verifiers = new HashMap<>();
+	private final Map<String, JWSSigner> signers = new HashMap<>();
+	private final Map<String, JWSVerifier> verifiers = new HashMap<>();
+
 	private String defaultSignerKeyId;
 	private JWSAlgorithm defaultAlgorithm;
 	private Map<String, JWK> keys = new HashMap<>();
@@ -113,9 +115,6 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		}
 	}
 
-	/**
-	 * Sign a jwt in place using the configured default signer.
-	 */
 	@Override
 	public void signJwt(SignedJWT jwt) {
 		if (getDefaultSignerKeyId() == null) {
@@ -143,8 +142,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		}
 
 		if (signer == null) {
-			//If we can't find an algorithm that matches, we can't sign
-			logger.error("No matching algirthm found for alg=" + alg);
+			logger.error("No matching algorithm found for alg={}", alg);
 		} else {
 			try {
 				jwt.sign(signer);
@@ -158,9 +156,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	public boolean validateSignature(SignedJWT jwt) {
 		for (JWSVerifier verifier : verifiers.values()) {
 			try {
-				if (jwt.verify(verifier)) {
-					return true;
-				}
+				return jwt.verify(verifier);
 			} catch (JOSEException e) {
 				logger.error("Failed to validate signature with {} error message: {}", verifier, e.getMessage());
 			}

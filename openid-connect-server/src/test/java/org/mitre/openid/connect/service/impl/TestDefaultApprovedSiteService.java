@@ -123,7 +123,6 @@ public class TestDefaultApprovedSiteService {
 		String otherId = "a different id";
 		client.setClientId(otherId);
 		service.clearApprovedSitesForClient(client);
-		Mockito.when(repository.getByClientId(otherId)).thenReturn(new HashSet<ApprovedSite>());
 		Mockito.verify(repository, never()).remove(any(ApprovedSite.class));
 	}
 

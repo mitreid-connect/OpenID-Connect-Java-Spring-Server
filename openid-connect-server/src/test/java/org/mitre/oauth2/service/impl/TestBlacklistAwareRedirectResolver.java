@@ -74,8 +74,6 @@ public class TestBlacklistAwareRedirectResolver {
 
 		when(client.getAuthorizedGrantTypes()).thenReturn(ImmutableSet.of("authorization_code"));
 		when(client.getRegisteredRedirectUri()).thenReturn(ImmutableSet.of(goodUri, blacklistedUri));
-
-		when(config.isHeartMode()).thenReturn(false);
 	}
 
 	@Test
@@ -141,8 +139,6 @@ public class TestBlacklistAwareRedirectResolver {
 
 	@Test
 	public void testHeartMode() {
-		when(config.isHeartMode()).thenReturn(true);
-
 		// this is not an exact match
 		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
 

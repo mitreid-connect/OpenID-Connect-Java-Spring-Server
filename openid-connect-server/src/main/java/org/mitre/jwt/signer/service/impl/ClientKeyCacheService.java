@@ -17,7 +17,6 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -99,7 +98,7 @@ public class ClientKeyCacheService {
 					return null;
 				}
 			} else if (symmetric.contains(alg)) {
-				return symmetricCache.getSymmetricValidtor(client);
+				return symmetricCache.getSymmetricValidator(client);
 			} else {
 				return null;
 			}

@@ -142,7 +142,7 @@ public class UserInfoJWTView extends UserInfoView {
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
 
 					// sign it with the client's secret
-					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidator(client);
 					signer.signJwt(signed);
 
 				} else {
