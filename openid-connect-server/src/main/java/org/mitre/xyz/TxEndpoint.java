@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -108,12 +109,7 @@ public class TxEndpoint {
 			// otherwise we build one from the parts
 
 			tx = new TxEntity();
-			// client ID is passed in as the handle for the key object
-			// we don't support ephemeral keys (yet)
-			String clientId = json.get("keys").getAsString();
-
-			// first, load the client
-			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+			ClientDetailsEntity client = loadOrRegisterClient(json);
 
 			if (client == null) {
 				m.addAttribute(JsonErrorView.ERROR, "unknown_key");
@@ -169,11 +165,14 @@ public class TxEndpoint {
 		switch (tx.getStatus()) {
 			case NEW:
 				// now make sure the client is asking for scopes that it's allowed to
-				if (!scopeService.scopesMatch(tx.getClient().getScope(), tx.getScope())) {
-					m.addAttribute(JsonErrorView.ERROR, "resource_not_allowed");
-					m.addAttribute(JsonErrorView.ERROR_MESSAGE, "The client requested resources it does not have access to.");
-					m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-					return JsonErrorView.VIEWNAME;
+				// note: if the client has no scopes registered, it can ask for anything
+				if (!tx.getClient().getScope().isEmpty()) {
+					if (!scopeService.scopesMatch(tx.getClient().getScope(), tx.getScope())) {
+						m.addAttribute(JsonErrorView.ERROR, "resource_not_allowed");
+						m.addAttribute(JsonErrorView.ERROR_MESSAGE, "The client requested resources it does not have access to.");
+						m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+						return JsonErrorView.VIEWNAME;
+					}
 				}
 
 				OAuth2Request o2r = new OAuth2Request(
@@ -215,22 +214,24 @@ public class TxEndpoint {
 						String callbackString = callback.get("uri").getAsString();
 						Path callbackPath = Paths.get(URI.create(callbackString).getPath());
 
-						// we do sub-path matching for the callback
-						// FIXME: this is a really simplistic filter that definitely has holes in it
-						boolean callbackMatches = tx.getClient().getRedirectUris().stream()
-							.filter(s -> callbackString.startsWith(s))
-							.map(URI::create)
-							.map(URI::getPath)
-							.map(Paths::get)
-							.anyMatch(path ->
-								callbackPath.startsWith(path)
-							);
+						if (!tx.getClient().getRedirectUris().isEmpty()) {
+							// we do sub-path matching for the callback
+							// FIXME: this is a really simplistic filter that definitely has holes in it
+							boolean callbackMatches = tx.getClient().getRedirectUris().stream()
+								.filter(s -> callbackString.startsWith(s))
+								.map(URI::create)
+								.map(URI::getPath)
+								.map(Paths::get)
+								.anyMatch(path ->
+									callbackPath.startsWith(path)
+								);
 
-						if (!callbackMatches) {
-							m.addAttribute(JsonErrorView.ERROR, "invalid_callback_uri");
-							m.addAttribute(JsonErrorView.ERROR_MESSAGE, "The client presented a callback URI that did not match one registered.");
-							m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-							return JsonErrorView.VIEWNAME;
+							if (!callbackMatches) {
+								m.addAttribute(JsonErrorView.ERROR, "invalid_callback_uri");
+								m.addAttribute(JsonErrorView.ERROR_MESSAGE, "The client presented a callback URI that did not match one registered.");
+								m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+								return JsonErrorView.VIEWNAME;
+							}
 						}
 
 						tx.setCallbackUri(callbackString);
@@ -257,6 +258,14 @@ public class TxEndpoint {
 					h.put("value", handle);
 					h.put("presentation", "bearer");
 					map.put("handle", h);
+
+					if (tx.getClient().isDynamicallyRegistered()) {
+						Map<String, String> kh = ImmutableMap.of(
+							"value", tx.getClient().getClientId(),
+							"presentation", "bearer"
+							);
+						map.put("key_handle", kh);
+					}
 
 					txService.save(tx);
 
@@ -317,6 +326,68 @@ public class TxEndpoint {
 		m.addAttribute(JsonErrorView.ERROR_MESSAGE, "There was an error processing the transaction.");
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 		return JsonErrorView.VIEWNAME;
+	}
+
+
+	private ClientDetailsEntity loadOrRegisterClient(JsonObject json) {
+
+		if (json.get("keys").isJsonObject()) {
+			// dynamically register the client
+
+			if (!json.get("keys").getAsJsonObject().has("jwk")) {
+				// we can only do a JWKS-based key proof
+				return null;
+			}
+
+			if (json.get("keys").getAsJsonObject().has("proof")
+				&& json.get("keys").getAsJsonObject().get("proof").getAsString().equals("jwsd")) {
+				try {
+
+					String jwkString = json.get("keys").getAsJsonObject().get("jwk").toString();
+					JWK jwk = JWK.parse(jwkString); // we have to round-trip this to get into the native object format for Nimbus
+
+					// TODO: see if we can figure out how to look up the client by its key value
+					//ClientDetailsEntity client = clientService.findClientByPublicKey(jwk);
+
+					// we create a new client and register it with the given key
+					ClientDetailsEntity client = new ClientDetailsEntity();
+					client.setDynamicallyRegistered(true);
+					client.setJwks(new JWKSet(jwk));
+
+					if (json.has("display") && json.get("display").isJsonObject()) {
+						JsonObject display = json.get("display").getAsJsonObject();
+
+						if (display.has("name")) {
+							client.setClientName(display.get("name").getAsString());
+						}
+
+						if (display.has("uri")) {
+							client.setClientUri(display.get("uri").getAsString());
+						}
+
+						if (display.has("logo_uri")) {
+							client.setLogoUri(display.get("logo_uri").getAsString());
+						}
+					}
+
+					ClientDetailsEntity saved = clientService.saveNewClient(client);
+
+					return saved;
+				} catch (ParseException e) {
+					return null;
+				}
+			} else {
+				// unsupported proof type
+				return null;
+			}
+		} else {
+			// client ID is passed in as the handle for the key object
+			String clientId = json.get("keys").getAsString();
+
+			// first, load the client
+			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+			return client;
+		}
 	}
 
 
