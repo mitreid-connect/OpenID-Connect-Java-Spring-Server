@@ -22,6 +22,7 @@ import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +37,11 @@ import org.mitre.oauth2.introspectingfilter.service.impl.SimpleIntrospectionAuth
 import org.mitre.oauth2.model.RegisteredClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
@@ -309,7 +314,12 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		form.add("token", accessToken);
 
 		try {
-			validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+			ResponseEntity<String> response = restTemplate.exchange(introspectionUrl, HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
+			validatedToken = response.getBody();
 		} catch (RestClientException rce) {
 			logger.error("validateToken", rce);
 			return null;
