@@ -4,8 +4,8 @@
 pipeline {
     agent any
 	tools {
-		maven 'Maven 3.3.9'
-		jdk 'Java 8'
+		maven 'Maven 3.6.3'
+		jdk 'Corretto 8.252'
 	}
 	options {
 		// Only keep 10 builds in total
@@ -15,7 +15,7 @@ pipeline {
 		timestamps()
 
 		// Prevent concurrent builds
-		disableConcurrentBuilds();
+		disableConcurrentBuilds()
 	}
 	stages {
 		stage ('1.3.3 Build') {
