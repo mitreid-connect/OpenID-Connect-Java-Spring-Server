@@ -6,6 +6,7 @@ Unreleased:
 - Added a password encoder to the client entity service
 - Fixes a bug by specifying the name of the scope columnn
 - Removed functionality that passed the client secret down to the UI
+- Updated JDK to Corretto 1.8.252
 
 *1.3.2:
 - Added changelog
