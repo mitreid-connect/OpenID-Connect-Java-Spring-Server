@@ -1,6 +1,3 @@
-//
-// CTC Open Id Connect Jenkins Pipeline
-//
 pipeline {
     agent any
 	tools {
@@ -30,20 +27,14 @@ pipeline {
 				script {
 					def pom = readMavenPom file: 'pom.xml'
 					def currentVersion = pom.getVersion()
-					echo 'Current Version: ' + currentVersion
 
 					VERSION = currentVersion.substring(0, currentVersion.indexOf('-SNAPSHOT'))
-					echo 'Release Version: ' + VERSION
 
 					def parts = VERSION.tokenize('-')
-					echo 'Parts: ' + parts
-
-					def index = parts[1].toInteger()
-					echo 'Index: ' + index
+					def currentGreshamVersion = parts[1].toInteger()
 
 					parts.remove(1)
-					NEW_VERSION = parts.join('-') + '-' + (index + 1)
-					echo 'Next Version: ' + NEW_VERSION
+					NEW_VERSION = parts.join('-') + '-' + (currentGreshamVersion + 1)
 				}
 			}
 		}
@@ -63,14 +54,11 @@ pipeline {
 				}
                 timeout(time: 10, unit: 'MINUTES') {
                     withMaven(options: [jUnitPublisher(disabled: true)]) {
-	                    sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/thirdparty/"
+	                    sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/repository/thirdparty-maven-releases/"
                     }
                 }
             }
             post {
-                always {
-                       archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'openid-connect-server-webapp/target/*.war'
-                }
                 success {
                     junit '**/target/surefire-reports/**/*.xml'
                 }
@@ -85,14 +73,11 @@ pipeline {
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     withMaven(options: [jUnitPublisher(disabled: true)]) {
-                        sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/third-party-snapshots/"
+                        sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/"
                     }
                 }
             }
             post {
-                always {
-                       archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'openid-connect-server-webapp/target/*.war'
-                }
                 success {
                     junit '**/target/surefire-reports/**/*.xml'
                 }
@@ -109,14 +94,11 @@ pipeline {
 					withMaven(options: [junitPublisher(disabled: true)]) {
 						sh "mvn versions:set -B -DnewVersion=${env.BRANCH_NAME}.GRESHAM-SNAPSHOT"
 	                    sh "mvn -N -B versions:update-child-modules"
-	                    sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/third-party-snapshots/"
+	                    sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/"
                     }
                 }
 			}
 			post {
-		        always{
-                    archiveArtifacts caseSensitive: false, onlyIfSuccessful: true, allowEmptyArchive: true, artifacts: 'openid-connect-server-webapp/target/*.war'
-		        }
 		        success {
                     junit '**/target/surefire-reports/**/*.xml'
                 }
