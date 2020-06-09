@@ -55,7 +55,7 @@ pipeline {
             }
             steps {
                 sh "mvn versions:set -B -DnewVersion=$VERSION"
-                sh "mvn -N versions:update-child-modules"
+                sh "mvn -N -B versions:update-child-modules"
 				script {
 					sh "git commit --all --message 'Creating Release $VERSION'"
 					sh "git tag --annotate v$VERSION --message 'Creating Release $VERSION'"
@@ -107,8 +107,8 @@ pipeline {
 			steps {
 				timeout(time: 10, unit: 'MINUTES') {
 					withMaven(options: [junitPublisher(disabled: true)]) {
-						sh "mvn versions:set -DnewVersion=${env.BRANCH_NAME}.GRESHAM-SNAPSHOT"
-	                    sh "mvn -N versions:update-child-modules"
+						sh "mvn versions:set -B -DnewVersion=${env.BRANCH_NAME}.GRESHAM-SNAPSHOT"
+	                    sh "mvn -N -B versions:update-child-modules"
 	                    sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/third-party-snapshots/"
                     }
                 }
