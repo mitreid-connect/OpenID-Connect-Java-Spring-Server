@@ -30,6 +30,10 @@ The authors and key contributors of the project include:
 
 Copyright &copy;2017, [MIT Internet Trust Consortium](http://www.trust.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
 
-## Note for releasing
+## Release Process
 
-Releases are made off of branch 1.3.x - the version released used to depend on the Jenkins build number but this is ineffective as the Jenkins history can vanish leaving you back at build number 1.  Therefore, in the Jenkinsfile, the version to be released needs altering on line 26 and incrementing by 1.
+Here at Gresham, we use this component for a base for the auth server, our developing branch is 1.3.x and any feature branches should be made off of that branch.
+
+In order to release a new version of the open-id-connect component, run the `Build with Parameters` on Jenkins ticking the release checkbox as part of the build.
+
+This will release the next release version (the current version less the -SNAPSHOT), run a build with the tests and then bump the 1.3.x branch to the next snapshot version of the repository 
