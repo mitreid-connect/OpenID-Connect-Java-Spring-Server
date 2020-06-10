@@ -53,7 +53,7 @@ pipeline {
 					sh "git push origin HEAD:${BRANCH_NAME} --tags"
 				}
 				timeout(time: 10, unit: 'MINUTES') {
-					withMaven(options: [jUnitPublisher(disabled: true)]) {
+					withMaven(options: [junitPublisher(disabled: true)]) {
 						sh "mvn -B -V -U -T4 clean deploy -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/repository/thirdparty-maven-releases/"
 					}
 				}
@@ -72,7 +72,7 @@ pipeline {
 			}
 			steps {
 				timeout(time: 10, unit: 'MINUTES') {
-					withMaven(options: [jUnitPublisher(disabled: true)]) {
+					withMaven(options: [junitPublisher(disabled: true)]) {
 						sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/"
 					}
 				}
