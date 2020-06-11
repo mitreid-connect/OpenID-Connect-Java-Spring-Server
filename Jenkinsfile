@@ -1,8 +1,8 @@
 pipeline {
 	agent any
 	tools {
-		maven 'Maven 3.3.9'
-		jdk 'Java 8'
+		maven 'Maven 3.6.3'
+		jdk 'Corretto 8.252'
 	}
 	environment {
 		VERSION = ''
