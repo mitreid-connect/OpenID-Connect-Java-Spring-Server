@@ -22,22 +22,22 @@ pipeline {
 		disableConcurrentBuilds()
 	}
 	stages {
-		stage ('Discover Version Number') {
-			steps {
-				script {
-					def pom = readMavenPom file: 'pom.xml'
-					def currentVersion = pom.getVersion()
-
-					VERSION = currentVersion.substring(0, currentVersion.indexOf('-SNAPSHOT'))
-
-					def parts = VERSION.tokenize('-')
-					def currentGreshamVersion = parts[1].toInteger()
-
-					parts.remove(1)
-					NEW_VERSION = parts.join('-') + '-' + (currentGreshamVersion + 1)
-				}
-			}
-		}
+//		stage ('Discover Version Number') {
+//			steps {
+//				script {
+//					def pom = readMavenPom file: 'pom.xml'
+//					def currentVersion = pom.getVersion()
+//
+//					VERSION = currentVersion.substring(0, currentVersion.indexOf('-SNAPSHOT'))
+//
+//					def parts = VERSION.tokenize('-')
+//					def currentGreshamVersion = parts[1].toInteger()
+//
+//					parts.remove(1)
+//					NEW_VERSION = parts.join('-') + '-' + (currentGreshamVersion + 1)
+//				}
+//			}
+//		}
 		stage ('1.3.3 Release Build') {
 			when {
 				expression {
