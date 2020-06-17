@@ -73,7 +73,7 @@ pipeline {
 			steps {
 				timeout(time: 10, unit: 'MINUTES') {
 					withMaven(options: [junitPublisher(disabled: true)]) {
-						sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/"
+						sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/ -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/repository/thirdparty-maven-releases/"
 					}
 				}
 			}
