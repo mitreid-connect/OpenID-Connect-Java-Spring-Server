@@ -188,7 +188,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 							null, null);
 					idToken = new SignedJWT(header, idClaims.build());
 
-					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidator(client);
 
 					// sign it with the client's secret
 					signer.signJwt((SignedJWT) idToken);

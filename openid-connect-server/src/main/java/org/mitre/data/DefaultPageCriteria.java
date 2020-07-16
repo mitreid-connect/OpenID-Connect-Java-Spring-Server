@@ -13,26 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-
-package org.mitre.oauth2.exception;
-
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+package org.mitre.data;
 
 /**
- * @author jricher
+ * Default implementation of PageCriteria which specifies
+ * both page to be retrieved and page size in the constructor.
  *
+ * @author Colm Smyth
  */
-public class DeviceCodeExpiredException extends OAuth2Exception {
+public class DefaultPageCriteria implements PageCriteria {
 
-	private static final long serialVersionUID = -7078098692596870940L;
+	private static final int DEFAULT_PAGE_NUMBER = 0;
+	private static final int DEFAULT_PAGE_SIZE = 100;
 
-	public DeviceCodeExpiredException(String msg) {
-		super(msg);
+	private final int pageNumber;
+	private final int pageSize;
+
+	public DefaultPageCriteria(){
+		this(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
+	}
+
+	public DefaultPageCriteria(int pageNumber, int pageSize) {
+		this.pageNumber = pageNumber;
+		this.pageSize = pageSize;
 	}
 
 	@Override
-	public String getOAuth2ErrorCode() {
-		return "expired_token";
+	public int getPageNumber() {
+		return pageNumber;
+	}
+
+	@Override
+	public int getPageSize() {
+		return pageSize;
 	}
 
 }
