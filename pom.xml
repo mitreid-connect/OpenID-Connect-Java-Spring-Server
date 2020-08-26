@@ -385,13 +385,10 @@
 			<!-- Spring Security -->
 			<dependency>
 				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>4.2.16.RELEASE</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-taglibs</artifactId>
-				<version>4.2.16.RELEASE</version>
+				<artifactId>spring-security-bom</artifactId>
+				<version>4.2.18.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security.oauth</groupId>
