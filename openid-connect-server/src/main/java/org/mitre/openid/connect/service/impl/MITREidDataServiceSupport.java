@@ -25,6 +25,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.format.datetime.DateFormatter;
 
 public abstract class MITREidDataServiceSupport {
+	public static final String DATE_TIME_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 	private final DateFormatter dateFormatter;
 	/**
 	 * Logger for this class
@@ -32,8 +33,7 @@ public abstract class MITREidDataServiceSupport {
 	private static final Logger logger = LoggerFactory.getLogger(MITREidDataServiceSupport.class);
 
 	public MITREidDataServiceSupport() {
-		dateFormatter = new DateFormatter();
-		dateFormatter.setIso(ISO.DATE_TIME);
+		dateFormatter = new DateFormatter(DATE_TIME_ISO);
 	}
 
 	protected Date utcToDate(String value) {

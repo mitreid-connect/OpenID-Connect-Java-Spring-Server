@@ -20,19 +20,19 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
 
 import com.google.common.base.Strings;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author jricher
  *
  */
-public class StaticSingleIssuerService implements IssuerService {
+public class StaticSingleIssuerService implements IssuerService, InitializingBean {
 
 	private String issuer;
 
@@ -60,7 +60,7 @@ public class StaticSingleIssuerService implements IssuerService {
 		return new IssuerServiceResponse(getIssuer(), null, null);
 	}
 
-	@PostConstruct
+	@Override
 	public void afterPropertiesSet() {
 
 		if (Strings.isNullOrEmpty(issuer)) {

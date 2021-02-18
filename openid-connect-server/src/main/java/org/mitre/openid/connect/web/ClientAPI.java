@@ -51,6 +51,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -207,6 +209,16 @@ public class ClientAPI {
 				public PKCEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 					if (json.isJsonPrimitive()) {
 						return PKCEAlgorithm.parse(json.getAsString());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(GrantedAuthority.class, new JsonDeserializer<GrantedAuthority>() {
+				@Override
+				public GrantedAuthority deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return new SimpleGrantedAuthority(json.getAsString());
 					} else {
 						return null;
 					}

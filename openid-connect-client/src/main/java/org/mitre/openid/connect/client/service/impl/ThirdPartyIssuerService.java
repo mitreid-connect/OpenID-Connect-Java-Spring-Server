@@ -24,12 +24,12 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Strings;
@@ -41,7 +41,7 @@ import com.google.common.base.Strings;
  * @author jricher
  *
  */
-public class ThirdPartyIssuerService implements IssuerService {
+public class ThirdPartyIssuerService implements IssuerService, InitializingBean {
 
 	private String accountChooserUrl;
 
@@ -128,7 +128,7 @@ public class ThirdPartyIssuerService implements IssuerService {
 		this.blacklist = blacklist;
 	}
 
-	@PostConstruct
+	@Override
 	public void afterPropertiesSet() {
 		if (Strings.isNullOrEmpty(this.accountChooserUrl)) {
 			throw new IllegalArgumentException("Account Chooser URL cannot be null or empty");
