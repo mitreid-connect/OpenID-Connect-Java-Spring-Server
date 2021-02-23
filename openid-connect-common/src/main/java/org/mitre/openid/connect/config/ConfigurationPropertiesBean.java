@@ -20,11 +20,10 @@ package org.mitre.openid.connect.config;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -40,7 +39,7 @@ import com.google.gson.Gson;
  * @author AANGANES
  *
  */
-public class ConfigurationPropertiesBean {
+public class ConfigurationPropertiesBean implements InitializingBean {
 
 	/**
 	 * Logger for this class
@@ -72,14 +71,16 @@ public class ConfigurationPropertiesBean {
 	private boolean allowCompleteDeviceCodeUri = false;
 
 	public ConfigurationPropertiesBean() {
-
 	}
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		checkConfigConsistency();
+	}
 	/**
 	 * Endpoints protected by TLS must have https scheme in the URI.
-	 * @throws HttpsUrlRequiredException
+	 * @throws BeanCreationException
 	 */
-	@PostConstruct
 	public void checkConfigConsistency() {
 		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
 			if (this.forceHttps) {
@@ -273,4 +274,6 @@ public class ConfigurationPropertiesBean {
 	public void setAllowCompleteDeviceCodeUri(boolean allowCompleteDeviceCodeUri) {
 		this.allowCompleteDeviceCodeUri = allowCompleteDeviceCodeUri;
 	}
+
+
 }

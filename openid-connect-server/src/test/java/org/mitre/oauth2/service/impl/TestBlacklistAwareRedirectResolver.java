@@ -87,15 +87,6 @@ public class TestBlacklistAwareRedirectResolver {
 
 		assertThat(res1, is(equalTo(goodUri)));
 		
-		// set the resolver to non-strict and test the path-based redirect resolution
-		
-		resolver.setStrictMatch(false);
-
-		String res2 = resolver.resolveRedirect(pathUri, client);
-
-		assertThat(res2, is(equalTo(pathUri)));
-
-
 	}
 
 	@Test(expected = InvalidRequestException.class)
@@ -104,54 +95,6 @@ public class TestBlacklistAwareRedirectResolver {
 		// this should fail with an error
 		resolver.resolveRedirect(blacklistedUri, client);
 
-	}
-
-	@Test
-	public void testRedirectMatches_default() {
-
-		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
-
-		assertThat(res1, is(false));
-
-		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
-
-		assertThat(res2, is(true));
-
-	}
-
-	@Test
-	public void testRedirectMatches_nonstrict() {
-
-		// set the resolver to non-strict match mode
-		resolver.setStrictMatch(false);
-		
-		// this is not an exact match (but that's OK)
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
-
-		assertThat(res1, is(true));
-
-		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
-
-		assertThat(res2, is(true));
-
-	}
-
-	@Test
-	public void testHeartMode() {
-		when(config.isHeartMode()).thenReturn(true);
-
-		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
-
-		assertThat(res1, is(false));
-
-		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
-
-		assertThat(res2, is(true));
 	}
 
 }
