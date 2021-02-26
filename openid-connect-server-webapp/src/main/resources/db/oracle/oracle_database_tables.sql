@@ -101,7 +101,7 @@ CREATE SEQUENCE saved_user_auth_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
 CREATE TABLE saved_user_auth_authority (
   owner_id NUMBER(19),
-  authority VARCHAR2(256)
+  authority VARCHAR2(1024)
 );
 
 CREATE TABLE client_authority (
@@ -180,9 +180,9 @@ CREATE TABLE client_details (
   initiate_login_uri VARCHAR2(2048),
   clear_access_tokens_on_refresh NUMBER(1) DEFAULT 1 NOT NULL,
   
-  software_statement VARCHAR(4096),
   software_id VARCHAR(2048),
   software_statement VARCHAR2(4000),
+  software_version VARCHAR2(2048),
 	
   code_challenge_method VARCHAR2(256),
 
@@ -255,11 +255,14 @@ CREATE TABLE system_scope (
   description VARCHAR2(4000),
   icon VARCHAR2(256),
   restricted NUMBER(1) DEFAULT 0 NOT NULL,
-  default_scope NUMBER(1) DEFAULT 0 NOT NULL
+  default_scope NUMBER(1) DEFAULT 0 NOT NULL,
+  structured NUMBER(1) DEFAULT 0 NOT NULL,
+  structured_param_description VARCHAR2(256),
 
   CONSTRAINT system_scope_unique UNIQUE (scope),
   CONSTRAINT default_scope_check CHECK (default_scope in (1,0)),
-  CONSTRAINT restricted_check CHECK (restricted in (1,0))
+  CONSTRAINT restricted_check CHECK (restricted in (1,0)),
+  CONSTRAINT structured_check CHECK (structured in (1,0))
 );
 CREATE SEQUENCE system_scope_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -395,22 +398,22 @@ CREATE TABLE saved_registered_client (
 );
 CREATE SEQUENCE saved_registered_client_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
-CREATE TABLE IF NOT EXISTS device_code (
+CREATE TABLE device_code (
 	id NUMBER(19) NOT NULL PRIMARY KEY,
 	device_code VARCHAR2(1024),
 	user_code VARCHAR2(1024),
 	expiration TIMESTAMP,
 	client_id VARCHAR2(256),
-	approved BOOLEAN,
+	approved NUMBER(1,0),
 	auth_holder_id NUMBER(19)	
 );
 
-CREATE TABLE IF NOT EXISTS device_code_scope (
+CREATE TABLE device_code_scope (
 	owner_id NUMBER(19) NOT NULL,
 	scope VARCHAR2(256) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS device_code_request_parameter (
+CREATE TABLE device_code_request_parameter (
 	owner_id NUMBER(19),
 	param VARCHAR2(2048),
 	val VARCHAR2(2048)
