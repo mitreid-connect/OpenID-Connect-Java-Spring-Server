@@ -71,7 +71,7 @@ public class UserInfoEndpoint {
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
-	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
+	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
 			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {

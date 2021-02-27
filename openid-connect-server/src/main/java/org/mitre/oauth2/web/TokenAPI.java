@@ -70,7 +70,7 @@ public class TokenAPI {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
-	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAllAccessTokens(ModelMap m, Principal p) {
 
 		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
@@ -78,7 +78,7 @@ public class TokenAPI {
 		return TokenApiView.VIEWNAME;
 	}
 
-	@RequestMapping(value = "/access/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/access/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
@@ -99,7 +99,7 @@ public class TokenAPI {
 		}
 	}
 
-	@RequestMapping(value = "/access/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/access/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String deleteAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
@@ -122,7 +122,7 @@ public class TokenAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/client/{clientId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/client/{clientId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAccessTokensByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -141,7 +141,7 @@ public class TokenAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -166,7 +166,7 @@ public class TokenAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String rotateRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
@@ -191,7 +191,7 @@ public class TokenAPI {
 
 	}
 
-	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 
 		Set<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
@@ -201,7 +201,7 @@ public class TokenAPI {
 
 	}
 
-	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
@@ -222,7 +222,7 @@ public class TokenAPI {
 		}
 	}
 
-	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String deleteRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);

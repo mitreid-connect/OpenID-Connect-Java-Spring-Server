@@ -105,7 +105,7 @@ public class DiscoveryEndpoint {
 		}
 	};
 
-	@RequestMapping(value={"/" + WEBFINGER_URL}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value={"/" + WEBFINGER_URL}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String webfinger(@RequestParam("resource") String resource, @RequestParam(value = "rel", required = false) String rel, Model model) {
 
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals("http://openid.net/specs/connect/1.0/issuer")) {

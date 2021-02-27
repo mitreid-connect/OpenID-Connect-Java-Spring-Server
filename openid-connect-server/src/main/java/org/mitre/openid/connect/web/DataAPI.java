@@ -80,7 +80,7 @@ public class DataAPI {
 	@Autowired
 	private MITREidDataService_1_3 exporter;
 
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String importData(Reader in, Model m) throws IOException {
 
 		JsonReader reader = new JsonReader(in);
@@ -120,10 +120,10 @@ public class DataAPI {
 		return "httpCodeView";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public void exportData(HttpServletResponse resp, Principal prin) throws IOException {
 
-		resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		resp.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
 		// this writer puts things out onto the wire
 		JsonWriter writer = new JsonWriter(resp.getWriter());

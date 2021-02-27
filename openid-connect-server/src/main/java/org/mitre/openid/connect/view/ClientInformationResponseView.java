@@ -67,7 +67,7 @@ public class ClientInformationResponseView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
 		RegisteredClient c = (RegisteredClient) model.get("client");
 		//OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");

@@ -53,7 +53,7 @@ public class JWKSetView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
 
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");

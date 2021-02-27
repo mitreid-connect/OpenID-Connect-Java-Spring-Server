@@ -40,12 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,7 +78,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	private JsonParser parser = new JsonParser();
 
-	@RequestMapping(method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String createResourceSet(@RequestBody String jsonString, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
@@ -127,7 +127,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String readResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
@@ -157,7 +157,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String updateResourceSet(@PathVariable ("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
@@ -202,7 +202,7 @@ public class ResourceSetRegistrationEndpoint {
 		}
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String deleteResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
@@ -240,7 +240,7 @@ public class ResourceSetRegistrationEndpoint {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String listResourceSets(Model m, Authentication auth) {
 		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
