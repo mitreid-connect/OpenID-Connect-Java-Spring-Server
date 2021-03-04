@@ -55,6 +55,6 @@
 	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.ScopeServiceAwareOAuth2RequestValidator" />
 
 	<!-- Error page handler. -->
-	<mvc:view-controller path="/error" view-name="error" />
+	<mvc:view-controller path="/errorview" view-name="error-view" />
 
 </beans>
