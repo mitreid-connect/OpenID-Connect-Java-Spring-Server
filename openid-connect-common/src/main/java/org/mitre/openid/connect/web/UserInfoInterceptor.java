@@ -79,8 +79,9 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
 				if (oidc.getUserInfo() != null) {
+					JsonElement json = gson.fromJson(oidc.getUserInfo().toJson().toString(), JsonElement.class);
 					request.setAttribute("userInfo", oidc.getUserInfo());
-					request.setAttribute("userInfoJson", oidc.getUserInfo().toJson());
+					request.setAttribute("userInfoJson", gson.toJson(json));
 				} else {
 					request.setAttribute("userInfo", null);
 					request.setAttribute("userInfoJson", "null");
@@ -94,8 +95,9 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 					// if we have one, inject it so views can use it
 					if (user != null) {
+						JsonElement json = gson.fromJson(user.toJson().toString(), JsonElement.class);
 						request.setAttribute("userInfo", user);
-						request.setAttribute("userInfoJson", user.toJson());
+						request.setAttribute("userInfoJson", gson.toJson(json));
 					}
 				}
 			}
