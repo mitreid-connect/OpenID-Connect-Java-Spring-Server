@@ -134,9 +134,6 @@ public class ClientAPI {
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
-	private ClientLogoLoadingService clientLogoLoadingService;
-
-	@Autowired
 	@Qualifier("clientAssertionValidator")
 	private AssertionValidator assertionValidator;
 
@@ -516,31 +513,6 @@ public class ClientAPI {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
-		}
-	}
-
-	/**
-	 * Get the logo image for a client
-	 * @param id
-	 */
-	@RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
-
-		ClientDetailsEntity client = clientService.getClientById(id);
-
-		if (client == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			// get the image from cache
-			CachedImage image = clientLogoLoadingService.getLogo(client);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.parseMediaType(image.getContentType()));
-			headers.setContentLength(image.getLength());
-
-			return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
 		}
 	}
 
