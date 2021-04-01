@@ -72,6 +72,7 @@
 	<properties>
 		<java-version>1.8</java-version>
 		<org.slf4j-version>1.7.25</org.slf4j-version>
+		<generateBackupPoms>false</generateBackupPoms>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
 	<url>https://github.com/mitreid-connect</url>

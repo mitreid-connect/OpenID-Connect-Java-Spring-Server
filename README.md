@@ -34,6 +34,4 @@ Copyright &copy;2017, [MIT Internet Trust Consortium](http://www.trust.mit.edu/)
 
 Here at Gresham, we use this component for a base for the auth server, our developing branch is 1.3.x and any feature branches should be made off of that branch.
 
-In order to release a new version of the open-id-connect component, run the `Build with Parameters` on Jenkins ticking the release checkbox as part of the build.
-
-This will release the next release version (the current version less the -SNAPSHOT), run a build with the tests and then bump the 1.3.x branch to the next snapshot version of the repository 
+A release build can be invoked by running .circleci/run_release_workflow.sh shell script. It uses CircleCI API to trigger the release workflow and it requires a CIRCLE_TOKEN environment variable with a personal CircleCI API token to be set. Once triggered, the build will bump appropriate versions to release and then proceed to bump them to next snapshot.
