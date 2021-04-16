@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
+	
+	@Autowired
+	private PasswordEncoder clientPasswordEncoder;
 
 	// map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
@@ -138,10 +142,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
 
-
 		// check the sector URI
 		checkSectorIdentifierUri(client);
 
+		// encode password
+        client.setClientSecret(encodePassword(client));
 
 		ensureNoReservedScopes(client);
 
@@ -422,6 +427,17 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
+			
+            /**
+             * Password is encoded only when the password of the new client is different
+             * from the password of the previous client. This method avoids, in the case of
+             * using any encryption algorithm, that the client's password is constantly
+             * being encrypted each time the customer's data is updated and therefore its
+             * real value is being changed when, in reality, it has not been changed
+             */
+            if (!hasOldClientSamePasswordAsNewClient(oldClient, newClient)) {
+                newClient.setClientSecret(encodePassword(newClient));
+            }
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
@@ -458,6 +474,38 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 		return client;
 	}
+	
+	/**
+     * Compares client secrets between old and new client. 
+     * @param oldClient {@link ClientDetailsEntity} with old client data
+     * @param newClient {@link ClientDetailsEntity} with new client data
+     * @return returns true if both client secrets are equals and returns false if they are different
+     */
+    private boolean hasOldClientSamePasswordAsNewClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) {
+
+        final String oldClientSecret = oldClient.getClientSecret();
+        final String newClientSecret = newClient.getClientSecret();
+        
+        if (oldClientSecret == null && newClientSecret == null) {
+            return Boolean.TRUE;
+        } else if (oldClientSecret == null || newClientSecret == null) {
+            return Boolean.FALSE;
+        } 
+        
+        return oldClientSecret.equals(newClientSecret);
+    }
+	
+	/**
+	 * Returns client secret encoded by configured password encoder.
+	 * @param client {@link ClientDetailsEntity} object with client data
+	 * @return encoded client secret
+	 */
+	private String encodePassword(ClientDetailsEntity client) {
+	    if (client.getClientSecret() == null ||  client.getClientSecret().isEmpty()) {
+	        return client.getClientSecret();
+	    }
+        return clientPasswordEncoder.encode(client.getClientSecret());
+    }
 
 	/**
 	 * Utility class to load a sector identifier's set of authorized redirect URIs.

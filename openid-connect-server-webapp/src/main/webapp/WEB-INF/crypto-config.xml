@@ -46,5 +46,35 @@
 		<property name="defaultDecryptionKeyId" value="rsa1" />
 		<property name="defaultEncryptionKeyId" value="rsa1" />
 	</bean>
+    
+    <!-- Use following password encoder for saving client passwords as plain text -->
+    <bean id="clientPasswordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder" />
+    
+    <!-- Use following password encoder for saving client passwords encoded with BCrypt algorithm -->
+    <!-- <bean id="clientPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving client passwords encoded with PBKDF2 algorithm -->
+    <!-- <bean id="clientPasswordEncoder" class="org.springframework.security.crypto.password.Pbkdf2PasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving client passwords encoded with SCrypt algorithm -->
+    <!-- <bean id="clientPasswordEncoder" class="org.springframework.security.crypto.scrypt.SCryptPasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving client passwords encoded with Standard algorithm -->
+    <!-- <bean id="clientPasswordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder" /> -->
+        
+    <!-- Use following password encoder for saving user passwords as plain text -->
+    <bean id="userPasswordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder" />
+    
+    <!-- Use following password encoder for saving user passwords encoded with BCrypt algorithm -->
+    <!-- <bean id="userPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving user passwords encoded with PBKDF2 algorithm -->
+    <!-- <bean id="userPasswordEncoder" class="org.springframework.security.crypto.password.Pbkdf2PasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving user passwords encoded with SCrypt algorithm -->
+    <!-- <bean id="userPasswordEncoder" class="org.springframework.security.crypto.scrypt.SCryptPasswordEncoder" /> -->
+    
+    <!-- Use following password encoder for saving user passwords encoded with Standard algorithm -->
+    <!-- <bean id="userPasswordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder" /> -->
 
 </beans>
