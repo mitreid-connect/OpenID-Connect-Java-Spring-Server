@@ -33,6 +33,13 @@
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.fasterxml.jackson.dataformat</groupId>
+		    <artifactId>jackson-dataformat-xml</artifactId>
+		    <version>2.9.9</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
 	<packaging>jar</packaging>
 	<build>
