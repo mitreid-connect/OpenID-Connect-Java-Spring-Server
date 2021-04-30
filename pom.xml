@@ -365,7 +365,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>4.3.22.RELEASE</version>
+				<version>4.3.29.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
