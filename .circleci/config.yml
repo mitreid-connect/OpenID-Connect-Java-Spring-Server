@@ -124,16 +124,16 @@ commands:
   whitelist-add:
     steps:
       - aws-white-list-circleci-ip/add:
-          description: "CTC-CircleCI"
+          description: "${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
           tag-key: "Name"
-          tag-value: "Nexus-ELB-SG"
+          tag-value: "SG-CircleCi-CTC"
 
   whitelist-remove:
     steps:
       - aws-white-list-circleci-ip/remove:
-          description: "CTC-CircleCI"
+          description: "${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
           tag-key: "Name"
-          tag-value: "Nexus-ELB-SG"
+          tag-value: "SG-CircleCi-CTC"
 
   save-cache:
     steps:
