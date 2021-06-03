@@ -123,7 +123,6 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 */
 	@Override
 	public String resolveRedirect(String requestedRedirect, ClientDetails client) throws OAuth2Exception {
-		log.error("!!!!!!!!!!!!!!!!!!!!!!!Resolving redirect!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		Set<String> authorizedGrantTypes = client.getAuthorizedGrantTypes();
 		if (authorizedGrantTypes.isEmpty()) {
 			throw new InvalidGrantException("A client must have at least one authorized grant type.");
