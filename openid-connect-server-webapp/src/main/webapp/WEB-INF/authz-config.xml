@@ -41,7 +41,7 @@
 		error-page="/error">
 		
 		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
-		<oauth:implicit />
+		<oauth:implicit/>
 		<oauth:refresh-token/>
 		<oauth:client-credentials/>
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
