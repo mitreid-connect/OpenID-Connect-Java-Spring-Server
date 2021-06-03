@@ -18,19 +18,20 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -40,9 +41,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static org.mitre.oauth2.model.ClientDetailsEntity.AppType.NATIVE;
 
 /**
  *
@@ -54,6 +56,8 @@ import java.util.Set;
  */
 @Component("blacklistAwareRedirectResolver")
 public class BlacklistAwareRedirectResolver implements RedirectResolver {
+
+	private static final Logger log = LoggerFactory.getLogger(BlacklistAwareRedirectResolver.class);
 
 	@Autowired
 	private BlacklistedSiteService blacklistService;
@@ -119,6 +123,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 */
 	@Override
 	public String resolveRedirect(String requestedRedirect, ClientDetails client) throws OAuth2Exception {
+		log.error("!!!!!!!!!!!!!!!!!!!!!!!Resolving redirect!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		Set<String> authorizedGrantTypes = client.getAuthorizedGrantTypes();
 		if (authorizedGrantTypes.isEmpty()) {
 			throw new InvalidGrantException("A client must have at least one authorized grant type.");
@@ -133,7 +138,9 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 			throw new InvalidRequestException("At least one redirect_uri must be registered with the client.");
 		}
 
-		String redirect = obtainMatchingRedirect(registeredRedirectUris, requestedRedirect);
+		ClientDetailsEntity cde = (ClientDetailsEntity) client;
+
+		String redirect = obtainMatchingRedirect(registeredRedirectUris, requestedRedirect, cde.getApplicationType());
 
 		if (blacklistService.isBlacklisted(redirect)) {
 			// don't let it go through
@@ -154,16 +161,22 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 *
 	 * @param requestedRedirect The requested redirect URI.
 	 * @param redirectUri The registered redirect URI.
+	 * @param applicationType
 	 * @return Whether the requested redirect URI "matches" the specified redirect URI.
 	 */
-	protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
+	protected boolean redirectMatches(String requestedRedirect, String redirectUri,
+									  ClientDetailsEntity.AppType applicationType)
+	{
 		UriComponents requestedRedirectUri = UriComponentsBuilder.fromUriString(requestedRedirect).build();
 		UriComponents registeredRedirectUri = UriComponentsBuilder.fromUriString(redirectUri).build();
 
 		boolean schemeMatch = isEqual(registeredRedirectUri.getScheme(), requestedRedirectUri.getScheme());
 		boolean userInfoMatch = isEqual(registeredRedirectUri.getUserInfo(), requestedRedirectUri.getUserInfo());
 		boolean hostMatch = hostMatches(registeredRedirectUri.getHost(), requestedRedirectUri.getHost());
-		boolean portMatch = !matchPorts || registeredRedirectUri.getPort() == requestedRedirectUri.getPort();
+		boolean portMatch = true;
+		if (!NATIVE.equals(applicationType)) {
+			portMatch = !matchPorts || registeredRedirectUri.getPort() == requestedRedirectUri.getPort();
+		}
 		boolean pathMatch = true;
 		boolean queryParamMatch = true;
 		if (strictMatch) {
@@ -194,10 +207,13 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 *
 	 * @param redirectUris the set of the registered URIs to try and find a match. This cannot be null or empty.
 	 * @param requestedRedirect the URI used as part of the request
+	 * @param applicationType
 	 * @return redirect uri
 	 * @throws RedirectMismatchException if no match was found
 	 */
-	private String obtainMatchingRedirect(Set<String> redirectUris, String requestedRedirect) {
+	private String obtainMatchingRedirect(Set<String> redirectUris, String requestedRedirect,
+										  ClientDetailsEntity.AppType applicationType)
+	{
 		Assert.notEmpty(redirectUris, "Redirect URIs cannot be empty");
 
 		if (redirectUris.size() == 1 && requestedRedirect == null) {
@@ -205,7 +221,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 		}
 
 		for (String redirectUri : redirectUris) {
-			if (requestedRedirect != null && redirectMatches(requestedRedirect, redirectUri)) {
+			if (requestedRedirect != null && redirectMatches(requestedRedirect, redirectUri, applicationType)) {
 				// Initialize with the registered redirect-uri
 				UriComponentsBuilder redirectUriBuilder = UriComponentsBuilder.fromUriString(redirectUri);
 				UriComponents requestedRedirectUri = UriComponentsBuilder.fromUriString(requestedRedirect).build();
@@ -213,7 +229,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 				if (this.matchSubdomains) {
 					redirectUriBuilder.host(requestedRedirectUri.getHost());
 				}
-				if (!this.matchPorts) {
+				if (!this.matchPorts || NATIVE.equals(applicationType)) {
 					redirectUriBuilder.port(requestedRedirectUri.getPort());
 				}
 				if (!this.strictMatch) {
