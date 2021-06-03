@@ -21,6 +21,7 @@ import static org.mockito.Matchers.anyString;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mockito.InjectMocks;
@@ -49,7 +50,7 @@ public class TestBlacklistAwareRedirectResolver {
 	private BlacklistedSiteService blacklistService;
 
 	@Mock
-	private ClientDetails client;
+	private ClientDetailsEntity client;
 
 	@Mock
 	private ConfigurationPropertiesBean config;
@@ -108,12 +109,12 @@ public class TestBlacklistAwareRedirectResolver {
 	public void testRedirectMatches_default() {
 
 		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res1, is(false));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res2, is(true));
 
@@ -126,12 +127,12 @@ public class TestBlacklistAwareRedirectResolver {
 		resolver.setStrictMatch(false);
 		
 		// this is not an exact match (but that's OK)
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res1, is(true));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res2, is(true));
 
@@ -140,12 +141,12 @@ public class TestBlacklistAwareRedirectResolver {
 	@Test
 	public void testHeartMode() {
 		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res1, is(false));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
 
 		assertThat(res2, is(true));
 	}
