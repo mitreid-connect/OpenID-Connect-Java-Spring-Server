@@ -16,11 +16,11 @@
     <meta name="author" content="">
 
     <!-- stylesheets -->
-    <link href="resources/bootstrap2/css/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="resources/css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <link href="resources/css/bootstrap-sheet.css" type="text/css" rel="stylesheet">
+    <link href="resources/css/bootstrap-responsive.min.css" type="text/css" rel="stylesheet">
     <link href="resources/css/mitreid-connect.css" type="text/css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-local.css" type="text/css" rel="stylesheet">
-    <link href="resources/bootstrap2/css/bootstrap-responsive.css" type="text/css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-responsive.css" type="text/css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-responsive-local.css" type="text/css" rel="stylesheet">
 
