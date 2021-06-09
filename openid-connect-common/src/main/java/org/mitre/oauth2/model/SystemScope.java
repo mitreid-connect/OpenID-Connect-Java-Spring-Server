@@ -38,11 +38,13 @@ import javax.persistence.Table;
 @Table(name = "system_scope")
 @NamedQueries({
 	@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.id"),
-	@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :" + SystemScope.PARAM_VALUE)
+	@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query  = "select s from SystemScope s WHERE s.value = :" + SystemScope.PARAM_VALUE),
+	@NamedQuery(name = SystemScope.QUERY_BY_VALUES, query = "select s from SystemScope s WHERE s.value in :" + SystemScope.PARAM_VALUE)
 })
 public class SystemScope {
 
 	public static final String QUERY_BY_VALUE = "SystemScope.getByValue";
+	public static final String QUERY_BY_VALUES = "SystemScope.getByValues";
 	public static final String QUERY_ALL = "SystemScope.findAll";
 
 	public static final String PARAM_VALUE = "value";

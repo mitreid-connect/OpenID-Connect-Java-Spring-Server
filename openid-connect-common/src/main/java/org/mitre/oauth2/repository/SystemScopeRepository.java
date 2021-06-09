@@ -36,6 +36,8 @@ public interface SystemScopeRepository {
 
 	public SystemScope getByValue(String value);
 
+	public Set<SystemScope> getByValues(Set<String> values);
+
 	public void remove(SystemScope scope);
 
 	public SystemScope save(SystemScope scope);
