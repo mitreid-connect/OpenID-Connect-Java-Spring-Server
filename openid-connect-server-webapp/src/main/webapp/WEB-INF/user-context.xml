@@ -52,6 +52,7 @@
 			<security:frame-options policy="DENY" />
 		</security:headers>
 		<security:csrf />
+		<security:custom-filter ref="mdcFilter" before="FIRST"/>
 	</security:http>	
 
 </beans>
