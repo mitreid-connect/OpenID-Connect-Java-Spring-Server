@@ -264,7 +264,9 @@ CREATE TABLE IF NOT EXISTS user_info (
 	address_id VARCHAR(256),
 	updated_time VARCHAR(256),
 	birthdate VARCHAR(256),
-	src VARCHAR(4096)
+	src VARCHAR(4096),
+	UNIQUE(preferred_username),
+	UNIQUE(email)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
