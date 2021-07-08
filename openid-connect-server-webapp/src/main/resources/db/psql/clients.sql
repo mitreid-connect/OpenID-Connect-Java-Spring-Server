@@ -40,18 +40,18 @@ INSERT INTO client_details (client_id, client_secret, client_name, dynamically_r
   ON CONFLICT
   DO NOTHING;
 
-INSERT INTO client_scope (scope)
-  SELECT scope FROM client_scope_TEMP, client_details WHERE client_details.client_id = client_scope_TEMP.owner_id
+INSERT INTO client_scope (owner_id, scope)
+  SELECT client_details.id, scope FROM client_scope_TEMP, client_details WHERE client_details.client_id = client_scope_TEMP.owner_id
   ON CONFLICT
   DO NOTHING;
 
-INSERT INTO client_redirect_uri (redirect_uri)
-  SELECT redirect_uri FROM client_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_redirect_uri_TEMP.owner_id
+INSERT INTO client_redirect_uri (owner_id, redirect_uri)
+  SELECT client_details.id, redirect_uri FROM client_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_redirect_uri_TEMP.owner_id
   ON CONFLICT
   DO NOTHING;
 
-INSERT INTO client_grant_type (grant_type)
-  SELECT grant_type FROM client_grant_type_TEMP, client_details WHERE client_details.client_id = client_grant_type_TEMP.owner_id
+INSERT INTO client_grant_type (owner_id, grant_type)
+  SELECT client_details.id, grant_type FROM client_grant_type_TEMP, client_details WHERE client_details.client_id = client_grant_type_TEMP.owner_id
   ON CONFLICT
   DO NOTHING;
     
