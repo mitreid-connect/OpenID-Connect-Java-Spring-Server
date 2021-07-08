@@ -36,6 +36,7 @@
 		<jdbc:script location="classpath:/db/hsql/hsql_database_tables.sql"/>
 		<!-- The following file is for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/hsql/security-schema.sql"/>
+ 		<jdbc:script location="classpath:/db/hsql/hsql_database_index.sql"/>
 		<!-- The following files are for safely bootstrapping users and clients into the database -->
 		<jdbc:script location="classpath:/db/hsql/loading_temp_tables.sql"/>
 		<jdbc:script location="classpath:/db/hsql/users.sql"/>
@@ -67,6 +68,7 @@
 <!-- 	<jdbc:initialize-database data-source="dataSource"> -->
 <!-- 		<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/> -->
+<!-- 		<jdbc:script location="classpath:/db/mysql/mysql_database_index.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/mysql/users.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/mysql/clients.sql"/> -->
@@ -95,6 +97,7 @@
 <!-- 	<jdbc:initialize-database data-source="dataSource"> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/psql_database_tables.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/security-schema.sql"/> -->
+<!-- 		<jdbc:script location="classpath:/db/psql/psql_database_index.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/loading_temp_tables.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/users.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/clients.sql"/> -->
@@ -120,6 +123,7 @@
 	<!--<jdbc:initialize-database data-source="dataSource">
 		<jdbc:script location="classpath:/db/oracle/oracle_database_tables.sql"/>
 		<jdbc:script location="classpath:/db/oracle/security-schema_oracle.sql"/>
+		<jdbc:script location="classpath:/db/oracle/oracle_database_index.sql"/>
 		<jdbc:script location="classpath:/db/oracle/loading_temp_tables_oracle.sql"/>
 		<jdbc:script location="classpath:/db/oracle/users_oracle.sql"/>
 		<jdbc:script location="classpath:/db/oracle/clients_oracle.sql"/>
