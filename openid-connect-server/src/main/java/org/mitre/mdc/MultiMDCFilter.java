@@ -21,13 +21,13 @@ public class MultiMDCFilter extends GenericFilterBean {
     public MultiMDCFilter() {
         this.remoteAddressMDCFilter = new RemoteAddressMDCFilter();
         this.sessionIdMDCFilter = new SessionIdMDCFilter();
+		log.info("--- Initialized MultiMDCFilter ---");
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException
     {
-        log.info("--- Initialized MultiMDCFilter ---");
         remoteAddressMDCFilter.doFilter(servletRequest);
         sessionIdMDCFilter.doFilter(servletRequest);
         filterChain.doFilter(servletRequest, servletResponse);
