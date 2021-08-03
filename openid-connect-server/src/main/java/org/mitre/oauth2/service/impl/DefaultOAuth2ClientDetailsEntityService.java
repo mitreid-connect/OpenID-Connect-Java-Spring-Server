@@ -53,6 +53,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -66,6 +67,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 @Service
+@Transactional
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
 	/**
