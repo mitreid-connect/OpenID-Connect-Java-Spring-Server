@@ -17,17 +17,13 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
-import org.mitre.openid.connect.service.StatsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +31,10 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of the ApprovedSiteService
@@ -58,9 +56,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
 
-	@Autowired
-	private StatsService statsService;
-
 	@Override
 	public Collection<ApprovedSite> getAll() {
 		return approvedSiteRepository.getAll();
@@ -69,9 +64,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
-		ApprovedSite a = approvedSiteRepository.save(approvedSite);
-		statsService.resetCache();
-		return a;
+		return approvedSiteRepository.save(approvedSite);
 	}
 
 	@Override
@@ -94,8 +87,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		}
 
 		approvedSiteRepository.remove(approvedSite);
-
-		statsService.resetCache();
 	}
 
 	@Override

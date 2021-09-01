@@ -200,10 +200,6 @@ var RegistrationTokenModel = Backbone.Model.extend({
 	urlRoot: 'api/tokens/registration'
 });
 
-var ClientStatsModel = Backbone.Model.extend({
-	urlRoot: 'api/stats/byclientid'
-});
-
 var ClientCollection = Backbone.Collection.extend({
 
 	initialize: function() {
@@ -303,19 +299,12 @@ var ClientView = Backbone.View.extend({
 		});
 
 		this.updateMatched();
-		this.updateStats();
 
 		$(this.el).i18n();
 
 		this.isRendered = true;
 
 		return this;
-	},
-
-	updateStats: function(eventName) {
-		$('.count', this.el).html(this.countTemplate({
-			count: this.options.clientStat.get('approvedSiteCount')
-		}));
 	},
 
 	showRegistrationToken: function(e) {
@@ -471,8 +460,6 @@ var ClientListView = Backbone.View.extend({
 
 	tagName: 'span',
 
-	stats: {},
-
 	initialize: function(options) {
 		this.options = options;
 		this.filteredModel = this.model;
@@ -542,10 +529,8 @@ var ClientListView = Backbone.View.extend({
 		// togglePlaceholder)
 
 		_.each(this.filteredModel.models, function(client, index) {
-			var clientStat = this.getStat(client.get('clientId'));
 			var view = new ClientView({
 				model: client,
-				clientStat: clientStat,
 				systemScopeList: this.options.systemScopeList,
 				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
 			});
@@ -567,15 +552,6 @@ var ClientListView = Backbone.View.extend({
 
 	getView: function(index) {
 		return this.views[index];
-	},
-
-	getStat: function(index) {
-		if (!this.stats[index]) {
-			this.stats[index] = new ClientStatsModel({
-				id: index
-			});
-		}
-		return this.stats[index];
 	},
 
 	togglePlaceholder: function() {
@@ -637,17 +613,6 @@ var ClientListView = Backbone.View.extend({
 			} else {
 				if (!view.isRendered) {
 					view.render();
-					var clientStat = view.options.clientStat;
-
-					// load and display the stats
-					$.when(clientStat.fetchIfNeeded({
-						success: function(e) {
-
-						},
-						error: app.errorHandlerView.handleError()
-					})).done(function(e) {
-						view.updateStats();
-					});
 				}
 				$(view.el).show();
 			}

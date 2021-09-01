@@ -22,14 +22,6 @@
 	</c:otherwise>
 </c:choose>
 <c:choose>
-	<c:when test="${pageName == 'Statistics'}">
-		<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href=""><spring:message code="topbar.statistics"/></a></li>
-	</c:when>
-	<c:otherwise>
-		<li><a href="stats" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="topbar.statistics"/></a></li>
-	</c:otherwise>
-</c:choose>
-<c:choose>
 	<c:when test="${pageName == 'Contact'}">
 		<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href=""><spring:message code="topbar.contact"/></a></li>
 	</c:when>

@@ -20,18 +20,11 @@
  */
 package org.mitre.oauth2.web;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
-
-import java.net.URISyntaxException;
-import java.security.Principal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
@@ -39,7 +32,6 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
-import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.slf4j.Logger;
@@ -55,11 +47,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonObject;
+import java.net.URISyntaxException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**
  * @author jricher
@@ -81,9 +78,6 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private UserInfoService userInfoService;
-
-	@Autowired
-	private StatsService statsService;
 
 	@Autowired
 	private RedirectResolver redirectResolver;
@@ -201,25 +195,12 @@ public class OAuthConfirmationController {
 
 		model.put("claims", claimsForScopes);
 
-		// client stats
-		Integer count = statsService.getCountForClientId(client.getClientId()).getApprovedSiteCount();
-		model.put("count", count);
-
-
 		// contacts
 		if (client.getContacts() != null) {
 			String contacts = Joiner.on(", ").join(client.getContacts());
 			model.put("contacts", contacts);
 		}
-
-		// if the client is over a week old and has more than one registration, don't give such a big warning
-		// instead, tag as "Generally Recognized As Safe" (gras)
-		Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
-		if (count > 1 && client.getCreatedAt() != null && client.getCreatedAt().before(lastWeek)) {
-			model.put("gras", true);
-		} else {
-			model.put("gras", false);
-		}
+		model.put("gras", true);
 
 		return "approve";
 	}

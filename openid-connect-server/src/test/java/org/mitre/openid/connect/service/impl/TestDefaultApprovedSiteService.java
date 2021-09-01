@@ -17,12 +17,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import static org.mockito.Matchers.any;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,16 +28,16 @@ import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
-import org.mitre.openid.connect.service.StatsService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.annotation.Rollback;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
@@ -60,9 +56,6 @@ public class TestDefaultApprovedSiteService {
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
-
-	@Mock
-	private StatsService statsService;
 
 	@InjectMocks
 	private ApprovedSiteService service = new DefaultApprovedSiteService();
@@ -93,7 +86,7 @@ public class TestDefaultApprovedSiteService {
 		site3.setUserId("user2");
 		site3.setClientId(clientId);
 
-		Mockito.reset(repository, statsService);
+		Mockito.reset(repository);
 
 	}
 

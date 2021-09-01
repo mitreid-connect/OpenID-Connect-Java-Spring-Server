@@ -17,17 +17,13 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -42,7 +38,6 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
-import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
@@ -57,13 +52,16 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.base.Strings;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.UncheckedExecutionException;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
@@ -90,9 +88,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private SystemScopeService scopeService;
-
-	@Autowired
-	private StatsService statsService;
 
 	@Autowired
 	private ResourceSetService resourceSetService;
@@ -142,14 +137,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// check the sector URI
 		checkSectorIdentifierUri(client);
 
-
 		ensureNoReservedScopes(client);
-
-		ClientDetailsEntity c = clientRepository.saveClient(client);
-
-		statsService.resetCache();
-
-		return c;
+		return clientRepository.saveClient(client);
 	}
 
 	/**
@@ -379,9 +368,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		// take care of the client itself
 		clientRepository.deleteClient(client);
-
-		statsService.resetCache();
-
 	}
 
 	/**

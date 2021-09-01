@@ -30,13 +30,12 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
-import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.mockito.AdditionalAnswers;
-import org.mockito.InjectMocks;
 import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -84,9 +83,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	private ResourceSetService resourceSetService;
 
 	@Mock
-	private StatsService statsService;
-
-	@Mock
 	private ConfigurationPropertiesBean config;
 
 	@InjectMocks
@@ -94,7 +90,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Before
 	public void prepare() {
-		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
+		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService);
 
 		Mockito.when(clientRepository.saveClient(ArgumentMatchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
