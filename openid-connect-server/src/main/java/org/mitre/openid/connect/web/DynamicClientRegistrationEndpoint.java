@@ -17,13 +17,15 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -61,15 +63,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonSyntaxException;
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWTClaimsSet;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
@@ -89,7 +88,6 @@ import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESP
 import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.REDIRECT_URIS;
@@ -711,9 +709,6 @@ public class DynamicClientRegistrationEndpoint {
 								break;
 							case CONTACTS:
 								newClient.setContacts(Sets.newHashSet(claimSet.getStringListClaim(claim)));
-								break;
-							case LOGO_URI:
-								newClient.setLogoUri(claimSet.getStringClaim(claim));
 								break;
 							case CLIENT_URI:
 								newClient.setClientUri(claimSet.getStringClaim(claim));

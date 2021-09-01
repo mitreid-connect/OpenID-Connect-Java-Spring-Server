@@ -143,7 +143,6 @@ CREATE TABLE IF NOT EXISTS client_details (
 	token_endpoint_auth_method VARCHAR(256),
 	subject_type VARCHAR(256),
 	
-	logo_uri VARCHAR(2048),
 	policy_uri VARCHAR(2048),
 	client_uri VARCHAR(2048),
 	tos_uri VARCHAR(2048),

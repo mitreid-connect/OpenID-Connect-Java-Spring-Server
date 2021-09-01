@@ -20,21 +20,20 @@
  */
 package org.mitre.oauth2.model;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.springframework.security.core.GrantedAuthority;
-
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author jricher
@@ -244,14 +243,6 @@ public class RegisteredClient {
 
 	public void setContacts(Set<String> contacts) {
 		client.setContacts(contacts);
-	}
-
-	public String getLogoUri() {
-		return client.getLogoUri();
-	}
-
-	public void setLogoUri(String logoUri) {
-		client.setLogoUri(logoUri);
 	}
 
 	public String getPolicyUri() {

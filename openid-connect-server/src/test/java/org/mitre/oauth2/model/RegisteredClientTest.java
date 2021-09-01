@@ -20,13 +20,12 @@
  */
 package org.mitre.oauth2.model;
 
-import java.sql.Date;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
+import org.junit.Test;
+
+import java.sql.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,7 +53,6 @@ public class RegisteredClientTest {
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
-		c.setLogoUri("https://client.example.org/logo.png");
 		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
@@ -72,7 +70,6 @@ public class RegisteredClientTest {
 		assertEquals(ClientDetailsEntity.AppType.WEB, c.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), c.getRedirectUris());
 		assertEquals("My Example", c.getClientName());
-		assertEquals("https://client.example.org/logo.png", c.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
@@ -95,7 +92,7 @@ public class RegisteredClientTest {
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
-		c.setLogoUri("https://client.example.org/logo.png");
+		
 		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
@@ -120,7 +117,6 @@ public class RegisteredClientTest {
 		assertEquals(ClientDetailsEntity.AppType.WEB, rc.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), rc.getRedirectUris());
 		assertEquals("My Example", rc.getClientName());
-		assertEquals("https://client.example.org/logo.png", rc.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, rc.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
@@ -143,7 +139,7 @@ public class RegisteredClientTest {
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
-		c.setLogoUri("https://client.example.org/logo.png");
+		
 		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
@@ -164,7 +160,6 @@ public class RegisteredClientTest {
 		assertEquals(ClientDetailsEntity.AppType.WEB, rc.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), rc.getRedirectUris());
 		assertEquals("My Example", rc.getClientName());
-		assertEquals("https://client.example.org/logo.png", rc.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, rc.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());

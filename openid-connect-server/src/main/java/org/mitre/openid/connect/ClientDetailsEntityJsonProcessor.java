@@ -21,25 +21,6 @@
 package org.mitre.openid.connect;
 
 
-import static org.mitre.util.JsonUtils.getAsArray;
-import static org.mitre.util.JsonUtils.getAsDate;
-import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
-import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
-import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
-import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringSet;
-
-import java.text.ParseException;
-
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.mitre.oauth2.model.RegisteredClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -50,6 +31,15 @@ import com.google.gson.JsonParser;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
 
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
@@ -70,7 +60,6 @@ import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESP
 import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.REDIRECT_URIS;
@@ -93,6 +82,14 @@ import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
+import static org.mitre.util.JsonUtils.getAsArray;
+import static org.mitre.util.JsonUtils.getAsDate;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
+import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
+import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
@@ -124,7 +121,6 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setRedirectUris(getAsStringSet(o, REDIRECT_URIS));
 			c.setClientName(getAsString(o, CLIENT_NAME));
 			c.setClientUri(getAsString(o, CLIENT_URI));
-			c.setLogoUri(getAsString(o, LOGO_URI));
 			c.setContacts(getAsStringSet(o, CONTACTS));
 			c.setTosUri(getAsString(o, TOS_URI));
 
@@ -301,7 +297,6 @@ public class ClientDetailsEntityJsonProcessor {
 			o.add(REDIRECT_URIS, getAsArray(c.getRedirectUris()));
 			o.addProperty(CLIENT_NAME, c.getClientName());
 			o.addProperty(CLIENT_URI, c.getClientUri());
-			o.addProperty(LOGO_URI, c.getLogoUri());
 			o.add(CONTACTS, getAsArray(c.getContacts()));
 			o.addProperty(TOS_URI, c.getTosUri());
 			o.addProperty(TOKEN_ENDPOINT_AUTH_METHOD, c.getTokenEndpointAuthMethod() != null ? c.getTokenEndpointAuthMethod().getValue() : null);

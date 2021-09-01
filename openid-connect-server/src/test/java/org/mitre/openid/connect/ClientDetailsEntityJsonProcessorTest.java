@@ -20,17 +20,16 @@
  */
 package org.mitre.openid.connect;
 
-import java.sql.Date;
-
-import org.junit.Test;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.RegisteredClient;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
+import org.junit.Test;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.RegisteredClient;
+
+import java.sql.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +74,6 @@ public class ClientDetailsEntityJsonProcessorTest {
 		assertEquals("My Example", c.getClientName());
 		assertEquals(ImmutableSet.of("code", "token"), c.getResponseTypes());
 		assertEquals(ImmutableSet.of("authorization_code", "implicit"), c.getGrantTypes());
-		assertEquals("https://client.example.org/logo.png", c.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
@@ -137,7 +135,6 @@ public class ClientDetailsEntityJsonProcessorTest {
 		assertEquals("My Example", c.getClientName());
 		assertEquals(ImmutableSet.of("code", "token"), c.getResponseTypes());
 		assertEquals(ImmutableSet.of("authorization_code", "implicit"), c.getGrantTypes());
-		assertEquals("https://client.example.org/logo.png", c.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
@@ -166,7 +163,6 @@ public class ClientDetailsEntityJsonProcessorTest {
 		c.setClientName("My Example");
 		c.setResponseTypes(ImmutableSet.of("code", "token"));
 		c.setGrantTypes(ImmutableSet.of("authorization_code", "implicit"));
-		c.setLogoUri("https://client.example.org/logo.png");
 		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
@@ -194,7 +190,6 @@ public class ClientDetailsEntityJsonProcessorTest {
 		for (JsonElement e : j.get("grant_types").getAsJsonArray()) {
 			assertTrue(ImmutableSet.of("authorization_code", "implicit").contains(e.getAsString()));
 		}
-		assertEquals("https://client.example.org/logo.png", j.get("logo_uri").getAsString());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE.getValue(), j.get("subject_type").getAsString());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", j.get("sector_identifier_uri").getAsString());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC.getValue(), j.get("token_endpoint_auth_method").getAsString());

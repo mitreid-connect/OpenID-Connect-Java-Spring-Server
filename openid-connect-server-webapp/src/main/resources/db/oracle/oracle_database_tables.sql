@@ -153,7 +153,6 @@ CREATE TABLE client_details (
   token_endpoint_auth_method VARCHAR2(256),
   subject_type VARCHAR2(256),
 
-  logo_uri VARCHAR2(2048),
   policy_uri VARCHAR2(2048),
   client_uri VARCHAR2(2048),
   tos_uri VARCHAR2(2048),

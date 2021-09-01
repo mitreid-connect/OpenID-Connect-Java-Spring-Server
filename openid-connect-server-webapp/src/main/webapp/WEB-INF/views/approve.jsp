@@ -82,38 +82,6 @@
 						</c:choose>
 					</c:if>
 
-					<c:if test="${ not empty client.logoUri }">
-						<ul class="thumbnails">
-							<li class="span5">
-								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="api/clients/${ client.id }/logo" /></a>
-							</li>
-						</ul>
-						<!-- Modal -->
-						<div id="logoModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="logoModalLabel" aria-hidden="true">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-								<h3 id="logoModalLabel">
-									<c:choose>
-										<c:when test="${empty client.clientName}">
-											<em><c:out value="${client.clientId}" /></em>
-										</c:when>
-										<c:otherwise>
-											<em><c:out value="${client.clientName}" /></em>
-										</c:otherwise>
-									</c:choose>
-								</h3>
-							</div>
-							<div class="modal-body">
-								<img src="api/clients/${ client.id }/logo" />
-								<c:if test="${ not empty client.clientUri }">
-									<a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
-								</c:if>
-							</div>
-							<div class="modal-footer">
-								<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-							</div>
-						</div>
-					</c:if>
 					<c:if test="${ (not empty client.clientDescription) || (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) || (not empty contacts) }">
 						<div class="muted moreInformationContainer">
 							<c:out value="${client.clientDescription}" />

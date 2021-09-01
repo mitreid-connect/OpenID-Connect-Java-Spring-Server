@@ -24,7 +24,6 @@ var DynRegClient = Backbone.Model.extend({
 		redirect_uris: [],
 		client_name: null,
 		client_uri: null,
-		logo_uri: null,
 		contacts: [],
 		tos_uri: null,
 		token_endpoint_auth_method: null,
@@ -242,7 +241,6 @@ var DynRegEditView = Backbone.View.extend({
 		"click .btn-save": "saveClient",
 		"click .btn-cancel": "cancel",
 		"click .btn-delete": "deleteClient",
-		"change #logoUri input": "previewLogo",
 		"change #tokenEndpointAuthMethod input:radio": "toggleClientCredentials",
 		"change #jwkSelector input:radio": "toggleJWKSetType"
 	},
@@ -277,16 +275,6 @@ var DynRegEditView = Backbone.View.extend({
 		}
 
 		return false;
-	},
-
-	previewLogo: function() {
-		if ($('#logoUri input', this.el).val()) {
-			$('#logoPreview', this.el).empty();
-			$('#logoPreview', this.el).attr('src', $('#logoUri input', this.el).val());
-		} else {
-			// $('#logoBlock', this.el).hide();
-			$('#logoPreview', this.el).attr('src', 'resources/images/logo_placeholder.gif');
-		}
 	},
 
 	/**
@@ -458,7 +446,6 @@ var DynRegEditView = Backbone.View.extend({
 		var attrs = {
 			client_name: this.emptyToNull($('#clientName input').val()),
 			redirect_uris: redirectUris,
-			logo_uri: this.emptyToNull($('#logoUri input').val()),
 			grant_types: grantTypes,
 			scope: scopes,
 			client_secret: null, // never send a client secret
@@ -680,7 +667,6 @@ var DynRegEditView = Backbone.View.extend({
 		this.listWidgetViews.push(defaultAcrView);
 
 		this.toggleClientCredentials();
-		this.previewLogo();
 		this.toggleJWKSetType();
 
 		// disable unsupported JOSE algorithms

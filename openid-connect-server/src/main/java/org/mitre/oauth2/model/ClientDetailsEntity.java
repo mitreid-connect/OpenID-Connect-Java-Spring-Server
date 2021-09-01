@@ -20,11 +20,20 @@
  */
 package org.mitre.oauth2.model;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter;
+import org.mitre.oauth2.model.convert.JWKSetStringConverter;
+import org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.JWTStringConverter;
+import org.mitre.oauth2.model.convert.PKCEAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -47,22 +56,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-
-import org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter;
-import org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter;
-import org.mitre.oauth2.model.convert.JWKSetStringConverter;
-import org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter;
-import org.mitre.oauth2.model.convert.JWTStringConverter;
-import org.mitre.oauth2.model.convert.PKCEAlgorithmStringConverter;
-import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.provider.ClientDetails;
-
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWT;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author jricher
@@ -91,7 +89,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Set<String> redirectUris = new HashSet<>();
 	private String clientName;
 	private String clientUri;
-	private String logoUri;
 	private Set<String> contacts;
 	private String tosUri;
 	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC;
@@ -486,16 +483,6 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	public void setContacts(Set<String> contacts) {
 		this.contacts = contacts;
-	}
-
-	@Basic
-	@Column(name="logo_uri")
-	public String getLogoUri() {
-		return logoUri;
-	}
-
-	public void setLogoUri(String logoUri) {
-		this.logoUri = logoUri;
 	}
 
 	@Basic

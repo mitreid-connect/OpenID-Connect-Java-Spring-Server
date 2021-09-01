@@ -17,49 +17,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import java.lang.reflect.Type;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.text.ParseException;
-import java.util.Collection;
-
-import javax.persistence.PersistenceException;
-
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.mitre.jwt.assertion.AssertionValidator;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.mitre.oauth2.model.PKCEAlgorithm;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.oauth2.web.AuthenticationUtilities;
-import org.mitre.openid.connect.exception.ValidationException;
-import org.mitre.openid.connect.model.CachedImage;
-import org.mitre.openid.connect.service.ClientLogoLoadingService;
-import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
-import org.mitre.openid.connect.view.ClientEntityViewForUsers;
-import org.mitre.openid.connect.view.HttpCodeView;
-import org.mitre.openid.connect.view.JsonEntityView;
-import org.mitre.openid.connect.view.JsonErrorView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -79,6 +36,43 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.mitre.jwt.assertion.AssertionValidator;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.PKCEAlgorithm;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.web.AuthenticationUtilities;
+import org.mitre.openid.connect.exception.ValidationException;
+import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
+import org.mitre.openid.connect.view.ClientEntityViewForUsers;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.openid.connect.view.JsonErrorView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.persistence.PersistenceException;
+import java.lang.reflect.Type;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.text.ParseException;
+import java.util.Collection;
 
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
@@ -98,7 +92,6 @@ import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESP
 import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.REDIRECT_URIS;
@@ -132,9 +125,6 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-
-	@Autowired
-	private ClientLogoLoadingService clientLogoLoadingService;
 
 	@Autowired
 	@Qualifier("clientAssertionValidator")
@@ -506,31 +496,6 @@ public class ClientAPI {
 		}
 	}
 
-	/**
-	 * Get the logo image for a client
-	 * @param id
-	 */
-	@RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
-
-		ClientDetailsEntity client = clientService.getClientById(id);
-
-		if (client == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			// get the image from cache
-			CachedImage image = clientLogoLoadingService.getLogo(client);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.parseMediaType(image.getContentType()));
-			headers.setContentLength(image.getLength());
-
-			return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
-		}
-	}
-
 	private ClientDetailsEntity validateSoftwareStatement(ClientDetailsEntity newClient) throws ValidationException {
 		if (newClient.getSoftwareStatement() != null) {
 			if (assertionValidator.isValid(newClient.getSoftwareStatement())) {
@@ -631,9 +596,6 @@ public class ClientAPI {
 								break;
 							case CONTACTS:
 								newClient.setContacts(Sets.newHashSet(claimSet.getStringListClaim(claim)));
-								break;
-							case LOGO_URI:
-								newClient.setLogoUri(claimSet.getStringClaim(claim));
 								break;
 							case CLIENT_URI:
 								newClient.setClientUri(claimSet.getStringClaim(claim));

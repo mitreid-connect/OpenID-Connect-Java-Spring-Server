@@ -40,7 +40,6 @@ var ClientModel = Backbone.Model.extend({
 		redirectUris: [],
 		clientName: null,
 		clientUri: null,
-		logoUri: null,
 		contacts: [],
 		tosUri: null,
 		tokenEndpointAuthMethod: null,
@@ -130,9 +129,6 @@ var ClientModel = Backbone.Model.extend({
 			}
 			if (this.get('tosUri') != null && this.get('tosUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
 				matches.push($.t('client.client-table.match.terms'));
-			}
-			if (this.get('logoUri') != null && this.get('logoUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-				matches.push($.t('client.client-table.match.logo'));
 			}
 			if (this.get('contacts') != null) {
 				var f = _.filter(this.get('contacts'), function(item) {
@@ -720,7 +716,6 @@ var ClientFormView = Backbone.View.extend({
 		"change #tokenEndpointAuthMethod input:radio": "toggleClientCredentials",
 		"change #displayClientSecret": "toggleDisplayClientSecret",
 		"change #generateClientSecret": "toggleGenerateClientSecret",
-		"change #logoUri input": "previewLogo",
 		"change #jwkSelector input:radio": "toggleJWKSetType"
 	},
 
@@ -758,16 +753,6 @@ var ClientFormView = Backbone.View.extend({
 
 	toggleRefreshTokenTimeout: function() {
 		$("#refreshTokenValidityTime", this.$el).toggle();
-	},
-
-	previewLogo: function() {
-		if ($('#logoUri input', this.el).val()) {
-			$('#logoPreview', this.el).empty();
-			$('#logoPreview', this.el).attr('src', $('#logoUri input', this.el).val());
-		} else {
-			// $('#logoBlock', this.el).hide();
-			$('#logoPreview', this.el).attr('src', 'resources/images/logo_placeholder.gif');
-		}
 	},
 
 	/**
@@ -1047,7 +1032,6 @@ var ClientFormView = Backbone.View.extend({
 			generateClientSecret: generateClientSecret,
 			redirectUris: redirectUris,
 			clientDescription: this.emptyToNull($('#clientDescription textarea').val()),
-			logoUri: this.emptyToNull($('#logoUri input').val()),
 			grantTypes: grantTypes,
 			accessTokenValiditySeconds: accessTokenValiditySeconds,
 			refreshTokenValiditySeconds: refreshTokenValiditySeconds,
@@ -1297,7 +1281,6 @@ var ClientFormView = Backbone.View.extend({
 
 		// toggle other dynamic fields
 		this.toggleClientCredentials();
-		this.previewLogo();
 		this.toggleJWKSetType();
 
 		// disable unsupported JOSE algorithms

@@ -187,12 +187,6 @@ h1,label {
     height: 20px;
 }
 
-/* Client table images */
-.client-logo {
-	max-width: 64px; 
-	max-height: 64px
-}
-
 /* Modal and sheet fight for the same z-index otherwise */
 .modal-backdrop {
   z-index: 2040;
