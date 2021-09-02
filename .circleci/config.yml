@@ -11,7 +11,7 @@ orbs:
 executors:
   docker-executor:
     docker:
-      - image: 455456581940.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u275
+      - image: 455456581940.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u302
         aws_auth:
           aws_access_key_id: $AWS_ACCESS_KEY_ID
           aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
