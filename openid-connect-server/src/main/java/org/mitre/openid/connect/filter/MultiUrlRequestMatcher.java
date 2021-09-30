@@ -16,6 +16,8 @@
 
 package org.mitre.openid.connect.filter;
 
+import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,6 +47,9 @@ public class MultiUrlRequestMatcher implements RequestMatcher {
 
 	@Override
 	public boolean matches(HttpServletRequest request) {
+		if (OPTIONS.toString().equalsIgnoreCase(request.getMethod())) {
+			return false;
+		}
 		for (RequestMatcher matcher : matchers) {
 			if (matcher.matches(request)) {
 				return true;
