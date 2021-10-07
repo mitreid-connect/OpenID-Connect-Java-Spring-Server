@@ -1,4 +1,5 @@
 Unreleased:
+- Updated JDK to Corretto 1.8.302
 
 *1.3.3-GRESHAM:
 - Upgraded libraries with known vulnerabilities
