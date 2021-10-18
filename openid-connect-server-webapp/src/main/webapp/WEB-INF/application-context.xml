@@ -44,6 +44,8 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
+	<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+	<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
@@ -61,7 +63,7 @@
 			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**" />
 					 
 			<!-- Inject the UserInfo into the response -->
-			<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+			<ref bean="userInfoInterceptor"/>
 		</mvc:interceptor>
 		<mvc:interceptor>
 			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
@@ -78,7 +80,7 @@
 			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**" />
 			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**" />
 			<!-- Inject the server configuration into the response -->
-			<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
+			<ref bean="serverConfigInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
 
