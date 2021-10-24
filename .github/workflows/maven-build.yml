@@ -1,8 +1,7 @@
-
-name: Maven build without running tests
+name: Maven build with tests
 on: [ push, pull_request ]
 jobs:
-  test:
+  build:
     name: JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
@@ -21,4 +20,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-jdk${{ matrix.java }}-
       - name: Build with Maven
-        run: mvn -B clean install -DskipTests
+        run: mvn -B clean install
+  release:
+    name: Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm install && npx semantic-release
+

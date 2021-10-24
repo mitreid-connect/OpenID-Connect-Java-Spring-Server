@@ -1,0 +1,16 @@
+{
+  "branches": ["master"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/exec", {
+      "prepareCmd": "mvn versions:set -DnewVersion=${nextRelease.version}; mvn versions:commit"
+    }],
+    "@semantic-release/changelog",
+    "@semantic-release/github",
+    ["@semantic-release/git", {
+      "assets": ["CHANGELOG.md", "pom.xml", "openid-connect-server-webapp/pom.xml", "openid-connect-server/pom.xml"],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }]
+  ]
+}
