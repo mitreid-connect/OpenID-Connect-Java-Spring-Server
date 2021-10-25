@@ -15,7 +15,6 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
@@ -91,7 +90,7 @@ public class UriEncodedClientUserDetailsService implements UserDetailsService {
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);
 			}
-		} catch (UnsupportedEncodingException | InvalidClientException e) {
+          } catch (InvalidClientException e) {
 			throw new UsernameNotFoundException("Client not found: " + clientId);
 		}
 
