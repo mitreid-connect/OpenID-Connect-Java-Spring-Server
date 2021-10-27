@@ -186,12 +186,6 @@
 				<artifactId>spring-security-oauth2</artifactId>
 				<version>${spring-security-oauth2.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${spring-test.version}</version>
-				<scope>test</scope>
-			</dependency>
 			<!-- Jackson -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -261,12 +255,6 @@
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<!-- MITREid Connect components -->
-			<dependency>
-				<groupId>org.mitre</groupId>
-				<artifactId>openid-connect-server</artifactId>
-				<version>${project.version}</version>
 			</dependency>
 			<!-- Other libraries -->
 			<dependency>

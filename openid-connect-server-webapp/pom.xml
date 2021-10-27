@@ -83,10 +83,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mitre</groupId>
-			<artifactId>openid-connect-server</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<exclusions>
@@ -112,7 +108,6 @@
 			<groupId>javax.servlet.jsp.jstl</groupId>
 			<artifactId>jstl-api</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
