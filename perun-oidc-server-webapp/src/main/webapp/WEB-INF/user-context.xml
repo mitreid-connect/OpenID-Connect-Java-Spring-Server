@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Replaces (overlays) the same-name file from project org.server.openid-connect-server-webapp.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:security="http://www.springframework.org/schema/security"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/security
+		 http://www.springframework.org/schema/security/spring-security.xsd
+		 http://www.springframework.org/schema/beans
+		 http://www.springframework.org/schema/beans/spring-beans.xsd
+		 http://www.springframework.org/schema/context
+		 http://www.springframework.org/schema/context/spring-context.xsd
+		 http://www.springframework.org/schema/aop
+		 http://www.springframework.org/schema/aop/spring-aop.xsd
+		 http://www.springframework.org/schema/mvc
+		 http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+	<context:property-placeholder properties-ref="nonOverwrittenAttributeProperties" ignore-unresolvable="true" order="0"/>
+	<context:property-placeholder properties-ref="userAttrMappingsProperties" ignore-unresolvable="true" order="1"/>
+	<context:property-placeholder properties-ref="facilityAttrMappingsProperties" ignore-unresolvable="true" order="2"/>
+	<context:property-placeholder properties-ref="groupAttrMappingsProperties" ignore-unresolvable="true" order="3"/>
+	<context:property-placeholder properties-ref="voAttrMappingsProperties" ignore-unresolvable="true" order="4"/>
+	<context:property-placeholder properties-ref="resourceAttrMappingsProperties" ignore-unresolvable="true" order="5"/>
+	<context:property-placeholder properties-ref="coreProperties" order="6"/>
+
+	<context:component-scan base-package="cz.muni.ics.oidc"/>
+
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/token**"/>
+			<mvc:exclude-mapping path="/resources/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.IsTestSpController).MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.AupController).URL}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_AUTHORIZATION}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_ENSURE_VO_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_PROD_VOS_GROUPS}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_TEST_VOS_GROUPS}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_LOGGED_IN}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_SPECIFIC_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_CONTINUE_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_SUBMIT_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.RegistrationController).CONTINUE_DIRECT_MAPPING}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}" />
+			<mvc:exclude-mapping path="/saml**" />
+			<!-- Inject the UserInfo into the response -->
+			<ref bean="userInfoInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/token**"/>
+			<mvc:exclude-mapping path="/resources/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
+			<!-- Inject the server configuration into the response -->
+			<ref bean="serverConfigInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- default config values, by default override in file /etc/perun/perun-mitreid.properties -->
+	<bean id="defaultCoreProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="main.oidc.issuer.url">https://perun-dev.meta.zcu.cz/oidc/</prop>
+				<prop key="logo.image.url">resources/images/perun_24px.png</prop>
+				<prop key="topbar.title">Perun OIDC</prop>
+				<prop key="admins">3197,59835</prop>
+				<prop key="perun.adapter.callFallback">true</prop>
+				<prop key="fill.missing.user.attrs">true</prop>
+				<prop key="perun.adapter.primary">RPC</prop>
+				<!-- RPC -->
+				<prop key="perun.rpc.enabled">true</prop>
+				<prop key="perun.rpc.url">https://perun.elixir-czech.cz/krb/rpc</prop>
+				<prop key="perun.rpc.user">xxxxx</prop>
+				<prop key="perun.rpc.password">yyyyy</prop>
+				<prop key="perun.rpc.serializer">json</prop>
+				<!-- LDAP -->
+				<prop key="ldap.host">perun.cesnet.cz</prop>
+				<prop key="ldap.user">xxxxx</prop>
+				<prop key="ldap.password">yyyyyyy</prop>
+				<prop key="ldap.port">636</prop>
+				<prop key="ldap.starttls">true</prop>
+				<prop key="ldap.ssl">true</prop>
+				<prop key="ldap.password">yyyyyyy</prop>
+				<prop key="ldap.timeoutSecs">120</prop>
+				<prop key="ldap.baseDN">dc=perun,dc=cesnet,dc=cz</prop>
+				<prop key="ldap.allowUntrustedSsl">false</prop>
+				<!-- JDBC -->
+				<prop key="jdbc.driver">org.mariadb.jdbc.Driver</prop>
+				<prop key="jdbc.url">jdbc:mariadb://localhost:3306/oidc</prop>
+				<prop key="jdbc.user">oidc</prop>
+				<prop key="jdbc.password">oidc</prop>
+				<prop key="jdbc.platform">org.eclipse.persistence.platform.database.MySQLPlatform</prop>
+				<!-- SAML AUTH -->
+				<prop key="saml.entityID">https://login.cesnet.cz/oidc/</prop>
+				<prop key="saml.keystore.location">/etc/perun/perun-mitreid-saml-keystore.jks</prop>
+				<prop key="saml.keystore.password">pass</prop>
+				<prop key="saml.keystore.defaultKey">pass</prop>
+				<prop key="saml.keystore.defaultKeyPass">pass</prop>
+				<prop key="saml.idp.defaultIdpEntityId">https://login.cesnet.cz/idp/</prop>
+				<prop key="saml.idp.metadataLocation"/> <!-- i.e. /etc/perun/login-cesnet-metadata.xml -->
+				<prop key="saml.idp.metadataUrl"/> <!-- i.e. https://login.cesnet.cz/proxy/module.php/metadata -->
+				<prop key="saml.proxy.enabled">true</prop>
+				<prop key="saml.proxy.spEntityId">https://login.cesnet.cz/proxy/</prop>
+				<prop key="saml.acrs.reserverdPrefixes">urn:cesnet:</prop>
+				<prop key="saml.acrs.enableComparison">false</prop>
+				<!-- STATS JDBC -->
+				<prop key="stats.jdbc.url">jdbc:mariadb://localhost:3306/STATS</prop>
+				<prop key="stats.jdbc.user">user</prop>
+				<prop key="stats.jdbc.password">password</prop>
+				<!-- WEB INTERFACE -->
+				<prop key="web.theme">default</prop>
+				<prop key="web.langs">EN</prop> <!-- EN,CS,SK -->
+				<prop key="web.langs.customfiles.path">/etc/perun</prop>
+				<prop key="web.classes.path">/etc/perun/web/classes.properties</prop>
+				<prop key="web.baseURL">https://login.cesnet.cz/proxy</prop>
+				<prop key="email.contact">login@cesnet.cz</prop>
+				<!-- LOGIN -->
+				<prop key="idpFilters.askPerun.enabled">false</prop>
+				<prop key="registrar.url">https://perun-dev.cesnet.cz/allfed/registrar/</prop>
+				<prop key="proxy.extSource.name"/>
+				<prop key="proxy.base.url"/>
+				<prop key="proxy.login.url"/>
+				<prop key="proxy.logout.url"/>
+				<prop key="proxy.add_client_id_to_acrs">false</prop>
+				<!-- OIDC STUFF -->
+				<prop key="jwk">file:///etc/perun/perun-oidc-keystore.jwks</prop>
+				<prop key="id_token.scopes">openid,profile,email,phone,address</prop>
+				<prop key="custom.claims">organization,eppns</prop>
+				<prop key="accessTokenClaimsModifier">cz.muni.ics.oidc.server.PerunAccessTokenEnhancer.NoOpAccessTokenClaimsModifier</prop>
+				<prop key="force.regenerate.userinfo.custom.claims" />
+				<prop key="force.regenerate.userinfo.standard.claims" />
+				<!-- UES ATTRS -->
+				<prop key="ues.orgUrl.attr">urn:perun:ues:attribute-def:def:organizationURL</prop>
+				<prop key="ues.affiliations.attr">urn:perun:ues:attribute-def:def:affiliation</prop>
+				<!-- USERINFO MODIFIERS -->
+				<prop key="userInfo.modifiers"/>
+				<!-- REQUEST FILTERS -->
+				<prop key="filter.names">stats</prop>
+				<prop key="filter.stats.class">cz.muni.ics.oidc.server.filters.impl.ProxyStatisticsFilter</prop>
+				<prop key="filter.stats.idpNameAttributeName">sourceIdPName</prop>
+				<prop key="filter.stats.idpEntityIdAttributeName">sourceIdPEntityID</prop>
+				<prop key="filter.stats.statisticsTableName">statistics_per_user</prop>
+				<prop key="filter.stats.identityProvidersMapTableName">statistics_idp</prop>
+				<prop key="filter.stats.serviceProvidersMapTableName">statistics_sp</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="coreProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultCoreProperties"/>
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/perun-mitreid.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="false"/>
+	</bean>
+
+	<bean id="samlProperties" class="cz.muni.ics.oidc.saml.SamlProperties">
+		<property name="entityID" value="${saml.idp.defaultIdpEntityId}"/>
+		<property name="keystoreLocation" value="${saml.keystore.location}"/>
+		<property name="keystorePassword" value="${saml.keystore.password}"/>
+		<property name="keystoreDefaultKey" value="${saml.keystore.defaultKey}"/>
+		<property name="keystoreDefaultKeyPassword" value="${saml.keystore.defaultKeyPass}"/>
+		<property name="defaultIdpEntityId" value="${saml.idp.defaultIdpEntityId}"/>
+		<property name="idpMetadataFile" value="${saml.idp.metadataLocation}"/>
+		<property name="idpMetadataUrl" value="${saml.idp.metadataUrl}"/>
+		<property name="acrReservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
+	</bean>
+
+	<bean id="nonOverwrittenAttributeProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="user.attribute_names.fixedList">openid_sub,profile_preferred_username,profile_given_name,profile_middle_name,profile_family_name,profile_name,profile_zoneinfo,profile_locale,email_email,address_address_formatted,phone_phone,aups</prop>
+				<prop key="facility.attribute_names.fixedList">checkGroupMembership,allowRegistration,registrationUrl,dynamicRegistration,clientId,voShortNames,wayfFilter,wayfEFilter,requestedAups,capabilities,testSp</prop>
+				<prop key="group.attribute_names.fixedList"/>
+				<prop key="vo.attribute_names.fixedList">aup</prop>
+				<prop key="resource.attribute_names.fixedList">capabilities</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="defaultUserAttrProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="user.attribute_names.customList"/>
+				<!-- ATTRIBUTES MAPPINGS -->
+				<prop key="openid_sub.mapping.ldap">login;x-ns-einfraid-persistent-shadow</prop>
+				<prop key="openid_sub.mapping.rpc">urn:perun:user:attribute-def:core:id</prop>
+				<prop key="openid_sub.type">STRING</prop>
+				<prop key="profile_preferred_username.mapping.ldap">login;x-ns-einfra</prop>
+				<prop key="profile_preferred_username.mapping.rpc">urn:perun:user:attribute-def:def:login-namespace:einfra</prop>
+				<prop key="profile_preferred_username.type">STRING</prop>
+				<prop key="profile_given_name.mapping.ldap">givenName</prop>
+				<prop key="profile_given_name.mapping.rpc">urn:perun:user:attribute-def:core:firstName</prop>
+				<prop key="profile_given_name.type">STRING</prop>
+				<prop key="profile_middle_name.mapping.ldap">middleName</prop>
+				<prop key="profile_middle_name.mapping.rpc">urn:perun:user:attribute-def:core:middleName</prop>
+				<prop key="profile_middle_name.type">STRING</prop>
+				<prop key="profile_family_name.mapping.ldap">sn</prop>
+				<prop key="profile_family_name.mapping.rpc">urn:perun:user:attribute-def:core:lastName</prop>
+				<prop key="profile_family_name.type">STRING</prop>
+				<prop key="profile_name.mapping.ldap">displayName</prop>
+				<prop key="profile_name.mapping.rpc">urn:perun:user:attribute-def:core:displayName</prop>
+				<prop key="profile_name.type">STRING</prop>
+				<prop key="profile_zoneinfo.mapping.ldap">timezone</prop>
+				<prop key="profile_zoneinfo.mapping.rpc">urn:perun:user:attribute-def:def:timezone</prop>
+				<prop key="profile_zoneinfo.type">STRING</prop>
+				<prop key="profile_locale.mapping.ldap">preferredLanguage</prop>
+				<prop key="profile_locale.mapping.rpc">urn:perun:user:attribute-def:def:preferredLanguage</prop>
+				<prop key="profile_locale.type">STRING</prop>
+				<prop key="email_email.mapping.ldap">preferredMail</prop>
+				<prop key="email_email.mapping.rpc">urn:perun:user:attribute-def:def:preferredMail</prop>
+				<prop key="email_email.type">STRING</prop>
+				<prop key="phone_phone.mapping.ldap">telephoneNumber</prop>
+				<prop key="phone_phone.mapping.rpc">urn:perun:user:attribute-def:def:phone</prop>
+				<prop key="phone_phone.type">STRING</prop>
+				<prop key="address_address_formatted.mapping.ldap">postalAddress</prop>
+				<prop key="address_address_formatted.mapping.rpc">urn:perun:user:attribute-def:def:address</prop>
+				<prop key="address_address_formatted.type">STRING</prop>
+				<prop key="aups.mapping.ldap">aups</prop>
+				<prop key="aups.mapping.rpc">urn:perun:user:attribute-def:def:aups</prop>
+				<prop key="aups.type">MAP_KEY_VALUE</prop>
+				<prop key="aups.separator">=</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="userAttrMappingsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultUserAttrProperties" />
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/user-attribute-mappings.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+	</bean>
+
+	<bean id="defaultFacilityAttrProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="facility.attribute_names.customList"/>
+				<!-- ATTRIBUTES MAPPINGS -->
+				<prop key="checkGroupMembership.mapping.ldap">checkGroupMembership</prop>
+				<prop key="checkGroupMembership.mapping.rpc">urn:perun:facility:attribute-def:def:checkGroupMembership</prop>
+				<prop key="checkGroupMembership.type">BOOLEAN</prop>
+				<prop key="allowRegistration.mapping.ldap">allowRegistration</prop>
+				<prop key="allowRegistration.mapping.rpc">urn:perun:facility:attribute-def:def:allowRegistration</prop>
+				<prop key="allowRegistration.type">BOOLEAN</prop>
+				<prop key="registrationUrl.mapping.ldap">registrationURL</prop>
+				<prop key="registrationUrl.mapping.rpc">urn:perun:facility:attribute-def:def:registrationURL</prop>
+				<prop key="registrationUrl.type">STRING</prop>
+				<prop key="dynamicRegistration.mapping.ldap">dynamicRegistration</prop>
+				<prop key="dynamicRegistration.mapping.rpc">urn:perun:facility:attribute-def:def:dynamicRegistration</prop>
+				<prop key="dynamicRegistration.type">BOOLEAN</prop>
+				<prop key="clientId.mapping.ldap">OIDCClientID</prop>
+				<prop key="clientId.mapping.rpc">urn:perun:facility:attribute-def:def:OIDCClientID</prop>
+				<prop key="clientId.type">STRING</prop>
+				<prop key="voShortNames.mapping.ldap">voShortNames</prop>
+				<prop key="voShortNames.mapping.rpc">urn:perun:facility:attribute-def:virt:voShortNames</prop>
+				<prop key="voShortNames.type">ARRAY</prop>
+				<prop key="wayfFilter.mapping.ldap">wayfFilter</prop>
+				<prop key="wayfFilter.mapping.rpc">urn:perun:facility:attribute-def:def:wayfFilter</prop>
+				<prop key="wayfFilter.type">STRING</prop>
+				<prop key="wayfEFilter.mapping.ldap">wayfEFilter</prop>
+				<prop key="wayfEFilter.mapping.rpc">urn:perun:facility:attribute-def:def:wayfEFilter</prop>
+				<prop key="wayfEFilter.type">STRING</prop>
+				<prop key="requestedAups.mapping.ldap">requiredAups</prop>
+				<prop key="requestedAups.mapping.rpc">urn:perun:facility:attribute-def:def:reqAups</prop>
+				<prop key="requestedAups.type">ARRAY</prop>
+				<prop key="capabilities.mapping.ldap">capabilities</prop>
+				<prop key="capabilities.mapping.rpc">urn:perun:facility:attribute-def:def:capabilities</prop>
+				<prop key="capabilities.type">ARRAY</prop>
+				<prop key="testSp.mapping.ldap">isTestSp</prop>
+				<prop key="testSp.mapping.rpc">urn:perun:facility:attribute-def:def:isTestSp</prop>
+				<prop key="testSp.type">BOOLEAN</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="facilityAttrMappingsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultFacilityAttrProperties" />
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/facility-attribute-mappings.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+	</bean>
+
+	<bean id="defaultGroupAttrProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="group.attribute_names.customList"/>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="groupAttrMappingsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultGroupAttrProperties" />
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/group-attribute-mappings.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+	</bean>
+
+	<bean id="defaultVoAttrProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="vo.attribute_names.customList"/>
+				<!-- ATTRIBUTES MAPPINGS -->
+				<prop key="aup.mapping.ldap">aup</prop>
+				<prop key="aup.mapping.rpc">urn:perun:vo:attribute-def:def:aup</prop>
+				<prop key="aup.type">LARGE_STRING</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="voAttrMappingsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultVoAttrProperties" />
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/vo-attribute-mappings.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+	</bean>
+
+	<bean id="defaultResourceAttrProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="resource.attribute_names.customList"/>
+				<!-- ATTRIBUTES MAPPINGS -->
+				<prop key="capabilities.mapping.ldap">capabilities</prop>
+				<prop key="capabilities.mapping.rpc">urn:perun:resource:attribute-def:def:capabilities</prop>
+				<prop key="capabilities.type">ARRAY</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="resourceAttrMappingsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties" ref="defaultResourceAttrProperties" />
+		<property name="locations">
+			<list>
+				<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+				<value>file://${config.location}/resource-attribute-mappings.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+	</bean>
+
+	<!-- defines our own user info service -->
+	<bean id="userInfoService" primary="true" class="cz.muni.ics.oidc.server.userInfo.PerunUserInfoService">
+		<property name="perunAdapter" ref="perunAdapter"/>
+		<property name="subAttribute" value="openid_sub"/>
+		<property name="preferredUsernameAttribute" value="profile_preferred_username"/>
+		<property name="givenNameAttribute" value="profile_given_name"/>
+		<property name="familyNameAttribute" value="profile_family_name"/>
+		<property name="middleNameAttribute" value="profile_middle_name"/>
+		<property name="fullNameAttribute" value="profile_name"/>
+		<property name="emailAttribute" value="email_email"/>
+		<property name="addressAttribute" value="address_address_formatted"/>
+		<property name="phoneAttribute" value="phone_phone"/>
+		<property name="zoneinfoAttribute" value="profile_zoneinfo"/>
+		<property name="localeAttribute" value="profile_locale"/>
+		<property name="properties" ref="coreProperties"/>
+		<property name="customClaimNames" value="#{'${custom.claims}'.split('\s*,\s*')}"/>
+		<property name="forceRegenerateUserinfoCustomClaims" value="#{'${force.regenerate.userinfo.custom.claims}'.split('\s*,\s*')}"/>
+		<property name="forceRegenerateUserinfoStandardClaims" value="#{'${force.regenerate.userinfo.standard.claims}'.split('\s*,\s*')}"/>
+	</bean>
+
+	<!-- replaces default translation service with our own for custom scope with custom claims. -->
+	<bean id="scopeClaimTranslator" primary="true" class="cz.muni.ics.oidc.server.PerunScopeClaimTranslationService">
+		<property name="perunUserInfoService" ref="userInfoService"/>
+	</bean>
+
+	<bean id="introspectionResultAssembler" class="cz.muni.ics.oidc.server.PerunIntrospectionResultAssembler" primary="true">
+		<constructor-arg name="configBean" ref="configBean"/>
+		<constructor-arg name="translator" ref="scopeClaimTranslator"/>
+	</bean>
+
+	<bean id="perunOidcConfig" class="cz.muni.ics.oidc.server.configurations.PerunOidcConfig">
+		<property name="rpcEnabled" value="${perun.rpc.enabled}"/>
+		<property name="rpcUrl" value="${perun.rpc.url}"/>
+		<property name="configBean" ref="configBean"/>
+		<property name="jwk" value="${jwk}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="theme" value="${web.theme}"/>
+		<property name="samlLoginURL" value="${proxy.login.url}"/>
+		<property name="samlLogoutURL" value="${proxy.logout.url}"/>
+		<property name="samlResourcesURL" value="${proxy.base.url}"/>
+		<property name="baseURL" value="${web.baseURL}"/>
+		<property name="registrarUrl" value="${registrar.url}"/>
+		<property name="fillMissingUserAttrs" value="${fill.missing.user.attrs}"/>
+		<property name="askPerunForIdpFiltersEnabled" value="${idpFilters.askPerun.enabled}"/>
+		<property name="proxyExtSourceName" value="${proxy.extSource.name}"/>
+		<property name="idTokenScopes" value="#{'${id_token.scopes}'.split('\s*,\s*')}"/>
+		<property name="availableLangs" value="#{'${web.langs}'.split('\s*,\s*')}"/>
+		<property name="localizationFilesPath" value="${web.langs.customfiles.path}"/>
+		<property name="webClassesFilePath" value="${web.classes.path}"/>
+		<property name="emailContact" value="${email.contact}"/>
+		<property name="addClientIdToAcrs" value="${proxy.add_client_id_to_acrs}"/>
+	</bean>
+
+	<bean id="facilityAttrsConfig" class="cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig">
+		<property name="checkGroupMembershipAttr" value="checkGroupMembership" />
+		<property name="allowRegistrationAttr" value="allowRegistration" />
+		<property name="registrationURLAttr" value="registrationURL" />
+		<property name="dynamicRegistrationAttr" value="dynamicRegistration" />
+		<property name="voShortNamesAttr" value="voShortNames" />
+		<property name="wayfFilterAttr" value="wayfFilter" />
+		<property name="wayfEFilterAttr" value="wayfEFilter" />
+		<property name="testSpAttr" value="testSp" />
+	</bean>
+
+	<!-- authentication -->
+
+	<!--suppress SpringXmlModelInspection -->
+	<security:http auto-config="false"
+				   use-expressions="true"
+				   entry-point-ref="samlEntryPoint"
+				   create-session="always"
+				   authentication-manager-ref="authenticationManager">
+		<security:csrf disabled="true"/>
+		<security:intercept-url pattern="/saml/**" access="permitAll()"/>
+		<security:intercept-url pattern="/logout" access="permitAll()"/>
+		<security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" access="permitAll()"/>
+		<security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}" access="permitAll()"/>
+		<security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+		<security:custom-filter ref="mdcMuFilter" before="FIRST"/>
+		<security:custom-filter ref="metadataGeneratorFilter" before="CHANNEL_FILTER"/>
+		<security:custom-filter ref="clearSessionFilter" after="CHANNEL_FILTER"/>
+		<security:custom-filter ref="samlFilter" before="CSRF_FILTER"/>
+		<security:custom-filter ref="samlFilter" after="BASIC_AUTH_FILTER"/>
+		<security:custom-filter ref="callPerunFiltersFilter" before="LAST"/>
+		<security:logout logout-url="/saml/logout"/>
+	</security:http>
+
+	<security:authentication-manager id="authenticationManager">
+		<security:authentication-provider ref="authenticationProvider"/>
+	</security:authentication-manager>
+
+	<bean id="mdcMuFilter" class="cz.muni.ics.oidc.server.filters.impl.MultiMDCFilter"/>
+
+	<!-- SAML -->
+
+	<bean id="clearSessionFilter" class="cz.muni.ics.oidc.saml.SamlInvalidateSessionFilter">
+		<constructor-arg name="pattern" value="/authorize**"/>
+		<constructor-arg name="oidcIssuer" value="${main.oidc.issuer.url}"/>
+		<constructor-arg name="idpEntityId" value="${saml.idp.defaultIdpEntityId}"/>
+		<constructor-arg name="proxyEnabled" value="${saml.proxy.enabled}"/>
+		<constructor-arg name="proxySpEntityId" value="${saml.proxy.spEntityId}"/>
+		<constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
+	</bean>
+	<bean id="samlDiscovery" class="org.springframework.security.saml.SAMLDiscovery">
+		<property name="contextProvider" ref="samlContextProvider"/>
+		<property name="samlEntryPoint" ref="samlEntryPoint"/>
+		<property name="metadata" ref="metadata"/>
+	</bean>
+
+	<bean id="successRedirectHandler" class="cz.muni.ics.oidc.saml.PerunSamlAuthenticationSuccessHandler">
+		<property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_SUCCESS}"/>
+	</bean>
+
+	<bean id="authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"/>
+		<property name="useForward" value="true"/>
+	</bean>
+
+	<bean id="successLogoutHandler" class="cz.muni.ics.oidc.saml.PerunOidcLogoutSuccessHandler">
+		<property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}"/>
+		<property name="targetUrlParameter" value="#{T(cz.muni.ics.oidc.server.filters.PerunFilterConstants).PARAM_TARGET}"/>
+	</bean>
+
+	<bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+		<property name="clearAuthentication" value="true"/>
+		<property name="invalidateHttpSession" value="true"/>
+	</bean>
+
+	<bean id="samlLogoutProcessingFilter" class="org.springframework.security.saml.SAMLLogoutProcessingFilter">
+		<constructor-arg name="logoutSuccessHandler" ref="successLogoutHandler"/>
+		<constructor-arg name="handlers" ref="logoutHandler"/>
+	</bean>
+
+	<bean id="samlLogoutFilter" class="org.springframework.security.saml.SAMLLogoutFilter">
+		<constructor-arg name="logoutSuccessHandler" ref="successLogoutHandler"/>
+		<constructor-arg name="localHandler" ref="logoutHandler"/>
+		<constructor-arg name="globalHandlers" ref="logoutHandler"/>
+	</bean>
+
+	<bean id="keyManager" class="org.springframework.security.saml.key.JKSKeyManager">
+		<constructor-arg name="storeFile">
+			<bean class="org.springframework.core.io.FileSystemResource">
+				<constructor-arg name="path" value="${saml.keystore.location}"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="storePass" value="${saml.keystore.password}"/>
+		<constructor-arg name="passwords">
+			<map>
+				<entry key="${saml.keystore.defaultKey}" value="${saml.keystore.defaultKeyPass}"/>
+			</map>
+		</constructor-arg>
+		<constructor-arg name="defaultKey" value="${saml.keystore.defaultKey}"/>
+	</bean>
+
+	<bean id="extendedMetadata" class="org.springframework.security.saml.metadata.ExtendedMetadata">
+		<property name="idpDiscoveryEnabled" value="false"/>
+	</bean>
+
+	<bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
+		<constructor-arg name="generator">
+			<bean class="org.springframework.security.saml.metadata.MetadataGenerator">
+				<property name="includeDiscoveryExtension" value="false"/>
+				<property name="entityId" value="${saml.entityID}"/>
+				<property name="extendedMetadata" ref="extendedMetadata"/>
+				<property name="wantAssertionSigned" value="true"/>
+				<property name="requestSigned" value="true"/>
+			</bean>
+		</constructor-arg>
+		<property name="normalizeBaseUrl" value="true"/>
+	</bean>
+
+	<bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
+
+	<bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
+		<property name="defaultIDP" value="${saml.idp.defaultIdpEntityId}"/>
+		<property name="refreshCheckInterval" value="60000"/>
+		<property name="refreshRequired" value="false"/>
+		<constructor-arg name="providers">
+			<list>
+				<ref bean="idpMetadata"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" init-method="initialize"/>
+
+	<bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
+
+	<bean id="processor" class="org.springframework.security.saml.processor.SAMLProcessorImpl">
+		<constructor-arg name="bindings">
+			<list>
+				<bean id="httpPostBinding" class="org.springframework.security.saml.processor.HTTPPostBinding">
+					<constructor-arg name="parserPool" ref="parserPool"/>
+					<constructor-arg name="velocityEngine" value="#{T(org.springframework.security.saml.util.VelocityFactory).getEngine()}"/>
+				</bean>
+				<bean id="httpRedirectDeflateBinding" class="org.springframework.security.saml.processor.HTTPRedirectDeflateBinding">
+					<constructor-arg name="parserPool" ref="parserPool"/>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
+		<property name="authenticationFailureHandler" ref="authenticationFailureHandler"/>
+	</bean>
+
+	<bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
+		<constructor-arg name="filterChains">
+			<list>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+							<constructor-arg name="pattern"
+											 value="#{T(org.springframework.security.saml.metadata.MetadataDisplayFilter).FILTER_URL}/**"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="metadataDisplayFilter"/>
+						</list>
+					</constructor-arg>
+				</bean>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+							<constructor-arg name="pattern"
+											 value="#{T(org.springframework.security.saml.SAMLProcessingFilter).FILTER_URL}"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="samlWebSSOProcessingFilter"/>
+						</list>
+					</constructor-arg>
+				</bean>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+							<constructor-arg name="pattern"
+											 value="#{T(org.springframework.security.saml.SAMLDiscovery).FILTER_URL}"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="samlDiscovery"/>
+						</list>
+					</constructor-arg>
+				</bean>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+							<constructor-arg name="pattern"
+											 value="#{T(org.springframework.security.saml.SAMLEntryPoint).FILTER_URL}"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="samlEntryPoint"/>
+						</list>
+					</constructor-arg>
+				</bean>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+							<constructor-arg name="requestMatchers">
+								<list>
+									<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+										<constructor-arg name="pattern"
+														 value="#{T(org.springframework.security.saml.SAMLLogoutFilter).FILTER_URL}"/>
+									</bean>
+									<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+										<constructor-arg name="pattern" value="/logout"/>
+									</bean>
+								</list>
+							</constructor-arg>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="samlLogoutFilter"/>
+						</list>
+					</constructor-arg>
+				</bean>
+				<bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+					<constructor-arg name="requestMatcher">
+						<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+							<constructor-arg name="pattern" value="#{T(org.springframework.security.saml.SAMLLogoutProcessingFilter).FILTER_URL}/**"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="filters">
+						<list>
+							<ref bean="samlLogoutProcessingFilter"/>
+						</list>
+					</constructor-arg>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="webSSOProfileOptions" class="org.springframework.security.saml.websso.WebSSOProfileOptions">
+		<property name="includeScoping" value="false"/>
+	</bean>
+
+	<bean id="samlEntryPoint" class="cz.muni.ics.oidc.saml.PerunSamlEntryPoint">
+		<property name="defaultProfileOptions" ref="webSSOProfileOptions"/>
+	</bean>
+
+	<bean id="samlContextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl"/>
+
+	<bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+		<property name="logMessagesOnException" value="true"/>
+		<property name="logErrors" value="true"/>
+	</bean>
+
+	<bean id="singleLogoutProfile" class="org.springframework.security.saml.websso.SingleLogoutProfileImpl"/>
+
+	<bean id="webSSOprofileConsumer" class="cz.muni.ics.oidc.saml.PerunWebSSOProfileConsumerImpl">
+		<property name="enableComparison" value="${saml.acrs.enableComparison}"/>
+		<property name="reservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
+		<property name="maxAuthenticationAge" value="360"/>
+	</bean>
+
+	<bean id="webSSOprofile" class="org.springframework.security.saml.websso.WebSSOProfileImpl"/>
+
+	<bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
+
+	<bean id="samlUserDetailsService" class="cz.muni.ics.oidc.saml.PerunSamlUserDetailsService"/>
+
+	<bean id="authenticationProvider" class="cz.muni.ics.oidc.saml.PerunSamlAuthenticationProvider">
+		<constructor-arg name="adminIds" value="#{'${admins}'.split('\s*,\s*')}"/>
+	</bean>
+
+	<bean class="org.springframework.security.saml.SAMLBootstrap"/>
+
+	<!-- END SAML -->
+
+	<bean id="accessTokenClaimsModifier" class="${accessTokenClaimsModifier}"/>
+
+	<bean id="tokenEnhancer" class="cz.muni.ics.oidc.server.PerunAccessTokenEnhancer" primary="true">
+		<property name="accessTokenClaimsModifier" ref="accessTokenClaimsModifier"/>
+		<constructor-arg name="configBean" ref="configBean"/>
+		<constructor-arg name="clientService" ref="defaultOAuth2ClientDetailsEntityService"/>
+		<constructor-arg name="jwtService" ref="defaultsignerService"/>
+		<constructor-arg name="connectTokenService" ref="oidcTokenService"/>
+		<constructor-arg name="userInfoService" ref="userInfoService"/>
+	</bean>
+
+	<bean id="oidcTokenService" class="cz.muni.ics.oidc.server.PerunOIDCTokenService" primary="true"/>
+
+	<bean id="callPerunFiltersFilter" class="cz.muni.ics.oidc.server.filters.CallPerunFiltersFilter"/>
+
+	<bean id="localization" class="cz.muni.ics.oidc.web.langs.Localization">
+		<constructor-arg name="perunOidcConfig" ref="perunOidcConfig"/>
+	</bean>
+
+	<bean id="htmlClasses" class="cz.muni.ics.oidc.web.WebHtmlClasses">
+		<constructor-arg name="perunOidcConfig" ref="perunOidcConfig"/>
+	</bean>
+
+	<!-- communicates with Perun -->
+
+	<bean id="perunConnectorRpc" class="cz.muni.ics.oidc.server.connectors.PerunConnectorRpc">
+		<constructor-arg name="perunUrl" value="${perun.rpc.url}"/>
+		<constructor-arg name="perunUser" value="${perun.rpc.user}"/>
+		<constructor-arg name="perunPassword" value="${perun.rpc.password}"/>
+		<constructor-arg name="enabled" value="${perun.rpc.enabled}"/>
+		<constructor-arg name="serializer" value="${perun.rpc.serializer}"/>
+	</bean>
+
+	<bean id="perunAdapterMethodsRpc" class="cz.muni.ics.oidc.server.adapters.impl.PerunAdapterRpc">
+		<property name="connectorRpc" ref="perunConnectorRpc"/>
+		<property name="oidcClientIdAttr" value="clientId" />
+		<property name="oidcCheckMembershipAttr" value="checkGroupMembership"/>
+		<property name="affiliationsAttr" value="${ues.affiliations.attr}"/>
+		<property name="orgUrlAttr" value="${ues.orgUrl.attr}"/>
+	</bean>
+
+	<bean id="perunConnectorLdap" class="cz.muni.ics.oidc.server.connectors.PerunConnectorLdap">
+		<constructor-arg name="ldapHost" value="${ldap.host}"/>
+		<constructor-arg name="ldapUser" value="${ldap.user}"/>
+		<constructor-arg name="ldapPassword" value="${ldap.password}"/>
+		<constructor-arg name="port" value="${ldap.port}"/>
+		<constructor-arg name="useTLS" value="${ldap.starttls}"/>
+		<constructor-arg name="useSSL" value="${ldap.ssl}"/>
+		<constructor-arg name="timeoutSecs" value="${ldap.timeoutSecs}"/>
+		<constructor-arg name="baseDN" value="${ldap.baseDN}"/>
+		<constructor-arg name="allowUntrustedSsl" value="${ldap.allowUntrustedSsl}"/>
+	</bean>
+
+	<bean id="perunAdapterMethodsLdap" class="cz.muni.ics.oidc.server.adapters.impl.PerunAdapterLdap">
+		<property name="connectorLdap" ref="perunConnectorLdap"/>
+		<property name="oidcClientIdAttr" value="clientId" />
+		<property name="oidcCheckMembershipAttr" value="checkGroupMembership"/>
+	</bean>
+
+	<bean id="userAttributesMappingService" class="cz.muni.ics.oidc.server.AttributeMappingsService">
+		<constructor-arg name="attrIdentifiersFixed" value="#{'${user.attribute_names.fixedList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrIdentifiersCustom" value="#{'${user.attribute_names.customList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrMappingsProperties" ref="userAttrMappingsProperties" />
+	</bean>
+
+	<bean id="facilityAttributesMappingService" class="cz.muni.ics.oidc.server.AttributeMappingsService">
+		<constructor-arg name="attrIdentifiersFixed" value="#{'${facility.attribute_names.fixedList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrIdentifiersCustom" value="#{'${facility.attribute_names.customList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrMappingsProperties" ref="facilityAttrMappingsProperties" />
+	</bean>
+
+	<bean id="groupAttributesMappingService" class="cz.muni.ics.oidc.server.AttributeMappingsService">
+		<constructor-arg name="attrIdentifiersFixed" value="#{'${group.attribute_names.fixedList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrIdentifiersCustom" value="#{'${group.attribute_names.customList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrMappingsProperties" ref="groupAttrMappingsProperties" />
+	</bean>
+
+	<bean id="voAttributesMappingService" class="cz.muni.ics.oidc.server.AttributeMappingsService">
+		<constructor-arg name="attrIdentifiersFixed" value="#{'${vo.attribute_names.fixedList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrIdentifiersCustom" value="#{'${vo.attribute_names.customList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrMappingsProperties" ref="voAttrMappingsProperties" />
+	</bean>
+
+	<bean id="resourceAttributesMappingService" class="cz.muni.ics.oidc.server.AttributeMappingsService">
+		<constructor-arg name="attrIdentifiersFixed" value="#{'${resource.attribute_names.fixedList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrIdentifiersCustom" value="#{'${resource.attribute_names.customList}'.split('\s*,\s*')}" />
+		<constructor-arg name="attrMappingsProperties" ref="resourceAttrMappingsProperties" />
+	</bean>
+
+	<bean id="perunAdapter" class="cz.muni.ics.oidc.server.adapters.impl.PerunAdapterImpl">
+		<property name="adapterLdap" ref="perunAdapterMethodsLdap"/>
+		<property name="adapterRpc" ref="perunAdapterMethodsRpc"/>
+		<property name="adapterFallback" ref="perunAdapterMethodsRpc"/>
+		<property name="adapterPrimary" ref="#{ '${perun.adapter.primary}' == 'LDAP' ? 'perunAdapterMethodsLdap' : 'perunAdapterMethodsRpc'}"/>
+		<property name="callFallback" value="${perun.adapter.callFallback}"/>
+	</bean>
+
+</beans>

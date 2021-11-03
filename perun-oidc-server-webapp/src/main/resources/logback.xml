@@ -1,0 +1,58 @@
+<configuration packagingData="true" debug="false" scan="false" scanPeriod="30 seconds">
+	<contextName>${log.contextName}</contextName>
+	<property name="PATTERN"
+			  value='%d{"yyyy-MM-dd HH:mm:ss.SSS"} %X{remoteAddr} [%X{sessionID}]: %-5level %logger{40} - %m%n%xException'/>
+	<property name="PATTERN_SYSLOG"
+			  value='%X{remoteAddr} [%X{sessionID}] %cn: %-5level %logger{40} - %m%n%xException'/>
+
+	<!-- ROLLING FILE -->
+	<appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.rolling-file}.${log.file-extension}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.rolling-file}.${log.file-extension}.%d{yyyy-MM-dd}</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- FILE -->
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>${log.file}.${log.file-extension}</file>
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- SYSLOG -->
+	<appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+		<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+		<facility>${log.facility}</facility>
+		<throwableExcluded>true</throwableExcluded>
+		<suffixPattern>${PATTERN_SYSLOG}</suffixPattern>
+	</appender>
+
+	<root level="${log.level}">
+		<appender-ref ref="${log.to}"/>
+	</root>
+
+	<!-- keep Spring quiet -->
+	<logger name="org.springframework" level="warn"/>
+	<logger name="org.springframework.security.core.SpringSecurityCoreVersion" level="info"/>
+	<logger name="cz.muni.ics.openid.connect.config.JsonMessageSource" level="warn"/>
+	<logger name="org.apache" level="warn"/>
+	<logger name="org.apache.directory" level="warn"/>
+	<logger name="org.apache.directory.ldap.client.api.LdapNetworkConnection" level="error"/>
+	<logger name="com.zaxxer.hikari" level="warn"/>
+	<logger name="cz.muni.ics" level="info"/>
+	<logger name="org.opensaml" level="info"/>
+	<logger name="org.springframework.security.saml" level="debug"/>
+	<logger name="PROTOCOL_MESSAGE" level="warn"/>
+	<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
+	<logger name="cz.muni.ics.oidc" level="${log.level}"/>
+	<logger name="cz.muni.ics.oidc.aop.WebLoggingAspect" level="debug"/>
+	<logger name="cz.muni.ics.oidc.aop.ExecutionTimeLoggingAspect" level="trace"/>
+	<logger name="cz.muni.ics.openid.connect.web.EndSessionEndpoint" level="${log.level}"/>
+	<logger name="net.javacrumbs.shedlock" level="error"/>
+
+</configuration>
