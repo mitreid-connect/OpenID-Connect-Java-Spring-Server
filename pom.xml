@@ -18,111 +18,55 @@
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.mitre</groupId>
-	<artifactId>openid-connect-parent</artifactId>
+	<groupId>cz.muni.ics</groupId>
+	<artifactId>perun-oidc-parent</artifactId>
 	<version>2.0.0</version>
-	<name>MITREid Connect</name>
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>perun-oidc-server</module>
+		<module>perun-oidc-server-webapp</module>
+	</modules>
+
+	<name>CESNET OpenID-Connect-Java-Spring-Server</name>
+	<description>OpenID Connect Provider server based on Java and Spring. It comes out of the MITREid Connect implementation.</description>
+	<url>https://github.com/CESNET/OpenID-Connect-Java-Spring-Server.git</url>
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 			<comments>A business-friendly OSS license</comments>
 		</license>
 	</licenses>
-	<modules>
-		<module>openid-connect-server</module>
-		<module>openid-connect-server-webapp</module>
-	</modules>
-
-	<scm>
-		<connection>scm:git:https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git</connection>
-		<developerConnection>scm:git:git@github.com:mitreid-connect/OpenID-Connect-Java-Spring-Server.git</developerConnection>
-		<url>https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git</url>
-		<tag>HEAD</tag>
-	</scm>
 
 	<developers>
 		<developer>
-			<id>jricher</id>
-			<name>Justin Richer</name>
-			<email>jricher@mit.edu</email>
+			<name>Dominik František Bučík</name>
+			<email>bucik@ics.muni.cz</email>
+			<organization>ICS MUNI</organization>
+			<organizationUrl>https://ics.muni.cz/</organizationUrl>
 		</developer>
 	</developers>
 
-	<mailingLists>
-		<mailingList>
-			<archive>https://mailman.mit.edu/mailman/listinfo/mitreid-connect</archive>
-			<name>MITREid Connect Mailing List</name>
-			<post>mitreid-connect@mit.edu</post>
-		</mailingList>
-	</mailingLists>
+	<scm>
+		<connection>scm:git:git://github.com/CESNET/OpenID-Connect-Java-Spring-Server.git</connection>
+		<developerConnection>scm:git:ssh://github.com:CESNET/OpenID-Connect-Java-Spring-Server.git</developerConnection>
+		<url>https://github.com/CESNET/OpenID-Connect-Java-Spring-Server.git/tree/master</url>
+	</scm>
 
-	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
-	<url>https://github.com/mitreid-connect</url>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.3.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>3.2.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.appfuse.plugins</groupId>
-					<artifactId>warpath-maven-plugin</artifactId>
-					<version>3.5.0</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<issueManagement>
-		<url>https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
-	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
-	</ciManagement>
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>Shibboleth</id>
+			<name>Shibboleth</name>
+			<url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<java-version>8</java-version>
@@ -134,15 +78,12 @@
 		<spring-security.version>4.2.20.RELEASE</spring-security.version>
 		<spring-security-oauth2.version>2.5.1.RELEASE</spring-security-oauth2.version>
 		<jackson.version>2.11.4</jackson.version>
-		<jstl.version>1.2</jstl.version>
-		<servlet-api.version>2.5</servlet-api.version>
 		<jsp-api.version>2.2</jsp-api.version>
 		<mysql.version>8.0.23</mysql.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<eclipse-persistence.version>2.7.7</eclipse-persistence.version>
 		<javax-persistence.version>2.2.1</javax-persistence.version>
 		<hikari.version>3.4.5</hikari.version>
-		<logback.version>1.2.3</logback.version>
 		<org.slf4j-version>1.7.30</org.slf4j-version>
 		<log4j-core.version>2.13.3</log4j-core.version>
 		<junit.version>4.13.1</junit.version>
@@ -156,14 +97,42 @@
 		<commons-io.version>2.7</commons-io.version>
 		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
 		<lombok.version>1.18.18</lombok.version>
+		<servlet-api.version>2.5</servlet-api.version>
+		<jstl.version>1.2</jstl.version>
+		<apache-commons.version>3.9</apache-commons.version>
+		<jackson-dataformat-yml.verson>2.11.4</jackson-dataformat-yml.verson>
+		<mariadb-java-client.version>2.7.0</mariadb-java-client.version>
+		<apache-directory-api.version>2.0.1</apache-directory-api.version>
+		<janino.version>3.0.12</janino.version>
+		<logback.verison>1.2.3</logback.verison>
+		<jul-to-slf4j.version>1.7.30</jul-to-slf4j.version>
+		<shedlock.version>4.3.1</shedlock.version>
+		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
+		<jakarta-xml-bind-api.version>2.3.3</jakarta-xml-bind-api.version>
+		<jaxb-runtime.version>2.3.3</jaxb-runtime.version>
+		<jakarta-servlet-api.version>4.0.4</jakarta-servlet-api.version>
+		<aspectjweaver.version>1.9.6</aspectjweaver.version>
+		<spring-aop.version>4.3.30.RELEASE</spring-aop.version>
+		<spring-context.version>4.3.30.RELEASE</spring-context.version>
+		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
+		<!-- BUILD -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java-version>8</java-version>
+		<maven.compiler.source>${java-version}</maven.compiler.source>
+		<maven.compiler.target>${java-version}</maven.compiler.target>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
-				<version>${javax-annotation-api.version}</version>
+				<groupId>cz.muni.ics</groupId>
+				<artifactId>perun-oidc-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cz.muni.ics</groupId>
+				<artifactId>perun-oidc-server-webapp</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<!-- Spring -->
 			<dependency>
@@ -204,12 +173,6 @@
 				<version>${jstl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>${servlet-api.version}</version>
-				<scope>compile</scope>
-			</dependency>
-			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
@@ -236,12 +199,6 @@
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
 				<version>${hikari.version}</version>
-			</dependency>
-			<!-- Logging -->
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
 			</dependency>
 			<!-- Test -->
 			<dependency>
@@ -297,7 +254,165 @@
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>${servlet-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${jstl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${apache-commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson-dataformat-yml.verson}</version>
+			</dependency>
+			<!-- MySQL JDBC driver -->
+			<dependency>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>${mariadb-java-client.version}</version>
+			</dependency>
+			<!-- LDAP -->
+			<dependency>
+				<groupId>org.apache.directory.api</groupId>
+				<artifactId>api-all</artifactId>
+				<version>${apache-directory-api.version}</version>
+			</dependency>
+			<!-- logging -->
+			<dependency>
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.verison}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${jul-to-slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-spring</artifactId>
+				<version>${shedlock.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-provider-jdbc-template</artifactId>
+				<version>${shedlock.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax-annotation-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>${jakarta-xml-bind-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${jaxb-runtime.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${jakarta-servlet-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring-aop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectjweaver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring-context.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.extensions</groupId>
+				<artifactId>spring-security-saml2-core</artifactId>
+				<version>${spring-security-saml2.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.appfuse.plugins</groupId>
+					<artifactId>warpath-maven-plugin</artifactId>
+					<version>3.5.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
