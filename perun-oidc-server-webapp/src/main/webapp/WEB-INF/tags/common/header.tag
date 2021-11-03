@@ -3,6 +3,7 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="elixir" tagdir="/WEB-INF/tags/elixir" %>
 <%@ taglib prefix="cesnet" tagdir="/WEB-INF/tags/cesnet" %>
+<%@ taglib prefix="einfra" tagdir="/WEB-INF/tags/einfra" %>
 <%@ taglib prefix="bbmri" tagdir="/WEB-INF/tags/bbmri" %>
 <%@ taglib prefix="ceitec" tagdir="/WEB-INF/tags/ceitec" %>
 <%@ taglib prefix="europdx" tagdir="/WEB-INF/tags/europdx" %>
@@ -19,6 +20,9 @@
     </c:when>
     <c:when test="${theme eq 'cesnet'}">
         <cesnet:header title="${title}" reqURL="${reqURL}" cssLinks="${cssLinks}" baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
+    </c:when>
+    <c:when test="${theme eq 'einfra'}">
+        <einfra:header title="${title}" reqURL="${reqURL}" cssLinks="${cssLinks}" baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
     </c:when>
     <c:when test="${theme eq 'bbmri'}">
         <bbmri:header title="${title}" reqURL="${reqURL}" cssLinks="${cssLinks}" baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
