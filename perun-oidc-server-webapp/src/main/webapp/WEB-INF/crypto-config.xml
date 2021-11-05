@@ -31,7 +31,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
 	<bean id="defaultKeyStore" class="cz.muni.ics.jose.keystore.JWKSetKeyStore">
-		<property name="location" value="classpath:keystore.jwks" />
+		<property name="location" value="${jwk}" />
 	</bean>
 	
 	<bean id="defaultsignerService" class="cz.muni.ics.jwt.signer.service.impl.DefaultJWTSigningAndValidationService">
