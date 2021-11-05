@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.0.0...v3.0.1) (2021-11-05)
+
+
+### Bug Fixes
+
+* 🐛 fix loading JWKS ([371adc1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/371adc13fbff6150a32fcd8b5242ef03899c758b))
+
 Unreleased:
 
 *1.3.3*:
