@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.0.1...v3.1.0) (2021-11-08)
+
+
+### Features
+
+* 🎸 Sign refresh tokens ([23a6354](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/23a6354fc708bd89301bf2cac0619bbebb431f4f))
+
 ## [3.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.0.0...v3.0.1) (2021-11-05)
 
 
