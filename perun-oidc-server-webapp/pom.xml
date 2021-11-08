@@ -38,9 +38,7 @@
 		<log.rolling-file>${catalina.base}/logs/${CONTEXT_NAME}</log.rolling-file>
 		<!--suppress UnresolvedMavenProperty -->
 		<log.file>${catalina.base}/logs/${CONTEXT_NAME}</log.file>
-		<log.trace.file-extension>trace</log.trace.file-extension>
 		<log.file-extension>log</log.file-extension>
-		<log.times.file-extension>times</log.times.file-extension>
 		<final.name>oidc</final.name>
 	</properties>
 
@@ -86,7 +84,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>${final.name}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -110,7 +107,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-					<warName>openid-connect-server-webapp</warName>
+					<warName>${final.name}</warName>
 					<webResources>
 						<resource>
 							<directory>src/main/webapp</directory>
