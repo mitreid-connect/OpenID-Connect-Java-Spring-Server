@@ -20,13 +20,23 @@
  */
 package cz.muni.ics.oauth2.service.impl;
 
+import static cz.muni.ics.oauth2.service.IntrospectionResultAssembler.SCOPE;
+import static cz.muni.ics.oauth2.service.IntrospectionResultAssembler.SCOPE_SEPARATOR;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE_METHOD;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_VERIFIER;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -100,6 +110,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
+
+	@Autowired
+	private JWTSigningAndValidationService jwtService;
+
+	@Autowired
+	private ConfigurationPropertiesBean configBean;
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String userName) {
@@ -262,7 +278,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
 		JWTClaimsSet.Builder refreshClaims = new JWTClaimsSet.Builder();
 
-
 		// make it expire if necessary
 		if (client.getRefreshTokenValiditySeconds() != null) {
 			Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
@@ -272,19 +287,29 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		// set a random identifier
 		refreshClaims.jwtID(UUID.randomUUID().toString());
+		refreshClaims.issuer(configBean.getIssuer());
 
-		// TODO: add issuer fields, signature to JWT
+		String audience = client.getClientId();
+		if (!Strings.isNullOrEmpty(audience)) {
+			refreshClaims.audience(Lists.newArrayList(audience));
+		}
 
-		PlainJWT refreshJwt = new PlainJWT(refreshClaims.build());
-		refreshToken.setJwt(refreshJwt);
+		JWTClaimsSet claims = refreshClaims.build();
+
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+		JWSHeader header = new JWSHeader(signingAlg, JOSEObjectType.JWT, null, null, null, null, null, null, null, null,
+			jwtService.getDefaultSignerKeyId(), true, null, null);
+		SignedJWT signed = new SignedJWT(header, claims);
+
+		jwtService.signJwt(signed);
+		refreshToken.setJwt(signed);
 
 		//Add the authentication
 		refreshToken.setAuthenticationHolder(authHolder);
 		refreshToken.setClient(client);
 
 		// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
-		OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
-		return savedRefreshToken;
+		return tokenRepository.saveRefreshToken(refreshToken);
 	}
 
 	@Override

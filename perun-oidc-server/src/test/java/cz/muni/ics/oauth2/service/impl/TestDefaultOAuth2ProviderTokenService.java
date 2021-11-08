@@ -17,9 +17,11 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +52,7 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static com.nimbusds.jose.JWSAlgorithm.RS256;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -91,6 +94,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private OAuth2AccessTokenEntity accessToken;
 	private String refreshTokenValue = "refresh_token_value";
 	private String userName = "6a50ac11786d402a9591d3e592ac770f";
+	private final String issuer = "https://issuer.com/oidc/";
 	private TokenRequest tokenRequest;
 
 	// for use when refreshing access tokens
@@ -113,6 +117,12 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 	@Mock
 	private SystemScopeService scopeService;
+
+	@Mock
+	private ConfigurationPropertiesBean configBean;
+
+	@Mock
+	private JWTSigningAndValidationService jwtService;
 
 	@InjectMocks
 	private DefaultOAuth2ProviderTokenService service;
@@ -219,6 +229,11 @@ public class TestDefaultOAuth2ProviderTokenService {
 			}
 		});
 
+		when(configBean.getIssuer()).thenReturn(issuer);
+
+		when(jwtService.getDefaultSigningAlgorithm()).thenReturn(RS256);
+		String keyId = "kid1";
+		when(jwtService.getDefaultSignerKeyId()).thenReturn(keyId);
 	}
 
 	/**
