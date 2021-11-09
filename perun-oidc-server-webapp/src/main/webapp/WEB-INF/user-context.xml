@@ -561,8 +561,8 @@
 
 	<bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
 		<property name="defaultIDP" value="${saml.idp.defaultIdpEntityId}"/>
-		<property name="refreshCheckInterval" value="60000"/>
-		<property name="refreshRequired" value="false"/>
+		<property name="refreshCheckInterval" value="3600000"/>
+		<property name="refreshRequired" value="true"/>
 		<constructor-arg name="providers">
 			<list>
 				<ref bean="idpMetadata"/>
