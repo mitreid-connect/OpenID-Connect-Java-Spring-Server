@@ -38,7 +38,10 @@ public class IdpMetadataBeans {
             fsmp.setParserPool(parserPool);
             mp = fsmp;
         }
-        return new ExtendedMetadataDelegate(mp, extendedMetadata);
+        ExtendedMetadataDelegate emd = new ExtendedMetadataDelegate(mp, extendedMetadata);
+        emd.setMetadataRequireSignature(false);
+        emd.setMetadataTrustCheck(false);
+        return emd;
     }
 
 }
