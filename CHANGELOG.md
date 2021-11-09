@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.1.0...v3.2.0) (2021-11-09)
+
+
+### Features
+
+* 🎸 Adderd e-INFRA CZ template ([5eb50f6](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/5eb50f64414db6a42cff76003c5b41f4e8e03535))
+
 # [3.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.0.1...v3.1.0) (2021-11-08)
 
 
