@@ -1,5 +1,8 @@
 package cz.muni.ics.oidc.server.filters;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class containing common constants used by Perun request filters.
  *
@@ -33,8 +36,22 @@ public class PerunFilterConstants {
     public static final String EFILTER_PREFIX = "urn:cesnet:proxyidp:efilter:";
 
     public static final String SAML_EPUID = "urn:oid:1.3.6.1.4.1.5923.1.1.1.13";
+    public static final String SAML_EPPN = "urn:oid:1.3.6.1.4.1.5923.1.1.1.6";
+    public static final String SAML_EPTID = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10";
+    public static final String SAML_UID = "urn:oid:0.9.2342.19200300.100.1.1";
+    public static final String SAML_UNIQUE_IDENTIFIER = "urn:oid:0.9.2342.19200300.100.1.44";
+
     public static final String REFEDS_MFA = "https://refeds.org/profile/mfa";
     public static final String PROMPT_LOGIN = "login";
     public static final String PROMPT_SELECT_ACCOUNT = "select_account";
+
+    public static final Map<String, String> SAML_IDS = new HashMap<>();
+    static {
+        SAML_IDS.put("eppn", SAML_EPPN);
+        SAML_IDS.put("epuid", SAML_EPUID);
+        SAML_IDS.put("eptid", SAML_EPTID);
+        SAML_IDS.put("uid", SAML_UID);
+        SAML_IDS.put("uniqueIdentifier", SAML_UNIQUE_IDENTIFIER);
+    }
 
 }

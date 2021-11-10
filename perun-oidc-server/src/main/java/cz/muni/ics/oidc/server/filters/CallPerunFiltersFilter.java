@@ -3,6 +3,7 @@ package cz.muni.ics.oidc.server.filters;
 import cz.muni.ics.oidc.BeanUtil;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunUser;
+import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +48,9 @@ public class CallPerunFiltersFilter extends GenericFilterBean {
     @Autowired
     private PerunAdapter perunAdapter;
 
+    @Autowired
+    private SamlProperties samlProperties;
+
     private PerunFiltersContext perunFiltersContext;
 
     @PostConstruct
@@ -72,7 +76,7 @@ public class CallPerunFiltersFilter extends GenericFilterBean {
                             CallPerunFiltersFilter.class.getSimpleName(), client.getClientId(), e);
                 }
             }
-            PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter);
+            PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter, samlProperties.getUserIdentifierAttribute());
             FilterParams params = new FilterParams(client, facility, user);
             for (PerunRequestFilter filter : filters) {
                 if (!filter.doFilter(servletRequest, servletResponse, params)) {

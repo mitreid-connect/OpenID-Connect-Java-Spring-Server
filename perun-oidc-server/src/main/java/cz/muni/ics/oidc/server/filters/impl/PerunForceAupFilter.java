@@ -9,6 +9,7 @@ import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttribute;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
+import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
@@ -74,6 +75,7 @@ public class PerunForceAupFilter extends PerunRequestFilter {
 
     private final PerunAdapter perunAdapter;
     private final PerunOidcConfig perunOidcConfig;
+    private final SamlProperties samlProperties;
     private final String filterName;
 
     public PerunForceAupFilter(PerunRequestFilterParams params) {
@@ -81,6 +83,7 @@ public class PerunForceAupFilter extends PerunRequestFilter {
         BeanUtil beanUtil = params.getBeanUtil();
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
         this.perunOidcConfig = beanUtil.getBean(PerunOidcConfig.class);
+        this.samlProperties = beanUtil.getBean(SamlProperties.class);
 
         this.perunOrgAupsAttrName = params.getProperty(ORG_AUPS_ATTR_NAME);
         this.perunUserAupsAttrName = params.getProperty(USER_AUPS_ATTR_NAME);
@@ -102,7 +105,7 @@ public class PerunForceAupFilter extends PerunRequestFilter {
             return true;
         }
 
-        PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter);
+        PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter, samlProperties.getUserIdentifierAttribute());
         if (user == null || user.getId() == null) {
             log.debug("{} - skip filter execution: no user provider", filterName);
             return true;

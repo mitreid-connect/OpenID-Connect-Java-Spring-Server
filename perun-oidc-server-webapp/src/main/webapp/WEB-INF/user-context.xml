@@ -133,6 +133,7 @@
 				<prop key="saml.proxy.spEntityId">https://login.cesnet.cz/proxy/</prop>
 				<prop key="saml.acrs.reserverdPrefixes">urn:cesnet:</prop>
 				<prop key="saml.acrs.enableComparison">false</prop>
+				<prop key="saml.user.attrIdentifier">eppn</prop><!-- eppn|epuid|eptid|uid|uniqueIdentifier -->
 				<!-- STATS JDBC -->
 				<prop key="stats.jdbc.url">jdbc:mariadb://localhost:3306/STATS</prop>
 				<prop key="stats.jdbc.user">user</prop>
@@ -197,6 +198,7 @@
 		<property name="idpMetadataFile" value="${saml.idp.metadataLocation}"/>
 		<property name="idpMetadataUrl" value="${saml.idp.metadataUrl}"/>
 		<property name="acrReservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
+		<property name="userIdentifierAttribute" value="${saml.user.attrIdentifier}"/>
 	</bean>
 
 	<bean id="nonOverwrittenAttributeProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
