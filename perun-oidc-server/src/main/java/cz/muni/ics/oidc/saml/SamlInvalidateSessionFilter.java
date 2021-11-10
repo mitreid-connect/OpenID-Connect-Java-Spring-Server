@@ -3,6 +3,10 @@ package cz.muni.ics.oidc.saml;
 import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -21,25 +25,34 @@ public class SamlInvalidateSessionFilter extends GenericFilterBean {
     private static final Logger log = LoggerFactory.getLogger(SamlInvalidateSessionFilter.class);
     private final AntPathRequestMatcher matcher;
 
-    private final String idpEntityId;
-    private final String proxySpEntityId;
-    private final boolean proxyEnabled;
-    private final String oidcIssuer;
     private final SecurityContextLogoutHandler contextLogoutHandler;
+    private final List<String> internalReferrers = new ArrayList<>();
 
     public SamlInvalidateSessionFilter(String pattern,
                                        String idpEntityId,
                                        String oidcIssuer,
-                                       boolean proxyEnabled,
                                        String proxySpEntityId,
-                                       SecurityContextLogoutHandler contextLogoutHandler)
+                                       SecurityContextLogoutHandler contextLogoutHandler,
+                                       String[] internalReferrers)
     {
         this.matcher = new AntPathRequestMatcher(pattern);
-        this.idpEntityId = idpEntityId;
-        this.oidcIssuer = oidcIssuer;
-        this.proxyEnabled = proxyEnabled;
-        this.proxySpEntityId = proxySpEntityId;
+        if (StringUtils.hasText(idpEntityId)) {
+            this.internalReferrers.add(idpEntityId);
+        }
+        if (StringUtils.hasText(oidcIssuer)) {
+            this.internalReferrers.add(oidcIssuer);
+        }
+        if (StringUtils.hasText(proxySpEntityId)) {
+            this.internalReferrers.add(proxySpEntityId);
+        }
         this.contextLogoutHandler = contextLogoutHandler;
+        if (internalReferrers != null && internalReferrers.length > 0) {
+            List<String> referrers = Arrays.asList(internalReferrers);
+            referrers = referrers.stream().filter(StringUtils::hasText).collect(Collectors.toList());
+            if (!referrers.isEmpty()) {
+                this.internalReferrers.addAll(referrers);
+            }
+        }
     }
 
     @Override
@@ -59,23 +72,15 @@ public class SamlInvalidateSessionFilter extends GenericFilterBean {
     }
 
     private boolean isInternalReferer(String referer) {
-        if (!StringUtils.hasText(referer)) {
-            // no referer, consider as internal
+        if (!StringUtils.hasText(referer)) { // no referer, consider as internal
             return true;
         }
-
-        boolean isInternal = referer.startsWith(oidcIssuer);
-        if (!isInternal) {
-            if (proxyEnabled) {
-                // check if referer is PROXY (SP part)
-                isInternal = referer.startsWith(proxySpEntityId);
-            } else {
-                // check if referer is IDP
-                isInternal = referer.startsWith(idpEntityId);
+        for (String internal : internalReferrers) {
+            if (referer.startsWith(internal)) {
+                return true;
             }
         }
-
-        log.debug("Referer {} is internal: {}", referer, isInternal);
-        return isInternal;
+        return false;
     }
+
 }
