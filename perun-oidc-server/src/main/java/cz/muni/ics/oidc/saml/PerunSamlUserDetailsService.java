@@ -15,16 +15,18 @@ public class PerunSamlUserDetailsService implements SAMLUserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(PerunSamlUserDetailsService.class);
 
     private final PerunAdapter perunAdapter;
+    private final SamlProperties samlProperties;
 
     @Autowired
-    public PerunSamlUserDetailsService(PerunAdapter perunAdapter) {
+    public PerunSamlUserDetailsService(PerunAdapter perunAdapter, SamlProperties samlProperties) {
         this.perunAdapter = perunAdapter;
+        this.samlProperties = samlProperties;
     }
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
         log.debug("Loading user for SAML credential");
-        PerunPrincipal p = FiltersUtils.getPerunPrincipal(credential);
+        PerunPrincipal p = FiltersUtils.getPerunPrincipal(credential, samlProperties.getUserIdentifierAttribute());
         log.debug("Fetching user from perun ({})", p);
         return perunAdapter.getPreauthenticatedUserId(p);
     }

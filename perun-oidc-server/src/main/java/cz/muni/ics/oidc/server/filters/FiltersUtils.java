@@ -2,7 +2,6 @@ package cz.muni.ics.oidc.server.filters;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_FORCE_AUTHN;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.SAML_EPUID;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.google.common.base.Strings;
 import cz.muni.ics.oidc.models.Facility;
@@ -31,6 +30,7 @@ import org.springframework.security.providers.ExpiringUsernameAuthenticationToke
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility class for filters. Contains common methods used by most of filter classes.
@@ -102,12 +102,12 @@ public class FiltersUtils {
 	 * @param perunAdapter Adapter of Perun interface
 	 * @return Found PerunUser
 	 */
-	public static PerunUser getPerunUser(HttpServletRequest request, PerunAdapter perunAdapter) {
+	public static PerunUser getPerunUser(HttpServletRequest request, PerunAdapter perunAdapter, String samlIdAttribute) {
 		SAMLCredential samlCredential = getSamlCredential(request);
 		if (samlCredential == null) {
 			return null;
 		}
-		PerunPrincipal principal = getPerunPrincipal(samlCredential);
+		PerunPrincipal principal = getPerunPrincipal(samlCredential, samlIdAttribute);
 		log.debug("fetching Perun user with extLogin '{}' and extSourceName '{}'",
 				principal.getExtLogin(), principal.getExtSourceName());
 		return perunAdapter.getPreauthenticatedUserId(principal);
@@ -121,8 +121,17 @@ public class FiltersUtils {
 		return (SAMLCredential) p.getCredentials();
 	}
 
-	public static PerunPrincipal getPerunPrincipal(SAMLCredential credential) {
-		String extLogin = credential.getAttributeAsString(SAML_EPUID);
+	public static PerunPrincipal getPerunPrincipal(SAMLCredential credential, String idAttribute) {
+		if (credential == null) {
+			throw new IllegalArgumentException("No SAML credential passed");
+		} else if (!StringUtils.hasText(idAttribute)) {
+			throw new IllegalArgumentException("No identifier from SAML configured");
+		}
+		String identifierAttrOid = PerunFilterConstants.SAML_IDS.getOrDefault(idAttribute, null);
+		if (identifierAttrOid == null) {
+			throw new IllegalStateException("SAML credentials has no value for attribute: " + idAttribute);
+		}
+		String extLogin = credential.getAttributeAsString(identifierAttrOid);
 		String extSourceName = credential.getRemoteEntityID();
 		return new PerunPrincipal(extLogin, extSourceName);
 	}
@@ -136,7 +145,7 @@ public class FiltersUtils {
 	public static PerunPrincipal extractPerunPrincipal(HttpServletRequest req, String proxyExtSourceName) {
 		String extLogin = null;
 		String remoteUser = req.getRemoteUser();
-		if (isNotEmpty(remoteUser)) {
+		if (StringUtils.hasText(remoteUser)) {
 			extLogin = remoteUser;
 		} else if (req.getUserPrincipal() != null) {
 			extLogin = ((User)req.getUserPrincipal()).getUsername();

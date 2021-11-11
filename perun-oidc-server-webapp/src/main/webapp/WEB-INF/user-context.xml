@@ -126,13 +126,14 @@
 				<prop key="saml.keystore.password">pass</prop>
 				<prop key="saml.keystore.defaultKey">pass</prop>
 				<prop key="saml.keystore.defaultKeyPass">pass</prop>
-				<prop key="saml.idp.defaultIdpEntityId">https://login.cesnet.cz/idp/</prop>
+				<prop key="saml.idp.defaultIdpEntityId"/>
 				<prop key="saml.idp.metadataLocation"/> <!-- i.e. /etc/perun/login-cesnet-metadata.xml -->
 				<prop key="saml.idp.metadataUrl"/> <!-- i.e. https://login.cesnet.cz/proxy/module.php/metadata -->
-				<prop key="saml.proxy.enabled">true</prop>
-				<prop key="saml.proxy.spEntityId">https://login.cesnet.cz/proxy/</prop>
+				<prop key="saml.proxy.spEntityId"/>
+				<prop key="saml.internalReferrers"/> <!-- comma separated list of URLs (which are matched as prefixes) -->
 				<prop key="saml.acrs.reserverdPrefixes">urn:cesnet:</prop>
 				<prop key="saml.acrs.enableComparison">false</prop>
+				<prop key="saml.user.attrIdentifier">eppn</prop><!-- eppn|epuid|eptid|uid|uniqueIdentifier -->
 				<!-- STATS JDBC -->
 				<prop key="stats.jdbc.url">jdbc:mariadb://localhost:3306/STATS</prop>
 				<prop key="stats.jdbc.user">user</prop>
@@ -197,6 +198,7 @@
 		<property name="idpMetadataFile" value="${saml.idp.metadataLocation}"/>
 		<property name="idpMetadataUrl" value="${saml.idp.metadataUrl}"/>
 		<property name="acrReservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
+		<property name="userIdentifierAttribute" value="${saml.user.attrIdentifier}"/>
 	</bean>
 
 	<bean id="nonOverwrittenAttributeProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -485,8 +487,8 @@
 		<constructor-arg name="pattern" value="/authorize**"/>
 		<constructor-arg name="oidcIssuer" value="${main.oidc.issuer.url}"/>
 		<constructor-arg name="idpEntityId" value="${saml.idp.defaultIdpEntityId}"/>
-		<constructor-arg name="proxyEnabled" value="${saml.proxy.enabled}"/>
 		<constructor-arg name="proxySpEntityId" value="${saml.proxy.spEntityId}"/>
+		<constructor-arg name="internalReferrers" value="#{'${saml.internalReferrers}'.split('\s*,\s*')}"/>
 		<constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
 	</bean>
 	<bean id="samlDiscovery" class="org.springframework.security.saml.SAMLDiscovery">
