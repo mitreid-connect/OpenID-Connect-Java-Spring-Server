@@ -23,6 +23,7 @@ public class SamlProperties implements InitializingBean {
     private String idpMetadataFile;
     private String idpMetadataUrl;
     private String[] acrReservedPrefixes;
+    private String[] acrsToBeAdded;
     private String userIdentifierAttribute;
 
     public String getEntityID() {
@@ -125,6 +126,14 @@ public class SamlProperties implements InitializingBean {
 
             this.acrReservedPrefixes = nonNull.toArray(new String[0]);
         }
+    }
+
+    public String[] getAcrsToBeAdded() {
+        return acrsToBeAdded;
+    }
+
+    public void setAcrsToBeAdded(String[] acrsToBeAdded) {
+        this.acrsToBeAdded = acrsToBeAdded;
     }
 
     public String getUserIdentifierAttribute() {

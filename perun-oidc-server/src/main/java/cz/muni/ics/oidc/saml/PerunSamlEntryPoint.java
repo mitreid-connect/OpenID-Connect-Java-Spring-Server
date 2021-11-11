@@ -1,8 +1,10 @@
 package cz.muni.ics.oidc.saml;
 
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.CLIENT_ID_PREFIX;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.EFILTER_PREFIX;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.FILTER_PREFIX;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.IDP_ENTITY_ID_PREFIX;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_CLIENT_ID;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_PROMPT;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.REFEDS_MFA;
 
@@ -14,9 +16,13 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,14 +49,18 @@ public class PerunSamlEntryPoint extends SAMLEntryPoint {
     private final PerunAdapter perunAdapter;
     private final PerunOidcConfig config;
     private final FacilityAttrsConfig facilityAttrsConfig;
+    private final SamlProperties samlProperties;
 
     @Autowired
-    public PerunSamlEntryPoint(PerunAdapter perunAdapter, PerunOidcConfig config,
-                               FacilityAttrsConfig facilityAttrsConfig)
+    public PerunSamlEntryPoint(PerunAdapter perunAdapter,
+                               PerunOidcConfig config,
+                               FacilityAttrsConfig facilityAttrsConfig,
+                               SamlProperties samlProperties)
     {
         this.perunAdapter = perunAdapter;
         this.config = config;
         this.facilityAttrsConfig = facilityAttrsConfig;
+        this.samlProperties = samlProperties;
     }
 
     @Override
@@ -163,15 +173,57 @@ public class PerunSamlEntryPoint extends SAMLEntryPoint {
             options.setForceAuthN(true);
         }
 
+        if (StringUtils.hasText(request.getParameter(PARAM_CLIENT_ID)) && config.isAddClientIdToAcrs()) {
+            String clientIdAcr = CLIENT_ID_PREFIX + request.getParameter(PARAM_CLIENT_ID);
+            log.debug("Adding client_id ACR ({}) to list of AuthnContextClassRefs for purposes" +
+                    " of displaying service name on the wayf", clientIdAcr);
+            acrs.add(clientIdAcr);
+        }
+
         if (acrs.size() > 0) {
+
+
             options.setAuthnContexts(acrs);
             log.debug("Transformed acr_values ({}) to SAML AuthnContextClassRef ({})",
                 acrValues, options.getAuthnContexts());
         }
     }
 
+    private void processAcrs(List<String> acrs) {
+        if (acrs == null || acrs.isEmpty()) {
+            return;
+        }
+
+        String[] reservedAcrsPrefixes = samlProperties.getAcrReservedPrefixes();
+        Set<String> reservedPrefixes = (reservedAcrsPrefixes != null) ?
+                new HashSet<>(Arrays.asList(reservedAcrsPrefixes)) : new HashSet<>();
+        if (reservedPrefixes.isEmpty()) {
+            return;
+        }
+
+        boolean hasNonReserved = false;
+        for (String prefix: reservedPrefixes) {
+            for (String acr: acrs) {
+                if (!acr.startsWith(prefix)) {
+                    log.debug("ACR with non reserved prefix found: {}", acr);
+                    hasNonReserved = true;
+                    break;
+                }
+            }
+            if (hasNonReserved) {
+                break;
+            }
+        }
+
+        if (!hasNonReserved) {
+            List<String> toBeAdded = new LinkedList<>(Arrays.asList(samlProperties.getAcrsToBeAdded()));
+            log.debug("NO ACR with non reserved prefix found, adding following: {}", toBeAdded);
+            acrs.addAll(toBeAdded);
+        }
+    }
+
     private List<String> convertAcrValuesToList(String acrValues) {
-        List<String> acrs = new ArrayList<>();
+        List<String> acrs = new LinkedList<>();
         if (StringUtils.hasText(acrValues)) {
             String[] parts = acrValues.split(" ");
             if (parts.length > 0) {
