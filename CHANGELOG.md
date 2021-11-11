@@ -1,3 +1,11 @@
+# [3.3.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.2.0...v3.3.0) (2021-11-11)
+
+
+### Features
+
+* 🎸 Extended list of internal referrers for sess. invalider ([9aa16ff](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/9aa16ffe5cb1c1b045d9f1f71cd94751d9d876b4))
+* 🎸 Make SAML identifier attribute configurable ([3949857](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/39498573c3d62284298bae0df48fbbcf071e9caf))
+
 # [3.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.1.0...v3.2.0) (2021-11-09)
 
 
