@@ -1,3 +1,10 @@
+# [3.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.3.0...v3.4.0) (2021-11-12)
+
+
+### Features
+
+* 🎸 Forward client_id in AuthenticationContextClass ([6a6d1e3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/6a6d1e3ad92d3c6785f0e786aaf4c3fa5f04b806))
+
 # [3.3.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.2.0...v3.3.0) (2021-11-11)
 
 
