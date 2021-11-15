@@ -5,10 +5,13 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.langs.Localization;
+import cz.muni.ics.openid.connect.model.UserInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -27,11 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class with common methods used for Controllers.

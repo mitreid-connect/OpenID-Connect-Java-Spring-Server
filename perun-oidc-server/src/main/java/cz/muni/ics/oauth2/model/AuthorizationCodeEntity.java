@@ -18,7 +18,6 @@
 package cz.muni.ics.oauth2.model;
 
 import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;

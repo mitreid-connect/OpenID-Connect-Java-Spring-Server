@@ -16,19 +16,17 @@
 
 package cz.muni.ics.openid.connect.model;
 
+import com.google.common.collect.ImmutableMap;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import cz.muni.ics.openid.connect.config.ServerConfiguration;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-
-import com.google.common.collect.ImmutableMap;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * AuthenticationToken for use as a data shuttle from the filter to the auth provider.

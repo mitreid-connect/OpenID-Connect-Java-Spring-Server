@@ -17,19 +17,17 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.web;
 
+import com.google.common.base.Strings;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.UserInfoJWTView;
 import cz.muni.ics.openid.connect.view.UserInfoView;
 import java.util.List;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.openid.connect.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,8 +40,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.google.common.base.Strings;
 
 /**
  * OpenID Connect UserInfo endpoint, as specified in Standard sec 5 and Messages sec 2.4.

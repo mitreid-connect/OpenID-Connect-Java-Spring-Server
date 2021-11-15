@@ -16,37 +16,31 @@
 package cz.muni.ics.oauth2.service.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
+import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.uma.model.Permission;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.text.DateFormatter;
-
 import org.junit.Test;
-import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.uma.model.Permission;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-
-import static org.junit.Assert.assertThat;
 
 public class TestDefaultIntrospectionResultAssembler {
 

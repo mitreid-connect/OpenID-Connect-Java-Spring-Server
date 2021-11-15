@@ -1,8 +1,8 @@
 package cz.muni.ics.oidc.server.filters;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunUser;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 
 public class FilterParams {
 

@@ -18,21 +18,19 @@
 package cz.muni.ics.openid.connect.util;
 
 
+import static org.junit.Assert.assertEquals;
+
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.JWTParser;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import java.text.ParseException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.JWTParser;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *

@@ -1,5 +1,7 @@
 package cz.muni.ics.oidc.web.controllers;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.Group;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
@@ -9,6 +11,7 @@ import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.langs.Localization;
+import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -17,12 +20,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.openid.connect.view.HttpCodeView;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;

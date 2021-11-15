@@ -16,12 +16,11 @@
 
 package cz.muni.ics.openid.connect.service.impl;
 
+import com.google.common.base.Strings;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.LoginHintExtracter;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
 
 /**
  * Checks the login hint against the User Info collection, only populates it if a user is found.

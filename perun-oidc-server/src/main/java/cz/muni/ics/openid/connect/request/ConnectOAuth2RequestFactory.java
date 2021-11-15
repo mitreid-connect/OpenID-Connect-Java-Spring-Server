@@ -18,29 +18,6 @@
 package cz.muni.ics.openid.connect.request;
 
 
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import java.io.Serializable;
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.PKCEAlgorithm;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -54,6 +31,25 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import java.io.Serializable;
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.stereotype.Component;
 
 @Component("connectOAuth2RequestFactory")
 @Slf4j

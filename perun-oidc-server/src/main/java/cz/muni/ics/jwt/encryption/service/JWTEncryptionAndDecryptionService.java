@@ -17,13 +17,12 @@
  *******************************************************************************/
 package cz.muni.ics.jwt.encryption.service;
 
-import java.util.Collection;
-import java.util.Map;
-
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.jwk.JWK;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author wkim

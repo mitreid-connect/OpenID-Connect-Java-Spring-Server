@@ -16,11 +16,10 @@
 
 package cz.muni.ics.oauth2.assertion;
 
+import com.nimbusds.jwt.JWT;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
-
-import com.nimbusds.jwt.JWT;
 
 /**
  * Take in an assertion and token request and generate an OAuth2Request from it, including scopes and other important components

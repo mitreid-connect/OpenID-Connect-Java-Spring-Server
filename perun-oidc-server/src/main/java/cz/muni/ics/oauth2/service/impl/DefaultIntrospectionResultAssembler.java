@@ -17,23 +17,19 @@ package cz.muni.ics.oauth2.service.impl;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
+import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.uma.model.Permission;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.

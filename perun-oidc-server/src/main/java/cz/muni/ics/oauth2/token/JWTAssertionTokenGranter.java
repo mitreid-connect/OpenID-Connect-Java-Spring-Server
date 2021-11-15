@@ -20,13 +20,14 @@
  */
 package cz.muni.ics.oauth2.token;
 
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import java.text.ParseException;
-
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import cz.muni.ics.jwt.assertion.AssertionValidator;
 import cz.muni.ics.oauth2.assertion.AssertionOAuth2RequestFactory;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.openid.connect.assertion.JWTBearerAssertionAuthenticationToken;
+import java.text.ParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,9 +39,6 @@ import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
-
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher

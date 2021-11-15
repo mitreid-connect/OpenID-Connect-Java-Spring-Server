@@ -2,16 +2,14 @@ package cz.muni.ics.oidc.server;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import java.util.Map;
-import java.util.Set;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.service.impl.DefaultIntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Assembler of result obtained from introspection endpoint.

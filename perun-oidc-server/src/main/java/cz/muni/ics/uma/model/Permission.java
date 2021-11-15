@@ -17,7 +17,6 @@
 package cz.muni.ics.uma.model;
 
 import java.util.Set;
-
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;

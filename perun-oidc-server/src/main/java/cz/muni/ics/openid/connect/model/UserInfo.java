@@ -17,9 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
-import java.io.Serializable;
-
 import com.google.gson.JsonObject;
+import java.io.Serializable;
 
 
 public interface UserInfo extends Serializable {

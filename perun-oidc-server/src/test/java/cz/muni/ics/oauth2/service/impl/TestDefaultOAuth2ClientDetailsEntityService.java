@@ -17,14 +17,18 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.fail;
+
 import com.google.common.collect.Sets;
-import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
+import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.WhitelistedSite;
@@ -33,6 +37,12 @@ import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
 import cz.muni.ics.uma.model.ResourceSet;
 import cz.muni.ics.uma.service.ResourceSetService;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -42,17 +52,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.fail;
 
 /**
  * @author wkim

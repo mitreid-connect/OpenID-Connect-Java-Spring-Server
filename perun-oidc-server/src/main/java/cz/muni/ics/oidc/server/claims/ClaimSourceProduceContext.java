@@ -1,9 +1,9 @@
 package cz.muni.ics.oidc.server.claims;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import java.util.Map;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 
 /**
  * Context in which the value of the claim is produced.

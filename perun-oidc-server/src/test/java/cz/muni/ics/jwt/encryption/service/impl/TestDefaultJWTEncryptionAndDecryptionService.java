@@ -17,24 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.jwt.encryption.service.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.crypto.Cipher;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import cz.muni.ics.jose.keystore.JWKSetKeyStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.EncryptionMethod;
@@ -52,12 +38,20 @@ import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import cz.muni.ics.jose.keystore.JWKSetKeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.crypto.Cipher;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 
 /**

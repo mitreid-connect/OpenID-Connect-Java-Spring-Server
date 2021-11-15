@@ -1,8 +1,6 @@
 package cz.muni.ics.oidc.server.claims;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Interface for all code that needs to modify claim values.

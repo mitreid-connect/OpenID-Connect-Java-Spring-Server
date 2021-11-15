@@ -17,9 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import java.util.Collection;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 

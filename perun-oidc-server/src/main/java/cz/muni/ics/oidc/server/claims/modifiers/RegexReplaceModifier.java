@@ -4,8 +4,6 @@ import cz.muni.ics.oidc.server.claims.ClaimModifier;
 import cz.muni.ics.oidc.server.claims.ClaimModifierInitContext;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Replace regex modifier. Replaces parts matched by regex with string using backreferences to groups.

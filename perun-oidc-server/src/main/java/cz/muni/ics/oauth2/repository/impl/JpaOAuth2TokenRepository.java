@@ -17,9 +17,17 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.repository.impl;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.data.DefaultPageCriteria;
+import cz.muni.ics.data.PageCriteria;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.uma.model.ResourceSet;
+import cz.muni.ics.util.jpa.JpaUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +35,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -35,21 +42,9 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
-
-import cz.muni.ics.data.DefaultPageCriteria;
-import cz.muni.ics.data.PageCriteria;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.util.jpa.JpaUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 @Repository
 @Slf4j

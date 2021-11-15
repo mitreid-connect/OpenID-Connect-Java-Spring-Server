@@ -17,9 +17,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.index.qual.SameLen;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Authorization filter. Decides if user can access the service based on his/hers

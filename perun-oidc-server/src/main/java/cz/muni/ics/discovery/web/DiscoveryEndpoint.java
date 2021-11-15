@@ -17,9 +17,23 @@
  *******************************************************************************/
 package cz.muni.ics.discovery.web;
 
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 import cz.muni.ics.discovery.util.WebfingerURLNormalizer;
 import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oauth2.web.DeviceEndpoint;
+import cz.muni.ics.oauth2.web.IntrospectionEndpoint;
+import cz.muni.ics.oauth2.web.RevocationEndpoint;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint;
@@ -30,18 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import cz.muni.ics.oauth2.model.PKCEAlgorithm;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.oauth2.web.DeviceEndpoint;
-import cz.muni.ics.oauth2.web.IntrospectionEndpoint;
-import cz.muni.ics.oauth2.web.RevocationEndpoint;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.openid.connect.service.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,13 +54,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.nimbusds.jose.Algorithm;
-import com.nimbusds.jose.JWSAlgorithm;
 
 /**
  *

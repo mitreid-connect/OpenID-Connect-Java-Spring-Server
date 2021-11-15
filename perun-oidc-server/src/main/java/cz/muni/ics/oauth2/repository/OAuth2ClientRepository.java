@@ -17,9 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.repository;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import java.util.Collection;
 
 public interface OAuth2ClientRepository {
 

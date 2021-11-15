@@ -1,11 +1,9 @@
 package cz.muni.ics.oidc.server.claims;
 
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import java.util.Properties;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Context for initializing ClaimValueSources.

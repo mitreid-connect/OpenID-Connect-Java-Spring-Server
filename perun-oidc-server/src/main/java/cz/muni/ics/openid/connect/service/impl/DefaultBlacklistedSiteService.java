@@ -20,16 +20,14 @@
  */
 package cz.muni.ics.openid.connect.service.impl;
 
-import java.util.Collection;
-
+import com.google.common.base.Strings;
 import cz.muni.ics.openid.connect.model.BlacklistedSite;
 import cz.muni.ics.openid.connect.repository.BlacklistedSiteRepository;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
 
 /**
  * @author jricher

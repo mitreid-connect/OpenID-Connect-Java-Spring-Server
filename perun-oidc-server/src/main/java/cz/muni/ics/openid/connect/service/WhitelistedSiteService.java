@@ -17,9 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.openid.connect.model.WhitelistedSite;
+import java.util.Collection;
 
 /**
  * Interface for WhitelistedSite service

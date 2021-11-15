@@ -17,17 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.discovery.util;
 
+import com.google.common.base.Strings;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.google.common.base.Strings;
 
 /**
  * Provides utility methods for normalizing and parsing URIs for use with Webfinger Discovery.

@@ -17,12 +17,11 @@
  *******************************************************************************/
 package cz.muni.ics.discovery.util;
 
-import org.junit.Test;
-import org.springframework.web.util.UriComponents;
+import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.ImmutableMap;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.springframework.web.util.UriComponents;
 
 /**
  * @author wkim

@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements UserInfo by inheriting from DefaultUserInfo and adding more claims.

@@ -5,8 +5,6 @@ import cz.muni.ics.oidc.server.claims.ClaimModifier;
 import cz.muni.ics.oidc.server.claims.ClaimModifierInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * GroupName to AARC Format modifier. Converts groupName values to AARC format.

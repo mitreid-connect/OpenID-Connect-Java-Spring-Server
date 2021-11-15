@@ -18,7 +18,6 @@ package cz.muni.ics.uma.model;
 
 import java.util.Collection;
 import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;

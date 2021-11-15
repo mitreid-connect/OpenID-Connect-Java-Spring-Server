@@ -17,11 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.repository.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import cz.muni.ics.openid.connect.model.Address;
 import cz.muni.ics.openid.connect.repository.AddressRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

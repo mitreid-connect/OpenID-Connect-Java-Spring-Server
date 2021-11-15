@@ -4,12 +4,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import cz.muni.ics.oidc.server.claims.PerunCustomClaimDefinition;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfoService;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import java.util.HashSet;
 import java.util.Set;
-import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Translates scopes to claims. A single scope can provide access to multiple claims.

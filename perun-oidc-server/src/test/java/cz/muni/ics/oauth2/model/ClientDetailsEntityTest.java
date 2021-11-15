@@ -20,14 +20,13 @@
  */
 package cz.muni.ics.oauth2.model;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
-import org.junit.Test;
-
 import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * @author jricher

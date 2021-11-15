@@ -17,11 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service.impl;
 
-import java.util.Collection;
-
 import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.repository.WhitelistedSiteRepository;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

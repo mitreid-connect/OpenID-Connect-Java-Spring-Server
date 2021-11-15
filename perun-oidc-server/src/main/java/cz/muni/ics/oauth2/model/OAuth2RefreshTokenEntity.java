@@ -20,8 +20,9 @@
  */
 package cz.muni.ics.oauth2.model;
 
+import com.nimbusds.jwt.JWT;
+import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
 import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -37,11 +38,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
-
-import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
-
-import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher

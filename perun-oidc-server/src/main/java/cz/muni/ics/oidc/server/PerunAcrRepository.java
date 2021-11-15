@@ -1,12 +1,12 @@
 package cz.muni.ics.oidc.server;
 
+import cz.muni.ics.openid.connect.models.Acr;
 import java.time.Instant;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import cz.muni.ics.openid.connect.models.Acr;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

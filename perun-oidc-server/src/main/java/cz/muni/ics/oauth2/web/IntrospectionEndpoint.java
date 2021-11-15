@@ -17,10 +17,15 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.web;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
@@ -31,13 +36,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -47,9 +46,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 
 @Controller
 @Slf4j

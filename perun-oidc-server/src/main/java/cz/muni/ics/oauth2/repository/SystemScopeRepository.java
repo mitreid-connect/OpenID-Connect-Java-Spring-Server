@@ -20,9 +20,8 @@
  */
 package cz.muni.ics.oauth2.repository;
 
-import java.util.Set;
-
 import cz.muni.ics.oauth2.model.SystemScope;
+import java.util.Set;
 
 /**
  * @author jricher

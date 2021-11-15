@@ -16,11 +16,10 @@
 
 package cz.muni.ics.openid.connect.config;
 
-import java.beans.PropertyEditorSupport;
-import java.text.ParseException;
-
 import com.google.common.base.Strings;
 import com.nimbusds.jose.jwk.JWKSet;
+import java.beans.PropertyEditorSupport;
+import java.text.ParseException;
 
 /**
  * Allows JWK Set strings to be used in XML configurations.

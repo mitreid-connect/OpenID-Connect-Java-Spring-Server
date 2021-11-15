@@ -32,9 +32,11 @@ import cz.muni.ics.oauth2.model.convert.JWSAlgorithmStringConverter;
 import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
 import cz.muni.ics.oauth2.model.convert.PKCEAlgorithmStringConverter;
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.provider.ClientDetails;
-
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -56,11 +58,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * @author jricher

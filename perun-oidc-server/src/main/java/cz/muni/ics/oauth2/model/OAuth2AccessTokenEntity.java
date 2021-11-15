@@ -20,11 +20,14 @@
  */
 package cz.muni.ics.oauth2.model;
 
+import com.nimbusds.jwt.JWT;
+import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.uma.model.Permission;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -45,16 +48,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
-
-import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.uma.model.Permission;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Deserializer;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Serializer;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
-
-import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher

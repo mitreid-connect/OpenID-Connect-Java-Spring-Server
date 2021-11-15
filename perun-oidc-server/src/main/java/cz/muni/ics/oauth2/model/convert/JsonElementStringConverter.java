@@ -16,11 +16,10 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import org.springframework.util.StringUtils;
 
 /**

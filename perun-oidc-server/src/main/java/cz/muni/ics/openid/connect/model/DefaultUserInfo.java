@@ -17,11 +17,12 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import cz.muni.ics.openid.connect.model.convert.JsonObjectStringConverter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,9 +36,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 @Entity
 @Table(name="user_info")

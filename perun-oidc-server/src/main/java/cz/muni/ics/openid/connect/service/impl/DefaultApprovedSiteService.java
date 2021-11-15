@@ -24,18 +24,15 @@ import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the ApprovedSiteService

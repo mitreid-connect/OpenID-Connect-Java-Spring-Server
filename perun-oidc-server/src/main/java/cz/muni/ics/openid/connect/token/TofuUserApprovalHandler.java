@@ -17,8 +17,14 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.token;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
+import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
 import cz.muni.ics.openid.connect.web.AuthenticationTimeStamper;
 import java.util.Calendar;
@@ -28,12 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpSession;
-
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -43,10 +44,6 @@ import org.springframework.security.oauth2.provider.approval.UserApprovalHandler
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 
 /**
  * Custom User Approval Handler implementation which uses a concept of a whitelist,

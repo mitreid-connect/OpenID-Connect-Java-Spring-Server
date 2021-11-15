@@ -17,6 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.token;
 
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
@@ -25,10 +27,6 @@ import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.OIDCTokenService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import java.text.ParseException;
-
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +35,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jwt.JWTClaimsSet.Builder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestConnectTokenEnhancer {

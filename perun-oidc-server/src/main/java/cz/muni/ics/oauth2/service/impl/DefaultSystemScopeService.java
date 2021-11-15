@@ -20,21 +20,19 @@
  */
 package cz.muni.ics.oauth2.service.impl;
 
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.SystemScopeRepository;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.SystemScopeRepository;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author jricher

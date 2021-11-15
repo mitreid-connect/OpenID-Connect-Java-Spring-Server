@@ -15,18 +15,14 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service.impl;
 
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.util.Date;
-
-import org.springframework.security.oauth2.provider.OAuth2Request;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOIDCTokenService {

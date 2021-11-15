@@ -2,12 +2,10 @@ package cz.muni.ics.oidc.server.elixir;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import cz.muni.ics.oidc.server.PerunAccessTokenEnhancer;
+import cz.muni.ics.openid.connect.model.UserInfo;
 import java.util.Collections;
 import java.util.Set;
-import cz.muni.ics.openid.connect.model.UserInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 

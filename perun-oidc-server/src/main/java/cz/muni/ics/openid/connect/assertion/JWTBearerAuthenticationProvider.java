@@ -20,20 +20,21 @@
  */
 package cz.muni.ics.openid.connect.assertion;
 
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -43,11 +44,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher

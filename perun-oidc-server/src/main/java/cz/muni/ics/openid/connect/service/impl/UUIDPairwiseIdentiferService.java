@@ -20,25 +20,20 @@
  */
 package cz.muni.ics.openid.connect.service.impl;
 
-import java.util.Set;
-import java.util.UUID;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.model.PairwiseIdentifier;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.repository.PairwiseIdentifierRepository;
 import cz.muni.ics.openid.connect.service.PairwiseIdentiferService;
+import java.util.Set;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.index.qual.SameLen;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 
 /**
  * @author jricher

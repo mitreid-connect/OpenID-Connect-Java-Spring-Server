@@ -17,14 +17,12 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import java.util.HashSet;
+import java.util.Set;
+import org.springframework.stereotype.Service;
 
 /**
  * Service to map scopes to claims, and claims to Java field names

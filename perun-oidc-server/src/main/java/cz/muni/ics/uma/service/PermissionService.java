@@ -16,10 +16,9 @@
 
 package cz.muni.ics.uma.service;
 
-import java.util.Set;
-
 import cz.muni.ics.uma.model.PermissionTicket;
 import cz.muni.ics.uma.model.ResourceSet;
+import java.util.Set;
 import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 
 

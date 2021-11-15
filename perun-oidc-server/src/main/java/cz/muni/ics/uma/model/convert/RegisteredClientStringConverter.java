@@ -16,11 +16,10 @@
 
 package cz.muni.ics.uma.model.convert;
 
+import cz.muni.ics.oauth2.model.RegisteredClient;
 import cz.muni.ics.openid.connect.ClientDetailsEntityJsonProcessor;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
-import cz.muni.ics.oauth2.model.RegisteredClient;
 import org.springframework.util.StringUtils;
 
 /**

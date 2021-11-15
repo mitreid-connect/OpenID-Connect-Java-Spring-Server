@@ -16,12 +16,11 @@
 
 package cz.muni.ics.openid.connect.service.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.uma.model.ResourceSet;
 import cz.muni.ics.uma.service.ResourceSetService;
+import java.util.Collection;
+import java.util.Collections;
 import org.springframework.stereotype.Service;
 
 /**

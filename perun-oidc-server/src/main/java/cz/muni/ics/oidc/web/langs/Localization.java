@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.index.qual.SameLen;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Static utility class for Language Bar displayed on custom pages.

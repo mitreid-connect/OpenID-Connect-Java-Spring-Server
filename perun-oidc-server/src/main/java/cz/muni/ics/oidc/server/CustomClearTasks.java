@@ -1,17 +1,17 @@
 package cz.muni.ics.oidc.server;
 
-import java.time.Instant;
-import java.util.Date;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.QueryTimeoutException;
 import cz.muni.ics.oauth2.model.AuthorizationCodeEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.openid.connect.models.Acr;
 import cz.muni.ics.openid.connect.models.DeviceCodeAcr;
+import java.time.Instant;
+import java.util.Date;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.QueryTimeoutException;
 import org.springframework.stereotype.Repository;
 
 @Repository

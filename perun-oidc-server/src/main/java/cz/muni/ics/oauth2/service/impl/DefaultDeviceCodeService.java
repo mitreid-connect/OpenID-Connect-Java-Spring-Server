@@ -21,13 +21,12 @@ import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.repository.impl.DeviceCodeRepository;
+import cz.muni.ics.oauth2.service.DeviceCodeService;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import cz.muni.ics.oauth2.service.DeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.provider.ClientDetails;

@@ -16,11 +16,14 @@
 
 package cz.muni.ics.oauth2.web;
 
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.exception.DeviceCodeCreationException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.DeviceCodeService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.token.DeviceTokenGranter;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
@@ -34,15 +37,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpSession;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
-import cz.muni.ics.oauth2.service.DeviceCodeService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,8 +56,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.google.common.collect.Sets;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow

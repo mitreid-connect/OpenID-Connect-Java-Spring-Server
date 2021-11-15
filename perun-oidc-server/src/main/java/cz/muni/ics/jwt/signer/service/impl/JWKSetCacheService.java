@@ -20,29 +20,25 @@
  */
 package cz.muni.ics.jwt.signer.service.impl;
 
-import cz.muni.ics.jose.keystore.JWKSetKeyStore;
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import cz.muni.ics.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonParseException;
 import com.nimbusds.jose.jwk.JWKSet;
+import cz.muni.ics.jose.keystore.JWKSetKeyStore;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Creates a caching map of JOSE signers/validators and encrypters/decryptors

@@ -1,18 +1,18 @@
 package cz.muni.ics.oidc.web.controllers;
 
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oauth2.web.OAuthConfirmationController;
 import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.langs.Localization;
+import cz.muni.ics.openid.connect.service.UserInfoService;
 import java.security.Principal;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.oauth2.web.OAuthConfirmationController;
-import cz.muni.ics.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.stereotype.Controller;

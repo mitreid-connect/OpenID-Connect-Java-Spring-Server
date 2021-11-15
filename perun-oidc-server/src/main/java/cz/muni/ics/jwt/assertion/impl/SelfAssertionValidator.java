@@ -16,18 +16,15 @@
 
 package cz.muni.ics.jwt.assertion.impl;
 
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import cz.muni.ics.jwt.assertion.AbstractAssertionValidator;
-import cz.muni.ics.jwt.assertion.AssertionValidator;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.assertion.AbstractAssertionValidator;
+import cz.muni.ics.jwt.assertion.AssertionValidator;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**

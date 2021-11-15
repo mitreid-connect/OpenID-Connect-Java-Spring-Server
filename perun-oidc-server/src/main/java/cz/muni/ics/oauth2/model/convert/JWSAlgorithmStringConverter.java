@@ -16,10 +16,9 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
-import com.nimbusds.jose.JWSAlgorithm;
 
 @Converter
 public class JWSAlgorithmStringConverter implements AttributeConverter<JWSAlgorithm, String> {

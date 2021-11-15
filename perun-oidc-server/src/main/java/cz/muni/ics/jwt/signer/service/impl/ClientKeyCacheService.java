@@ -16,23 +16,6 @@
 
 package cz.muni.ics.jwt.signer.service.impl;
 
-import cz.muni.ics.jose.keystore.JWKSetKeyStore;
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import cz.muni.ics.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -40,6 +23,19 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
+import cz.muni.ics.jose.keystore.JWKSetKeyStore;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**

@@ -16,16 +16,11 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
+import com.nimbusds.jose.jwk.JWKSet;
 import java.text.ParseException;
-
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher

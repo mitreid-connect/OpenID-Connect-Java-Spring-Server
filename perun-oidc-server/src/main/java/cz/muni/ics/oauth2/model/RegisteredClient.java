@@ -26,11 +26,10 @@ import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * @author jricher

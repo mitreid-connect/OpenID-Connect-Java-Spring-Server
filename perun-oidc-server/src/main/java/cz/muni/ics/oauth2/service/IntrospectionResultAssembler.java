@@ -21,7 +21,6 @@ import cz.muni.ics.openid.connect.model.UserInfo;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.text.DateFormatter;
 
 /**

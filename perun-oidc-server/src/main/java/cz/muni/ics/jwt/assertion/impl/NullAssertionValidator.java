@@ -16,9 +16,8 @@
 
 package cz.muni.ics.jwt.assertion.impl;
 
-import cz.muni.ics.jwt.assertion.AssertionValidator;
-
 import com.nimbusds.jwt.JWT;
+import cz.muni.ics.jwt.assertion.AssertionValidator;
 
 /**
  * Reject all assertions passed in.

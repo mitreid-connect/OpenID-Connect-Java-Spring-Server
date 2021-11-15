@@ -20,6 +20,10 @@
  */
 package cz.muni.ics.openid.connect.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
+import com.google.common.collect.ImmutableSet;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import cz.muni.ics.openid.connect.model.PairwiseIdentifier;
@@ -27,7 +31,6 @@ import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.repository.PairwiseIdentifierRepository;
 import java.util.Set;
 import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,11 +39,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 
 /**
  * @author jricher

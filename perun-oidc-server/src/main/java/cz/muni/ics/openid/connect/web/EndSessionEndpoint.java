@@ -16,11 +16,18 @@
 
 package cz.muni.ics.openid.connect.web;
 
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.jwt.assertion.impl.SelfAssertionValidator;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -29,12 +36,7 @@ import java.text.ParseException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import cz.muni.ics.jwt.assertion.impl.SelfAssertionValidator;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -46,10 +48,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
 
 /**
  * End Session Endpoint from OIDC session management.

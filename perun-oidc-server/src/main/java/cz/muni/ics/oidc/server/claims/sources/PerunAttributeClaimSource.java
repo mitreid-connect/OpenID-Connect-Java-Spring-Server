@@ -9,8 +9,6 @@ import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Collections;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Source for claim which get value of attribute from Perun.

@@ -20,18 +20,15 @@
  */
 package cz.muni.ics.openid.connect.web;
 
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonApprovedSiteView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
 import java.security.Principal;
 import java.util.Collection;
-
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

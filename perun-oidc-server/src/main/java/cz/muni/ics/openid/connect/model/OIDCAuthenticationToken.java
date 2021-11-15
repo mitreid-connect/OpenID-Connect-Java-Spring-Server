@@ -17,18 +17,16 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
+import com.google.common.collect.ImmutableMap;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.util.Collection;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-
-import com.google.common.collect.ImmutableMap;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author Michael Walsh, Justin Richer

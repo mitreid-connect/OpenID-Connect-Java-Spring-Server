@@ -16,11 +16,10 @@
 
 package cz.muni.ics.openid.connect.model.convert;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import org.springframework.util.StringUtils;
 
 /**

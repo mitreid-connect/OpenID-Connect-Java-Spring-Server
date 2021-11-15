@@ -21,28 +21,6 @@
 package cz.muni.ics.openid.connect;
 
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-import cz.muni.ics.util.JsonUtils;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AppType;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.SubjectType;
-import cz.muni.ics.oauth2.model.RegisteredClient;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLIENT_ID;
@@ -84,7 +62,25 @@ import static cz.muni.ics.oauth2.model.RegisteredClientFields.TOS_URI;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
-import static cz.muni.ics.util.JsonUtils.getAsArray;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.AppType;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.SubjectType;
+import cz.muni.ics.oauth2.model.RegisteredClient;
+import cz.muni.ics.util.JsonUtils;
+import java.text.ParseException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.

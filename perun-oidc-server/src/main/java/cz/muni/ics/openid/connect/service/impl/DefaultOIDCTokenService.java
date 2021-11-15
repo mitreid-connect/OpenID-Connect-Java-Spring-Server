@@ -20,35 +20,6 @@ package cz.muni.ics.openid.connect.service.impl;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.MAX_AGE;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.NONCE;
 
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
-import cz.muni.ics.openid.connect.util.IdTokenHashUtils;
-import cz.muni.ics.openid.connect.web.AuthenticationTimeStamper;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
-import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
-import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import cz.muni.ics.openid.connect.service.OIDCTokenService;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -64,6 +35,31 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
+import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
+import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import cz.muni.ics.openid.connect.service.OIDCTokenService;
+import cz.muni.ics.openid.connect.util.IdTokenHashUtils;
+import cz.muni.ics.openid.connect.web.AuthenticationTimeStamper;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.stereotype.Service;
 /**
  * Default implementation of service to create specialty OpenID Connect tokens.
  *

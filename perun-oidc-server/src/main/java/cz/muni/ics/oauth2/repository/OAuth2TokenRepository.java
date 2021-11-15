@@ -17,15 +17,14 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.repository;
 
-import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
-import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
-import java.util.List;
-import java.util.Set;
-
 import cz.muni.ics.data.PageCriteria;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.uma.model.ResourceSet;
+import java.util.List;
+import java.util.Set;
 
 public interface OAuth2TokenRepository {
 

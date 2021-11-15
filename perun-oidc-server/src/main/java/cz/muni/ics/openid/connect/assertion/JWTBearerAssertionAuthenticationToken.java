@@ -20,13 +20,11 @@
  */
 package cz.muni.ics.openid.connect.assertion;
 
+import com.nimbusds.jwt.JWT;
 import java.text.ParseException;
 import java.util.Collection;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-
-import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher

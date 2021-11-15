@@ -16,9 +16,8 @@
 
 package cz.muni.ics.oauth2.repository.impl;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.DeviceCode;
+import java.util.Collection;
 
 /**
  * @author jricher

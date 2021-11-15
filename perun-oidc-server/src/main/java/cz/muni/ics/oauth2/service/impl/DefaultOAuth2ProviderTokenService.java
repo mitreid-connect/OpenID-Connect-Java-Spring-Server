@@ -20,23 +20,35 @@
  */
 package cz.muni.ics.oauth2.service.impl;
 
-import static cz.muni.ics.oauth2.service.IntrospectionResultAssembler.SCOPE;
-import static cz.muni.ics.oauth2.service.IntrospectionResultAssembler.SCOPE_SEPARATOR;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE_METHOD;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CODE_VERIFIER;
 
-import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.data.AbstractPageOperationTemplate;
+import cz.muni.ics.data.DefaultPageCriteria;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
+import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -46,22 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import cz.muni.ics.data.AbstractPageOperationTemplate;
-import cz.muni.ics.data.DefaultPageCriteria;
-import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.PKCEAlgorithm;
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
@@ -75,11 +72,6 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.PlainJWT;
 
 
 /**

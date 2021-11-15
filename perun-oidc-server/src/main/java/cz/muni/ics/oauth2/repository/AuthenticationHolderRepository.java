@@ -18,9 +18,8 @@
 package cz.muni.ics.oauth2.repository;
 
 import cz.muni.ics.data.PageCriteria;
-import java.util.List;
-
 import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
+import java.util.List;
 
 public interface AuthenticationHolderRepository {
 

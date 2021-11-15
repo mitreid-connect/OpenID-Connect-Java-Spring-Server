@@ -20,14 +20,12 @@
  */
 package cz.muni.ics.openid.connect.view;
 
-import java.util.Set;
-
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BeanPropertyBindingResult;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
+import java.util.Set;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 /**
  *

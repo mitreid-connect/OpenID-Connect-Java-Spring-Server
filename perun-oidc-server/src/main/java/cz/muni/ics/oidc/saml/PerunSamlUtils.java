@@ -9,8 +9,6 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PROMPT_SELECT
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
 import javax.servlet.ServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 @Slf4j

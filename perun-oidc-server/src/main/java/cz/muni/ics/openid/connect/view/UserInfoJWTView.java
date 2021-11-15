@@ -18,30 +18,6 @@
  */
 package cz.muni.ics.openid.connect.view;
 
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
-import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
@@ -52,6 +28,25 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
+import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 /**
  * @author jricher

@@ -18,7 +18,6 @@
 package cz.muni.ics.jwt.signer.service.impl;
 
 import com.nimbusds.jose.JOSEException;
-
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSProvider;
 import com.nimbusds.jose.JWSSigner;
@@ -36,17 +35,14 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 import cz.muni.ics.jose.keystore.JWKSetKeyStore;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 public class DefaultJWTSigningAndValidationService implements JWTSigningAndValidationService {

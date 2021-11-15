@@ -18,17 +18,14 @@ package cz.muni.ics.jwt.assertion.impl;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.assertion.AbstractAssertionValidator;
 import cz.muni.ics.jwt.assertion.AssertionValidator;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.signer.service.impl.JWKSetCacheService;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 /**
  * Checks to see if the assertion has been signed by a particular authority available from a whitelist
