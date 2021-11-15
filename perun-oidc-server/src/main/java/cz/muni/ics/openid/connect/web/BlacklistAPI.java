@@ -58,8 +58,8 @@ public class BlacklistAPI {
 	@Autowired
 	private BlacklistedSiteService blacklistService;
 
-	private Gson gson = new Gson();
-	private JsonParser parser = new JsonParser();
+	private final Gson gson = new Gson();
+	private final JsonParser parser = new JsonParser();
 
 	/**
 	 * Get a list of all blacklisted sites

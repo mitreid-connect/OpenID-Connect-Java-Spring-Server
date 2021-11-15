@@ -45,7 +45,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(GrantedAuthority.class,
 				(JsonSerializer<GrantedAuthority>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getAuthority()))
 			.create();
@@ -53,7 +53,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	@Autowired(required = false)
 	private UserInfoService userInfoService;
 
-	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+	private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

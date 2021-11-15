@@ -37,10 +37,10 @@ public class TestDefaultOIDCTokenService {
     private static final String CLIENT_ID = "client";
     private static final String KEY_ID = "key";
 
-    private ConfigurationPropertiesBean configBean = new ConfigurationPropertiesBean();
-    private ClientDetailsEntity client = new ClientDetailsEntity();
-    private OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
-    private OAuth2Request request = new OAuth2Request(CLIENT_ID) { };
+    private final ConfigurationPropertiesBean configBean = new ConfigurationPropertiesBean();
+    private final ClientDetailsEntity client = new ClientDetailsEntity();
+    private final OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
+    private final OAuth2Request request = new OAuth2Request(CLIENT_ID) { };
 
     @Mock
     private JWTSigningAndValidationService jwtService;

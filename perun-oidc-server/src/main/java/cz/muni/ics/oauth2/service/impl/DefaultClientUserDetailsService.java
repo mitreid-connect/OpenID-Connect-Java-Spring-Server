@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 @Service("clientUserDetailsService")
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
-	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
 	private ClientDetailsEntityService clientDetailsService;
 	private final ConfigurationPropertiesBean config;

@@ -53,11 +53,11 @@ public class TestBlacklistAwareRedirectResolver {
 	@InjectMocks
 	private BlacklistAwareRedirectResolver resolver;
 
-	private String blacklistedUri = "https://evil.example.com/";
+	private final String blacklistedUri = "https://evil.example.com/";
 
-	private String goodUri = "https://good.example.com/";
+	private final String goodUri = "https://good.example.com/";
 
-	private String pathUri = "https://good.example.com/with/path";
+	private final String pathUri = "https://good.example.com/with/path";
 
 	/**
 	 * @throws java.lang.Exception

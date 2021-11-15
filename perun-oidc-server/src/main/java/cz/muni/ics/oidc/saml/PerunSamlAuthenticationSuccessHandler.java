@@ -49,7 +49,7 @@ public class PerunSamlAuthenticationSuccessHandler extends SavedRequestAwareAuth
                 .map(AuthnContext::getAuthnContextClassRef)
                 .map(AuthnContextClassRef::getAuthnContextClassRef)
                 .collect(Collectors.joining());
-        request.getSession(true).setAttribute(PerunOIDCTokenService.SESSION_PARAM_ACR, acrs);;
+        request.getSession(true).setAttribute(PerunOIDCTokenService.SESSION_PARAM_ACR, acrs);
     }
 
 }

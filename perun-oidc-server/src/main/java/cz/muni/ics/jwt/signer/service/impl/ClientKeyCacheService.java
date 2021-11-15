@@ -48,10 +48,10 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class ClientKeyCacheService {
 
-	private JWKSetCacheService jwksUriCache;
-	private SymmetricKeyJWTValidatorCacheService symmetricCache;
-	private LoadingCache<JWKSet, JWTSigningAndValidationService> jwksValidators;
-	private LoadingCache<JWKSet, JWTEncryptionAndDecryptionService> jwksEncrypters;
+	private final JWKSetCacheService jwksUriCache;
+	private final SymmetricKeyJWTValidatorCacheService symmetricCache;
+	private final LoadingCache<JWKSet, JWTSigningAndValidationService> jwksValidators;
+	private final LoadingCache<JWKSet, JWTEncryptionAndDecryptionService> jwksEncrypters;
 
 	@Autowired
 	public ClientKeyCacheService(JWKSetCacheService jwksUriCache, SymmetricKeyJWTValidatorCacheService symmetricCache) {

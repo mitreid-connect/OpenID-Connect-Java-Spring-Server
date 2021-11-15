@@ -145,9 +145,9 @@ public class AbstractPageOperationTemplateTest {
 	private static class CountingPageOperation extends AbstractPageOperationTemplate<String>{
 
 		private int currentPageFetch;
-		private int pageSize = 10;
+		private final int pageSize = 10;
 		private long counter = 0L;
-		private long startTime;
+		private final long startTime;
 		private long timeToLastFetch;
 		private long timeToPreviousFetch;
 

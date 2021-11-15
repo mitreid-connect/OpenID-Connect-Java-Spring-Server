@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebHtmlClasses {
 
-	private String classesFilePath;
+	private final String classesFilePath;
 	private Properties webHtmlClassesProperties;
 
 	public WebHtmlClasses(PerunOidcConfig perunOidcConfig) {

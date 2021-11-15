@@ -23,9 +23,9 @@ public class TestJsonMessageSource {
 	@Spy
 	private ConfigurationPropertiesBean config;
 
-	private Locale localeThatHasAFile = new Locale("en");
+	private final Locale localeThatHasAFile = new Locale("en");
 
-	private Locale localeThatDoesNotHaveAFile = new Locale("xx");
+	private final Locale localeThatDoesNotHaveAFile = new Locale("xx");
 
 	@Before
 	public void setup() {

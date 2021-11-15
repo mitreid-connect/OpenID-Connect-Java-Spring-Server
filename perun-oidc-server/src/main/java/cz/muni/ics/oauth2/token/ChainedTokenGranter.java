@@ -47,7 +47,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant_type:redelegate";
 
 	// keep down-cast versions so we can get to the right queries
-	private OAuth2TokenEntityService tokenServices;
+	private final OAuth2TokenEntityService tokenServices;
 
 	/**
 	 * @param tokenServices

@@ -63,17 +63,17 @@ import org.junit.rules.ExpectedException;
 @Slf4j
 public class TestDefaultJWTEncryptionAndDecryptionService {
 
-	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
+	private final String plainText = "The true sign of intelligence is not knowledge but imagination.";
 
-	private String issuer = "www.example.net";
-	private String subject = "example_user";
+	private final String issuer = "www.example.net";
+	private final String subject = "example_user";
 	private JWTClaimsSet claimsSet = null;
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
 	// Example data taken from rfc7516 appendix A
-	private String compactSerializedJwe = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ." +
+	private final String compactSerializedJwe = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ." +
 			"OKOawDo13gRp2ojaHV7LFpZcgV7T6DVZKTyKOMTYUmKoTCVJRgckCL9kiMT03JGe" +
 			"ipsEdY3mx_etLbbWSrFr05kLzcSr4qKAq7YN7e9jwQRb23nfa6c9d-StnImGyFDb" +
 			"Sv04uVuxIp5Zms1gNxKKK2Da14B8S4rzVRltdYwam_lDp5XnZAYpQdb76FdIKLaV" +
@@ -85,8 +85,8 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 			"SdiwkIr3ajwQzaBtQD_A." +
 			"XFBoMYUZodetZdvTiFvSkQ";
 
-	private String RSAkid = "rsa321";
-	private JWK RSAjwk = new RSAKey(
+	private final String RSAkid = "rsa321";
+	private final JWK RSAjwk = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
 					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
 					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
@@ -102,8 +102,8 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null, null);
 
-	private String RSAkid_2 = "rsa3210";
-	private JWK RSAjwk_2 = new RSAKey(
+	private final String RSAkid_2 = "rsa3210";
+	private final JWK RSAjwk_2 = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
 					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
 					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
@@ -119,30 +119,30 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_2, null, null, null, null, null);
 
-	private String AESkid = "aes123";
-	private JWK AESjwk = new OctetSequenceKey(new Base64URL("GawgguFyGrWKav7AX4VKUg"),
+	private final String AESkid = "aes123";
+	private final JWK AESjwk = new OctetSequenceKey(new Base64URL("GawgguFyGrWKav7AX4VKUg"),
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.A128KW,
 			AESkid, null, null, null, null, null);
 
 
-	private Map<String, JWK> keys = new ImmutableMap.Builder<String, JWK>()
+	private final Map<String, JWK> keys = new ImmutableMap.Builder<String, JWK>()
 			.put(RSAkid, RSAjwk)
 			.build();
-	private Map<String, JWK> keys_2 = new ImmutableMap.Builder<String, JWK>()
+	private final Map<String, JWK> keys_2 = new ImmutableMap.Builder<String, JWK>()
 			.put(RSAkid, RSAjwk)
 			.put(RSAkid_2, RSAjwk_2)
 			.build();
-	private Map<String, JWK> keys_3 = new ImmutableMap.Builder<String, JWK>()
+	private final Map<String, JWK> keys_3 = new ImmutableMap.Builder<String, JWK>()
 			.put(AESkid, AESjwk)
 			.build();
-	private Map<String, JWK> keys_4= new ImmutableMap.Builder<String, JWK>()
+	private final Map<String, JWK> keys_4= new ImmutableMap.Builder<String, JWK>()
 			.put(RSAkid, RSAjwk)
 			.put(RSAkid_2, RSAjwk_2)
 			.put(AESkid, AESjwk)
 			.build();
 
 
-	private List<JWK> keys_list = new LinkedList<>();
+	private final List<JWK> keys_list = new LinkedList<>();
 
 	private DefaultJWTEncryptionAndDecryptionService service;
 	private DefaultJWTEncryptionAndDecryptionService service_2;

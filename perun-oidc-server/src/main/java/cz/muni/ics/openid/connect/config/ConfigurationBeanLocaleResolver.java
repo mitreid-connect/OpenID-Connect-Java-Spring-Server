@@ -34,7 +34,7 @@ import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
  */
 public class ConfigurationBeanLocaleResolver extends AbstractLocaleContextResolver {
 
-	private ConfigurationPropertiesBean config;
+	private final ConfigurationPropertiesBean config;
 
 	@Autowired
 	public ConfigurationBeanLocaleResolver(ConfigurationPropertiesBean config) {

@@ -64,7 +64,7 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 			session.removeAttribute(AuthorizationRequestFilter.PROMPT_REQUESTED);
 		}
 
-		log.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp.toString());
+		log.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp);
 
 		super.onAuthenticationSuccess(request, response, authentication);
 

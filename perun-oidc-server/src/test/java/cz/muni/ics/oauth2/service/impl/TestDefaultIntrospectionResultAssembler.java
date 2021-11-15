@@ -44,9 +44,9 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 
 public class TestDefaultIntrospectionResultAssembler {
 
-	private IntrospectionResultAssembler assembler = new DefaultIntrospectionResultAssembler();
+	private final IntrospectionResultAssembler assembler = new DefaultIntrospectionResultAssembler();
 
-	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+	private static final DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
 
 	@Test
 	public void shouldAssembleExpectedResultForAccessToken() throws ParseException {

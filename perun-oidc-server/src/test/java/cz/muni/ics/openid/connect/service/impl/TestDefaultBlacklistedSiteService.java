@@ -43,9 +43,9 @@ public class TestDefaultBlacklistedSiteService {
 	private BlacklistedSite site1;
 	private BlacklistedSite site2;
 
-	private String uri1 = "black1";
-	private String uri2 = "black2";
-	private String uri3 = "not-black";
+	private final String uri1 = "black1";
+	private final String uri2 = "black2";
+	private final String uri3 = "not-black";
 
 	private Set<BlacklistedSite> blackListedSitesSet;
 

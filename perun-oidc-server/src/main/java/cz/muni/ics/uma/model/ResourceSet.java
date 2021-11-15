@@ -248,13 +248,8 @@ public class ResourceSet {
 			return false;
 		}
 		if (uri == null) {
-			if (other.uri != null) {
-				return false;
-			}
-		} else if (!uri.equals(other.uri)) {
-			return false;
-		}
-		return true;
+			return other.uri == null;
+		} else return uri.equals(other.uri);
 	}
 
 }

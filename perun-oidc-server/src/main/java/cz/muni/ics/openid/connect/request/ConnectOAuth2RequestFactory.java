@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
-	private ClientDetailsEntityService clientDetailsService;
+	private final ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
 	private ClientKeyCacheService validators;
@@ -63,7 +63,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	@Autowired
 	private JWTEncryptionAndDecryptionService encryptionService;
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
 	/**
 	 * Constructor with arguments
@@ -80,7 +80,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
 
 
-		AuthorizationRequest request = new AuthorizationRequest(inputParams, Collections.<String, String> emptyMap(),
+		AuthorizationRequest request = new AuthorizationRequest(inputParams, Collections.emptyMap(),
 				inputParams.get(OAuth2Utils.CLIENT_ID),
 				OAuth2Utils.parseParameterList(inputParams.get(OAuth2Utils.SCOPE)), null,
 				null, false, inputParams.get(OAuth2Utils.STATE),

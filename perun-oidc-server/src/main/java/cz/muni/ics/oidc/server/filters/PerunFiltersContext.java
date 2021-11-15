@@ -27,9 +27,9 @@ public class PerunFiltersContext {
 	private static final String FILTER_CLASS = ".class";
 	private static final String PREFIX = "filter.";
 
-	private List<PerunRequestFilter> filters;
-	private Properties properties;
-	private BeanUtil beanUtil;
+	private final List<PerunRequestFilter> filters;
+	private final Properties properties;
+	private final BeanUtil beanUtil;
 
 	public PerunFiltersContext(Properties properties, BeanUtil beanUtil) {
 		this.properties = properties;

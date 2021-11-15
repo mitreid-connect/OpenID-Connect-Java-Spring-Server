@@ -40,7 +40,7 @@ import org.springframework.web.util.UriUtils;
 @Service("uriEncodedClientUserDetailsService")
 public class UriEncodedClientUserDetailsService implements UserDetailsService {
 
-	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
 	private ClientDetailsEntityService clientDetailsService;
 	private final ConfigurationPropertiesBean config;

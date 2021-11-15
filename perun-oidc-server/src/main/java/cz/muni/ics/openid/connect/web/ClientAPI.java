@@ -129,9 +129,9 @@ public class ClientAPI {
 	@Qualifier("clientAssertionValidator")
 	private AssertionValidator assertionValidator;
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.serializeNulls()
 			.registerTypeAdapter(JWSAlgorithm.class, new JsonDeserializer<Algorithm>() {
 				@Override

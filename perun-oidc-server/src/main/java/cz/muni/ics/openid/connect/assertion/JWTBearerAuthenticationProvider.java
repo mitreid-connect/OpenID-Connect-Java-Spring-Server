@@ -59,7 +59,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 	private ClientKeyCacheService validators;
 
 	// Allow for time sync issues by having a window of X seconds.
-	private int timeSkewAllowance = 300;
+	private final int timeSkewAllowance = 300;
 
 	// to load clients
 	@Autowired

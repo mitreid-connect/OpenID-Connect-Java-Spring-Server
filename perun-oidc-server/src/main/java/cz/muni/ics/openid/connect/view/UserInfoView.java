@@ -52,7 +52,7 @@ public class UserInfoView extends AbstractView {
 
 	public static final String VIEWNAME = "userInfoView";
 
-	private static JsonParser jsonParser = new JsonParser();
+	private static final JsonParser jsonParser = new JsonParser();
 
 	@Autowired
 	private ScopeClaimTranslationService translator;
@@ -68,10 +68,7 @@ public class UserInfoView extends AbstractView {
 		@Override
 		public boolean shouldSkipClass(Class<?> clazz) {
 			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
+			return clazz.equals(BeanPropertyBindingResult.class);
 		}
 
 	}).create();

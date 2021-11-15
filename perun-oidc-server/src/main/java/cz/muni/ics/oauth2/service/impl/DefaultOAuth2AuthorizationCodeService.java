@@ -54,7 +54,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 	private int authCodeExpirationSeconds = 60 * 5; // expire in 5 minutes by default
 
-	private RandomValueStringGenerator generator = new RandomValueStringGenerator(22);
+	private final RandomValueStringGenerator generator = new RandomValueStringGenerator(22);
 
 	/**
 	 * Generate a random authorization code and create an AuthorizationCodeEntity,

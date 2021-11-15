@@ -90,7 +90,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private ConfigurationPropertiesBean config;
 
 	// map of sector URI -> list of redirect URIs
-	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
+	private final LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.HOURS)
 			.maximumSize(100)
 			.build(new SectorIdentifierLoader(HttpClientBuilder.create().useSystemProperties().build()));
@@ -318,7 +318,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Get the client for the given ClientID
 	 */
 	@Override
-	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, InvalidClientException, IllegalArgumentException {
+	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, IllegalArgumentException {
 		if (!Strings.isNullOrEmpty(clientId)) {
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientId);
 			if (client == null) {
@@ -446,9 +446,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *
 	 */
 	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
-		private HttpComponentsClientHttpRequestFactory httpFactory;
-		private RestTemplate restTemplate;
-		private JsonParser parser = new JsonParser();
+		private final HttpComponentsClientHttpRequestFactory httpFactory;
+		private final RestTemplate restTemplate;
+		private final JsonParser parser = new JsonParser();
 
 		SectorIdentifierLoader(HttpClient httpClient) {
 			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);

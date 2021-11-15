@@ -55,7 +55,7 @@ public class ScopeAPI {
 	@Autowired
 	private SystemScopeService scopeService;
 
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAll(ModelMap m) {

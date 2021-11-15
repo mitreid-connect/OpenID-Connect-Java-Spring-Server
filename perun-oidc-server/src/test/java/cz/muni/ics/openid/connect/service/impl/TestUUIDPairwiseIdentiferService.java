@@ -61,28 +61,28 @@ public class TestUUIDPairwiseIdentiferService {
 	private ClientDetailsEntity pairwiseClient4;
 	private ClientDetailsEntity pairwiseClient5;
 
-	private String regularUsername = "regular";
-	private String regularSub = "regularSub652ha23b";
-	private String pairwiseSub = "pairwise-12-regular-user";
+	private final String regularUsername = "regular";
+	private final String regularSub = "regularSub652ha23b";
+	private final String pairwiseSub = "pairwise-12-regular-user";
 
-	private String pairwiseClientId1 = "pairwiseClient-1-2312";
-	private String pairwiseClientId2 = "pairwiseClient-2-324416";
-	private String pairwiseClientId3 = "pairwiseClient-3-154157";
-	private String pairwiseClientId4 = "pairwiseClient-4-4589723";
-	private String pairwiseClientId5 = "pairwiseClient-5-34908713";
+	private final String pairwiseClientId1 = "pairwiseClient-1-2312";
+	private final String pairwiseClientId2 = "pairwiseClient-2-324416";
+	private final String pairwiseClientId3 = "pairwiseClient-3-154157";
+	private final String pairwiseClientId4 = "pairwiseClient-4-4589723";
+	private final String pairwiseClientId5 = "pairwiseClient-5-34908713";
 
-	private String sectorHost12 = "sector-identifier-12";
-	private String sectorHost3 = "sector-identifier-3";
-	private String clientHost4 = "client-redirect-4";
-	private String clientHost5 = "client-redirect-5";
+	private final String sectorHost12 = "sector-identifier-12";
+	private final String sectorHost3 = "sector-identifier-3";
+	private final String clientHost4 = "client-redirect-4";
+	private final String clientHost5 = "client-redirect-5";
 
-	private String sectorIdentifier1 = "https://" + sectorHost12 + "/url";
-	private String sectorIdentifier2 = "https://" + sectorHost12 + "/url2";
-	private String sectorIdentifier3 = "https://" + sectorHost3 + "/url";
+	private final String sectorIdentifier1 = "https://" + sectorHost12 + "/url";
+	private final String sectorIdentifier2 = "https://" + sectorHost12 + "/url2";
+	private final String sectorIdentifier3 = "https://" + sectorHost3 + "/url";
 
-	private Set<String> pairwiseClient3RedirectUris = ImmutableSet.of("https://" + sectorHost3 + "/oauth", "https://" + sectorHost3 + "/other");
-	private Set<String> pairwiseClient4RedirectUris = ImmutableSet.of("https://" + clientHost4 + "/oauth");
-	private Set<String> pairwiseClient5RedirectUris = ImmutableSet.of("https://" + clientHost5 + "/oauth", "https://" + clientHost5 + "/other");
+	private final Set<String> pairwiseClient3RedirectUris = ImmutableSet.of("https://" + sectorHost3 + "/oauth", "https://" + sectorHost3 + "/other");
+	private final Set<String> pairwiseClient4RedirectUris = ImmutableSet.of("https://" + clientHost4 + "/oauth");
+	private final Set<String> pairwiseClient5RedirectUris = ImmutableSet.of("https://" + clientHost5 + "/oauth", "https://" + clientHost5 + "/other");
 
 	private PairwiseIdentifier savedPairwiseIdentifier;
 

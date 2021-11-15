@@ -68,25 +68,25 @@ public class TestDefaultUserInfoService {
 	private ClientDetailsEntity pairwiseClient3;
 	private ClientDetailsEntity pairwiseClient4;
 
-	private String adminUsername = "username";
-	private String regularUsername = "regular";
-	private String adminSub = "adminSub12d3a1f34a2";
-	private String regularSub = "regularSub652ha23b";
+	private final String adminUsername = "username";
+	private final String regularUsername = "regular";
+	private final String adminSub = "adminSub12d3a1f34a2";
+	private final String regularSub = "regularSub652ha23b";
 
-	private String pairwiseSub12 = "regularPairwise-12-31ijoef";
-	private String pairwiseSub3 = "regularPairwise-3-1ojadsio";
-	private String pairwiseSub4 = "regularPairwise-4-1ojadsio";
+	private final String pairwiseSub12 = "regularPairwise-12-31ijoef";
+	private final String pairwiseSub3 = "regularPairwise-3-1ojadsio";
+	private final String pairwiseSub4 = "regularPairwise-4-1ojadsio";
 
-	private String publicClientId1 = "publicClient-1-313124";
-	private String publicClientId2 = "publicClient-2-4109312";
-	private String pairwiseClientId1 = "pairwiseClient-1-2312";
-	private String pairwiseClientId2 = "pairwiseClient-2-324416";
-	private String pairwiseClientId3 = "pairwiseClient-3-154157";
-	private String pairwiseClientId4 = "pairwiseClient-4-4589723";
+	private final String publicClientId1 = "publicClient-1-313124";
+	private final String publicClientId2 = "publicClient-2-4109312";
+	private final String pairwiseClientId1 = "pairwiseClient-1-2312";
+	private final String pairwiseClientId2 = "pairwiseClient-2-324416";
+	private final String pairwiseClientId3 = "pairwiseClient-3-154157";
+	private final String pairwiseClientId4 = "pairwiseClient-4-4589723";
 
-	private String sectorIdentifier1 = "https://sector-identifier-12/url";
-	private String sectorIdentifier2 = "https://sector-identifier-12/url2";
-	private String sectorIdentifier3 = "https://sector-identifier-3/url";
+	private final String sectorIdentifier1 = "https://sector-identifier-12/url";
+	private final String sectorIdentifier2 = "https://sector-identifier-12/url2";
+	private final String sectorIdentifier3 = "https://sector-identifier-3/url";
 
 
 

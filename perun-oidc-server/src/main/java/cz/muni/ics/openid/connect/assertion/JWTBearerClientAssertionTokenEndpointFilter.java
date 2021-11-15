@@ -48,7 +48,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthenticationProcessingFilter {
 
-	private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+	private final AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
 
 	public JWTBearerClientAssertionTokenEndpointFilter(RequestMatcher additionalMatcher) {
 		super(new ClientAssertionRequestMatcher(additionalMatcher));
@@ -110,7 +110,7 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 
 	private static class ClientAssertionRequestMatcher implements RequestMatcher {
 
-		private RequestMatcher additionalMatcher;
+		private final RequestMatcher additionalMatcher;
 
 		public ClientAssertionRequestMatcher(RequestMatcher additionalMatcher) {
 			this.additionalMatcher = additionalMatcher;

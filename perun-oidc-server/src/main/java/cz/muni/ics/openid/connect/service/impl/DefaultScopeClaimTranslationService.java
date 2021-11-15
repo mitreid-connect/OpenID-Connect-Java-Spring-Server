@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service("scopeClaimTranslator")
 public class DefaultScopeClaimTranslationService implements ScopeClaimTranslationService {
 
-	private SetMultimap<String, String> scopesToClaims = HashMultimap.create();
+	private final SetMultimap<String, String> scopesToClaims = HashMultimap.create();
 
 	/**
 	 * Default constructor; initializes scopesToClaims map

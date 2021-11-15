@@ -58,9 +58,9 @@ import org.springframework.web.servlet.view.AbstractView;
 @Slf4j
 public abstract class AbstractClientEntityView extends AbstractView {
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(getExclusionStrategy())
 			.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {
 				@Override

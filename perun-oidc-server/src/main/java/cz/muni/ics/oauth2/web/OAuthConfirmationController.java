@@ -127,7 +127,7 @@ public class OAuthConfirmationController {
 					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
 				}
 
-				return "redirect:" + uriBuilder.toString();
+				return "redirect:" + uriBuilder;
 
 			} catch (URISyntaxException e) {
 				log.error("Can't build redirect URI for prompt=none, sending error instead", e);

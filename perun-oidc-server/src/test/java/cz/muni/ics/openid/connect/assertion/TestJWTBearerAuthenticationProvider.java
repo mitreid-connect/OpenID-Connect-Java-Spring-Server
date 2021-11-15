@@ -67,9 +67,9 @@ public class TestJWTBearerAuthenticationProvider {
 	@Mock
 	private JWTSigningAndValidationService validator;
 
-	private GrantedAuthority authority1 = new SimpleGrantedAuthority("1");
-	private GrantedAuthority authority2 = new SimpleGrantedAuthority("2");
-	private GrantedAuthority authority3 = new SimpleGrantedAuthority("3");
+	private final GrantedAuthority authority1 = new SimpleGrantedAuthority("1");
+	private final GrantedAuthority authority2 = new SimpleGrantedAuthority("2");
+	private final GrantedAuthority authority3 = new SimpleGrantedAuthority("3");
 
 	@Before
 	public void setup() {

@@ -140,13 +140,8 @@ public class Policy {
 			return false;
 		}
 		if (scopes == null) {
-			if (other.scopes != null) {
-				return false;
-			}
-		} else if (!scopes.equals(other.scopes)) {
-			return false;
-		}
-		return true;
+			return other.scopes == null;
+		} else return scopes.equals(other.scopes);
 	}
 
 }

@@ -39,7 +39,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
 	public static final String VIEWNAME = "clientEntityViewAdmins";
-	private Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
+	private final Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
 
 	/**
 	 * @return
@@ -50,20 +50,13 @@ public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
 			@Override
 			public boolean shouldSkipField(FieldAttributes f) {
-				if (blacklistedFields.contains(f.getName())) {
-					return true;
-				} else {
-					return false;
-				}
+				return blacklistedFields.contains(f.getName());
 			}
 
 			@Override
 			public boolean shouldSkipClass(Class<?> clazz) {
 				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
+				return clazz.equals(BeanPropertyBindingResult.class);
 			}
 
 		};

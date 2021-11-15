@@ -565,9 +565,9 @@ public class GA4GHClaimSource extends ClaimSource {
 	}
 
 	public static class ClaimRepository {
-		private String name;
-		private RestTemplate restTemplate;
-		private String actionURL;
+		private final String name;
+		private final RestTemplate restTemplate;
+		private final String actionURL;
 
 		public ClaimRepository(String name, RestTemplate restTemplate, String actionURL) {
 			this.name = name;

@@ -156,7 +156,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	}
 
-	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
+	private final Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
 		@Override
 		public boolean apply(ApprovedSite input) {
 			return (input != null && input.isExpired());

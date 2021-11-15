@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 @Converter
 public class JsonObjectStringConverter implements AttributeConverter<JsonObject, String> {
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
 	@Override
 	public String convertToDatabaseColumn(JsonObject attribute) {

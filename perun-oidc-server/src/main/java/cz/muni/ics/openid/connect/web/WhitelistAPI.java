@@ -58,8 +58,8 @@ public class WhitelistAPI {
 	@Autowired
 	private WhitelistedSiteService whitelistService;
 
-	private Gson gson = new Gson();
-	private JsonParser parser = new JsonParser();
+	private final Gson gson = new Gson();
+	private final JsonParser parser = new JsonParser();
 
 	/**
 	 * Get a list of all whitelisted sites

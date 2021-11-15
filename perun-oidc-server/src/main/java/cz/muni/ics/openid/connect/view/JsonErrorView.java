@@ -55,7 +55,7 @@ public class JsonErrorView extends AbstractView {
 
 	public static final String VIEWNAME = "jsonErrorView";
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
 
 				@Override
@@ -67,10 +67,7 @@ public class JsonErrorView extends AbstractView {
 				@Override
 				public boolean shouldSkipClass(Class<?> clazz) {
 					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
+					return clazz.equals(BeanPropertyBindingResult.class);
 				}
 
 			})

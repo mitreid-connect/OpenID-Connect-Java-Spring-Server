@@ -39,7 +39,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 @Component(ClientEntityViewForUsers.VIEWNAME)
 public class ClientEntityViewForUsers extends AbstractClientEntityView {
 
-	private Set<String> whitelistedFields = ImmutableSet.of("clientName", "clientId", "id", "clientDescription", "scope", "logoUri");
+	private final Set<String> whitelistedFields = ImmutableSet.of("clientName", "clientId", "id", "clientDescription", "scope", "logoUri");
 
 	public static final String VIEWNAME = "clientEntityViewUsers";
 
@@ -53,20 +53,13 @@ public class ClientEntityViewForUsers extends AbstractClientEntityView {
 			@Override
 			public boolean shouldSkipField(FieldAttributes f) {
 				// whitelist the handful of fields that are good
-				if (whitelistedFields.contains(f.getName())) {
-					return false;
-				} else {
-					return true;
-				}
+				return !whitelistedFields.contains(f.getName());
 			}
 
 			@Override
 			public boolean shouldSkipClass(Class<?> clazz) {
 				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
+				return clazz.equals(BeanPropertyBindingResult.class);
 			}
 
 		};

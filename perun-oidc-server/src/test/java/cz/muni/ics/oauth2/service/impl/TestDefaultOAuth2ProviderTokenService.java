@@ -86,13 +86,13 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private OAuth2Authentication authentication;
 	private ClientDetailsEntity client;
 	private ClientDetailsEntity badClient;
-	private String clientId = "test_client";
-	private String badClientId = "bad_client";
-	private Set<String> scope = newHashSet("openid", "profile", "email", "offline_access");
+	private final String clientId = "test_client";
+	private final String badClientId = "bad_client";
+	private final Set<String> scope = newHashSet("openid", "profile", "email", "offline_access");
 	private OAuth2RefreshTokenEntity refreshToken;
 	private OAuth2AccessTokenEntity accessToken;
-	private String refreshTokenValue = "refresh_token_value";
-	private String userName = "6a50ac11786d402a9591d3e592ac770f";
+	private final String refreshTokenValue = "refresh_token_value";
+	private final String userName = "6a50ac11786d402a9591d3e592ac770f";
 	private final String issuer = "https://issuer.com/oidc/";
 	private TokenRequest tokenRequest;
 

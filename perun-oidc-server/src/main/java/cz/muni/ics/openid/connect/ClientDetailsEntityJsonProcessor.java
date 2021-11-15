@@ -90,7 +90,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientDetailsEntityJsonProcessor {
 
-	private static JsonParser parser = new JsonParser();
+	private static final JsonParser parser = new JsonParser();
 
 	public static ClientDetailsEntity parse(String jsonString) {
 		JsonElement jsonEl = parser.parse(jsonString);

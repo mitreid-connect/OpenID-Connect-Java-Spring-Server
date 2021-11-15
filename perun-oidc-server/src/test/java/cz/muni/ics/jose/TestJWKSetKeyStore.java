@@ -45,8 +45,8 @@ import org.springframework.core.io.Resource;
 
 public class TestJWKSetKeyStore {
 
-	private String RSAkid = "rsa_1";
-	private JWK RSAjwk = new RSAKey(
+	private final String RSAkid = "rsa_1";
+	private final JWK RSAjwk = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
 					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
 					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
@@ -62,8 +62,8 @@ public class TestJWKSetKeyStore {
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null, null);
 
-	private String RSAkid_rsa2 = "rsa_2";
-	private JWK RSAjwk_rsa2 = new RSAKey(
+	private final String RSAkid_rsa2 = "rsa_2";
+	private final JWK RSAjwk_rsa2 = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
 					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
 					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
@@ -82,8 +82,8 @@ public class TestJWKSetKeyStore {
 
 	List<JWK> keys_list = new LinkedList<>();
 	private JWKSet jwkSet;
-	private String ks_file = "ks.txt";
-	private String ks_file_badJWK = "ks_badJWK.txt";
+	private final String ks_file = "ks.txt";
+	private final String ks_file_badJWK = "ks_badJWK.txt";
 
 	@Before
 	public void prepare() throws IOException {
@@ -93,7 +93,7 @@ public class TestJWKSetKeyStore {
 		jwkSet = new JWKSet(keys_list);
 		jwkSet.getKeys();
 
-		byte jwtbyte[] = jwkSet.toString().getBytes();
+		byte[] jwtbyte = jwkSet.toString().getBytes();
 		FileOutputStream out = new FileOutputStream(ks_file);
 		out.write(jwtbyte);
 		out.close();
@@ -135,7 +135,7 @@ public class TestJWKSetKeyStore {
 	@Test(expected=IllegalArgumentException.class)
 	public void ksBadJWKinput() throws IOException {
 
-		byte jwtbyte[] = RSAjwk.toString().getBytes();
+		byte[] jwtbyte = RSAjwk.toString().getBytes();
 		FileOutputStream out = new FileOutputStream(ks_file_badJWK);
 		out.write(jwtbyte);
 		out.close();
@@ -180,7 +180,7 @@ public class TestJWKSetKeyStore {
 		}
 		assertTrue(thrown);
 
-		ks.setJwkSet(jwkSet);;
-		assertEquals(ks.getJwkSet(), jwkSet);
+		ks.setJwkSet(jwkSet);
+        assertEquals(ks.getJwkSet(), jwkSet);
 	}
 }

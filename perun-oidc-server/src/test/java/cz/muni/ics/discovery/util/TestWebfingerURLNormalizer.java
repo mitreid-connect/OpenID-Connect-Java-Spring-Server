@@ -31,7 +31,7 @@ public class TestWebfingerURLNormalizer {
 
 
 	// Test fixture:
-	private ImmutableMap<String, String> inputToNormalized = new ImmutableMap.Builder<String, String>()
+	private final ImmutableMap<String, String> inputToNormalized = new ImmutableMap.Builder<String, String>()
 			.put("example.com", "https://example.com")
 			.put("example.com:8080", "https://example.com:8080")
 			.put("example.com/path", "https://example.com/path")

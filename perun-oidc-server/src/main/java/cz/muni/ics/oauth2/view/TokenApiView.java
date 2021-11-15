@@ -46,7 +46,7 @@ public class TokenApiView extends AbstractView {
 
 	public static final String VIEWNAME = "tokenApiView";
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
 
 				@Override
@@ -57,10 +57,7 @@ public class TokenApiView extends AbstractView {
 				@Override
 				public boolean shouldSkipClass(Class<?> clazz) {
 					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
+					return clazz.equals(BeanPropertyBindingResult.class);
 				}
 
 			})

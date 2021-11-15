@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,9 +47,9 @@ public class JsonMessageSource extends AbstractMessageSource {
 
 	private Resource baseDirectory;
 
-	private Locale fallbackLocale = new Locale("en"); // US English is the fallback language
+	private final Locale fallbackLocale = new Locale("en"); // US English is the fallback language
 
-	private Map<Locale, List<JsonObject>> languageMaps = new HashMap<>();
+	private final Map<Locale, List<JsonObject>> languageMaps = new HashMap<>();
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -170,7 +171,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 					log.info("No locale loaded, trying to load from {}", r);
 
 					JsonParser parser = new JsonParser();
-					JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
+					JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), StandardCharsets.UTF_8));
 
 					set.add(obj);
 				}

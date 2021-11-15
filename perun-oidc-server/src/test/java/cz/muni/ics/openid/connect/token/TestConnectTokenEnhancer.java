@@ -44,7 +44,7 @@ public class TestConnectTokenEnhancer {
 	private static final String CLIENT_ID = "client";
 	private static final String KEY_ID = "key";
 
-	private ConfigurationPropertiesBean configBean = new ConfigurationPropertiesBean();
+	private final ConfigurationPropertiesBean configBean = new ConfigurationPropertiesBean();
 
 	@Mock
 	private JWTSigningAndValidationService jwtService;
@@ -61,7 +61,7 @@ public class TestConnectTokenEnhancer {
 	@Mock
 	private OAuth2Authentication authentication;
 
-	private OAuth2Request request = new OAuth2Request(CLIENT_ID) { };
+	private final OAuth2Request request = new OAuth2Request(CLIENT_ID) { };
 
 	@InjectMocks
 	private ConnectTokenEnhancer enhancer = new ConnectTokenEnhancer();

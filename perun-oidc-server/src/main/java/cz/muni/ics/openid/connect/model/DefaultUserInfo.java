@@ -617,13 +617,8 @@ public class DefaultUserInfo implements UserInfo {
 			return false;
 		}
 		if (zoneinfo == null) {
-			if (other.zoneinfo != null) {
-				return false;
-			}
-		} else if (!zoneinfo.equals(other.zoneinfo)) {
-			return false;
-		}
-		return true;
+			return other.zoneinfo == null;
+		} else return zoneinfo.equals(other.zoneinfo);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

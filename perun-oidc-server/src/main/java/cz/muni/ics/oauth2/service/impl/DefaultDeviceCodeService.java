@@ -44,7 +44,7 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	@Autowired
 	private DeviceCodeRepository repository;
 
-	private RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
+	private final RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
 
 	/* (non-Javadoc)
 	 * @see cz.muni.ics.oauth2.service.DeviceCodeService#save(cz.muni.ics.oauth2.model.DeviceCode)

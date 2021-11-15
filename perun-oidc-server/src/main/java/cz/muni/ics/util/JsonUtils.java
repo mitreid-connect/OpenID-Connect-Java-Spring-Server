@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JsonUtils {
 
-	private static Gson gson = new Gson();
+	private static final Gson gson = new Gson();
 
 	/**
 	 * Translate a set of strings to a JSON array, empty array returned as null

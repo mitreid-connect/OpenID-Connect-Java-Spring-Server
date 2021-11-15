@@ -51,7 +51,7 @@ public class ClientInformationResponseView extends AbstractView {
 	public static final String VIEWNAME = "clientInformationResponseView";
 
 	// note that this won't serialize nulls by default
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
