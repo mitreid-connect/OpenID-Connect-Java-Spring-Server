@@ -115,6 +115,7 @@
 		<spring-aop.version>4.3.30.RELEASE</spring-aop.version>
 		<spring-context.version>4.3.30.RELEASE</spring-context.version>
 		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
+		<postgresql.version>42.3.1</postgresql.version>
 		<!-- BUILD -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>8</java-version>
@@ -189,6 +190,11 @@
 				<artifactId>hsqldb</artifactId>
 				<version>${hsqldb.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
