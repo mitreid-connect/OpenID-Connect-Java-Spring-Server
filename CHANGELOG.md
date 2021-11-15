@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.4.0...v3.4.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* 🐛 Added missing PostgreSQL dependency ([e12c164](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/e12c164b46cbf9efb1a3516cb8c03e307e7049c2))
+
 # [3.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.3.0...v3.4.0) (2021-11-12)
 
 
