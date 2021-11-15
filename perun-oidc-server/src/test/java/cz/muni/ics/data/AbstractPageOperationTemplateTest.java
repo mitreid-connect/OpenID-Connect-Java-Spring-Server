@@ -15,17 +15,16 @@
  *******************************************************************************/
 package cz.muni.ics.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @author Colm Smyth
@@ -146,9 +145,9 @@ public class AbstractPageOperationTemplateTest {
 	private static class CountingPageOperation extends AbstractPageOperationTemplate<String>{
 
 		private int currentPageFetch;
-		private int pageSize = 10;
+		private final int pageSize = 10;
 		private long counter = 0L;
-		private long startTime;
+		private final long startTime;
 		private long timeToLastFetch;
 		private long timeToPreviousFetch;
 

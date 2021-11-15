@@ -17,9 +17,17 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.repository.impl;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.data.DefaultPageCriteria;
+import cz.muni.ics.data.PageCriteria;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.uma.model.ResourceSet;
+import cz.muni.ics.util.jpa.JpaUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +35,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -35,27 +42,15 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
-
-import cz.muni.ics.data.DefaultPageCriteria;
-import cz.muni.ics.data.PageCriteria;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.util.jpa.JpaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-
 @Repository
+@Slf4j
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
-
-	private static final Logger logger = LoggerFactory.getLogger(JpaOAuth2TokenRepository.class);
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
@@ -242,7 +237,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
 		for (Object[] r : resultList) {
-			logger.warn("Found duplicate access tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
+			log.warn("Found duplicate access tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
 			values.add((JWT) r[0]);
 		}
 		if (values.size() > 0) {
@@ -251,7 +246,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			Root<OAuth2AccessTokenEntity> root = criteriaDelete.from(OAuth2AccessTokenEntity.class);
 			criteriaDelete.where(root.get("jwt").in(values));
 			int result = manager.createQuery(criteriaDelete).executeUpdate();
-			logger.warn("Deleted {} duplicate access tokens", result);
+			log.warn("Deleted {} duplicate access tokens", result);
 		}
 	}
 
@@ -263,7 +258,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
 		for (Object[] r : resultList) {
-			logger.warn("Found duplicate refresh tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
+			log.warn("Found duplicate refresh tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
 			values.add((JWT) r[0]);
 		}
 		if (values.size() > 0) {
@@ -272,7 +267,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			Root<OAuth2RefreshTokenEntity> root = criteriaDelete.from(OAuth2RefreshTokenEntity.class);
 			criteriaDelete.where(root.get("jwt").in(values));
 			int result = manager.createQuery(criteriaDelete).executeUpdate();
-			logger.warn("Deleted {} duplicate refresh tokens", result);
+			log.warn("Deleted {} duplicate refresh tokens", result);
 		}
 
 	}

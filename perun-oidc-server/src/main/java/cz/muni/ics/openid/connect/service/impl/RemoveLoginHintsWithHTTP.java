@@ -16,9 +16,8 @@
 
 package cz.muni.ics.openid.connect.service.impl;
 
-import cz.muni.ics.openid.connect.service.LoginHintExtracter;
-
 import com.google.common.base.Strings;
+import cz.muni.ics.openid.connect.service.LoginHintExtracter;
 
 /**
  * Passes login hints that don't start with "http"

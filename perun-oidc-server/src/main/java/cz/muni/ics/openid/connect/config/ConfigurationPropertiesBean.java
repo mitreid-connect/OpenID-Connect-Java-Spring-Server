@@ -17,18 +17,14 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.config;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.PostConstruct;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.util.StringUtils;
 
 
 
@@ -40,9 +36,8 @@ import com.google.gson.Gson;
  * @author AANGANES
  *
  */
+@Slf4j
 public class ConfigurationPropertiesBean {
-
-	private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
 
 	private String issuer;
 	private String topbarTitle;
@@ -63,15 +58,15 @@ public class ConfigurationPropertiesBean {
 	public void checkConfigConsistency() {
 		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
 			if (this.forceHttps) {
-				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
+				log.error("Configured issuer url is not using https scheme. Server will be shut down!");
 				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
 			} else {
-				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
+				log.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
 			}
 		}
 
 		if (languageNamespaces == null || languageNamespaces.isEmpty()) {
-			logger.error("No configured language namespaces! Text rendering will fail!");
+			log.error("No configured language namespaces! Text rendering will fail!");
 		}
 	}
 

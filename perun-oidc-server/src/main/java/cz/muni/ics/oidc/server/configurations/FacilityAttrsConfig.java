@@ -3,17 +3,15 @@ package cz.muni.ics.oidc.server.configurations;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Configuration of Facility attributes
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class FacilityAttrsConfig {
-
-	private final static Logger log = LoggerFactory.getLogger(FacilityAttrsConfig.class);
 
 	private String checkGroupMembershipAttr;
 	private String registrationURLAttr;

@@ -17,13 +17,11 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service;
 
+import com.nimbusds.jwt.JWT;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import java.util.Date;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-
-import com.nimbusds.jwt.JWT;
 
 /**
  * Service to create specialty OpenID Connect tokens.

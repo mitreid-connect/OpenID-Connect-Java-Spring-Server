@@ -15,10 +15,9 @@
  *******************************************************************************/
 package cz.muni.ics.uma.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.uma.model.ResourceSet;
+import java.util.Collection;
 
 /**
  * Manage registered resource sets at this authorization server.

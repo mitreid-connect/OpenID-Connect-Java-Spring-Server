@@ -20,9 +20,8 @@
  */
 package cz.muni.ics.openid.connect.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.openid.connect.model.BlacklistedSite;
+import java.util.Collection;
 
 /**
  * @author jricher

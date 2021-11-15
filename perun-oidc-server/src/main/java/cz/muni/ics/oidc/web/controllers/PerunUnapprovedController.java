@@ -7,18 +7,17 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_REASON;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
 import static cz.muni.ics.oidc.web.controllers.ControllerUtils.LANG_PROPS_KEY;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.langs.Localization;
+import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.util.Map;
 import java.util.Properties;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.openid.connect.view.HttpCodeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -32,9 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Controller
+@Slf4j
 public class PerunUnapprovedController {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunUnapprovedController.class);
 
     public static final String UNAPPROVED_MAPPING = "/unapproved";
     public static final String UNAPPROVED_SPECIFIC_MAPPING = "/unapproved_spec";

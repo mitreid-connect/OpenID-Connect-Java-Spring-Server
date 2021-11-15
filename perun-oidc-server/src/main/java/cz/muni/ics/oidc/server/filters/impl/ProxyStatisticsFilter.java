@@ -2,6 +2,7 @@ package cz.muni.ics.oidc.server.filters.impl;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.SAML_EPUID;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oidc.BeanUtil;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
@@ -17,9 +18,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.util.StringUtils;
 
@@ -44,9 +43,8 @@ import org.springframework.util.StringUtils;
  * @author Dominik Baránek <baranek@ics.muni.cz>
  */
 @SuppressWarnings("SqlResolve")
+@Slf4j
 public class ProxyStatisticsFilter extends PerunRequestFilter {
-
-	private static final Logger log = LoggerFactory.getLogger(ProxyStatisticsFilter.class);
 
 	/* CONFIGURATION OPTIONS */
 	private static final String IDP_NAME_ATTRIBUTE_NAME = "idpNameAttributeName";

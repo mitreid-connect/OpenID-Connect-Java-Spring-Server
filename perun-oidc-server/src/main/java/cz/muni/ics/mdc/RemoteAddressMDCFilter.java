@@ -1,9 +1,8 @@
 package cz.muni.ics.mdc;
 
-import org.slf4j.MDC;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.MDC;
 
 public class RemoteAddressMDCFilter {
 

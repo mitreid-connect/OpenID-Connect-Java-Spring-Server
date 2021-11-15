@@ -20,25 +20,21 @@
  */
 package cz.muni.ics.openid.connect.view;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import cz.muni.ics.oauth2.model.RegisteredClient;
+import cz.muni.ics.openid.connect.ClientDetailsEntityJsonProcessor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import cz.muni.ics.oauth2.model.RegisteredClient;
-import cz.muni.ics.openid.connect.ClientDetailsEntityJsonProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -49,17 +45,13 @@ import com.google.gson.JsonObject;
  *
  */
 @Component(ClientInformationResponseView.VIEWNAME)
+@Slf4j
 public class ClientInformationResponseView extends AbstractView {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
 
 	public static final String VIEWNAME = "clientInformationResponseView";
 
 	// note that this won't serialize nulls by default
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -86,11 +78,11 @@ public class ClientInformationResponseView extends AbstractView {
 			gson.toJson(o, out);
 		} catch (JsonIOException e) {
 
-			logger.error("JsonIOException in ClientInformationResponseView.java: ", e);
+			log.error("JsonIOException in ClientInformationResponseView.java: ", e);
 
 		} catch (IOException e) {
 
-			logger.error("IOException in ClientInformationResponseView.java: ", e);
+			log.error("IOException in ClientInformationResponseView.java: ", e);
 
 		}
 

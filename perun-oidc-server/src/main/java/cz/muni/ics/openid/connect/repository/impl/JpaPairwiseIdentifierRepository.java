@@ -20,13 +20,12 @@
  */
 package cz.muni.ics.openid.connect.repository.impl;
 
+import cz.muni.ics.openid.connect.model.PairwiseIdentifier;
+import cz.muni.ics.openid.connect.repository.PairwiseIdentifierRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.openid.connect.model.PairwiseIdentifier;
-import cz.muni.ics.openid.connect.repository.PairwiseIdentifierRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

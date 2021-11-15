@@ -16,8 +16,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Authorization filter. Decides if user can access the service based on his/hers
@@ -30,9 +29,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunAuthorizationFilter extends PerunRequestFilter {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunAuthorizationFilter.class);
 
 	private final PerunAdapter perunAdapter;
 	private final FacilityAttrsConfig facilityAttrsConfig;

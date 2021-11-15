@@ -17,29 +17,28 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import java.util.Collection;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 public interface ClientDetailsEntityService extends ClientDetailsService {
 
-	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client);
+	ClientDetailsEntity saveNewClient(ClientDetailsEntity client);
 
-	public ClientDetailsEntity getClientById(Long id);
+	ClientDetailsEntity getClientById(Long id);
 
 	@Override
-	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
+	ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
 
-	public void deleteClient(ClientDetailsEntity client);
+	void deleteClient(ClientDetailsEntity client);
 
-	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
+	ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
 
-	public Collection<ClientDetailsEntity> getAllClients();
+	Collection<ClientDetailsEntity> getAllClients();
 
-	public ClientDetailsEntity generateClientId(ClientDetailsEntity client);
+	ClientDetailsEntity generateClientId(ClientDetailsEntity client);
 
-	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client);
+	ClientDetailsEntity generateClientSecret(ClientDetailsEntity client);
 
 }

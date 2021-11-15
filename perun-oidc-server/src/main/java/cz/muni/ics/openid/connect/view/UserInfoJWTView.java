@@ -18,29 +18,6 @@
  */
 package cz.muni.ics.openid.connect.view;
 
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
-import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
@@ -51,20 +28,35 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
+import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 /**
  * @author jricher
  *
  */
 @Component(UserInfoJWTView.VIEWNAME)
+@Slf4j
 public class UserInfoJWTView extends UserInfoView {
 
 	public static final String CLIENT = "client";
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(UserInfoJWTView.class);
 
 	public static final String VIEWNAME = "userInfoJwtView";
 
@@ -124,7 +116,7 @@ public class UserInfoJWTView extends UserInfoView {
 					out.write(encrypted.serialize());
 
 				} else {
-					logger.error("Couldn't find encrypter for client: " + client.getClientId());
+					log.error("Couldn't find encrypter for client: " + client.getClientId());
 				}
 			} else {
 
@@ -154,7 +146,7 @@ public class UserInfoJWTView extends UserInfoView {
 				out.write(signed.serialize());
 			}
 		} catch (IOException e) {
-			logger.error("IO Exception in UserInfoJwtView", e);
+			log.error("IO Exception in UserInfoJwtView", e);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -2,8 +2,7 @@ package cz.muni.ics.oidc.server.claims.modifiers;
 
 import cz.muni.ics.oidc.server.claims.ClaimModifier;
 import cz.muni.ics.oidc.server.claims.ClaimModifierInitContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Appending modifier. Appends the given text to the claim value.
@@ -16,9 +15,8 @@ import org.slf4j.LoggerFactory;
  * @author Martin Kuba <makub@ics.muni.cz>
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class AppendModifier extends ClaimModifier {
-
-	private static final Logger log = LoggerFactory.getLogger(AppendModifier.class);
 
 	private static final String APPEND = "append";
 

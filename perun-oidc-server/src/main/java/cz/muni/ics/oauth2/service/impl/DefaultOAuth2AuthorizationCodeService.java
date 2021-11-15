@@ -27,9 +27,7 @@ import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
 import cz.muni.ics.oauth2.repository.AuthorizationCodeRepository;
 import java.util.Collection;
 import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
@@ -45,9 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service("defaultOAuth2AuthorizationCodeService")
+@Slf4j
 public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeServices {
-	// Logger for this class
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2AuthorizationCodeService.class);
 
 	@Autowired
 	private AuthorizationCodeRepository repository;
@@ -57,7 +54,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 	private int authCodeExpirationSeconds = 60 * 5; // expire in 5 minutes by default
 
-	private RandomValueStringGenerator generator = new RandomValueStringGenerator(22);
+	private final RandomValueStringGenerator generator = new RandomValueStringGenerator(22);
 
 	/**
 	 * Generate a random authorization code and create an AuthorizationCodeEntity,

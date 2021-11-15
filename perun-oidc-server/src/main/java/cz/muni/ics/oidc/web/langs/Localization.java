@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Static utility class for Language Bar displayed on custom pages.
@@ -21,9 +20,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class Localization {
-
-	private static final Logger log = LoggerFactory.getLogger(Localization.class);
 
 	private Map<String, String> localizationEntries;
 	private Map<String, Properties> localizationFiles;

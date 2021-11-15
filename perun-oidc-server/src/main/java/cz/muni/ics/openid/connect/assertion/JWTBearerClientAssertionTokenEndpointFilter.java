@@ -20,14 +20,15 @@
  */
 package cz.muni.ics.openid.connect.assertion;
 
+import com.google.common.base.Strings;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import java.io.IOException;
 import java.text.ParseException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,10 +40,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.google.common.base.Strings;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-
 /**
  * Filter to check client authentication via JWT Bearer assertions.
  *
@@ -51,7 +48,7 @@ import com.nimbusds.jwt.JWTParser;
  */
 public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthenticationProcessingFilter {
 
-	private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+	private final AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
 
 	public JWTBearerClientAssertionTokenEndpointFilter(RequestMatcher additionalMatcher) {
 		super(new ClientAssertionRequestMatcher(additionalMatcher));
@@ -113,7 +110,7 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 
 	private static class ClientAssertionRequestMatcher implements RequestMatcher {
 
-		private RequestMatcher additionalMatcher;
+		private final RequestMatcher additionalMatcher;
 
 		public ClientAssertionRequestMatcher(RequestMatcher additionalMatcher) {
 			this.additionalMatcher = additionalMatcher;

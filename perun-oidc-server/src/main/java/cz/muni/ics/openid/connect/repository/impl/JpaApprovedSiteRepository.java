@@ -17,15 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.repository.impl;
 
+import cz.muni.ics.openid.connect.model.ApprovedSite;
+import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.Collection;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

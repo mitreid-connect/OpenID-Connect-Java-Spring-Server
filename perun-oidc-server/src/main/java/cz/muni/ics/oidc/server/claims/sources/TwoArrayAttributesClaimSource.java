@@ -10,8 +10,7 @@ import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Claim source which takes value from two attributes from Perun.
@@ -26,9 +25,8 @@ import org.slf4j.LoggerFactory;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class TwoArrayAttributesClaimSource extends ClaimSource {
-
-	private static final Logger log = LoggerFactory.getLogger(TwoArrayAttributesClaimSource.class);
 
 	public static final String ATTRIBUTE_1 = "attribute1";
 	public static final String ATTRIBUTE_2 = "attribute2";

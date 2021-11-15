@@ -17,15 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.repository.impl;
 
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.Collection;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

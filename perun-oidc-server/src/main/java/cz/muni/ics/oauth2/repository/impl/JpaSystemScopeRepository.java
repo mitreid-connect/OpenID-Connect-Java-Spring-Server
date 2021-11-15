@@ -20,16 +20,14 @@
  */
 package cz.muni.ics.oauth2.repository.impl;
 
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.SystemScopeRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.SystemScopeRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

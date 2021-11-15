@@ -17,9 +17,8 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.repository;
 
-import java.util.Collection;
-
 import cz.muni.ics.openid.connect.model.ApprovedSite;
+import java.util.Collection;
 
 /**
  * ApprovedSite repository interface

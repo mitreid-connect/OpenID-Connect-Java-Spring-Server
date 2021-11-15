@@ -34,9 +34,15 @@ import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
+import java.net.URISyntaxException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,22 +53,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import java.net.URISyntaxException;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author jricher
  *
  */
 @Controller
 @SessionAttributes("authorizationRequest")
+@Slf4j
 public class OAuthConfirmationController {
-
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -78,11 +76,6 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private RedirectResolver redirectResolver;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
 
@@ -106,17 +99,17 @@ public class OAuthConfirmationController {
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (OAuth2Exception e) {
-			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
+			log.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
-			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
+			log.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
-			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
+			log.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
@@ -134,10 +127,10 @@ public class OAuthConfirmationController {
 					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
 				}
 
-				return "redirect:" + uriBuilder.toString();
+				return "redirect:" + uriBuilder;
 
 			} catch (URISyntaxException e) {
-				logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+				log.error("Can't build redirect URI for prompt=none, sending error instead", e);
 				model.put("code", HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
 			}

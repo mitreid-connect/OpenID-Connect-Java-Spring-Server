@@ -18,8 +18,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 
@@ -45,9 +44,8 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @SuppressWarnings("SqlResolve")
+@Slf4j
 public class ValidUserFilter extends PerunRequestFilter {
-
-	private static final Logger log = LoggerFactory.getLogger(ValidUserFilter.class);
 
 	/* CONFIGURATION OPTIONS */
 	private static final String ALL_ENV_GROUPS = "allEnvGroups";

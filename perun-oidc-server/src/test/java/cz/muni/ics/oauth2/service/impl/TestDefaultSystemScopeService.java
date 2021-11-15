@@ -17,25 +17,22 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
-import java.util.Set;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
+import com.google.common.collect.Sets;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.SystemScopeRepository;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.SystemScopeRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -52,12 +49,12 @@ public class TestDefaultSystemScopeService {
 	private SystemScope dynScope1;
 	private SystemScope restrictedScope1;
 
-	private String defaultDynScope1String = "defaultDynScope1";
-	private String defaultDynScope2String = "defaultDynScope2";
-	private String defaultScope1String = "defaultScope1";
-	private String defaultScope2String = "defaultScope2";
-	private String dynScope1String = "dynScope1";
-	private String restrictedScope1String = "restrictedScope1";
+	private final String defaultDynScope1String = "defaultDynScope1";
+	private final String defaultDynScope2String = "defaultDynScope2";
+	private final String defaultScope1String = "defaultScope1";
+	private final String defaultScope2String = "defaultScope2";
+	private final String dynScope1String = "dynScope1";
+	private final String restrictedScope1String = "restrictedScope1";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;

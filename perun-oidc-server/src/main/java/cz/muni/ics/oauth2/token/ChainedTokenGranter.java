@@ -20,12 +20,12 @@
  */
 package cz.muni.ics.oauth2.token;
 
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import java.util.HashSet;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
@@ -37,8 +37,6 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Sets;
-
 /**
  * @author jricher
  *
@@ -49,7 +47,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant_type:redelegate";
 
 	// keep down-cast versions so we can get to the right queries
-	private OAuth2TokenEntityService tokenServices;
+	private final OAuth2TokenEntityService tokenServices;
 
 	/**
 	 * @param tokenServices

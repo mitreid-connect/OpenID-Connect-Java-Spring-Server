@@ -20,30 +20,25 @@
  */
 package cz.muni.ics.openid.connect.view;
 
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
-
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
  */
 @Component(JWKSetView.VIEWNAME)
+@Slf4j
 public class JWKSetView extends AbstractView {
-
-	private static final Logger logger = LoggerFactory.getLogger(JWKSetView.class);
 
 	public static final String VIEWNAME = "jwkSet";
 
@@ -59,7 +54,7 @@ public class JWKSetView extends AbstractView {
 			Writer out = response.getWriter();
 			out.write(jwkSet.toString());
 		} catch (IOException e) {
-			logger.error("IOException in JWKSetView.java: ", e);
+			log.error("IOException in JWKSetView.java: ", e);
 		}
 	}
 

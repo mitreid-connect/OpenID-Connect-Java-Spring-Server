@@ -18,24 +18,21 @@ package cz.muni.ics.jwt.assertion.impl;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.assertion.AbstractAssertionValidator;
 import cz.muni.ics.jwt.assertion.AssertionValidator;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.signer.service.impl.JWKSetCacheService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 /**
  * Checks to see if the assertion has been signed by a particular authority available from a whitelist
  * @author jricher
  */
+@Slf4j
 public class WhitelistedIssuerAssertionValidator extends AbstractAssertionValidator implements AssertionValidator {
-
-	private static final Logger logger = LoggerFactory.getLogger(WhitelistedIssuerAssertionValidator.class);
 
 	private Map<String, String> whitelist = new HashMap<>(); //Map of issuer -> JWKSetUri
 	private JWKSetCacheService jwkCache;
@@ -60,10 +57,10 @@ public class WhitelistedIssuerAssertionValidator extends AbstractAssertionValida
 	public boolean isValid(JWT assertion) {
 		String issuer = extractIssuer(assertion);
 		if (StringUtils.isEmpty(issuer)) {
-			logger.debug("No issuer for assertion, rejecting");
+			log.debug("No issuer for assertion, rejecting");
 			return false;
 		} else if (!whitelist.containsKey(issuer)) {
-			logger.debug("Issuer is not in whitelist, rejecting");
+			log.debug("Issuer is not in whitelist, rejecting");
 			return false;
 		}
 

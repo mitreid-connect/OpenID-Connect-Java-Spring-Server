@@ -16,11 +16,14 @@
 
 package cz.muni.ics.oauth2.web;
 
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.exception.DeviceCodeCreationException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.DeviceCodeService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.token.DeviceTokenGranter;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
@@ -34,14 +37,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpSession;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
-import cz.muni.ics.oauth2.service.DeviceCodeService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,8 +57,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.collect.Sets;
-
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
  *
@@ -70,12 +66,11 @@ import com.google.common.collect.Sets;
  *
  */
 @Controller
+@Slf4j
 public class DeviceEndpoint {
 
 	public static final String URL = "devicecode";
 	public static final String USER_URL = "device";
-
-	public static final Logger logger = LoggerFactory.getLogger(DeviceEndpoint.class);
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -108,13 +103,13 @@ public class DeviceEndpoint {
 			}
 
 		} catch (IllegalArgumentException e) {
-			logger.error("IllegalArgumentException was thrown when attempting to load client", e);
+			log.error("IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
-			logger.error("could not find client " + clientId);
+			log.error("could not find client " + clientId);
 			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
@@ -125,7 +120,7 @@ public class DeviceEndpoint {
 
 		if (!scopeService.scopesMatch(allowedScopes, requestedScopes)) {
 			// client asked for scopes it can't have
-			logger.error("Client asked for " + requestedScopes + " but is allowed " + allowedScopes);
+			log.error("Client asked for " + requestedScopes + " but is allowed " + allowedScopes);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			model.put(JsonErrorView.ERROR, "invalid_scope");
 			return JsonErrorView.VIEWNAME;
@@ -164,7 +159,7 @@ public class DeviceEndpoint {
 			
 			return JsonErrorView.VIEWNAME;
 		} catch (URISyntaxException use) {
-			logger.error("unable to build verification_uri_complete due to wrong syntax of uri components");
+			log.error("unable to build verification_uri_complete due to wrong syntax of uri components");
 			model.put(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 
 			return HttpCodeView.VIEWNAME;

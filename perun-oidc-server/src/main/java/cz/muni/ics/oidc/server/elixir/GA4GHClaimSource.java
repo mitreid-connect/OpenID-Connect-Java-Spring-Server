@@ -19,11 +19,13 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oidc.models.PerunAttribute;
 import cz.muni.ics.oidc.server.claims.ClaimSource;
 import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
+import cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,10 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
@@ -70,12 +69,11 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class GA4GHClaimSource extends ClaimSource {
 
 	static final String GA4GH_SCOPE = "ga4gh_passport_v1";
 	private static final String GA4GH_CLAIM = "ga4gh_passport_v1";
-
-	private static final Logger log = LoggerFactory.getLogger(GA4GHClaimSource.class);
 
 	private static final String BONA_FIDE_URL = "https://doi.org/10.1038/s41431-018-0219-y";
 	private static final String ELIXIR_ORG_URL = "https://elixir-europe.org/";
@@ -567,9 +565,9 @@ public class GA4GHClaimSource extends ClaimSource {
 	}
 
 	public static class ClaimRepository {
-		private String name;
-		private RestTemplate restTemplate;
-		private String actionURL;
+		private final String name;
+		private final RestTemplate restTemplate;
+		private final String actionURL;
 
 		public ClaimRepository(String name, RestTemplate restTemplate, String actionURL) {
 			this.name = name;

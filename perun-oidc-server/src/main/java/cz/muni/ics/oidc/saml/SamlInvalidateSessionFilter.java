@@ -13,16 +13,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+@Slf4j
 public class SamlInvalidateSessionFilter extends GenericFilterBean {
 
-    private static final Logger log = LoggerFactory.getLogger(SamlInvalidateSessionFilter.class);
     private final AntPathRequestMatcher matcher;
 
     private final SecurityContextLogoutHandler contextLogoutHandler;

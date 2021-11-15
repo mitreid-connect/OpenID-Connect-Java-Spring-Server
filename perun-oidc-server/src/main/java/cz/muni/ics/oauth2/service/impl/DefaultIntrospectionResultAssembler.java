@@ -17,33 +17,26 @@ package cz.muni.ics.oauth2.service.impl;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
+import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.uma.model.Permission;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.
  */
 @Service
+@Slf4j
 public class DefaultIntrospectionResultAssembler implements IntrospectionResultAssembler {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
 	@Override
 	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes) {
@@ -79,7 +72,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(accessToken.getExpiration()));
 				result.put(EXP, accessToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				logger.error("Parse exception in token introspection", e);
+				log.error("Parse exception in token introspection", e);
 			}
 		}
 
@@ -119,7 +112,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(refreshToken.getExpiration()));
 				result.put(EXP, refreshToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				logger.error("Parse exception in token introspection", e);
+				log.error("Parse exception in token introspection", e);
 			}
 		}
 

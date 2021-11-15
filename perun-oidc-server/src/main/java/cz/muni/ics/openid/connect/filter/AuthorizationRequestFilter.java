@@ -20,6 +20,9 @@
  */
 package cz.muni.ics.openid.connect.filter;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
 import cz.muni.ics.openid.connect.service.LoginHintExtracter;
@@ -31,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -39,11 +41,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,20 +55,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-
 /**
  * @author jricher
  *
  */
 @Component("authRequestFilter")
+@Slf4j
 public class AuthorizationRequestFilter extends GenericFilterBean {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(AuthorizationRequestFilter.class);
 
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
@@ -138,7 +130,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 						// we're OK, continue without prompting
 						chain.doFilter(req, res);
 					} else {
-						logger.info("Client requested no prompt");
+						log.info("Client requested no prompt");
 						// user hasn't been logged in, we need to "return an error"
 						if (client != null && authRequest.getRedirectUri() != null) {
 
@@ -158,7 +150,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 								return;
 
 							} catch (URISyntaxException e) {
-								logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+								log.error("Can't build redirect URI for prompt=none, sending error instead", e);
 								response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 								return;
 							}

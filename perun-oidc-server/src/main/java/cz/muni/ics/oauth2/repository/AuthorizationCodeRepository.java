@@ -18,9 +18,8 @@
 package cz.muni.ics.oauth2.repository;
 
 import cz.muni.ics.data.PageCriteria;
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.AuthorizationCodeEntity;
+import java.util.Collection;
 
 /**
  * Interface for saving and consuming OAuth2 authorization codes as AuthorizationCodeEntitys.

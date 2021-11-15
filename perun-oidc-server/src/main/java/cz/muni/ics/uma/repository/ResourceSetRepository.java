@@ -16,9 +16,8 @@
 
 package cz.muni.ics.uma.repository;
 
-import java.util.Collection;
-
 import cz.muni.ics.uma.model.ResourceSet;
+import java.util.Collection;
 
 /**
  * @author jricher

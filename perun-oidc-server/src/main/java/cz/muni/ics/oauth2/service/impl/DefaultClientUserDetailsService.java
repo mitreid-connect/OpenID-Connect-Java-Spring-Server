@@ -17,7 +17,7 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
-import cz.muni.ics.oauth2.service.impl.ServiceUtils;
+import com.google.common.base.Strings;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
@@ -30,8 +30,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-
 /**
  * Shim layer to convert a ClientDetails service into a UserDetails service
  *
@@ -40,7 +38,7 @@ import com.google.common.base.Strings;
 @Service("clientUserDetailsService")
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
-	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
 	private ClientDetailsEntityService clientDetailsService;
 	private final ConfigurationPropertiesBean config;

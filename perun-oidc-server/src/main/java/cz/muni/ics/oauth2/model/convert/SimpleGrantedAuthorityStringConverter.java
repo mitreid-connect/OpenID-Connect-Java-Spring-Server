@@ -18,7 +18,6 @@ package cz.muni.ics.oauth2.model.convert;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**

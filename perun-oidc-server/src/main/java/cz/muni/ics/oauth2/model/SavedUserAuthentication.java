@@ -19,7 +19,6 @@ package cz.muni.ics.oauth2.model;
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import java.util.Collection;
 import java.util.HashSet;
-
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -33,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

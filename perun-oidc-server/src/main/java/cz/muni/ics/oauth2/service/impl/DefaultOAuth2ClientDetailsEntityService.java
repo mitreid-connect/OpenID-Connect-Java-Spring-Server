@@ -24,14 +24,11 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
+import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
@@ -41,17 +38,6 @@ import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
 import cz.muni.ics.uma.model.ResourceSet;
 import cz.muni.ics.uma.service.ResourceSetService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -62,14 +48,22 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@Slf4j
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
 
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
@@ -96,7 +90,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private ConfigurationPropertiesBean config;
 
 	// map of sector URI -> list of redirect URIs
-	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
+	private final LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.HOURS)
 			.maximumSize(100)
 			.build(new SectorIdentifierLoader(HttpClientBuilder.create().useSystemProperties().build()));
@@ -324,7 +318,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Get the client for the given ClientID
 	 */
 	@Override
-	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, InvalidClientException, IllegalArgumentException {
+	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, IllegalArgumentException {
 		if (!Strings.isNullOrEmpty(clientId)) {
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientId);
 			if (client == null) {
@@ -437,7 +431,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
 	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
 		if (config.isHeartMode()) {
-			logger.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
+			log.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
 			client.setClientSecret(null);
 		} else {
 			client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
@@ -452,9 +446,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *
 	 */
 	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
-		private HttpComponentsClientHttpRequestFactory httpFactory;
-		private RestTemplate restTemplate;
-		private JsonParser parser = new JsonParser();
+		private final HttpComponentsClientHttpRequestFactory httpFactory;
+		private final RestTemplate restTemplate;
+		private final JsonParser parser = new JsonParser();
 
 		SectorIdentifierLoader(HttpClient httpClient) {
 			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -468,7 +462,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				if (config.isForceHttps()) {
 					throw new IllegalArgumentException("Sector identifier must start with https: " + key);
 				}
-				logger.error("Sector identifier doesn't start with https, loading anyway...");
+				log.error("Sector identifier doesn't start with https, loading anyway...");
 			}
 
 			// key is the sector URI
@@ -481,7 +475,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 					redirectUris.add(el.getAsString());
 				}
 
-				logger.info("Found " + redirectUris + " for sector " + key);
+				log.info("Found " + redirectUris + " for sector " + key);
 
 				return redirectUris;
 			} else {

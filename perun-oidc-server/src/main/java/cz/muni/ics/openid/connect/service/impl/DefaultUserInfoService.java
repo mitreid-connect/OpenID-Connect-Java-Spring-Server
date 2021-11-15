@@ -17,9 +17,9 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service.impl;
 
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity.SubjectType;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.repository.UserInfoRepository;
 import cz.muni.ics.openid.connect.service.PairwiseIdentiferService;

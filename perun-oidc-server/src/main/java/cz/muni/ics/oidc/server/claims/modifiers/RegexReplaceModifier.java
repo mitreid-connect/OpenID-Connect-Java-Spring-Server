@@ -3,8 +3,7 @@ package cz.muni.ics.oidc.server.claims.modifiers;
 import cz.muni.ics.oidc.server.claims.ClaimModifier;
 import cz.muni.ics.oidc.server.claims.ClaimModifierInitContext;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Replace regex modifier. Replaces parts matched by regex with string using backreferences to groups.
@@ -19,9 +18,8 @@ import org.slf4j.LoggerFactory;
  * @author Martin Kuba <makub@ics.muni.cz>
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class RegexReplaceModifier extends ClaimModifier {
-
-	private static final Logger log = LoggerFactory.getLogger(RegexReplaceModifier.class);
 
 	private static final String FIND = "find";
 	private static final String REPLACE = "replace";

@@ -18,7 +18,6 @@ package cz.muni.ics.uma.model;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -249,13 +248,8 @@ public class ResourceSet {
 			return false;
 		}
 		if (uri == null) {
-			if (other.uri != null) {
-				return false;
-			}
-		} else if (!uri.equals(other.uri)) {
-			return false;
-		}
-		return true;
+			return other.uri == null;
+		} else return uri.equals(other.uri);
 	}
 
 }

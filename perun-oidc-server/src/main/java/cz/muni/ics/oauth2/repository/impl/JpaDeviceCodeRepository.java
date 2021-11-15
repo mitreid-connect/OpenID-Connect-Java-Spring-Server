@@ -18,15 +18,13 @@
  */
 package cz.muni.ics.oauth2.repository.impl;
 
+import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.oauth2.model.DeviceCode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -17,13 +17,12 @@
  *******************************************************************************/
 package cz.muni.ics.jwt.signer.service;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Map;
-
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.SignedJWT;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.Map;
 
 public interface JWTSigningAndValidationService {
 

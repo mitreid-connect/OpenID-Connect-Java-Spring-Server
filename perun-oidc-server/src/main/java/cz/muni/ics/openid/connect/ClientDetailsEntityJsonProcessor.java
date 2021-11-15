@@ -21,27 +21,6 @@
 package cz.muni.ics.openid.connect;
 
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-import cz.muni.ics.util.JsonUtils;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AppType;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.SubjectType;
-import cz.muni.ics.oauth2.model.RegisteredClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLIENT_ID;
@@ -83,18 +62,35 @@ import static cz.muni.ics.oauth2.model.RegisteredClientFields.TOS_URI;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
-import static cz.muni.ics.util.JsonUtils.getAsArray;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.AppType;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity.SubjectType;
+import cz.muni.ics.oauth2.model.RegisteredClient;
+import cz.muni.ics.util.JsonUtils;
+import java.text.ParseException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
  *
  * @author jricher
  */
+@Slf4j
 public class ClientDetailsEntityJsonProcessor {
 
-	private static Logger logger = LoggerFactory.getLogger(ClientDetailsEntityJsonProcessor.class);
-
-	private static JsonParser parser = new JsonParser();
+	private static final JsonParser parser = new JsonParser();
 
 	public static ClientDetailsEntity parse(String jsonString) {
 		JsonElement jsonEl = parser.parse(jsonString);
@@ -140,7 +136,7 @@ public class ClientDetailsEntityJsonProcessor {
 					JWKSet jwks = JWKSet.parse(jwksEl.toString()); // we have to pass this through Nimbus's parser as a string
 					c.setJwks(jwks);
 				} catch (ParseException e) {
-					logger.error("Unable to parse JWK Set for client", e);
+					log.error("Unable to parse JWK Set for client", e);
 					return null;
 				}
 			}
@@ -201,7 +197,7 @@ public class ClientDetailsEntityJsonProcessor {
 					JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
 					c.setSoftwareStatement(softwareStatementJwt);
 				} catch (ParseException e) {
-					logger.warn("Error parsing software statement", e);
+					log.warn("Error parsing software statement", e);
 					return null;
 				}
 			}

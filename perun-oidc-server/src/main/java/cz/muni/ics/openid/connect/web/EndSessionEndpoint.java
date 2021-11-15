@@ -16,11 +16,18 @@
 
 package cz.muni.ics.openid.connect.web;
 
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import cz.muni.ics.jwt.assertion.impl.SelfAssertionValidator;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -29,11 +36,7 @@ import java.text.ParseException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import cz.muni.ics.jwt.assertion.impl.SelfAssertionValidator;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -45,10 +48,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
 
 /**
  * End Session Endpoint from OIDC session management.
@@ -65,6 +64,7 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
 //TODO: https://openid.net/specs/openid-connect-frontchannel-1_0.html
 //TODO: https://openid.net/specs/openid-connect-backchannel-1_0.html
 //TODO: https://openid.net/specs/openid-connect-session-1_0.html
+@Slf4j
 public class EndSessionEndpoint {
 
 	public static final String URL = "endsession";
@@ -72,8 +72,6 @@ public class EndSessionEndpoint {
 	private static final String CLIENT_KEY = "client";
 	private static final String STATE_KEY = "state";
 	private static final String REDIRECT_URI_KEY = "redirectUri";
-
-	private static final Logger logger = LoggerFactory.getLogger(EndSessionEndpoint.class);
 
 	private final SelfAssertionValidator validator;
 	private final PerunOidcConfig perunOidcConfig;
@@ -131,10 +129,10 @@ public class EndSessionEndpoint {
 				}
 			} catch (ParseException e) {
 				// it's not a valid ID token, ignore it
-				logger.debug("Invalid id token hint", e);
+				log.debug("Invalid id token hint", e);
 			} catch (InvalidClientException e) {
 				// couldn't find the client, ignore it
-				logger.debug("Invalid client", e);
+				log.debug("Invalid client", e);
 			}
 		}
 
@@ -143,7 +141,7 @@ public class EndSessionEndpoint {
 			// we're not logged in anyway, process the final redirect bits if needed
 			return processLogout(null, null, request, session);
 		} else {
-			logger.info("Logout confirmating for user {} from client {}", auth.getName(), client != null ? client.getClientName() : "unknown");
+			log.info("Logout confirmating for user {} from client {}", auth.getName(), client != null ? client.getClientName() : "unknown");
 			// we are logged in, need to prompt the user before we log out
 			model.put("client", client);
 			model.put("idToken", idTokenClaims);
@@ -174,7 +172,7 @@ public class EndSessionEndpoint {
 				uri = uri.queryParam("state", state);
 			}
 			UriComponents uriComponents = uri.build();
-			logger.trace("redirect URL: {}", uriComponents);
+			log.trace("redirect URL: {}", uriComponents);
 			redirectURL = uriComponents.toString();
 		}
 
@@ -182,15 +180,15 @@ public class EndSessionEndpoint {
 			String target = getRedirectUrl(redirectUri, state);
 			if (StringUtils.hasText(approved)) {
 				target = getLogoutUrl(target);
-				logger.trace("redirecting to logout SAML and then {}", target);
+				log.trace("redirecting to logout SAML and then {}", target);
 				return "redirect:" + target;
 			} else {
-				logger.trace("redirecting to {}", target);
+				log.trace("redirecting to {}", target);
 				return "redirect:" + redirectURL;
 			}
 		} else {
 			if (StringUtils.hasText(approved)) {
-				logger.trace("redirecting to logout SAML only");
+				log.trace("redirecting to logout SAML only");
 				return "redirect:" + getLogoutUrl(null);
 			} else {
 				return "logout_denied";

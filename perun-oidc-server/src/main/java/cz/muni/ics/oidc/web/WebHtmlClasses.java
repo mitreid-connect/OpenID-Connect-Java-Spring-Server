@@ -8,19 +8,17 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Static utility class for HTML pages. Contains properties that can be rendered as element classes in HTML.
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class WebHtmlClasses {
 
-	private static final Logger log = LoggerFactory.getLogger(WebHtmlClasses.class);
-
-	private String classesFilePath;
+	private final String classesFilePath;
 	private Properties webHtmlClassesProperties;
 
 	public WebHtmlClasses(PerunOidcConfig perunOidcConfig) {

@@ -2,14 +2,13 @@ package cz.muni.ics.oauth2.service.impl;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.HashSet;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class ServiceUtils {
 

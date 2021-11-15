@@ -20,14 +20,12 @@
  */
 package cz.muni.ics.openid.connect.view;
 
-import java.util.Set;
-
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BeanPropertyBindingResult;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
+import java.util.Set;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 /**
  *
@@ -41,7 +39,7 @@ import com.google.gson.FieldAttributes;
 public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
 	public static final String VIEWNAME = "clientEntityViewAdmins";
-	private Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
+	private final Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
 
 	/**
 	 * @return
@@ -52,20 +50,13 @@ public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
 			@Override
 			public boolean shouldSkipField(FieldAttributes f) {
-				if (blacklistedFields.contains(f.getName())) {
-					return true;
-				} else {
-					return false;
-				}
+				return blacklistedFields.contains(f.getName());
 			}
 
 			@Override
 			public boolean shouldSkipClass(Class<?> clazz) {
 				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
+				return clazz.equals(BeanPropertyBindingResult.class);
 			}
 
 		};

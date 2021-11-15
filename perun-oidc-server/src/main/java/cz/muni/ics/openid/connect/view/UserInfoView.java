@@ -17,26 +17,6 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.view;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.web.servlet.view.AbstractView;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -44,8 +24,25 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.servlet.view.AbstractView;
 
 @Component(UserInfoView.VIEWNAME)
+@Slf4j
 public class UserInfoView extends AbstractView {
 
 	public static final String REQUESTED_CLAIMS = "requestedClaims";
@@ -55,12 +52,7 @@ public class UserInfoView extends AbstractView {
 
 	public static final String VIEWNAME = "userInfoView";
 
-	private static JsonParser jsonParser = new JsonParser();
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(UserInfoView.class);
+	private static final JsonParser jsonParser = new JsonParser();
 
 	@Autowired
 	private ScopeClaimTranslationService translator;
@@ -76,10 +68,7 @@ public class UserInfoView extends AbstractView {
 		@Override
 		public boolean shouldSkipClass(Class<?> clazz) {
 			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
+			return clazz.equals(BeanPropertyBindingResult.class);
 		}
 
 	}).create();
@@ -122,7 +111,7 @@ public class UserInfoView extends AbstractView {
 			gson.toJson(json, out);
 		} catch (IOException e) {
 
-			logger.error("IOException in UserInfoView.java: ", e);
+			log.error("IOException in UserInfoView.java: ", e);
 
 		}
 

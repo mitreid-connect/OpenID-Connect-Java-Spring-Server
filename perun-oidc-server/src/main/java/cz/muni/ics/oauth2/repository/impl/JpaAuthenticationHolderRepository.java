@@ -19,15 +19,13 @@ package cz.muni.ics.oauth2.repository.impl;
 
 import cz.muni.ics.data.DefaultPageCriteria;
 import cz.muni.ics.data.PageCriteria;
+import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
+import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
-import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -17,27 +17,6 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.token;
 
-import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
-import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import cz.muni.ics.openid.connect.service.OIDCTokenService;
-import cz.muni.ics.openid.connect.service.UserInfoService;
-import java.util.Date;
-import java.util.UUID;
-
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -46,14 +25,28 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
+import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.OIDCTokenService;
+import cz.muni.ics.openid.connect.service.UserInfoService;
+import java.util.Date;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ConnectTokenEnhancer implements TokenEnhancer {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ConnectTokenEnhancer.class);
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
@@ -131,7 +124,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				token.setIdToken(idToken);
 			} else {
 				// can't create an id token if we can't find the user
-				logger.warn("Request for ID token when no user is present.");
+				log.warn("Request for ID token when no user is present.");
 			}
 		}
 

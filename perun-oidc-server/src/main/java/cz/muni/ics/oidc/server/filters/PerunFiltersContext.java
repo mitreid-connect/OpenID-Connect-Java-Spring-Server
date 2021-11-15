@@ -6,8 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 /**
@@ -21,17 +20,16 @@ import org.springframework.util.StringUtils;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunFiltersContext {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunFiltersContext.class);
 
 	private static final String FILTER_NAMES = "filter.names";
 	private static final String FILTER_CLASS = ".class";
 	private static final String PREFIX = "filter.";
 
-	private List<PerunRequestFilter> filters;
-	private Properties properties;
-	private BeanUtil beanUtil;
+	private final List<PerunRequestFilter> filters;
+	private final Properties properties;
+	private final BeanUtil beanUtil;
 
 	public PerunFiltersContext(Properties properties, BeanUtil beanUtil) {
 		this.properties = properties;

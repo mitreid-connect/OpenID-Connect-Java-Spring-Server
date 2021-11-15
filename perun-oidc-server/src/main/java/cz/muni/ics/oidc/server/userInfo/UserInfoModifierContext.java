@@ -6,17 +6,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Context for UserInfoModifiers.
  *
  * @author Dominik Baránek <baranek@ics.muni.cz>
  */
+@Slf4j
 public class UserInfoModifierContext {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunUserInfoService.class);
 
 	private static final String MODIFIER_CLASS = ".class";
 

@@ -17,14 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.repository.impl;
 
+import cz.muni.ics.openid.connect.model.DefaultUserInfo;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.repository.UserInfoRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.openid.connect.model.DefaultUserInfo;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.openid.connect.repository.UserInfoRepository;
 import org.springframework.stereotype.Repository;
 
 /**

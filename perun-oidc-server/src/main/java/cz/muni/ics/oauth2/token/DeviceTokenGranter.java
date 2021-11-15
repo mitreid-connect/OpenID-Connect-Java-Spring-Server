@@ -16,13 +16,12 @@
 
 package cz.muni.ics.oauth2.token;
 
-import java.util.Date;
-
 import cz.muni.ics.oauth2.exception.AuthorizationPendingException;
 import cz.muni.ics.oauth2.exception.DeviceCodeExpiredException;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.web.DeviceEndpoint;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.ClientDetails;

@@ -16,11 +16,10 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,7 +28,7 @@ import org.springframework.util.StringUtils;
 @Converter
 public class JsonElementStringConverter implements AttributeConverter<JsonElement, String> {
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
 	@Override
 	public String convertToDatabaseColumn(JsonElement attribute) {

@@ -205,13 +205,8 @@ public class DefaultAddress implements Address {
 			return false;
 		}
 		if (streetAddress == null) {
-			if (other.streetAddress != null) {
-				return false;
-			}
-		} else if (!streetAddress.equals(other.streetAddress)) {
-			return false;
-		}
-		return true;
+			return other.streetAddress == null;
+		} else return streetAddress.equals(other.streetAddress);
 	}
 
 }

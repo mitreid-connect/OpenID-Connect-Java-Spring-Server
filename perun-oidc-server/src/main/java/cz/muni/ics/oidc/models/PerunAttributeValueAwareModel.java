@@ -158,7 +158,7 @@ public abstract class PerunAttributeValueAwareModel {
 
     private InconvertibleValueException inconvertible(String clazzName) {
         return new InconvertibleValueException("Cannot convert value of attribute to " + clazzName +
-                " for object: " + this.toString());
+                " for object: " + this);
     }
 
 }

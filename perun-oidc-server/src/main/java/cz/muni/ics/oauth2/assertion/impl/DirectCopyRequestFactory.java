@@ -16,18 +16,16 @@
 
 package cz.muni.ics.oauth2.assertion.impl;
 
+import com.google.common.collect.Sets;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import cz.muni.ics.oauth2.assertion.AssertionOAuth2RequestFactory;
 import java.text.ParseException;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.assertion.AssertionOAuth2RequestFactory;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
-
-import com.google.common.collect.Sets;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
  * Takes an assertion from a trusted source, looks for the fields:

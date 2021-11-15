@@ -2,15 +2,14 @@ package cz.muni.ics.oidc.server;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import java.util.Map;
-import java.util.Set;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.service.impl.DefaultIntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Assembler of result obtained from introspection endpoint.
@@ -18,9 +17,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunIntrospectionResultAssembler extends DefaultIntrospectionResultAssembler {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunIntrospectionResultAssembler.class);
 
 	private final ConfigurationPropertiesBean configBean;
 	private final ScopeClaimTranslationService translator;

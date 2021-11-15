@@ -20,13 +20,15 @@
  */
 package cz.muni.ics.oauth2.token;
 
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import java.text.ParseException;
-
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import cz.muni.ics.jwt.assertion.AssertionValidator;
 import cz.muni.ics.oauth2.assertion.AssertionOAuth2RequestFactory;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.openid.connect.assertion.JWTBearerAssertionAuthenticationToken;
+import java.text.ParseException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
@@ -38,14 +40,12 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
-
 /**
  * @author jricher
  *
  */
 @Component("jwtAssertionTokenGranter")
+@Slf4j
 public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer";
@@ -80,12 +80,12 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 						new JWTBearerAssertionAuthenticationToken(assertion, client.getAuthorities()));
 
 			} else {
-				logger.warn("Incoming assertion did not pass validator, rejecting");
+				log.warn("Incoming assertion did not pass validator, rejecting");
 				return null;
 			}
 
 		} catch (ParseException e) {
-			logger.warn("Unable to parse incoming assertion");
+			log.warn("Unable to parse incoming assertion");
 		}
 
 		// if we had made a token, we'd have returned it by now, so return null here to close out with no created token

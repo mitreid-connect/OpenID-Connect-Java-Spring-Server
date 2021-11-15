@@ -17,11 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.config;
 
-import java.util.List;
-
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import java.util.List;
 
 
 
@@ -204,7 +203,7 @@ public class ServerConfiguration {
 	public enum UserInfoTokenMethod {
 		HEADER,
 		FORM,
-		QUERY;
+		QUERY
 	}
 
 	public String getAuthorizationEndpointUri() {
@@ -950,14 +949,9 @@ public class ServerConfiguration {
 			return false;
 		}
 		if (userinfoSigningAlgValuesSupported == null) {
-			if (other.userinfoSigningAlgValuesSupported != null) {
-				return false;
-			}
-		} else if (!userinfoSigningAlgValuesSupported
-				.equals(other.userinfoSigningAlgValuesSupported)) {
-			return false;
-		}
-		return true;
+			return other.userinfoSigningAlgValuesSupported == null;
+		} else return userinfoSigningAlgValuesSupported
+				.equals(other.userinfoSigningAlgValuesSupported);
 	}
 
 }

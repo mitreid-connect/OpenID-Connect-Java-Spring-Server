@@ -5,18 +5,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
-import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
-import java.text.ParseException;
-import java.util.Map;
-import java.util.Set;
-import net.minidev.json.JSONArray;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.service.impl.DefaultOIDCTokenService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.text.ParseException;
+import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.web.context.request.RequestAttributes;
@@ -28,9 +27,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunOIDCTokenService extends DefaultOIDCTokenService {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunOIDCTokenService.class);
 
 	public static final String SESSION_PARAM_ACR = "acr";
 

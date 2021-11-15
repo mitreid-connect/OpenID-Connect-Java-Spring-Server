@@ -20,10 +20,8 @@ package cz.muni.ics.openid.connect.config;
 
 import java.util.Locale;
 import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
@@ -36,7 +34,7 @@ import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
  */
 public class ConfigurationBeanLocaleResolver extends AbstractLocaleContextResolver {
 
-	private ConfigurationPropertiesBean config;
+	private final ConfigurationPropertiesBean config;
 
 	@Autowired
 	public ConfigurationBeanLocaleResolver(ConfigurationPropertiesBean config) {

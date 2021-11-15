@@ -16,10 +16,9 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
+import com.nimbusds.jose.EncryptionMethod;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
-import com.nimbusds.jose.EncryptionMethod;
 
 @Converter
 public class JWEEncryptionMethodStringConverter implements AttributeConverter<EncryptionMethod, String> {

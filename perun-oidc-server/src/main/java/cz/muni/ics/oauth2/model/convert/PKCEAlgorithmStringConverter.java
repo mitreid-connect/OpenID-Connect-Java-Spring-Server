@@ -16,10 +16,9 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
+import cz.muni.ics.oauth2.model.PKCEAlgorithm;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-
-import cz.muni.ics.oauth2.model.PKCEAlgorithm;
 
 /**
  * @author jricher

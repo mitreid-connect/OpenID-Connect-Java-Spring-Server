@@ -21,9 +21,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This filter forwards user to a warning page if the service is in test environment.
@@ -36,9 +35,8 @@ import org.slf4j.LoggerFactory;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  * @author Pavol Pluta <500348@mail.muni.cz>
  */
+@Slf4j
 public class PerunIsTestSpFilter extends PerunRequestFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunIsTestSpFilter.class);
 
     private static final String IS_TEST_SP_ATTR_NAME = "isTestSpAttr";
 

@@ -17,10 +17,15 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.web;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
@@ -31,12 +36,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -47,10 +47,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-
 @Controller
+@Slf4j
 public class IntrospectionEndpoint {
 
 	/**
@@ -72,11 +70,6 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private ResourceSetService resourceSetService;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 
 	public IntrospectionEndpoint() {
 
@@ -131,7 +124,7 @@ public class IntrospectionEndpoint {
 
 				// this client isn't allowed to do direct introspection
 
-				logger.error("Client " + authClient.getClientId() + " is not allowed to call introspection endpoint");
+				log.error("Client " + authClient.getClientId() + " is not allowed to call introspection endpoint");
 				model.addAttribute("code", HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
 
@@ -143,7 +136,7 @@ public class IntrospectionEndpoint {
 
 		// first make sure the token is there
 		if (Strings.isNullOrEmpty(tokenValue)) {
-			logger.error("Verify failed; token value is null");
+			log.error("Verify failed; token value is null");
 			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;
@@ -166,7 +159,7 @@ public class IntrospectionEndpoint {
 			user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
 
 		} catch (InvalidTokenException e) {
-			logger.info("Invalid access token. Checking refresh token.");
+			log.info("Invalid access token. Checking refresh token.");
 			try {
 
 				// check refresh tokens next
@@ -179,7 +172,7 @@ public class IntrospectionEndpoint {
 				user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
 
 			} catch (InvalidTokenException e2) {
-				logger.error("Invalid refresh token");
+				log.error("Invalid refresh token");
 				Map<String,Boolean> entity = ImmutableMap.of(IntrospectionResultAssembler.ACTIVE, Boolean.FALSE);
 				model.addAttribute(JsonEntityView.ENTITY, entity);
 				return JsonEntityView.VIEWNAME;
@@ -196,7 +189,7 @@ public class IntrospectionEndpoint {
 			model.addAttribute(JsonEntityView.ENTITY, entity);
 		} else {
 			// no tokens were found (we shouldn't get here)
-			logger.error("Verify failed; Invalid access/refresh token");
+			log.error("Verify failed; Invalid access/refresh token");
 			Map<String,Boolean> entity = ImmutableMap.of(IntrospectionResultAssembler.ACTIVE, Boolean.FALSE);
 			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;

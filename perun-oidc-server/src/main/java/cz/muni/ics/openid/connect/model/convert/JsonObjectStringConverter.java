@@ -16,11 +16,10 @@
 
 package cz.muni.ics.openid.connect.model.convert;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,7 +28,7 @@ import org.springframework.util.StringUtils;
 @Converter
 public class JsonObjectStringConverter implements AttributeConverter<JsonObject, String> {
 
-	private JsonParser parser = new JsonParser();
+	private final JsonParser parser = new JsonParser();
 
 	@Override
 	public String convertToDatabaseColumn(JsonObject attribute) {

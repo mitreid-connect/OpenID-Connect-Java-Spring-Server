@@ -61,14 +61,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.entry.Value;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.ldap.client.api.search.FilterBuilder;
 import org.apache.directory.ldap.client.template.EntryMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -77,9 +76,8 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  * @author Martin Kuba makub@ics.muni.cz
  */
+@Slf4j
 public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements PerunAdapterMethods, PerunAdapterMethodsLdap {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunAdapterLdap.class);
 
 	private PerunConnectorLdap connectorLdap;
 	private String oidcClientIdAttr;

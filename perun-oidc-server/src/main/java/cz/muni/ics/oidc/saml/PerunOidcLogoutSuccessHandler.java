@@ -8,16 +8,14 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 public class PerunOidcLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunOidcLogoutSuccessHandler.class);
 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {

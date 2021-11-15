@@ -17,26 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.jwt.encryption.service.impl;
 
-import cz.muni.ics.jose.keystore.JWKSetKeyStore;
-import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
-import com.nimbusds.jose.KeyLengthException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.JWEEncrypter;
 import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.ECDHDecrypter;
@@ -48,14 +35,22 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
+import cz.muni.ics.jose.keystore.JWKSetKeyStore;
+import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 /**
  * @author wkim
  */
+@Slf4j
 public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
-
-	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
 	private final Map<String, JWEEncrypter> encrypters = new HashMap<>();
 	private final Map<String, JWEDecrypter> decrypters = new HashMap<>();
@@ -157,7 +152,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.encrypt(encrypter);
 		} catch (JOSEException e) {
-			logger.error("Failed to encrypt JWT, error was: ", e);
+			log.error("Failed to encrypt JWT, error was: ", e);
 		}
 	}
 
@@ -172,7 +167,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.decrypt(decrypter);
 		} catch (JOSEException e) {
-			logger.error("Failed to decrypt JWT, error was: ", e);
+			log.error("Failed to decrypt JWT, error was: ", e);
 		}
 	}
 
@@ -238,7 +233,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			} else if (jwk instanceof OctetSequenceKey) {
 				handleOctetSeqKey(id, jwk);
 			} else {
-				logger.warn("Unknown key type: {}", jwk);
+				log.warn("Unknown key type: {}", jwk);
 			}
 		}
 	}
@@ -263,7 +258,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 			decrypters.put(id, decrypter);
 		} else {
-			logger.warn("No private key for key #{}", jwk.getKeyID());
+			log.warn("No private key for key #{}", jwk.getKeyID());
 		}
 	}
 
@@ -277,7 +272,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 			decrypters.put(id, decrypter);
 		} else {
-			logger.warn("No private key for key #{}", jwk.getKeyID());
+			log.warn("No private key for key #{}", jwk.getKeyID());
 		}
 	}
 

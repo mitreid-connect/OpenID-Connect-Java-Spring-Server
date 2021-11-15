@@ -17,12 +17,11 @@
  *******************************************************************************/
 package cz.muni.ics.discovery.util;
 
-import org.junit.Test;
-import org.springframework.web.util.UriComponents;
+import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.ImmutableMap;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.springframework.web.util.UriComponents;
 
 /**
  * @author wkim
@@ -32,7 +31,7 @@ public class TestWebfingerURLNormalizer {
 
 
 	// Test fixture:
-	private ImmutableMap<String, String> inputToNormalized = new ImmutableMap.Builder<String, String>()
+	private final ImmutableMap<String, String> inputToNormalized = new ImmutableMap.Builder<String, String>()
 			.put("example.com", "https://example.com")
 			.put("example.com:8080", "https://example.com:8080")
 			.put("example.com/path", "https://example.com/path")

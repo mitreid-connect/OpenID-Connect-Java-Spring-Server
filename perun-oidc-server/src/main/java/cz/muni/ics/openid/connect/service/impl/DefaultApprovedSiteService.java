@@ -24,17 +24,15 @@ import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the ApprovedSiteService
@@ -43,12 +41,8 @@ import java.util.Set;
  *
  */
 @Service("defaultApprovedSiteService")
+@Slf4j
 public class DefaultApprovedSiteService implements ApprovedSiteService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
 
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
@@ -148,11 +142,11 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	public void clearExpiredSites() {
 
-		logger.debug("Clearing expired approved sites");
+		log.debug("Clearing expired approved sites");
 
 		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites.size() > 0) {
-			logger.info("Found " + expiredSites.size() + " expired approved sites.");
+			log.info("Found " + expiredSites.size() + " expired approved sites.");
 		}
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
@@ -162,7 +156,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	}
 
-	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
+	private final Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
 		@Override
 		public boolean apply(ApprovedSite input) {
 			return (input != null && input.isExpired());

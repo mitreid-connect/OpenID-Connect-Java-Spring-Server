@@ -26,14 +26,12 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.util.Base64URL;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * Creates and caches symmetrical validators for clients based on client secrets.
@@ -41,9 +39,8 @@ import java.util.concurrent.TimeUnit;
  * @author jricher
  */
 @Service
+@Slf4j
 public class SymmetricKeyJWTValidatorCacheService {
-
-	private static final Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
 
 	private final LoadingCache<String, JWTSigningAndValidationService> validators;
 
@@ -56,17 +53,17 @@ public class SymmetricKeyJWTValidatorCacheService {
 
 	public JWTSigningAndValidationService getSymmetricValidator(ClientDetailsEntity client) {
 		if (client == null) {
-			logger.error("Couldn't create symmetric validator for null client");
+			log.error("Couldn't create symmetric validator for null client");
 			return null;
 		} else if (StringUtils.isEmpty(client.getClientSecret())) {
-			logger.error("Couldn't create symmetric validator for client {} without a client secret", client.getClientId());
+			log.error("Couldn't create symmetric validator for client {} without a client secret", client.getClientId());
 			return null;
 		}
 
 		try {
 			return validators.get(client.getClientSecret());
 		} catch (UncheckedExecutionException | ExecutionException ue) {
-			logger.error("Problem loading client validator", ue);
+			log.error("Problem loading client validator", ue);
 			return null;
 		}
 	}

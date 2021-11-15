@@ -17,9 +17,23 @@
  *******************************************************************************/
 package cz.muni.ics.discovery.web;
 
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 import cz.muni.ics.discovery.util.WebfingerURLNormalizer;
 import cz.muni.ics.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oauth2.web.DeviceEndpoint;
+import cz.muni.ics.oauth2.web.IntrospectionEndpoint;
+import cz.muni.ics.oauth2.web.RevocationEndpoint;
+import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint;
@@ -30,17 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import cz.muni.ics.oauth2.model.PKCEAlgorithm;
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.oauth2.web.DeviceEndpoint;
-import cz.muni.ics.oauth2.web.IntrospectionEndpoint;
-import cz.muni.ics.oauth2.web.RevocationEndpoint;
-import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.openid.connect.service.UserInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,13 +55,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.nimbusds.jose.Algorithm;
-import com.nimbusds.jose.JWSAlgorithm;
-
 /**
  *
  * Handle OpenID Connect Discovery.
@@ -66,9 +63,8 @@ import com.nimbusds.jose.JWSAlgorithm;
  *
  */
 @Controller
+@Slf4j
 public class DiscoveryEndpoint {
-
-	private static final Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
 
 	public static final String WELL_KNOWN_URL = ".well-known";
 	public static final String OPENID_CONFIGURATION_URL = WELL_KNOWN_URL + "/openid-configuration";
@@ -100,7 +96,7 @@ public class DiscoveryEndpoint {
 							@RequestParam(value = "rel", required = false) String rel,
 							Model model) {
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals(ISSUER_STRING)) {
-			logger.warn("Responding to webfinger request for non-OIDC relation: {}", rel);
+			log.warn("Responding to webfinger request for non-OIDC relation: {}", rel);
 		}
 
 		if (!resource.equals(config.getIssuer())) {
@@ -111,7 +107,7 @@ public class DiscoveryEndpoint {
 					&& resourceUri.getScheme().equals("acct")) {
 				UserInfo user = extractUser(resourceUri);
 				if (user == null) {
-					logger.info("User not found: {}", resource);
+					log.info("User not found: {}", resource);
 					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
@@ -119,12 +115,12 @@ public class DiscoveryEndpoint {
 				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
 				if (!Strings.nullToEmpty(issuerComponents.getHost())
 					.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
-					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
+					log.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
 					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 			} else {
-				logger.info("Unknown URI format: " + resource);
+				log.info("Unknown URI format: " + resource);
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				return HttpCodeView.VIEWNAME;
 			}
@@ -269,7 +265,7 @@ public class DiscoveryEndpoint {
 		String baseUrl = config.getIssuer();
 
 		if (!baseUrl.endsWith("/")) {
-			logger.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
+			log.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
 			baseUrl = baseUrl.concat("/");
 		}
 

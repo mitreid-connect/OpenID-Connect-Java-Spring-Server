@@ -1,7 +1,6 @@
 package cz.muni.ics.oidc.server.claims;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Interface for all code that needs to modify claim values.
@@ -10,9 +9,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public abstract class ClaimModifier {
-
-	private static final Logger log = LoggerFactory.getLogger(ClaimModifier.class);
 
 	private final String claimName;
 	private final String modifierName;

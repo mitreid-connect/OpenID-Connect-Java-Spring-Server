@@ -16,27 +16,23 @@
 
 package cz.muni.ics.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.google.common.collect.ImmutableSet;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
-
-import com.google.common.collect.ImmutableSet;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-
-import static org.mockito.Mockito.when;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author jricher
@@ -57,11 +53,11 @@ public class TestBlacklistAwareRedirectResolver {
 	@InjectMocks
 	private BlacklistAwareRedirectResolver resolver;
 
-	private String blacklistedUri = "https://evil.example.com/";
+	private final String blacklistedUri = "https://evil.example.com/";
 
-	private String goodUri = "https://good.example.com/";
+	private final String goodUri = "https://good.example.com/";
 
-	private String pathUri = "https://good.example.com/with/path";
+	private final String pathUri = "https://good.example.com/with/path";
 
 	/**
 	 * @throws java.lang.Exception

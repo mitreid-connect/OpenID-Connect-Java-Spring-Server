@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder_scope (
 CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
 	owner_id BIGINT,
 	param VARCHAR(2048),
-	val VARCHAR(2048)
+    val VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth (

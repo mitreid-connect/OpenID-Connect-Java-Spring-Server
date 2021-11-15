@@ -21,16 +21,14 @@
 package cz.muni.ics.oauth2.repository.impl;
 
 import cz.muni.ics.data.PageCriteria;
+import cz.muni.ics.oauth2.model.AuthorizationCodeEntity;
 import cz.muni.ics.oauth2.repository.AuthorizationCodeRepository;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.oauth2.model.AuthorizationCodeEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

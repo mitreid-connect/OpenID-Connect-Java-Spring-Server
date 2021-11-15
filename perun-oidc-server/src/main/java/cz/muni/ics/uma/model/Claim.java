@@ -18,9 +18,7 @@ package cz.muni.ics.uma.model;
 
 import com.google.gson.JsonElement;
 import cz.muni.ics.oauth2.model.convert.JsonElementStringConverter;
-
 import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -198,13 +196,8 @@ public class Claim {
 			return false;
 		}
 		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		} else if (!value.equals(other.value)) {
-			return false;
-		}
-		return true;
+			return other.value == null;
+		} else return value.equals(other.value);
 	}
 
 }

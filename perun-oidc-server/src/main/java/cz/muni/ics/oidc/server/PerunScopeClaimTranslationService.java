@@ -4,11 +4,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import cz.muni.ics.oidc.server.claims.PerunCustomClaimDefinition;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfoService;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import java.util.HashSet;
 import java.util.Set;
-import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Translates scopes to claims. A single scope can provide access to multiple claims.
@@ -18,9 +17,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunScopeClaimTranslationService implements ScopeClaimTranslationService {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunScopeClaimTranslationService.class);
 
 	public static final String OPENID = "openid";
 	public static final String PROFILE = "profile";

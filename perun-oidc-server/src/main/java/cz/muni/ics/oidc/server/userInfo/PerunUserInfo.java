@@ -6,20 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import cz.muni.ics.openid.connect.model.DefaultUserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implements UserInfo by inheriting from DefaultUserInfo and adding more claims.
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunUserInfo extends DefaultUserInfo {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunUserInfo.class);
 
 	private final Map<String, JsonNode> customClaims = new LinkedHashMap<>();
 	private JsonObject obj;

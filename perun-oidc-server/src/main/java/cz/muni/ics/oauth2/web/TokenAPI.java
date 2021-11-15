@@ -21,6 +21,7 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.oauth2.view.TokenApiView;
 import cz.muni.ics.openid.connect.service.OIDCTokenService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
@@ -30,10 +31,7 @@ import cz.muni.ics.openid.connect.web.RootController;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
-
-import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/" + TokenAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
+@Slf4j
 public class TokenAPI {
 
 	public static final String URL = RootController.API_URL + "/tokens";
@@ -64,11 +63,6 @@ public class TokenAPI {
 
 	@Autowired
 	private OIDCTokenService oidcTokenService;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
 	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllAccessTokens(ModelMap m, Principal p) {
@@ -84,12 +78,12 @@ public class TokenAPI {
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 
 		if (token == null) {
-			logger.error("getToken failed; token not found: " + id);
+			log.error("getToken failed; token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
-			logger.error("getToken failed; token does not belong to principal " + p.getName());
+			log.error("getToken failed; token does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
@@ -105,12 +99,12 @@ public class TokenAPI {
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 
 		if (token == null) {
-			logger.error("getToken failed; token not found: " + id);
+			log.error("getToken failed; token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
-			logger.error("getToken failed; token does not belong to principal " + p.getName());
+			log.error("getToken failed; token does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
@@ -207,12 +201,12 @@ public class TokenAPI {
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
 
 		if (token == null) {
-			logger.error("refresh token not found: " + id);
+			log.error("refresh token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
-			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
+			log.error("refresh token " + id + " does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
@@ -228,12 +222,12 @@ public class TokenAPI {
 		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
 
 		if (token == null) {
-			logger.error("refresh token not found: " + id);
+			log.error("refresh token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
-			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
+			log.error("refresh token " + id + " does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;

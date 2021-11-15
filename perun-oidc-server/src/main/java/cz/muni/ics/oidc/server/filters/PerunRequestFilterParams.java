@@ -10,11 +10,11 @@ import java.util.Properties;
  */
 public class PerunRequestFilterParams {
 
-	private String filterName;
+	private final String filterName;
 
-	private String propertyPrefix;
-	private Properties properties;
-	private BeanUtil beanUtil;
+	private final String propertyPrefix;
+	private final Properties properties;
+	private final BeanUtil beanUtil;
 
 	public PerunRequestFilterParams(String filterName, String propertyPrefix, Properties properties, BeanUtil beanUtil) {
 		this.filterName = filterName;

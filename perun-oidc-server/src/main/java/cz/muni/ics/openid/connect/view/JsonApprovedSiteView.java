@@ -20,24 +20,6 @@
  */
 package cz.muni.ics.openid.connect.view;
 
-import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import cz.muni.ics.openid.connect.model.WhitelistedSite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.web.servlet.view.AbstractView;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -46,22 +28,32 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.openid.connect.model.WhitelistedSite;
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.servlet.view.AbstractView;
 
 /**
  * @author jricher
  *
  */
 @Component(JsonApprovedSiteView.VIEWNAME)
+@Slf4j
 public class JsonApprovedSiteView extends AbstractView {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
 
 	public static final String VIEWNAME = "jsonApprovedSiteView";
 
-	private Gson gson = new GsonBuilder()
+	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
 
 				@Override
@@ -73,10 +65,7 @@ public class JsonApprovedSiteView extends AbstractView {
 				@Override
 				public boolean shouldSkipClass(Class<?> clazz) {
 					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
+					return clazz.equals(BeanPropertyBindingResult.class);
 				}
 
 			})
@@ -118,7 +107,7 @@ public class JsonApprovedSiteView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JsonEntityView.java: ", e);
+			log.error("IOException in JsonEntityView.java: ", e);
 
 		}
 	}

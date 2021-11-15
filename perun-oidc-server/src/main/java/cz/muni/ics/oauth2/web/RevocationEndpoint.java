@@ -23,11 +23,10 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cz.muni.ics.openid.connect.view.HttpCodeView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,17 +39,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@Slf4j
 public class RevocationEndpoint {
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
 	private OAuth2TokenEntityService tokenServices;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
 
 	public static final String URL = "revoke";
 
@@ -92,7 +87,7 @@ public class RevocationEndpoint {
 			if (!accessToken.getClient().getClientId().equals(authClient.getClientId())) {
 				// trying to revoke a token we don't own, throw a 403
 
-				logger.info("Client " + authClient.getClientId() + " tried to revoke a token owned by " + accessToken.getClient().getClientId());
+				log.info("Client " + authClient.getClientId() + " tried to revoke a token owned by " + accessToken.getClient().getClientId());
 
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
@@ -101,7 +96,7 @@ public class RevocationEndpoint {
 			// if we got this far, we're allowed to do this
 			tokenServices.revokeAccessToken(accessToken);
 
-			logger.debug("Client " + authClient.getClientId() + " revoked access token " + tokenValue);
+			log.debug("Client " + authClient.getClientId() + " revoked access token " + tokenValue);
 
 			model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 			return HttpCodeView.VIEWNAME;
@@ -116,7 +111,7 @@ public class RevocationEndpoint {
 				if (!refreshToken.getClient().getClientId().equals(authClient.getClientId())) {
 					// trying to revoke a token we don't own, throw a 403
 
-					logger.info("Client " + authClient.getClientId() + " tried to revoke a token owned by " + refreshToken.getClient().getClientId());
+					log.info("Client " + authClient.getClientId() + " tried to revoke a token owned by " + refreshToken.getClient().getClientId());
 
 					model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 					return HttpCodeView.VIEWNAME;
@@ -125,7 +120,7 @@ public class RevocationEndpoint {
 				// if we got this far, we're allowed to do this
 				tokenServices.revokeRefreshToken(refreshToken);
 
-				logger.debug("Client " + authClient.getClientId() + " revoked access token " + tokenValue);
+				log.debug("Client " + authClient.getClientId() + " revoked access token " + tokenValue);
 
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;
@@ -134,7 +129,7 @@ public class RevocationEndpoint {
 
 				// neither token type was found, simply say "OK" and be on our way.
 
-				logger.debug("Failed to revoke token " + tokenValue);
+				log.debug("Failed to revoke token " + tokenValue);
 
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;

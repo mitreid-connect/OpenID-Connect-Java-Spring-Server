@@ -15,11 +15,11 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
+import com.google.common.base.Strings;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.io.UnsupportedEncodingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,8 +29,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
-
-import com.google.common.base.Strings;
 
 /**
  * Loads client details based on URI encoding as passed in from basic auth.
@@ -42,7 +40,7 @@ import com.google.common.base.Strings;
 @Service("uriEncodedClientUserDetailsService")
 public class UriEncodedClientUserDetailsService implements UserDetailsService {
 
-	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
 	private ClientDetailsEntityService clientDetailsService;
 	private final ConfigurationPropertiesBean config;

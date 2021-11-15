@@ -17,17 +17,15 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.web;
 
+import com.nimbusds.jose.jwk.JWK;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.openid.connect.view.JWKSetView;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.nimbusds.jose.jwk.JWK;
 
 @Controller
 public class JWKSetPublishingEndpoint {

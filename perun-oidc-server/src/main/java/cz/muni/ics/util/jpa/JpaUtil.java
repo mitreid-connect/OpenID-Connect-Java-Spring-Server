@@ -17,12 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.util.jpa;
 
+import cz.muni.ics.data.PageCriteria;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
-import cz.muni.ics.data.PageCriteria;
 
 /**
  * @author mfranklin

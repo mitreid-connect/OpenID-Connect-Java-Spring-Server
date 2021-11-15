@@ -1,18 +1,16 @@
 package cz.muni.ics.oidc.aop;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Slf4j
 public class WebLoggingAspect {
-
-    public static final Logger log = LoggerFactory.getLogger(WebLoggingAspect.class);
 
     @AfterReturning(value = "execution(* cz.muni.ics.oidc.web..* (..))", returning = "result")
     public Object logAroundMethodWithParams(JoinPoint jp, Object result) {

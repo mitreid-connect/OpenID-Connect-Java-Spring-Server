@@ -16,10 +16,9 @@
 
 package cz.muni.ics.uma.service;
 
-import java.util.Collection;
-
 import cz.muni.ics.oauth2.model.RegisteredClient;
 import cz.muni.ics.uma.model.SavedRegisteredClient;
+import java.util.Collection;
 
 /**
  * @author jricher

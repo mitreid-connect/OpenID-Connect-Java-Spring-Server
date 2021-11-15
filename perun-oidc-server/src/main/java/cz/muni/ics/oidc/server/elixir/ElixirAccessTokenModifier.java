@@ -2,11 +2,10 @@ package cz.muni.ics.oidc.server.elixir;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import cz.muni.ics.oidc.server.PerunAccessTokenEnhancer;
+import cz.muni.ics.openid.connect.model.UserInfo;
 import java.util.Collections;
 import java.util.Set;
-import cz.muni.ics.openid.connect.model.UserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -16,9 +15,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
  * @author Martin Kuba <makub@ics.muni.cz>
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class ElixirAccessTokenModifier implements PerunAccessTokenEnhancer.AccessTokenClaimsModifier {
-
-	private final static Logger log = LoggerFactory.getLogger(ElixirAccessTokenModifier.class);
 
 	public ElixirAccessTokenModifier() {
 	}

@@ -17,29 +17,28 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service.impl;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
+import cz.muni.ics.openid.connect.service.ApprovedSiteService;
+import java.util.List;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.annotation.Rollback;
-
-import java.util.List;
-import java.util.Set;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultApprovedSiteService {

@@ -17,24 +17,45 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.service.impl;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static com.nimbusds.jose.JWSAlgorithm.RS256;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import cz.muni.ics.oauth2.model.AuthenticationHolderEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.AuthenticationHolderRepository;
-import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
-import cz.muni.ics.oauth2.service.SystemScopeService;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -51,28 +72,6 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static com.nimbusds.jose.JWSAlgorithm.RS256;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * @author wkim
  *
@@ -87,13 +86,13 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private OAuth2Authentication authentication;
 	private ClientDetailsEntity client;
 	private ClientDetailsEntity badClient;
-	private String clientId = "test_client";
-	private String badClientId = "bad_client";
-	private Set<String> scope = newHashSet("openid", "profile", "email", "offline_access");
+	private final String clientId = "test_client";
+	private final String badClientId = "bad_client";
+	private final Set<String> scope = newHashSet("openid", "profile", "email", "offline_access");
 	private OAuth2RefreshTokenEntity refreshToken;
 	private OAuth2AccessTokenEntity accessToken;
-	private String refreshTokenValue = "refresh_token_value";
-	private String userName = "6a50ac11786d402a9591d3e592ac770f";
+	private final String refreshTokenValue = "refresh_token_value";
+	private final String userName = "6a50ac11786d402a9591d3e592ac770f";
 	private final String issuer = "https://issuer.com/oidc/";
 	private TokenRequest tokenRequest;
 

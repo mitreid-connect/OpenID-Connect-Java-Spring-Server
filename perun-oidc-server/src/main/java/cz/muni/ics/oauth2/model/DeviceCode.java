@@ -19,7 +19,6 @@ package cz.muni.ics.oauth2.model;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;

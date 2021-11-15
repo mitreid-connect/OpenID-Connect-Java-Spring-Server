@@ -20,21 +20,19 @@
  */
 package cz.muni.ics.oauth2.service.impl;
 
-import cz.muni.ics.oauth2.model.SystemScope;
-import cz.muni.ics.oauth2.repository.SystemScopeRepository;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import cz.muni.ics.oauth2.service.SystemScopeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.repository.SystemScopeRepository;
+import cz.muni.ics.oauth2.service.SystemScopeService;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author jricher
@@ -46,28 +44,28 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	@Autowired
 	private SystemScopeRepository repository;
 
-	private Predicate<SystemScope> isDefault = new Predicate<SystemScope>() {
+	private final Predicate<SystemScope> isDefault = new Predicate<SystemScope>() {
 		@Override
 		public boolean apply(SystemScope input) {
 			return (input != null && input.isDefaultScope());
 		}
 	};
 
-	private Predicate<SystemScope> isRestricted = new Predicate<SystemScope>() {
+	private final Predicate<SystemScope> isRestricted = new Predicate<SystemScope>() {
 		@Override
 		public boolean apply(SystemScope input) {
 			return (input != null && input.isRestricted());
 		}
 	};
 
-	private Predicate<SystemScope> isReserved = new Predicate<SystemScope>() {
+	private final Predicate<SystemScope> isReserved = new Predicate<SystemScope>() {
 		@Override
 		public boolean apply(SystemScope input) {
 			return (input != null && getReserved().contains(input));
 		}
 	};
 
-	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
+	private final Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
 		public SystemScope apply(String input) {
 			if (Strings.isNullOrEmpty(input)) {
@@ -85,7 +83,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		}
 	};
 
-	private Function<SystemScope, String> systemScopeToString = new Function<SystemScope, String>() {
+	private final Function<SystemScope, String> systemScopeToString = new Function<SystemScope, String>() {
 		@Override
 		public String apply(SystemScope input) {
 			if (input == null) {

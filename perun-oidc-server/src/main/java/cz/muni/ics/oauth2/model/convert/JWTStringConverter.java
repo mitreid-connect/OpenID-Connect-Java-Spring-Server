@@ -16,24 +16,19 @@
 
 package cz.muni.ics.oauth2.model.convert;
 
-import java.text.ParseException;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
+import java.text.ParseException;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author jricher
  */
 @Converter
+@Slf4j
 public class JWTStringConverter implements AttributeConverter<JWT, String> {
-
-	public static Logger logger = LoggerFactory.getLogger(JWTStringConverter.class);
 
 	@Override
 	public String convertToDatabaseColumn(JWT attribute) {
@@ -46,7 +41,7 @@ public class JWTStringConverter implements AttributeConverter<JWT, String> {
 			try {
 				return JWTParser.parse(dbData);
 			} catch (ParseException e) {
-				logger.error("Unable to parse JWT", e);
+				log.error("Unable to parse JWT", e);
 				return null;
 			}
 		} else {

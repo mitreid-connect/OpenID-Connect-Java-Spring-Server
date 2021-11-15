@@ -9,20 +9,18 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml2.core.AuthnContext;
 import org.opensaml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml2.core.AuthnStatement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
+@Slf4j
 public class PerunSamlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunSamlAuthenticationSuccessHandler.class);
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -51,7 +49,7 @@ public class PerunSamlAuthenticationSuccessHandler extends SavedRequestAwareAuth
                 .map(AuthnContext::getAuthnContextClassRef)
                 .map(AuthnContextClassRef::getAuthnContextClassRef)
                 .collect(Collectors.joining());
-        request.getSession(true).setAttribute(PerunOIDCTokenService.SESSION_PARAM_ACR, acrs);;
+        request.getSession(true).setAttribute(PerunOIDCTokenService.SESSION_PARAM_ACR, acrs);
     }
 
 }
