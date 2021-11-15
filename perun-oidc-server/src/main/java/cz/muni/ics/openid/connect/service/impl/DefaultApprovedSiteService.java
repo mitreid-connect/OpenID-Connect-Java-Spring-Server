@@ -24,6 +24,7 @@ import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.repository.ApprovedSiteRepository;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,8 @@ import java.util.Set;
  *
  */
 @Service("defaultApprovedSiteService")
+@Slf4j
 public class DefaultApprovedSiteService implements ApprovedSiteService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
 
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
@@ -148,11 +145,11 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	public void clearExpiredSites() {
 
-		logger.debug("Clearing expired approved sites");
+		log.debug("Clearing expired approved sites");
 
 		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites.size() > 0) {
-			logger.info("Found " + expiredSites.size() + " expired approved sites.");
+			log.info("Found " + expiredSites.size() + " expired approved sites.");
 		}
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {

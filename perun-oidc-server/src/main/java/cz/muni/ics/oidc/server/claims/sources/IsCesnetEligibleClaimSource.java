@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -27,9 +28,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Pavol Pluta <pavol.pluta1@gmail.com>
  */
+@Slf4j
 public class IsCesnetEligibleClaimSource extends ClaimSource {
-
-    public static final Logger log = LoggerFactory.getLogger(IsCesnetEligibleClaimSource.class);
 
     private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final int VALIDITY_PERIOD = 12; // 12 months

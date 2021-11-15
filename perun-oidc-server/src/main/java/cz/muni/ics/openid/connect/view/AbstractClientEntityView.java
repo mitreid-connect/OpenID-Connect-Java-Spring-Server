@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -59,11 +60,8 @@ import com.nimbusds.jwt.JWT;
  * @author jricher
  *
  */
+@Slf4j
 public abstract class AbstractClientEntityView extends AbstractView {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEntityView.class);
 
 	private JsonParser parser = new JsonParser();
 
@@ -162,7 +160,7 @@ public abstract class AbstractClientEntityView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JsonEntityView.java: ", e);
+			log.error("IOException in JsonEntityView.java: ", e);
 
 		}
 	}

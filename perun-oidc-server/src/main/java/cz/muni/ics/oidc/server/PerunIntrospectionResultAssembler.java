@@ -9,6 +9,7 @@ import cz.muni.ics.oauth2.service.impl.DefaultIntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +19,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunIntrospectionResultAssembler extends DefaultIntrospectionResultAssembler {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunIntrospectionResultAssembler.class);
 
 	private final ConfigurationPropertiesBean configBean;
 	private final ScopeClaimTranslationService translator;

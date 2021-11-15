@@ -4,6 +4,7 @@ import cz.muni.ics.oidc.models.PerunUser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,9 +13,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLCredential;
 
+@Slf4j
 public class PerunSamlAuthenticationProvider extends SAMLAuthenticationProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunSamlAuthenticationProvider.class);
 
     private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
     private static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");

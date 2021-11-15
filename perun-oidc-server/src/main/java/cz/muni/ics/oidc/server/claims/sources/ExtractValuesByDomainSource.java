@@ -11,6 +11,7 @@ import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Collections;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +26,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dominik Baránek <baranek@ics.muni.cz>
  */
+@Slf4j
 public class ExtractValuesByDomainSource extends ClaimSource {
-
-	private static final Logger log = LoggerFactory.getLogger(ExtractValuesByDomainSource.class);
 
 	private static final String EXTRACT_BY_DOMAIN = "extractByDomain";
 	private static final String ATTRIBUTE_NAME = "attributeName";

@@ -20,6 +20,7 @@ package cz.muni.ics.discovery.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -33,9 +34,8 @@ import com.google.common.base.Strings;
  *
  * @author wkim
  */
+@Slf4j
 public class WebfingerURLNormalizer {
-
-	private static final Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
 
 	// pattern used to parse user input; we can't use the built-in java URI parser
 	private static final Pattern pattern = Pattern.compile("^" +
@@ -63,7 +63,7 @@ public class WebfingerURLNormalizer {
 		// NOTE: we can't use the Java built-in URI class because it doesn't split the parts appropriately
 
 		if (StringUtils.isEmpty(identifier)) {
-			logger.warn("Can't normalize null or empty URI: " + identifier);
+			log.warn("Can't normalize null or empty URI: " + identifier);
 			return null;
 		} else {
 			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
@@ -81,7 +81,7 @@ public class WebfingerURLNormalizer {
 				builder.query(m.group(13));
 				builder.fragment(m.group(15)); // we throw away the hash, but this is the group it would be if we kept it
 			} else {
-				logger.warn("Parser couldn't match input: {}", identifier);
+				log.warn("Parser couldn't match input: {}", identifier);
 				return null;
 			}
 

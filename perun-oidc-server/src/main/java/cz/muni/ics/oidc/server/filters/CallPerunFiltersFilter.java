@@ -16,6 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Dominik Baranek <baranek@ics.muni.cz>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class CallPerunFiltersFilter extends GenericFilterBean {
-
-    public static final Logger log = LoggerFactory.getLogger(CallPerunFiltersFilter.class);
 
     @Autowired
     private Properties coreProperties;

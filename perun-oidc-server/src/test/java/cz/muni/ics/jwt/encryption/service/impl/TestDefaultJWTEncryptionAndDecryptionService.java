@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.crypto.Cipher;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,9 +66,8 @@ import static org.junit.Assert.assertTrue;
  *
  */
 
+@Slf4j
 public class TestDefaultJWTEncryptionAndDecryptionService {
-
-	private static Logger logger = LoggerFactory.getLogger(TestDefaultJWTEncryptionAndDecryptionService.class);
 
 	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
 

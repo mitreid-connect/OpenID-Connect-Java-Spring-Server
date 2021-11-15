@@ -28,6 +28,7 @@ import cz.muni.ics.openid.connect.web.RootController;
 import java.util.Set;
 
 import cz.muni.ics.oauth2.service.SystemScopeService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,17 +51,13 @@ import com.google.gson.Gson;
 @Controller
 @RequestMapping("/" + ScopeAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
+@Slf4j
 public class ScopeAPI {
 
 	public static final String URL = RootController.API_URL + "/scopes";
 
 	@Autowired
 	private SystemScopeService scopeService;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ScopeAPI.class);
 
 	private Gson gson = new Gson();
 
@@ -86,7 +83,7 @@ public class ScopeAPI {
 			return JsonEntityView.VIEWNAME;
 		} else {
 
-			logger.error("getScope failed; scope not found: " + id);
+			log.error("getScope failed; scope not found: " + id);
 
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested scope with id " + id + " could not be found.");
@@ -114,7 +111,7 @@ public class ScopeAPI {
 				return JsonEntityView.VIEWNAME;
 			} else {
 
-				logger.error("updateScope failed; scope ids to not match: got "
+				log.error("updateScope failed; scope ids to not match: got "
 						+ existing.getId() + " and " + scope.getId());
 
 				m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -125,7 +122,7 @@ public class ScopeAPI {
 
 		} else {
 
-			logger.error("updateScope failed; scope with id " + id + " not found.");
+			log.error("updateScope failed; scope with id " + id + " not found.");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update scope. The scope with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
@@ -140,7 +137,7 @@ public class ScopeAPI {
 		SystemScope alreadyExists = scopeService.getByValue(scope.getValue());
 		if (alreadyExists != null) {
 			//Error, cannot save a scope with the same value as an existing one
-			logger.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
+			log.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
 			m.put(HttpCodeView.CODE, HttpStatus.CONFLICT);
 			m.put(JsonErrorView.ERROR_MESSAGE, "A scope with value " + scope.getValue() + " already exists, please choose a different value.");
 			return JsonErrorView.VIEWNAME;
@@ -155,7 +152,7 @@ public class ScopeAPI {
 			return JsonEntityView.VIEWNAME;
 		} else {
 
-			logger.error("createScope failed; JSON was invalid: " + json);
+			log.error("createScope failed; JSON was invalid: " + json);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not save new scope " + scope + ". The scope service failed to return a saved entity.");
 			return JsonErrorView.VIEWNAME;
@@ -175,7 +172,7 @@ public class ScopeAPI {
 			return HttpCodeView.VIEWNAME;
 		} else {
 
-			logger.error("deleteScope failed; scope with id " + id + " not found.");
+			log.error("deleteScope failed; scope with id " + id + " not found.");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete scope. The requested scope with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;

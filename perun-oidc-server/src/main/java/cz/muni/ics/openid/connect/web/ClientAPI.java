@@ -43,6 +43,7 @@ import cz.muni.ics.openid.connect.view.ClientEntityViewForUsers;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity.AppType;
@@ -119,6 +120,7 @@ import static cz.muni.ics.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RE
 @Controller
 @RequestMapping("/" + ClientAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
+@Slf4j
 public class ClientAPI {
 
 	public static final String URL = RootController.API_URL + "/clients";
@@ -206,11 +208,6 @@ public class ClientAPI {
 			.create();
 
 	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ClientAPI.class);
-
-	/**
 	 * Get a list of all clients
 	 * @param modelAndView
 	 * @return
@@ -247,17 +244,17 @@ public class ClientAPI {
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
 		} catch (JsonSyntaxException e) {
-			logger.error("apiAddClient failed due to JsonSyntaxException", e);
+			log.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
-			logger.error("apiAddClient failed due to IllegalStateException", e);
+			log.error("apiAddClient failed due to IllegalStateException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (ValidationException e) {
-			logger.error("apiUpdateClient failed due to ValidationException", e);
+			log.error("apiUpdateClient failed due to ValidationException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a ValidationException.");
 			return JsonErrorView.VIEWNAME;
@@ -287,7 +284,7 @@ public class ClientAPI {
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
-				logger.error("tried to create client with private key auth but no private key");
+				log.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
@@ -298,7 +295,7 @@ public class ClientAPI {
 
 		} else {
 
-			logger.error("unknown auth method");
+			log.error("unknown auth method");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
@@ -318,7 +315,7 @@ public class ClientAPI {
 				return ClientEntityViewForUsers.VIEWNAME;
 			}
 		} catch (IllegalArgumentException e) {
-			logger.error("Unable to save client: {}", e.getMessage());
+			log.error("Unable to save client: {}", e.getMessage());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
@@ -327,7 +324,7 @@ public class ClientAPI {
 			if (cause instanceof DatabaseException) {
 				Throwable databaseExceptionCause = cause.getCause();
 				if(databaseExceptionCause instanceof SQLIntegrityConstraintViolationException) {
-					logger.error("apiAddClient failed; duplicate client id entry found: {}", client.getClientId());
+					log.error("apiAddClient failed; duplicate client id entry found: {}", client.getClientId());
 					m.addAttribute(HttpCodeView.CODE, HttpStatus.CONFLICT);
 					m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client. Duplicate client id entry found: " + client.getClientId());
 					return JsonErrorView.VIEWNAME;
@@ -358,17 +355,17 @@ public class ClientAPI {
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
 		} catch (JsonSyntaxException e) {
-			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
+			log.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
-			logger.error("apiUpdateClient failed due to IllegalStateException", e);
+			log.error("apiUpdateClient failed due to IllegalStateException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (ValidationException e) {
-			logger.error("apiUpdateClient failed due to ValidationException", e);
+			log.error("apiUpdateClient failed due to ValidationException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a ValidationException.");
 			return JsonErrorView.VIEWNAME;
@@ -377,7 +374,7 @@ public class ClientAPI {
 		ClientDetailsEntity oldClient = clientService.getClientById(id);
 
 		if (oldClient == null) {
-			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
+			log.error("apiUpdateClient failed; client with id " + id + " could not be found.");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
@@ -407,7 +404,7 @@ public class ClientAPI {
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
-				logger.error("tried to create client with private key auth but no private key");
+				log.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
@@ -418,7 +415,7 @@ public class ClientAPI {
 
 		} else {
 
-			logger.error("unknown auth method");
+			log.error("unknown auth method");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
@@ -436,7 +433,7 @@ public class ClientAPI {
 				return ClientEntityViewForUsers.VIEWNAME;
 			}
 		} catch (IllegalArgumentException e) {
-			logger.error("Unable to save client: {}", e.getMessage());
+			log.error("Unable to save client: {}", e.getMessage());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
@@ -456,7 +453,7 @@ public class ClientAPI {
 		ClientDetailsEntity client = clientService.getClientById(id);
 
 		if (client == null) {
-			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
+			log.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			modelAndView.getModelMap().put(JsonErrorView.ERROR_MESSAGE, "Could not delete client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
@@ -481,7 +478,7 @@ public class ClientAPI {
 		ClientDetailsEntity client = clientService.getClientById(id);
 
 		if (client == null) {
-			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
+			log.error("apiShowClient failed; client with id " + id + " could not be found.");
 			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			model.addAttribute(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
@@ -612,7 +609,7 @@ public class ClientAPI {
 								throw new ValidationException("invalid_client_metadata", "Software statement can't contain client ID", HttpStatus.BAD_REQUEST);
 
 							default:
-								logger.warn("Software statement contained unknown field: " + claim + " with value " + claimSet.getClaim(claim));
+								log.warn("Software statement contained unknown field: " + claim + " with value " + claimSet.getClaim(claim));
 								break;
 						}
 					}

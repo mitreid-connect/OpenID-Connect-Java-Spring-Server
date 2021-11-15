@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import com.nimbusds.jose.KeyLengthException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +54,8 @@ import org.springframework.util.StringUtils;
 /**
  * @author wkim
  */
+@Slf4j
 public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
-
-	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
 	private final Map<String, JWEEncrypter> encrypters = new HashMap<>();
 	private final Map<String, JWEDecrypter> decrypters = new HashMap<>();
@@ -157,7 +157,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.encrypt(encrypter);
 		} catch (JOSEException e) {
-			logger.error("Failed to encrypt JWT, error was: ", e);
+			log.error("Failed to encrypt JWT, error was: ", e);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		try {
 			jwt.decrypt(decrypter);
 		} catch (JOSEException e) {
-			logger.error("Failed to decrypt JWT, error was: ", e);
+			log.error("Failed to decrypt JWT, error was: ", e);
 		}
 	}
 
@@ -238,7 +238,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			} else if (jwk instanceof OctetSequenceKey) {
 				handleOctetSeqKey(id, jwk);
 			} else {
-				logger.warn("Unknown key type: {}", jwk);
+				log.warn("Unknown key type: {}", jwk);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 			decrypters.put(id, decrypter);
 		} else {
-			logger.warn("No private key for key #{}", jwk.getKeyID());
+			log.warn("No private key for key #{}", jwk.getKeyID());
 		}
 	}
 
@@ -277,7 +277,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 			decrypters.put(id, decrypter);
 		} else {
-			logger.warn("No private key for key #{}", jwk.getKeyID());
+			log.warn("No private key for key #{}", jwk.getKeyID());
 		}
 	}
 

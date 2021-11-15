@@ -31,6 +31,7 @@ import java.util.Set;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +53,8 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
+@Slf4j
 public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(JWTBearerAuthenticationProvider.class);
 
 	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
@@ -201,7 +198,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getName());
 		} catch (ParseException e) {
 
-			logger.error("Failure during authentication, error was: ", e);
+			log.error("Failure during authentication, error was: ", e);
 
 			throw new AuthenticationServiceException("Invalid JWT format");
 		}

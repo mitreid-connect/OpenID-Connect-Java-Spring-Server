@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Component(UserInfoView.VIEWNAME)
+@Slf4j
 public class UserInfoView extends AbstractView {
 
 	public static final String REQUESTED_CLAIMS = "requestedClaims";
@@ -56,11 +58,6 @@ public class UserInfoView extends AbstractView {
 	public static final String VIEWNAME = "userInfoView";
 
 	private static JsonParser jsonParser = new JsonParser();
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 
 	@Autowired
 	private ScopeClaimTranslationService translator;
@@ -122,7 +119,7 @@ public class UserInfoView extends AbstractView {
 			gson.toJson(json, out);
 		} catch (IOException e) {
 
-			logger.error("IOException in UserInfoView.java: ", e);
+			log.error("IOException in UserInfoView.java: ", e);
 
 		}
 

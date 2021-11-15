@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,8 @@ import org.slf4j.LoggerFactory;
  * @author jricher
  */
 @Converter
+@Slf4j
 public class SerializableStringConverter implements AttributeConverter<Serializable, String> {
-
-	private static Logger logger = LoggerFactory.getLogger(SerializableStringConverter.class);
 
 	@Override
 	public String convertToDatabaseColumn(Serializable attribute) {
@@ -50,7 +50,7 @@ public class SerializableStringConverter implements AttributeConverter<Serializa
 		} else if (attribute instanceof Date) {
 			return Long.toString(((Date)attribute).getTime());
 		} else {
-			logger.warn("Dropping data from request: {} :: {}", attribute, attribute.getClass());
+			log.warn("Dropping data from request: {} :: {}", attribute, attribute.getClass());
 			return null;
 		}
 	}

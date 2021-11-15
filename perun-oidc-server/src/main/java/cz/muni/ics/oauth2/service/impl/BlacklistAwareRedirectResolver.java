@@ -21,6 +21,7 @@ package cz.muni.ics.oauth2.service.impl;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +54,8 @@ import java.util.Set;
  *
  */
 @Component("blacklistAwareRedirectResolver")
+@Slf4j
 public class BlacklistAwareRedirectResolver implements RedirectResolver {
-
-	private static final Logger log = LoggerFactory.getLogger(BlacklistAwareRedirectResolver.class);
 
 	@Autowired
 	private BlacklistedSiteService blacklistService;

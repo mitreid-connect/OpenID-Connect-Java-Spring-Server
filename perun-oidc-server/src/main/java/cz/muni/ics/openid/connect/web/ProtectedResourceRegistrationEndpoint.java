@@ -36,6 +36,7 @@ import cz.muni.ics.openid.connect.ClientDetailsEntityJsonProcessor;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.exception.ValidationException;
 import cz.muni.ics.openid.connect.service.OIDCTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ import com.google.gson.JsonSyntaxException;
 
 @Controller
 @RequestMapping(value = ProtectedResourceRegistrationEndpoint.URL)
+@Slf4j
 public class ProtectedResourceRegistrationEndpoint {
 
 	/**
@@ -80,11 +82,6 @@ public class ProtectedResourceRegistrationEndpoint {
 	private OIDCTokenService connectTokenService;
 
 	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ProtectedResourceRegistrationEndpoint.class);
-
-	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
 	 * @param jsonString
 	 * @param m
@@ -100,7 +97,7 @@ public class ProtectedResourceRegistrationEndpoint {
 		} catch (JsonSyntaxException e) {
 			// bad parse
 			// didn't parse, this is a bad request
-			logger.error("registerNewProtectedResource failed; submitted JSON is malformed");
+			log.error("registerNewProtectedResource failed; submitted JSON is malformed");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
@@ -178,11 +175,11 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
+				log.error("Unsupported encoding", e);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
-				logger.error("Couldn't save client", e);
+				log.error("Couldn't save client", e);
 
 				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
@@ -192,7 +189,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			}
 		} else {
 			// didn't parse, this is a bad request
-			logger.error("registerNewClient failed; submitted JSON is malformed");
+			log.error("registerNewClient failed; submitted JSON is malformed");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 			return HttpCodeView.VIEWNAME;
@@ -246,13 +243,13 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
+				log.error("Unsupported encoding", e);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			}
 		} else {
 			// client mismatch
-			logger.error("readResourceConfiguration failed, client ID mismatch: "
+			log.error("readResourceConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
@@ -279,7 +276,7 @@ public class ProtectedResourceRegistrationEndpoint {
 		} catch (JsonSyntaxException e) {
 			// bad parse
 			// didn't parse, this is a bad request
-			logger.error("updateProtectedResource failed; submitted JSON is malformed");
+			log.error("updateProtectedResource failed; submitted JSON is malformed");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
@@ -357,11 +354,11 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
+				log.error("Unsupported encoding", e);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
-				logger.error("Couldn't save client", e);
+				log.error("Couldn't save client", e);
 
 				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
@@ -371,7 +368,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			}
 		} else {
 			// client mismatch
-			logger.error("updateProtectedResource" +
+			log.error("updateProtectedResource" +
 					" failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
@@ -402,7 +399,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			return HttpCodeView.VIEWNAME;
 		} else {
 			// client mismatch
-			logger.error("readClientConfiguration failed, client ID mismatch: "
+			log.error("readClientConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
@@ -448,7 +445,7 @@ public class ProtectedResourceRegistrationEndpoint {
 				// Re-issue the token if it has been issued before [currentTime - validity]
 				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
 				if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate)) {
-					logger.info("Rotating the registration access token for " + client.getClientId());
+					log.info("Rotating the registration access token for " + client.getClientId());
 					tokenService.revokeAccessToken(token);
 					OAuth2AccessTokenEntity newToken = connectTokenService.createResourceAccessToken(client);
 					tokenService.saveAccessToken(newToken);
@@ -458,7 +455,7 @@ public class ProtectedResourceRegistrationEndpoint {
 					return token;
 				}
 			} catch (ParseException e) {
-				logger.error("Couldn't parse a known-valid token?", e);
+				log.error("Couldn't parse a known-valid token?", e);
 				return token;
 			}
 		} else {

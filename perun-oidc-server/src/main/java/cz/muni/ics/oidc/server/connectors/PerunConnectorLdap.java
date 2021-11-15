@@ -3,6 +3,7 @@ package cz.muni.ics.oidc.server.connectors;
 import com.google.common.base.Strings;
 import cz.muni.ics.oidc.aop.LogTimes;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -23,9 +24,8 @@ import org.springframework.beans.factory.DisposableBean;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunConnectorLdap implements DisposableBean {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunConnectorLdap.class);
 
 	private final String baseDN;
 	private final LdapConnectionPool pool;

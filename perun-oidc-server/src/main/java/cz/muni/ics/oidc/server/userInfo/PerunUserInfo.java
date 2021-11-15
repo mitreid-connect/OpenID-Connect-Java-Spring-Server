@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import cz.muni.ics.openid.connect.model.DefaultUserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +18,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunUserInfo extends DefaultUserInfo {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunUserInfo.class);
 
 	private final Map<String, JsonNode> customClaims = new LinkedHashMap<>();
 	private JsonObject obj;

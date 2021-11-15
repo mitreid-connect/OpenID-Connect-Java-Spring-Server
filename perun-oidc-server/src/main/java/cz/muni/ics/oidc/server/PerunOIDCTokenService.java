@@ -9,6 +9,7 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
@@ -28,9 +29,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunOIDCTokenService extends DefaultOIDCTokenService {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunOIDCTokenService.class);
 
 	public static final String SESSION_PARAM_ACR = "acr";
 

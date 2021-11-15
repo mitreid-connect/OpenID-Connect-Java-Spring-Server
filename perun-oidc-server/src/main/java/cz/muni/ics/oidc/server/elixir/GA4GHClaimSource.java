@@ -48,6 +48,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -70,12 +71,11 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class GA4GHClaimSource extends ClaimSource {
 
 	static final String GA4GH_SCOPE = "ga4gh_passport_v1";
 	private static final String GA4GH_CLAIM = "ga4gh_passport_v1";
-
-	private static final Logger log = LoggerFactory.getLogger(GA4GHClaimSource.class);
 
 	private static final String BONA_FIDE_URL = "https://doi.org/10.1038/s41431-018-0219-y";
 	private static final String ELIXIR_ORG_URL = "https://elixir-europe.org/";

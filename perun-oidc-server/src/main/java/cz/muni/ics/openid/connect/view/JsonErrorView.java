@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,7 @@ import com.google.gson.JsonObject;
  *
  */
 @Component(JsonErrorView.VIEWNAME)
+@Slf4j
 public class JsonErrorView extends AbstractView {
 
 	/**
@@ -55,11 +57,6 @@ public class JsonErrorView extends AbstractView {
 	 *
 	 */
 	public static final String ERROR = "error";
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(JsonErrorView.class);
 
 	public static final String VIEWNAME = "jsonErrorView";
 
@@ -115,7 +112,7 @@ public class JsonErrorView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JsonErrorView.java: ", e);
+			log.error("IOException in JsonErrorView.java: ", e);
 
 		}
 	}

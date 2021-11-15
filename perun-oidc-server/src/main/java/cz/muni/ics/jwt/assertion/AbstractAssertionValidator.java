@@ -3,14 +3,14 @@ package cz.muni.ics.jwt.assertion;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 
+@Slf4j
 public abstract class AbstractAssertionValidator implements AssertionValidator {
-
-	private static final Logger logger = LoggerFactory.getLogger(AbstractAssertionValidator.class);
 
 	/**
 	 * Extract issuer from claims present in JWT assertion.
@@ -26,7 +26,7 @@ public abstract class AbstractAssertionValidator implements AssertionValidator {
 		try {
 			claims = assertion.getJWTClaimsSet();
 		} catch (ParseException e) {
-			logger.debug("Invalid assertion claims");
+			log.debug("Invalid assertion claims");
 			return null;
 		}
 

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Controller
+@Slf4j
 public class PerunUnapprovedRegistrationController {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunUnapprovedRegistrationController.class);
 
     public static final String REGISTRATION_FORM_MAPPING = "/regForm";
     public static final String REGISTRATION_FORM_SUBMIT_MAPPING = "/regForm/submit";

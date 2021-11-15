@@ -59,6 +59,7 @@ import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,12 +87,8 @@ import com.nimbusds.jwt.PlainJWT;
  *
  */
 @Service("defaultOAuth2ProviderTokenService")
+@Slf4j
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
 
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
@@ -147,7 +144,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			return null;
 		} else if (token.isExpired()) {
 			// immediately revoke expired token
-			logger.debug("Clearing expired access token: " + token.getValue());
+			log.debug("Clearing expired access token: " + token.getValue());
 			revokeAccessToken(token);
 			return null;
 		} else {
@@ -165,7 +162,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			return null;
 		} else if (token.isExpired()) {
 			// immediately revoke expired token
-			logger.debug("Clearing expired refresh token: " + token.getValue());
+			log.debug("Clearing expired refresh token: " + token.getValue());
 			revokeRefreshToken(token);
 			return null;
 		} else {
@@ -207,7 +204,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 							throw new InvalidRequestException("Code challenge and verifier do not match");
 						}
 					} catch (NoSuchAlgorithmException e) {
-						logger.error("Unknown algorithm for PKCE digest", e);
+						log.error("Unknown algorithm for PKCE digest", e);
 					}
 				}
 
@@ -375,7 +372,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				token.setScope(scopeService.toStrings(scope));
 			} else {
 				String errorMsg = "Up-scoping is not allowed.";
-				logger.error(errorMsg);
+				log.error(errorMsg);
 				throw new InvalidScopeException(errorMsg);
 			}
 		} else {
@@ -493,7 +490,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 */
 	@Override
 	public void clearExpiredTokens() {
-		logger.debug("Cleaning out all expired tokens");
+		log.debug("Cleaning out all expired tokens");
 
 		new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>("clearExpiredAccessTokens") {
 			@Override

@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,8 @@ import org.springframework.util.StringUtils;
  * </ul>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunEnsureVoMember extends PerunRequestFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunEnsureVoMember.class);
 
     private static final String TRIGGER_ATTR = "triggerAttr";
     private static final String VO_DEFS_ATTR = "voDefsAttr";

@@ -27,6 +27,7 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ import com.google.common.base.Strings;
  */
 @Controller
 @RequestMapping("/" + UserInfoEndpoint.URL)
+@Slf4j
 public class UserInfoEndpoint {
 
 	public static final String URL = "userinfo";
@@ -63,11 +65,6 @@ public class UserInfoEndpoint {
 	private ClientDetailsEntityService clientService;
 
 	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
-
-	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
@@ -77,7 +74,7 @@ public class UserInfoEndpoint {
 			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {
-			logger.error("getInfo failed; no principal. Requester is not authorized.");
+			log.error("getInfo failed; no principal. Requester is not authorized.");
 			model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
@@ -86,7 +83,7 @@ public class UserInfoEndpoint {
 		UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, auth.getOAuth2Request().getClientId());
 
 		if (userInfo == null) {
-			logger.error("getInfo failed; user not found: " + username);
+			log.error("getInfo failed; user not found: " + username);
 			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}

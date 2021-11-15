@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -64,12 +65,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
 
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
@@ -437,7 +434,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
 	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
 		if (config.isHeartMode()) {
-			logger.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
+			log.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
 			client.setClientSecret(null);
 		} else {
 			client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
@@ -468,7 +465,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				if (config.isForceHttps()) {
 					throw new IllegalArgumentException("Sector identifier must start with https: " + key);
 				}
-				logger.error("Sector identifier doesn't start with https, loading anyway...");
+				log.error("Sector identifier doesn't start with https, loading anyway...");
 			}
 
 			// key is the sector URI
@@ -481,7 +478,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 					redirectUris.add(el.getAsString());
 				}
 
-				logger.info("Found " + redirectUris + " for sector " + key);
+				log.info("Found " + redirectUris + " for sector " + key);
 
 				return redirectUris;
 			} else {

@@ -42,6 +42,7 @@ import cz.muni.ics.openid.connect.model.Address;
 import cz.muni.ics.openid.connect.model.DefaultAddress;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +53,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunUserInfoService implements UserInfoService {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunUserInfoService.class);
 
 	private static final String CUSTOM_CLAIM = "custom.claim.";
 	private static final String SOURCE = ".source";

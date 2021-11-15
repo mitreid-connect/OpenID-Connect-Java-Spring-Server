@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -41,9 +42,8 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  */
 @Component(JWKSetView.VIEWNAME)
+@Slf4j
 public class JWKSetView extends AbstractView {
-
-	private static final Logger logger = LoggerFactory.getLogger(JWKSetView.class);
 
 	public static final String VIEWNAME = "jwkSet";
 
@@ -59,7 +59,7 @@ public class JWKSetView extends AbstractView {
 			Writer out = response.getWriter();
 			out.write(jwkSet.toString());
 		} catch (IOException e) {
-			logger.error("IOException in JWKSetView.java: ", e);
+			log.error("IOException in JWKSetView.java: ", e);
 		}
 	}
 

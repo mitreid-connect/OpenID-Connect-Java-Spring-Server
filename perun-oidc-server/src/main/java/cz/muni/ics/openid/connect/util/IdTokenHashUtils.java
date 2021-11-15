@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +37,8 @@ import com.nimbusds.jose.util.Base64URL;
  * @author Amanda Anganes
  *
  */
+@Slf4j
 public class IdTokenHashUtils {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(IdTokenHashUtils.class);
 
 	/**
 	 * Compute the SHA hash of an authorization code
@@ -102,7 +99,7 @@ public class IdTokenHashUtils {
 
 			} catch (NoSuchAlgorithmException e) {
 
-				logger.error("No such algorithm error: ", e);
+				log.error("No such algorithm error: ", e);
 
 			}
 

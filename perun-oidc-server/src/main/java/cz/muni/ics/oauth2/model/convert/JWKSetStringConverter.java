@@ -21,6 +21,7 @@ import java.text.ParseException;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +31,8 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  */
 @Converter
+@Slf4j
 public class JWKSetStringConverter implements AttributeConverter<JWKSet, String> {
-
-	private static Logger logger = LoggerFactory.getLogger(JWKSetStringConverter.class);
 
 	@Override
 	public String convertToDatabaseColumn(JWKSet attribute) {
@@ -45,7 +45,7 @@ public class JWKSetStringConverter implements AttributeConverter<JWKSet, String>
 			try {
 				return JWKSet.parse(dbData);
 			} catch (ParseException e) {
-				logger.error("Unable to parse JWK Set", e);
+				log.error("Unable to parse JWK Set", e);
 				return null;
 			}
 		} else {

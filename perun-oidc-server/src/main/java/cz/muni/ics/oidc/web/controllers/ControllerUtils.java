@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import cz.muni.ics.oauth2.model.SystemScope;
@@ -37,9 +38,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dominik Frantisek Bucik (bucik@ics.muni.cz)
  */
+@Slf4j
 public class ControllerUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(ControllerUtils.class);
 
     private static final String LANG_KEY = "lang";
     private static final String REQ_URL_KEY = "reqURL";

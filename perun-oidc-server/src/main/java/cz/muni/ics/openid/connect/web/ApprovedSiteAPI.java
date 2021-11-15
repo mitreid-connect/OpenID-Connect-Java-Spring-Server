@@ -29,6 +29,7 @@ import java.util.Collection;
 
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +49,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/" + ApprovedSiteAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
+@Slf4j
 public class ApprovedSiteAPI {
 
 	public static final String URL = RootController.API_URL + "/approved";
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ApprovedSiteAPI.class);
 
 	/**
 	 * Get a list of all of this user's approved sites
@@ -84,12 +81,12 @@ public class ApprovedSiteAPI {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 
 		if (approvedSite == null) {
-			logger.error("deleteApprovedSite failed; no approved site found for id: " + id);
+			log.error("deleteApprovedSite failed; no approved site found for id: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete approved site. The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
-			logger.error("deleteApprovedSite failed; principal "
+			log.error("deleteApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to delete this approved site. The approved site decision will not be deleted.");
@@ -109,12 +106,12 @@ public class ApprovedSiteAPI {
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {
-			logger.error("getApprovedSite failed; no approved site found for id: " + id);
+			log.error("getApprovedSite failed; no approved site found for id: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put(JsonErrorView.ERROR_MESSAGE, "The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
-			logger.error("getApprovedSite failed; principal "
+			log.error("getApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this approved site.");

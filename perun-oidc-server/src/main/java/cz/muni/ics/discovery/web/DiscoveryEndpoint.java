@@ -39,6 +39,7 @@ import cz.muni.ics.oauth2.web.RevocationEndpoint;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +67,8 @@ import com.nimbusds.jose.JWSAlgorithm;
  *
  */
 @Controller
+@Slf4j
 public class DiscoveryEndpoint {
-
-	private static final Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
 
 	public static final String WELL_KNOWN_URL = ".well-known";
 	public static final String OPENID_CONFIGURATION_URL = WELL_KNOWN_URL + "/openid-configuration";
@@ -100,7 +100,7 @@ public class DiscoveryEndpoint {
 							@RequestParam(value = "rel", required = false) String rel,
 							Model model) {
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals(ISSUER_STRING)) {
-			logger.warn("Responding to webfinger request for non-OIDC relation: {}", rel);
+			log.warn("Responding to webfinger request for non-OIDC relation: {}", rel);
 		}
 
 		if (!resource.equals(config.getIssuer())) {
@@ -111,7 +111,7 @@ public class DiscoveryEndpoint {
 					&& resourceUri.getScheme().equals("acct")) {
 				UserInfo user = extractUser(resourceUri);
 				if (user == null) {
-					logger.info("User not found: {}", resource);
+					log.info("User not found: {}", resource);
 					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
@@ -119,12 +119,12 @@ public class DiscoveryEndpoint {
 				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
 				if (!Strings.nullToEmpty(issuerComponents.getHost())
 					.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
-					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
+					log.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
 					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 			} else {
-				logger.info("Unknown URI format: " + resource);
+				log.info("Unknown URI format: " + resource);
 				model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				return HttpCodeView.VIEWNAME;
 			}
@@ -269,7 +269,7 @@ public class DiscoveryEndpoint {
 		String baseUrl = config.getIssuer();
 
 		if (!baseUrl.endsWith("/")) {
-			logger.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
+			log.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
 			baseUrl = baseUrl.concat("/");
 		}
 

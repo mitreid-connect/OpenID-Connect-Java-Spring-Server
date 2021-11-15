@@ -39,6 +39,7 @@ import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.OIDCTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +71,8 @@ import com.nimbusds.jwt.SignedJWT;
  *
  */
 @Service
+@Slf4j
 public class DefaultOIDCTokenService implements OIDCTokenService {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOIDCTokenService.class);
 
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
@@ -122,7 +119,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				}
 			} else {
 				// we couldn't find the timestamp!
-				logger.warn("Unable to find authentication timestamp! There is likely something wrong with the configuration.");
+				log.warn("Unable to find authentication timestamp! There is likely something wrong with the configuration.");
 			}
 		}
 
@@ -166,7 +163,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				encrypter.encryptJwt((JWEObject) idToken);
 
 			} else {
-				logger.error("Couldn't find encrypter for client: " + client.getClientId());
+				log.error("Couldn't find encrypter for client: " + client.getClientId());
 			}
 
 		} else {

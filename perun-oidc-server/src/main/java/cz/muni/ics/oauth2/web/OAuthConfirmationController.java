@@ -34,6 +34,7 @@ import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +62,8 @@ import java.util.Set;
  */
 @Controller
 @SessionAttributes("authorizationRequest")
+@Slf4j
 public class OAuthConfirmationController {
-
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -78,11 +79,6 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private RedirectResolver redirectResolver;
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
 
@@ -106,17 +102,17 @@ public class OAuthConfirmationController {
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (OAuth2Exception e) {
-			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
+			log.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
-			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
+			log.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
-			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
+			log.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
@@ -137,7 +133,7 @@ public class OAuthConfirmationController {
 				return "redirect:" + uriBuilder.toString();
 
 			} catch (URISyntaxException e) {
-				logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+				log.error("Can't build redirect URI for prompt=none, sending error instead", e);
 				model.put("code", HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
 			}

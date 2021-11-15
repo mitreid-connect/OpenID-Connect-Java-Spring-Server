@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,14 +46,10 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 @Component(TokenApiView.VIEWNAME)
+@Slf4j
 public class TokenApiView extends AbstractView {
 
 	public static final String VIEWNAME = "tokenApiView";
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(TokenApiView.class);
 
 	private Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
@@ -142,7 +139,7 @@ public class TokenApiView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JsonEntityView.java: ", e);
+			log.error("IOException in JsonEntityView.java: ", e);
 
 		}
 	}

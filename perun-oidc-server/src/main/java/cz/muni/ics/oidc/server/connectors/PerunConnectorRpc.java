@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.client.config.RequestConfig;
@@ -34,9 +35,8 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunConnectorRpc {
-
-	private static final Logger log = LoggerFactory.getLogger(PerunConnectorRpc.class);
 
 	public static final String ATTRIBUTES_MANAGER = "attributesManager";
 	public static final String FACILITIES_MANAGER = "facilitiesManager";

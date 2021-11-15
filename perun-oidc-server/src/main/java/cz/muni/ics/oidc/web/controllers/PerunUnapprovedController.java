@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Controller
+@Slf4j
 public class PerunUnapprovedController {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunUnapprovedController.class);
 
     public static final String UNAPPROVED_MAPPING = "/unapproved";
     public static final String UNAPPROVED_SPECIFIC_MAPPING = "/unapproved_spec";

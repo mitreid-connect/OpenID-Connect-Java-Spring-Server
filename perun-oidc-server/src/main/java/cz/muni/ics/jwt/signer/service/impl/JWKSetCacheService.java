@@ -26,6 +26,7 @@ import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import cz.muni.ics.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
@@ -50,9 +51,8 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  */
 @Service
+@Slf4j
 public class JWKSetCacheService {
-
-	private static final Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
 	private final LoadingCache<String, JWTSigningAndValidationService> validators;
 	private final LoadingCache<String, JWTEncryptionAndDecryptionService> encrypters;
@@ -72,7 +72,7 @@ public class JWKSetCacheService {
 		try {
 			return validators.get(jwksUri);
 		} catch (UncheckedExecutionException | ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
+			log.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
 			return null;
 		}
 	}
@@ -81,7 +81,7 @@ public class JWKSetCacheService {
 		try {
 			return encrypters.get(jwksUri);
 		} catch (UncheckedExecutionException | ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
+			log.warn("Couldn't load JWK Set from {}: {}", jwksUri, e.getMessage());
 			return null;
 		}
 	}

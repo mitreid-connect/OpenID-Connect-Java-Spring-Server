@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -55,9 +56,8 @@ import org.springframework.util.StringUtils;
  * @author Dominik František Bučík bucik@ics.muni.cz
  * @author Peter Jancus jancus@ics.muni.cz
  */
+@Slf4j
 public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements PerunAdapterMethods, PerunAdapterMethodsRpc {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunAdapterRpc.class);
 
 	private PerunConnectorRpc connectorRpc;
 

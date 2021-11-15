@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +54,8 @@ import com.nimbusds.jose.JWSAlgorithm;
  * @author jricher
  */
 @SuppressWarnings(value = {"rawtypes", "unchecked"})
+@Slf4j
 public class JsonUtils {
-
-	private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
 	private static Gson gson = new Gson();
 
@@ -277,7 +277,7 @@ public class JsonUtils {
 					value = reader.nextLong();
 					break;
 				default:
-					logger.debug("Found unexpected entry");
+					log.debug("Found unexpected entry");
 					reader.skipValue();
 					continue;
 			}

@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -47,8 +48,8 @@ import com.google.gson.JsonObject;
  *
  */
 @Component("webfingerView")
+@Slf4j
 public class WebfingerView extends AbstractView {
-	private static final Logger logger = LoggerFactory.getLogger(WebfingerView.class);
 
 	private final Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
@@ -95,7 +96,7 @@ public class WebfingerView extends AbstractView {
 			Writer out = response.getWriter();
 			gson.toJson(obj, out);
 		} catch (IOException e) {
-			logger.error("IOException in WebfingerView.java: ", e);
+			log.error("IOException in WebfingerView.java: ", e);
 		}
 	}
 

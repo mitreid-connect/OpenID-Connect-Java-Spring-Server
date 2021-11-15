@@ -31,6 +31,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -52,9 +53,9 @@ import org.springframework.util.StringUtils;
  * @author Dominik Baranek <baranek@ics.muni.cz>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunForceAupFilter extends PerunRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(PerunForceAupFilter.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     /* CONFIGURATION PROPERTIES */

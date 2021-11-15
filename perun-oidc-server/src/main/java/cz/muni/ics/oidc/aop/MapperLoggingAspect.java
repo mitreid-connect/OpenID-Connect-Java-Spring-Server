@@ -1,5 +1,6 @@
 package cz.muni.ics.oidc.aop;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -10,9 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Slf4j
 public class MapperLoggingAspect {
-
-    public static final Logger log = LoggerFactory.getLogger(MapperLoggingAspect.class);
 
     @AfterReturning(value = "execution(* cz.muni.ics.oidc.models.mappers..* (..))", returning = "result")
     public Object logAroundMethodWithParams(JoinPoint jp, Object result) {

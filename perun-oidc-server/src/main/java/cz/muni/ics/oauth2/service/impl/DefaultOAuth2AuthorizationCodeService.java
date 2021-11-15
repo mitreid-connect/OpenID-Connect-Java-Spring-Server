@@ -28,6 +28,7 @@ import cz.muni.ics.oauth2.repository.AuthorizationCodeRepository;
 import java.util.Collection;
 import java.util.Date;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service("defaultOAuth2AuthorizationCodeService")
+@Slf4j
 public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeServices {
-	// Logger for this class
-	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2AuthorizationCodeService.class);
 
 	@Autowired
 	private AuthorizationCodeRepository repository;

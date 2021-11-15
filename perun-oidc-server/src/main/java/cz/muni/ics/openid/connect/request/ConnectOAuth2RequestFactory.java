@@ -30,6 +30,7 @@ import java.util.Set;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.PKCEAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,8 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 @Component("connectOAuth2RequestFactory")
+@Slf4j
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 
 	private ClientDetailsEntityService clientDetailsService;
 
@@ -151,7 +148,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					request.getExtensions().put(ConnectRequestParameters.MAX_AGE, client.getDefaultMaxAge().toString());
 				}
 			} catch (OAuth2Exception e) {
-				logger.error("Caught OAuth2 exception trying to test client scopes and max age:", e);
+				log.error("Caught OAuth2 exception trying to test client scopes and max age:", e);
 			}
 		}
 
@@ -265,7 +262,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim(ConnectRequestParameters.RESPONSE_TYPE));
 			if (!responseTypes.isEmpty()) {
 				if (!responseTypes.equals(request.getResponseTypes())) {
-					logger.info("Mismatch between request object and regular parameter for response_type, using request object");
+					log.info("Mismatch between request object and regular parameter for response_type, using request object");
 				}
 				request.setResponseTypes(responseTypes);
 			}
@@ -273,7 +270,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String redirectUri = claims.getStringClaim(ConnectRequestParameters.REDIRECT_URI);
 			if (redirectUri != null) {
 				if (!redirectUri.equals(request.getRedirectUri())) {
-					logger.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
+					log.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
 				}
 				request.setRedirectUri(redirectUri);
 			}
@@ -281,7 +278,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String state = claims.getStringClaim(ConnectRequestParameters.STATE);
 			if(state != null) {
 				if (!state.equals(request.getState())) {
-					logger.info("Mismatch between request object and regular parameter for state, using request object");
+					log.info("Mismatch between request object and regular parameter for state, using request object");
 				}
 				request.setState(state);
 			}
@@ -289,7 +286,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String nonce = claims.getStringClaim(ConnectRequestParameters.NONCE);
 			if(nonce != null) {
 				if (!nonce.equals(request.getExtensions().get(ConnectRequestParameters.NONCE))) {
-					logger.info("Mismatch between request object and regular parameter for nonce, using request object");
+					log.info("Mismatch between request object and regular parameter for nonce, using request object");
 				}
 				request.getExtensions().put(ConnectRequestParameters.NONCE, nonce);
 			}
@@ -297,7 +294,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String display = claims.getStringClaim(ConnectRequestParameters.DISPLAY);
 			if (display != null) {
 				if (!display.equals(request.getExtensions().get(ConnectRequestParameters.DISPLAY))) {
-					logger.info("Mismatch between request object and regular parameter for display, using request object");
+					log.info("Mismatch between request object and regular parameter for display, using request object");
 				}
 				request.getExtensions().put(ConnectRequestParameters.DISPLAY, display);
 			}
@@ -305,7 +302,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String prompt = claims.getStringClaim(ConnectRequestParameters.PROMPT);
 			if (prompt != null) {
 				if (!prompt.equals(request.getExtensions().get(ConnectRequestParameters.PROMPT))) {
-					logger.info("Mismatch between request object and regular parameter for prompt, using request object");
+					log.info("Mismatch between request object and regular parameter for prompt, using request object");
 				}
 				request.getExtensions().put(ConnectRequestParameters.PROMPT, prompt);
 			}
@@ -313,7 +310,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim(ConnectRequestParameters.SCOPE));
 			if (!scope.isEmpty()) {
 				if (!scope.equals(request.getScope())) {
-					logger.info("Mismatch between request object and regular parameter for scope, using request object");
+					log.info("Mismatch between request object and regular parameter for scope, using request object");
 				}
 				request.setScope(scope);
 			}
@@ -322,7 +319,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			if (claimRequest != null) {
 				Serializable claimExtension = request.getExtensions().get(ConnectRequestParameters.CLAIMS);
 				if (claimExtension == null || !claimRequest.equals(parseClaimRequest(claimExtension.toString()))) {
-					logger.info("Mismatch between request object and regular parameter for claims, using request object");
+					log.info("Mismatch between request object and regular parameter for claims, using request object");
 				}
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
 				request.getExtensions().put(ConnectRequestParameters.CLAIMS, claimRequest.toString());
@@ -331,13 +328,13 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String loginHint = claims.getStringClaim(ConnectRequestParameters.LOGIN_HINT);
 			if (loginHint != null) {
 				if (!loginHint.equals(request.getExtensions().get(ConnectRequestParameters.LOGIN_HINT))) {
-					logger.info("Mistmatch between request object and regular parameter for login_hint, using requst object");
+					log.info("Mistmatch between request object and regular parameter for login_hint, using requst object");
 				}
 				request.getExtensions().put(ConnectRequestParameters.LOGIN_HINT, loginHint);
 			}
 
 		} catch (ParseException e) {
-			logger.error("ParseException while parsing RequestObject:", e);
+			log.error("ParseException while parsing RequestObject:", e);
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml2.core.AuthnContext;
 import org.opensaml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml2.core.AuthnStatement;
@@ -20,9 +21,8 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
+@Slf4j
 public class PerunSamlAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunSamlAuthenticationSuccessHandler.class);
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,

@@ -28,6 +28,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,8 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunIsCesnetEligibleFilter.class);
 
     /* CONFIGURATION PROPERTIES */
     private static final String IS_CESNET_ELIGIBLE_ATTR_NAME = "isCesnetEligibleAttr";

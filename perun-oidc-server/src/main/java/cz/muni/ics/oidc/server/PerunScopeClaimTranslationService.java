@@ -7,6 +7,7 @@ import cz.muni.ics.oidc.server.userInfo.PerunUserInfoService;
 import java.util.HashSet;
 import java.util.Set;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +19,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunScopeClaimTranslationService implements ScopeClaimTranslationService {
-
-	private final static Logger log = LoggerFactory.getLogger(PerunScopeClaimTranslationService.class);
 
 	public static final String OPENID = "openid";
 	public static final String PROFILE = "profile";

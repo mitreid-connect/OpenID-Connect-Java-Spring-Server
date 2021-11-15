@@ -16,6 +16,7 @@
 
 package cz.muni.ics.oauth2.web;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
  *
  */
 @ControllerAdvice
+@Slf4j
 public class OAuth2ExceptionHandler {
-	private static final Logger logger = LoggerFactory.getLogger(OAuth2ExceptionHandler.class);
 
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
 
 	@ExceptionHandler(OAuth2Exception.class)
 	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		log.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
 		return providerExceptionHandler.translate(e);
 	}
 

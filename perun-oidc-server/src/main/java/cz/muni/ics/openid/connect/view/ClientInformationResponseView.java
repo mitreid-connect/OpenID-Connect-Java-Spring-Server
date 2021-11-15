@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import cz.muni.ics.oauth2.model.RegisteredClient;
 import cz.muni.ics.openid.connect.ClientDetailsEntityJsonProcessor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -49,12 +50,8 @@ import com.google.gson.JsonObject;
  *
  */
 @Component(ClientInformationResponseView.VIEWNAME)
+@Slf4j
 public class ClientInformationResponseView extends AbstractView {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
 
 	public static final String VIEWNAME = "clientInformationResponseView";
 
@@ -86,11 +83,11 @@ public class ClientInformationResponseView extends AbstractView {
 			gson.toJson(o, out);
 		} catch (JsonIOException e) {
 
-			logger.error("JsonIOException in ClientInformationResponseView.java: ", e);
+			log.error("JsonIOException in ClientInformationResponseView.java: ", e);
 
 		} catch (IOException e) {
 
-			logger.error("IOException in ClientInformationResponseView.java: ", e);
+			log.error("IOException in ClientInformationResponseView.java: ", e);
 
 		}
 

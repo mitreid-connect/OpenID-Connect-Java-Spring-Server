@@ -29,6 +29,7 @@ import java.util.UUID;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.UserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +49,8 @@ import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
 
 @Service
+@Slf4j
 public class ConnectTokenEnhancer implements TokenEnhancer {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ConnectTokenEnhancer.class);
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
@@ -131,7 +128,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				token.setIdToken(idToken);
 			} else {
 				// can't create an id token if we can't find the user
-				logger.warn("Request for ID token when no user is present.");
+				log.warn("Request for ID token when no user is present.");
 			}
 		}
 

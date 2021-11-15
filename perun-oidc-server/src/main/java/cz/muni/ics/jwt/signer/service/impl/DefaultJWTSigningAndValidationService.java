@@ -36,6 +36,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 import cz.muni.ics.jose.keystore.JWKSetKeyStore;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -47,9 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 public class DefaultJWTSigningAndValidationService implements JWTSigningAndValidationService {
-
-	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTSigningAndValidationService.class);
 
 	private final Map<String, JWSSigner> signers = new HashMap<>();
 	private final Map<String, JWSVerifier> verifiers = new HashMap<>();
@@ -126,7 +126,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		try {
 			jwt.sign(signer);
 		} catch (JOSEException e) {
-			logger.error("Failed to sign JWT, error was: ", e);
+			log.error("Failed to sign JWT, error was: ", e);
 		}
 	}
 
@@ -142,12 +142,12 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		}
 
 		if (signer == null) {
-			logger.error("No matching algorithm found for alg={}", alg);
+			log.error("No matching algorithm found for alg={}", alg);
 		} else {
 			try {
 				jwt.sign(signer);
 			} catch (JOSEException e) {
-				logger.error("Failed to sign JWT, error was: ", e);
+				log.error("Failed to sign JWT, error was: ", e);
 			}
 		}
 	}
@@ -158,7 +158,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 			try {
 				return jwt.verify(verifier);
 			} catch (JOSEException e) {
-				logger.error("Failed to validate signature with {} error message: {}", verifier, e.getMessage());
+				log.error("Failed to validate signature with {} error message: {}", verifier, e.getMessage());
 			}
 		}
 
@@ -201,10 +201,10 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 				} else if (jwk instanceof OctetSequenceKey) {
 					processOctetKey(signers, verifiers, jwk, id);
 				} else {
-					logger.warn("Unknown key type: {}", jwk);
+					log.warn("Unknown key type: {}", jwk);
 				}
 			} catch (JOSEException e) {
-				logger.warn("Exception loading signer/verifier", e);
+				log.warn("Exception loading signer/verifier", e);
 			}
 		}
 

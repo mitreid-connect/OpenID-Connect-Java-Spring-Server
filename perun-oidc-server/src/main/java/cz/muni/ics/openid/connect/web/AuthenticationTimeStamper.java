@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cz.muni.ics.openid.connect.filter.AuthorizationRequestFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -43,12 +44,8 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("authenticationTimeStamper")
+@Slf4j
 public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSuccessHandler {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(AuthenticationTimeStamper.class);
 
 	public static final String AUTH_TIMESTAMP = "AUTH_TIMESTAMP";
 
@@ -71,7 +68,7 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 			session.removeAttribute(AuthorizationRequestFilter.PROMPT_REQUESTED);
 		}
 
-		logger.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp.toString());
+		log.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp.toString());
 
 		super.onAuthenticationSuccess(request, response, authentication);
 

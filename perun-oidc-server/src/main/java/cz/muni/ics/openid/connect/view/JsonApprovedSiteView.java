@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cz.muni.ics.openid.connect.model.WhitelistedSite;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -52,12 +53,8 @@ import com.google.gson.JsonSerializer;
  *
  */
 @Component(JsonApprovedSiteView.VIEWNAME)
+@Slf4j
 public class JsonApprovedSiteView extends AbstractView {
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
 
 	public static final String VIEWNAME = "jsonApprovedSiteView";
 
@@ -118,7 +115,7 @@ public class JsonApprovedSiteView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JsonEntityView.java: ", e);
+			log.error("IOException in JsonEntityView.java: ", e);
 
 		}
 	}

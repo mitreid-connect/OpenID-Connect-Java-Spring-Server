@@ -2,6 +2,7 @@ package cz.muni.ics.oidc.server;
 
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.core.LockAssert;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
@@ -25,11 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Configuration
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "30s")
+@Slf4j
 public class CustomTaskScheduler {
 
 	private static final long ONE_MINUTE = 60000L;
-
-	private static final Logger log = LoggerFactory.getLogger(CustomTaskScheduler.class);
 
 	private final CustomClearTasks customClearTasks;
 	private final DataSource dataSource;

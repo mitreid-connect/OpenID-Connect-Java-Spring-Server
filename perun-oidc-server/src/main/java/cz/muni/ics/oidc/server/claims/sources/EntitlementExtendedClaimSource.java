@@ -9,14 +9,14 @@ import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.external.com.google.gdata.util.common.base.PercentEscaper;
 
+@Slf4j
 public class EntitlementExtendedClaimSource extends EntitlementSource {
-
-    public static final Logger log = LoggerFactory.getLogger(EntitlementExtendedClaimSource.class);
 
     private static final String GROUP = "group";
     private static final String GROUP_ATTRIBUTES = "groupAttributes";

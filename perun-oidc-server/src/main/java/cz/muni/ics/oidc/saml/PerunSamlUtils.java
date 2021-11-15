@@ -8,13 +8,13 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PROMPT_SELECT
 
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
 import javax.servlet.ServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class PerunSamlUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunSamlUtils.class);
 
     public static boolean needsReAuthByPrompt(ServletRequest request) {
         String prompt = request.getParameter(PARAM_PROMPT);

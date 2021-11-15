@@ -23,6 +23,7 @@ import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.OIDCTokenService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,8 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class PerunAccessTokenEnhancer implements TokenEnhancer {
-
-    private final static Logger log = LoggerFactory.getLogger(PerunAccessTokenEnhancer.class);
 
     private final ConfigurationPropertiesBean configBean;
     private final JWTSigningAndValidationService jwtService;

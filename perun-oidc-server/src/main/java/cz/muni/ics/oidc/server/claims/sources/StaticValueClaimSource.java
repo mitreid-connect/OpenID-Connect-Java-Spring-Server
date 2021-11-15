@@ -10,6 +10,7 @@ import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -29,9 +30,8 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @SuppressWarnings("unused")
+@Slf4j
 public class StaticValueClaimSource extends ClaimSource {
-
-	public static final Logger log = LoggerFactory.getLogger(StaticValueClaimSource.class);
 
 	private static final String NO_SEPARATOR = "@NULL";
 	private static final String VALUE_SEPARATOR = "valueSeparator";

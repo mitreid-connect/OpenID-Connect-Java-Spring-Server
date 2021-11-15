@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.common.SAMLException;
 import org.opensaml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
@@ -42,9 +43,8 @@ import org.springframework.security.saml.util.SAMLUtil;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class PerunSamlEntryPoint extends SAMLEntryPoint {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunSamlEntryPoint.class);
 
     private final PerunAdapter perunAdapter;
     private final PerunOidcConfig config;

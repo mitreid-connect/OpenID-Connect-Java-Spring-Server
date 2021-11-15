@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
@@ -70,12 +71,11 @@ import com.google.common.collect.Sets;
  *
  */
 @Controller
+@Slf4j
 public class DeviceEndpoint {
 
 	public static final String URL = "devicecode";
 	public static final String USER_URL = "device";
-
-	public static final Logger logger = LoggerFactory.getLogger(DeviceEndpoint.class);
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -108,13 +108,13 @@ public class DeviceEndpoint {
 			}
 
 		} catch (IllegalArgumentException e) {
-			logger.error("IllegalArgumentException was thrown when attempting to load client", e);
+			log.error("IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
-			logger.error("could not find client " + clientId);
+			log.error("could not find client " + clientId);
 			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
@@ -125,7 +125,7 @@ public class DeviceEndpoint {
 
 		if (!scopeService.scopesMatch(allowedScopes, requestedScopes)) {
 			// client asked for scopes it can't have
-			logger.error("Client asked for " + requestedScopes + " but is allowed " + allowedScopes);
+			log.error("Client asked for " + requestedScopes + " but is allowed " + allowedScopes);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			model.put(JsonErrorView.ERROR, "invalid_scope");
 			return JsonErrorView.VIEWNAME;
@@ -164,7 +164,7 @@ public class DeviceEndpoint {
 			
 			return JsonErrorView.VIEWNAME;
 		} catch (URISyntaxException use) {
-			logger.error("unable to build verification_uri_complete due to wrong syntax of uri components");
+			log.error("unable to build verification_uri_complete due to wrong syntax of uri components");
 			model.put(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 
 			return HttpCodeView.VIEWNAME;

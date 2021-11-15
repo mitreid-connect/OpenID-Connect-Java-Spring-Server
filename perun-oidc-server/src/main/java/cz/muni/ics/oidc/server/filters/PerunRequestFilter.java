@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -36,9 +37,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * @author Dominik Baranek <baranek@ics.muni.cz>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public abstract class PerunRequestFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(PerunRequestFilter.class);
 
     private static final String DELIMITER = ",";
     private static final String CLIENT_IDS = "clientIds";

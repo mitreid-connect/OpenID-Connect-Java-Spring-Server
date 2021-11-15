@@ -3,6 +3,7 @@ package cz.muni.ics.oidc.server.claims;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import java.util.Properties;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +12,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
+@Slf4j
 public class ClaimSourceInitContext {
-
-	private static final Logger log = LoggerFactory.getLogger(ClaimSourceInitContext.class);
 
 	private final PerunOidcConfig perunOidcConfig;
 	private final JWTSigningAndValidationService jwtService;

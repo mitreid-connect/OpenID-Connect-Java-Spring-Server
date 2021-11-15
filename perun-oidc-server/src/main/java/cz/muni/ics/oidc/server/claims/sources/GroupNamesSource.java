@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -25,9 +26,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
+@Slf4j
 public class GroupNamesSource extends ClaimSource {
-
-	public static final Logger log = LoggerFactory.getLogger(GroupNamesSource.class);
 
 	protected static final String MEMBERS = "members";
 

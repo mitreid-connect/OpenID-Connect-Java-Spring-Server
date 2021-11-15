@@ -35,6 +35,7 @@ import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
 import cz.muni.ics.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,14 +58,10 @@ import com.nimbusds.jwt.SignedJWT;
  *
  */
 @Component(UserInfoJWTView.VIEWNAME)
+@Slf4j
 public class UserInfoJWTView extends UserInfoView {
 
 	public static final String CLIENT = "client";
-
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(UserInfoJWTView.class);
 
 	public static final String VIEWNAME = "userInfoJwtView";
 
@@ -124,7 +121,7 @@ public class UserInfoJWTView extends UserInfoView {
 					out.write(encrypted.serialize());
 
 				} else {
-					logger.error("Couldn't find encrypter for client: " + client.getClientId());
+					log.error("Couldn't find encrypter for client: " + client.getClientId());
 				}
 			} else {
 
@@ -154,7 +151,7 @@ public class UserInfoJWTView extends UserInfoView {
 				out.write(signed.serialize());
 			}
 		} catch (IOException e) {
-			logger.error("IO Exception in UserInfoJwtView", e);
+			log.error("IO Exception in UserInfoJwtView", e);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
