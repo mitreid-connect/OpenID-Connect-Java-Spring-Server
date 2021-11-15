@@ -36,23 +36,26 @@
 		<appender-ref ref="${log.to}"/>
 	</root>
 
-	<!-- keep Spring quiet -->
+	<!-- SPRING -->
 	<logger name="org.springframework" level="warn"/>
+	<logger name="org.springframework.security.saml" level="warn"/>
 	<logger name="org.springframework.security.core.SpringSecurityCoreVersion" level="info"/>
-	<logger name="cz.muni.ics.openid.connect.config.JsonMessageSource" level="warn"/>
-	<logger name="org.apache" level="warn"/>
-	<logger name="org.apache.directory" level="warn"/>
-	<logger name="org.apache.directory.ldap.client.api.LdapNetworkConnection" level="error"/>
-	<logger name="com.zaxxer.hikari" level="warn"/>
-	<logger name="cz.muni.ics" level="info"/>
-	<logger name="org.opensaml" level="info"/>
-	<logger name="org.springframework.security.saml" level="debug"/>
+	<!-- SAML -->
+	<logger name="org.opensaml" level="warn"/>
 	<logger name="PROTOCOL_MESSAGE" level="warn"/>
+	<!-- LDAP -->
+	<logger name="org.apache" level="warn"/>
+	<logger name="org.apache.directory.ldap.client.api.LdapNetworkConnection" level="error"/>
+	<!-- DB -->
+	<logger name="com.zaxxer.hikari" level="warn"/>
+	<logger name="net.javacrumbs.shedlock" level="error"/>
+
+	<!-- OUR LOGGERS -->
 	<!-- PASSED FROM POM.XML / MAVEN BUILD PROPS -->
-	<logger name="cz.muni.ics.oidc" level="${log.level}"/>
+	<logger name="cz.muni.ics" level="${log.level}"/>
 	<logger name="cz.muni.ics.oidc.aop.WebLoggingAspect" level="debug"/>
 	<logger name="cz.muni.ics.oidc.aop.ExecutionTimeLoggingAspect" level="trace"/>
 	<logger name="cz.muni.ics.openid.connect.web.EndSessionEndpoint" level="${log.level}"/>
-	<logger name="net.javacrumbs.shedlock" level="error"/>
+	<logger name="cz.muni.ics.openid.connect.config.JsonMessageSource" level="warn"/>
 
 </configuration>
