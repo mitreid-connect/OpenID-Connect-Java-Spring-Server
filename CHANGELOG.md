@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.4.1...v3.5.0) (2021-11-16)
+
+
+### Features
+
+* 🎸 AARC_IDP_HINTING implemented ([ebd1459](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/ebd1459ba3eac20717c80955c5dbc725fd3934f8))
+
 ## [3.4.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.4.0...v3.4.1) (2021-11-15)
 
 
