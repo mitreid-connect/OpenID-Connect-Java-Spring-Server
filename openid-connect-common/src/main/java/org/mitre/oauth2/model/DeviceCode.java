@@ -16,6 +16,7 @@
 
 package org.mitre.oauth2.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -44,191 +45,192 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name = "device_code")
 @NamedQueries({
-	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.userCode = :" + DeviceCode.PARAM_USER_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)
-})
-public class DeviceCode {
+    @NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE,
+        query = "select d from DeviceCode d where d.userCode = :" + DeviceCode.PARAM_USER_CODE),
+    @NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE,
+        query = "select d from DeviceCode d where d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
+    @NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE,
+        query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)})
+public class DeviceCode implements Serializable {
 
-	public static final String QUERY_BY_USER_CODE = "DeviceCode.queryByUserCode";
-	public static final String QUERY_BY_DEVICE_CODE = "DeviceCode.queryByDeviceCode";
-	public static final String QUERY_EXPIRED_BY_DATE = "DeviceCode.queryExpiredByDate";
+  private static final long serialVersionUID = 1L;
 
-	public static final String PARAM_USER_CODE = "userCode";
-	public static final String PARAM_DEVICE_CODE = "deviceCode";
-	public static final String PARAM_DATE = "date";
+  public static final String QUERY_BY_USER_CODE = "DeviceCode.queryByUserCode";
+  public static final String QUERY_BY_DEVICE_CODE = "DeviceCode.queryByDeviceCode";
+  public static final String QUERY_EXPIRED_BY_DATE = "DeviceCode.queryExpiredByDate";
 
-	private Long id;
-	private String deviceCode;
-	private String userCode;
-	private Set<String> scope;
-	private Date expiration;
-	private String clientId;
-	private Map<String, String> requestParameters;
-	private boolean approved;
-	private AuthenticationHolderEntity authenticationHolder;
+  public static final String PARAM_USER_CODE = "userCode";
+  public static final String PARAM_DEVICE_CODE = "deviceCode";
+  public static final String PARAM_DATE = "date";
 
-	public DeviceCode() {
+  private Long id;
+  private String deviceCode;
+  private String userCode;
+  private Set<String> scope;
+  private Date expiration;
+  private String clientId;
+  private Map<String, String> requestParameters;
+  private boolean approved;
+  private AuthenticationHolderEntity authenticationHolder;
 
-	}
+  public DeviceCode() {
 
-	public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
-		this.deviceCode = deviceCode;
-		this.userCode = userCode;
-		this.scope = scope;
-		this.clientId = clientId;
-		this.requestParameters = params;
-	}
+  }
 
-	/**
-	 * @return the id
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+  public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId,
+      Map<String, String> params) {
+    this.deviceCode = deviceCode;
+    this.userCode = userCode;
+    this.scope = scope;
+    this.clientId = clientId;
+    this.requestParameters = params;
+  }
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+  /**
+   * @return the id
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  public Long getId() {
+    return id;
+  }
 
-	/**
-	 * @return the deviceCode
-	 */
-	@Basic
-	@Column(name = "device_code")
-	public String getDeviceCode() {
-		return deviceCode;
-	}
+  /**
+   * @param id the id to set
+   */
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	/**
-	 * @param deviceCode the deviceCode to set
-	 */
-	public void setDeviceCode(String deviceCode) {
-		this.deviceCode = deviceCode;
-	}
+  /**
+   * @return the deviceCode
+   */
+  @Basic
+  @Column(name = "device_code")
+  public String getDeviceCode() {
+    return deviceCode;
+  }
 
-	/**
-	 * @return the userCode
-	 */
-	@Basic
-	@Column(name = "user_code")
-	public String getUserCode() {
-		return userCode;
-	}
+  /**
+   * @param deviceCode the deviceCode to set
+   */
+  public void setDeviceCode(String deviceCode) {
+    this.deviceCode = deviceCode;
+  }
 
-	/**
-	 * @param userCode the userCode to set
-	 */
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+  /**
+   * @return the userCode
+   */
+  @Basic
+  @Column(name = "user_code")
+  public String getUserCode() {
+    return userCode;
+  }
 
-	/**
-	 * @return the scope
-	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="device_code_scope",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="scope")
-	public Set<String> getScope() {
-		return scope;
-	}
+  /**
+   * @param userCode the userCode to set
+   */
+  public void setUserCode(String userCode) {
+    this.userCode = userCode;
+  }
 
-	/**
-	 * @param scope the scope to set
-	 */
-	public void setScope(Set<String> scope) {
-		this.scope = scope;
-	}
+  /**
+   * @return the scope
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "device_code_scope", joinColumns = @JoinColumn(name = "owner_id"))
+  @Column(name = "scope")
+  public Set<String> getScope() {
+    return scope;
+  }
 
-	@Basic
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name = "expiration")
-	public Date getExpiration() {
-		return expiration;
-	}
+  /**
+   * @param scope the scope to set
+   */
+  public void setScope(Set<String> scope) {
+    this.scope = scope;
+  }
 
-	public void setExpiration(Date expiration) {
-		this.expiration = expiration;
-	}
+  @Basic
+  @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+  @Column(name = "expiration")
+  public Date getExpiration() {
+    return expiration;
+  }
 
-	/**
-	 * @return the clientId
-	 */
-	@Basic
-	@Column(name = "client_id")
-	public String getClientId() {
-		return clientId;
-	}
+  public void setExpiration(Date expiration) {
+    this.expiration = expiration;
+  }
 
-	/**
-	 * @param clientId the clientId to set
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+  /**
+   * @return the clientId
+   */
+  @Basic
+  @Column(name = "client_id")
+  public String getClientId() {
+    return clientId;
+  }
 
-	/**
-	 * @return the params
-	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="device_code_request_parameter",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="val")
-	@MapKeyColumn(name="param")
-	public Map<String, String> getRequestParameters() {
-		return requestParameters;
-	}
+  /**
+   * @param clientId the clientId to set
+   */
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-	/**
-	 * @param params the params to set
-	 */
-	public void setRequestParameters(Map<String, String> params) {
-		this.requestParameters = params;
-	}
+  /**
+   * @return the params
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "device_code_request_parameter",
+      joinColumns = @JoinColumn(name = "owner_id"))
+  @Column(name = "val")
+  @MapKeyColumn(name = "param")
+  public Map<String, String> getRequestParameters() {
+    return requestParameters;
+  }
 
-	/**
-	 * @return the approved
-	 */
-	@Basic
-	@Column(name = "approved")
-	public boolean isApproved() {
-		return approved;
-	}
+  /**
+   * @param params the params to set
+   */
+  public void setRequestParameters(Map<String, String> params) {
+    this.requestParameters = params;
+  }
 
-	/**
-	 * @param approved the approved to set
-	 */
-	public void setApproved(boolean approved) {
-		this.approved = approved;
-	}
+  /**
+   * @return the approved
+   */
+  @Basic
+  @Column(name = "approved")
+  public boolean isApproved() {
+    return approved;
+  }
 
-	/**
-	 * The authentication in place when this token was created.
-	 * @return the authentication
-	 */
-	@ManyToOne
-	@JoinColumn(name = "auth_holder_id")
-	public AuthenticationHolderEntity getAuthenticationHolder() {
-		return authenticationHolder;
-	}
+  /**
+   * @param approved the approved to set
+   */
+  public void setApproved(boolean approved) {
+    this.approved = approved;
+  }
 
-	/**
-	 * @param authentication the authentication to set
-	 */
-	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
-		this.authenticationHolder = authenticationHolder;
-	}
+  /**
+   * The authentication in place when this token was created.
+   * 
+   * @return the authentication
+   */
+  @ManyToOne
+  @JoinColumn(name = "auth_holder_id")
+  public AuthenticationHolderEntity getAuthenticationHolder() {
+    return authenticationHolder;
+  }
+
+  /**
+   * @param authentication the authentication to set
+   */
+  public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+    this.authenticationHolder = authenticationHolder;
+  }
 
 
 }

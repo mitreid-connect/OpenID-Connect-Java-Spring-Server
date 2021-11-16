@@ -17,6 +17,7 @@
  *******************************************************************************/
 package org.mitre.oauth2.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -44,9 +45,11 @@ import javax.persistence.Temporal;
 	@NamedQuery(name = AuthorizationCodeEntity.QUERY_BY_VALUE, query = "select a from AuthorizationCodeEntity a where a.code = :code"),
 	@NamedQuery(name = AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, query = "select a from AuthorizationCodeEntity a where a.expiration <= :" + AuthorizationCodeEntity.PARAM_DATE)
 })
-public class AuthorizationCodeEntity {
+public class AuthorizationCodeEntity implements Serializable {
 
-	public static final String QUERY_BY_VALUE = "AuthorizationCodeEntity.getByValue";
+  private static final long serialVersionUID = 1L;
+
+  public static final String QUERY_BY_VALUE = "AuthorizationCodeEntity.getByValue";
 	public static final String QUERY_EXPIRATION_BY_DATE = "AuthorizationCodeEntity.expirationByDate";
 
 	public static final String PARAM_DATE = "date";

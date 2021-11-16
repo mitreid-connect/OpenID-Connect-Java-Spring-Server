@@ -58,9 +58,12 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 			"a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r) and " +
 			"a.id not in (select c.authenticationHolder.id from AuthorizationCodeEntity c)")
 })
-public class AuthenticationHolderEntity {
+public class AuthenticationHolderEntity implements Serializable {
 
-	public static final String QUERY_GET_UNUSED = "AuthenticationHolderEntity.getUnusedAuthenticationHolders";
+
+  private static final long serialVersionUID = 1L;
+  public static final String QUERY_GET_UNUSED =
+      "AuthenticationHolderEntity.getUnusedAuthenticationHolders";
 	public static final String QUERY_ALL = "AuthenticationHolderEntity.getAll";
 
 	private Long id;
