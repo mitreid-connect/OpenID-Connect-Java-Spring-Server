@@ -583,10 +583,27 @@
 			<list>
 				<bean id="httpPostBinding" class="org.springframework.security.saml.processor.HTTPPostBinding">
 					<constructor-arg name="parserPool" ref="parserPool"/>
-					<constructor-arg name="velocityEngine" value="#{T(org.springframework.security.saml.util.VelocityFactory).getEngine()}"/>
+					<constructor-arg name="encoder">
+						<bean class="cz.muni.ics.oidc.saml.PerunPostEncoder">
+							<constructor-arg name="engine" value="#{T(org.springframework.security.saml.util.VelocityFactory).getEngine()}"/>
+							<constructor-arg name="templateId" value="/templates/saml2-post-binding.vm"/>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="decoder">
+						<bean class="org.opensaml.saml2.binding.decoding.HTTPPostDecoder">
+							<constructor-arg name="pool" ref="parserPool"/>
+						</bean>
+					</constructor-arg>
 				</bean>
 				<bean id="httpRedirectDeflateBinding" class="org.springframework.security.saml.processor.HTTPRedirectDeflateBinding">
-					<constructor-arg name="parserPool" ref="parserPool"/>
+					<constructor-arg name="encoder">
+						<bean class="cz.muni.ics.oidc.saml.PerunHTTPRedirectDeflateEncoder"/>
+					</constructor-arg>
+					<constructor-arg name="decoder">
+						<bean class="org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder">
+							<constructor-arg name="pool" ref="parserPool"/>
+						</bean>
+					</constructor-arg>
 				</bean>
 			</list>
 		</constructor-arg>

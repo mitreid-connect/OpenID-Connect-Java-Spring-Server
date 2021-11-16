@@ -1,5 +1,6 @@
 package cz.muni.ics.oidc.saml;
 
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AARC_IDP_HINT;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.CLIENT_ID_PREFIX;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.EFILTER_PREFIX;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.FILTER_PREFIX;
@@ -124,6 +125,12 @@ public class PerunSamlEntryPoint extends SAMLEntryPoint {
             }
         }
 
+        if (StringUtils.hasText(request.getParameter(AARC_IDP_HINT))) {
+            PerunSAMLMessageContext messageContext = new PerunSAMLMessageContext(context);
+            messageContext.setAarcIdpHint(request.getParameter(AARC_IDP_HINT));
+            context = messageContext;
+            log.debug("Added aarc_idp_hint to context '{}'", context);
+        }
         // Ordinary WebSSO
         log.debug("Processing SSO using WebSSO profile");
         webSSOprofile.sendAuthenticationRequest(context, options);
@@ -179,8 +186,7 @@ public class PerunSamlEntryPoint extends SAMLEntryPoint {
         }
 
         if (acrs.size() > 0) {
-
-
+            processAcrs(acrs);
             options.setAuthnContexts(acrs);
             log.debug("Transformed acr_values ({}) to SAML AuthnContextClassRef ({})",
                 acrValues, options.getAuthnContexts());
