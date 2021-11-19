@@ -18,9 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Modifies ID Token.
@@ -49,8 +46,11 @@ public class PerunOIDCTokenService extends DefaultOIDCTokenService {
 	}
 
 	@Override
-	protected void addCustomIdTokenClaims(JWTClaimsSet.Builder idClaims, ClientDetailsEntity client, OAuth2Request request,
-										  String sub, OAuth2AccessTokenEntity accessToken)
+	protected void addCustomIdTokenClaims(JWTClaimsSet.Builder idClaims,
+										  ClientDetailsEntity client,
+										  OAuth2Request request,
+										  String sub,
+										  OAuth2AccessTokenEntity accessToken)
 	{
 		log.debug("modifying ID token");
 		String userId = accessToken.getAuthenticationHolder().getAuthentication().getName();
@@ -73,16 +73,15 @@ public class PerunOIDCTokenService extends DefaultOIDCTokenService {
 			}
 		}
 
-		String acr = getAuthnContextClass();
-		if (acr != null) {
-			log.debug("adding to ID token claim acr with value {}", acr);
-			idClaims.claim("acr", acr);
+		if (accessToken.getAuthenticationHolder() != null
+			&& accessToken.getAuthenticationHolder().getUserAuth() != null)
+		{
+			String acr = accessToken.getAuthenticationHolder().getUserAuth().getAcr();
+			if (acr != null) {
+				log.debug("adding to ID token claim acr with value {}", acr);
+				idClaims.claim("acr", acr);
+			}
 		}
-	}
-
-	private String getAuthnContextClass() {
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		return (String) attr.getAttribute(SESSION_PARAM_ACR, RequestAttributes.SCOPE_SESSION);
 	}
 
 	/**

@@ -243,8 +243,9 @@ public class DeviceEndpoint {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL + "/approve", method = RequestMethod.POST)
-	public String approveDevice(@RequestParam("user_code") String userCode, @RequestParam(value = "user_oauth_approval") Boolean approve, ModelMap model, Authentication auth, HttpSession session) {
-
+	public String approveDevice(@RequestParam("user_code") String userCode,
+								@RequestParam(value = "user_oauth_approval") Boolean approve,
+								ModelMap model, Authentication auth, HttpSession session) {
 		AuthorizationRequest authorizationRequest = (AuthorizationRequest) session.getAttribute("authorizationRequest");
 		DeviceCode dc = (DeviceCode) session.getAttribute("deviceCode");
 

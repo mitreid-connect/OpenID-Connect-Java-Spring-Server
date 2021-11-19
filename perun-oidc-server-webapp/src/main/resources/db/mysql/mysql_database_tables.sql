@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
 
 CREATE TABLE IF NOT EXISTS saved_user_auth (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    acr VARCHAR(1024),
     name VARCHAR(1024),
     authenticated BOOLEAN,
     source_class VARCHAR(2048)

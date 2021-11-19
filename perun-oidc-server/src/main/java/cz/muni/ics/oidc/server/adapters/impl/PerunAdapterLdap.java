@@ -43,7 +43,6 @@ import cz.muni.ics.oidc.models.Resource;
 import cz.muni.ics.oidc.models.Vo;
 import cz.muni.ics.oidc.models.enums.PerunAttrValueType;
 import cz.muni.ics.oidc.models.enums.PerunEntityType;
-import cz.muni.ics.oidc.server.PerunPrincipal;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.adapters.PerunAdapterMethods;
 import cz.muni.ics.oidc.server.adapters.PerunAdapterMethodsLdap;
@@ -96,16 +95,10 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 		this.oidcCheckMembershipAttr = oidcCheckMembershipAttr;
 	}
 
-	/**
-	 * Fetch user based on his principal (extLogin and extSource) from Perun
-	 *
-	 * @param perunPrincipal principal of user
-	 * @return PerunUser with id of found user
-	 */
 	@Override
-	public PerunUser getPreauthenticatedUserId(PerunPrincipal perunPrincipal) {
+	public PerunUser getPreauthenticatedUserId(String extLogin, String extSourceName) {
 		FilterBuilder filter = and(
-				equal(OBJECT_CLASS, PERUN_USER), equal(EDU_PERSON_PRINCIPAL_NAMES, perunPrincipal.getExtLogin())
+				equal(OBJECT_CLASS, PERUN_USER), equal(EDU_PERSON_PRINCIPAL_NAMES, extLogin)
 		);
 		SearchScope scope = SearchScope.ONELEVEL;
 		String[] attributes = new String[]{PERUN_USER_ID, GIVEN_NAME, SN};

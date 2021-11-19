@@ -30,8 +30,7 @@ public class PerunSamlAuthenticationProvider extends SAMLAuthenticationProvider 
     @Override
     protected Object getPrincipal(SAMLCredential credential, Object userDetail) {
         PerunUser user = (PerunUser) userDetail;
-        return new User(String.valueOf(user.getId()), credential.getRemoteEntityID(),
-                getEntitlements(credential, userDetail));
+        return new SamlPrincipal(user.getId(), credential, getEntitlements(credential, userDetail));
     }
 
     @Override
