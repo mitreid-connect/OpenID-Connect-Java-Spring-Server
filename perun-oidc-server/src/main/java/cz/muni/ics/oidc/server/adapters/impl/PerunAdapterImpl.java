@@ -6,7 +6,6 @@ import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.models.Resource;
 import cz.muni.ics.oidc.models.Vo;
-import cz.muni.ics.oidc.server.PerunPrincipal;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
 import java.util.Collection;
@@ -23,12 +22,12 @@ import java.util.Set;
 public class PerunAdapterImpl extends PerunAdapter {
 
     @Override
-    public PerunUser getPreauthenticatedUserId(PerunPrincipal perunPrincipal) {
+    public PerunUser getPreauthenticatedUserId(String extLogin, String extSourceName) {
         try {
-            return this.getAdapterPrimary().getPreauthenticatedUserId(perunPrincipal);
+            return this.getAdapterPrimary().getPreauthenticatedUserId(extLogin, extSourceName);
         } catch (UnsupportedOperationException e) {
             if (this.isCallFallback()) {
-                return this.getAdapterFallback().getPreauthenticatedUserId(perunPrincipal);
+                return this.getAdapterFallback().getPreauthenticatedUserId(extLogin, extSourceName);
             } else {
                 throw e;
             }

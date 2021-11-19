@@ -27,7 +27,6 @@ import cz.muni.ics.oidc.models.Vo;
 import cz.muni.ics.oidc.models.enums.MemberStatus;
 import cz.muni.ics.oidc.models.enums.PerunEntityType;
 import cz.muni.ics.oidc.models.mappers.RpcMapper;
-import cz.muni.ics.oidc.server.PerunPrincipal;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.adapters.PerunAdapterMethods;
 import cz.muni.ics.oidc.server.adapters.PerunAdapterMethodsRpc;
@@ -85,13 +84,13 @@ public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements 
 	}
 
 	@Override
-	public PerunUser getPreauthenticatedUserId(PerunPrincipal perunPrincipal) {
+	public PerunUser getPreauthenticatedUserId(String extLogin, String extSourceName) {
 		if (!this.connectorRpc.isEnabled()) {
 			return null;
 		}
 		Map<String, Object> map = new LinkedHashMap<>();
-		map.put("extLogin", perunPrincipal.getExtLogin());
-		map.put("extSourceName", perunPrincipal.getExtSourceName());
+		map.put("extLogin", extLogin);
+		map.put("extSourceName", extSourceName);
 
 		JsonNode response = connectorRpc.post(USERS_MANAGER, "getUserByExtSourceNameAndExtLogin", map);
 		return RpcMapper.mapPerunUser(response);

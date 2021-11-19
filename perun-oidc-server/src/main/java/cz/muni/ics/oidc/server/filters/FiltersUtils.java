@@ -8,7 +8,6 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
-import cz.muni.ics.oidc.server.PerunPrincipal;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -93,21 +92,30 @@ public class FiltersUtils {
 		return client;
 	}
 
-	/**
-	 * Get Perun user
-	 * @param request Request object
-	 * @param perunAdapter Adapter of Perun interface
-	 * @return Found PerunUser
-	 */
-	public static PerunUser getPerunUser(HttpServletRequest request, PerunAdapter perunAdapter, String samlIdAttribute) {
-		SAMLCredential samlCredential = getSamlCredential(request);
+	public static PerunUser getPerunUser(HttpServletRequest request,
+										 PerunAdapter perunAdapter,
+										 String samlIdAttribute)
+	{
+		return getPerunUser(getSamlCredential(request), perunAdapter, samlIdAttribute);
+	}
+
+	public static PerunUser getPerunUser(SAMLCredential samlCredential,
+										 PerunAdapter perunAdapter,
+										 String samlIdAttribute) {
+		if (perunAdapter == null) {
+			throw new IllegalArgumentException("Cannot fetch user, no adapter passed");
+		}
 		if (samlCredential == null) {
 			return null;
 		}
-		PerunPrincipal principal = getPerunPrincipal(samlCredential, samlIdAttribute);
-		log.debug("fetching Perun user with extLogin '{}' and extSourceName '{}'",
-				principal.getExtLogin(), principal.getExtSourceName());
-		return perunAdapter.getPreauthenticatedUserId(principal);
+		String extLogin = getExtLogin(samlCredential, samlIdAttribute);
+		String extSourceName = getExtSourceName(samlCredential);
+		if (!StringUtils.hasText(extLogin)) {
+			return null;
+		} else if (!StringUtils.hasText(extSourceName)) {
+			return null;
+		}
+		return perunAdapter.getPreauthenticatedUserId(extLogin, extSourceName);
 	}
 
 	public static SAMLCredential getSamlCredential(HttpServletRequest request) {
@@ -118,7 +126,7 @@ public class FiltersUtils {
 		return (SAMLCredential) p.getCredentials();
 	}
 
-	public static PerunPrincipal getPerunPrincipal(SAMLCredential credential, String idAttribute) {
+	public static String getExtLogin(SAMLCredential credential, String idAttribute) {
 		if (credential == null) {
 			throw new IllegalArgumentException("No SAML credential passed");
 		} else if (!StringUtils.hasText(idAttribute)) {
@@ -128,39 +136,14 @@ public class FiltersUtils {
 		if (identifierAttrOid == null) {
 			throw new IllegalStateException("SAML credentials has no value for attribute: " + idAttribute);
 		}
-		String extLogin = credential.getAttributeAsString(identifierAttrOid);
-		String extSourceName = credential.getRemoteEntityID();
-		return new PerunPrincipal(extLogin, extSourceName);
+		return credential.getAttributeAsString(identifierAttrOid);
 	}
 
-	/**
-	 * Extract PerunPrincipal from request
-	 * @param req request object
-	 * @param proxyExtSourceName name of proxy
-	 * @return extracted principal or null if not present
-	 */
-	public static PerunPrincipal extractPerunPrincipal(HttpServletRequest req, String proxyExtSourceName) {
-		String extLogin = null;
-		String remoteUser = req.getRemoteUser();
-		if (StringUtils.hasText(remoteUser)) {
-			extLogin = remoteUser;
-		} else if (req.getUserPrincipal() != null) {
-			extLogin = ((User)req.getUserPrincipal()).getUsername();
+	public static String getExtSourceName(SAMLCredential credential) {
+		if (credential == null) {
+			throw new IllegalArgumentException("No SAML credential passed");
 		}
-
-		PerunPrincipal principal = null;
-		log.error("{}", req.getUserPrincipal());
-		log.error("{}", req.getRemoteUser());
-
-
-		if (extLogin != null) {
-			principal = new PerunPrincipal(extLogin, proxyExtSourceName);
-			log.debug("extracted principal '{}'", principal);
-		} else {
-			log.debug("could not extract principal");
-		}
-
-		return principal;
+		return credential.getRemoteEntityID();
 	}
 
 	/**

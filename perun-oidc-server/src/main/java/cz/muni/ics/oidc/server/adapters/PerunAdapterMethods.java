@@ -6,7 +6,6 @@ import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.models.Resource;
 import cz.muni.ics.oidc.models.Vo;
-import cz.muni.ics.oidc.server.PerunPrincipal;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
 import java.util.Collection;
 import java.util.List;
@@ -26,10 +25,9 @@ public interface PerunAdapterMethods {
 	/**
 	 * Fetch user based on his principal (extLogin and extSource) from Perun
 	 *
-	 * @param perunPrincipal principal of user
 	 * @return PerunUser with id of found user
 	 */
-	PerunUser getPreauthenticatedUserId(PerunPrincipal perunPrincipal);
+	PerunUser getPreauthenticatedUserId(String extLogin, String extSourceName);
 
 	/**
 	 * Fetch user attribute values
