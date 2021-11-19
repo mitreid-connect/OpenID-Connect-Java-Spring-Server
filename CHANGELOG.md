@@ -1,3 +1,16 @@
+# [4.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.5.0...v4.0.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* 🐛 Fix ACR for implicit and authorization_code flows ([39bc00a](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/39bc00a3b08e3129e2244f123a466f4c9490ae36))
+
+
+### BREAKING CHANGES
+
+* 🧨 Database needs to be updated: `ALTER TABLE saved_user_auth DROP
+source_class; ALTER TABLE saved_user_auth ADD COLUMN acr VARCHAR(1024);`
+
 # [3.5.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.4.1...v3.5.0) (2021-11-16)
 
 
