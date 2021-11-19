@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v4.0.0...v4.0.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* 🐛 Fixed missing ACRs code and device_code flows ([4d3b072](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/4d3b07225c1f7b1abb7a9c79d170326fa81c2aa8))
+
 # [4.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v3.5.0...v4.0.0) (2021-11-19)
 
 
