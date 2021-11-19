@@ -17,8 +17,10 @@
 package cz.muni.ics.oauth2.model;
 
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
+import cz.muni.ics.oidc.saml.SamlPrincipal;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -32,8 +34,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.opensaml.saml2.core.AuthnContext;
+import org.opensaml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml2.core.AuthnStatement;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 
 /**
  * This class stands in for an original Authentication object.
@@ -42,6 +50,8 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @Entity
 @Table(name="saved_user_auth")
+@Slf4j
+@ToString
 public class SavedUserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = -1804249963940323488L;
@@ -50,18 +60,21 @@ public class SavedUserAuthentication implements Authentication {
 	private String name;
 	private Collection<GrantedAuthority> authorities;
 	private boolean authenticated;
-	private String sourceClass;
+	private String acr;
 
 	public SavedUserAuthentication(Authentication src) {
 		setName(src.getName());
 		setAuthorities(new HashSet<>(src.getAuthorities()));
 		setAuthenticated(src.isAuthenticated());
-
-		if (src instanceof SavedUserAuthentication) {
-			// if we're copying in a saved auth, carry over the original class name
-			setSourceClass(((SavedUserAuthentication) src).getSourceClass());
-		} else {
-			setSourceClass(src.getClass().getName());
+		if (src instanceof ExpiringUsernameAuthenticationToken) {
+			ExpiringUsernameAuthenticationToken token = (ExpiringUsernameAuthenticationToken) src;
+			this.acr = ((SamlPrincipal) token.getPrincipal()).getSamlCredential()
+					.getAuthenticationAssertion()
+					.getAuthnStatements().stream()
+					.map(AuthnStatement::getAuthnContext)
+					.map(AuthnContext::getAuthnContextClassRef)
+					.map(AuthnContextClassRef::getAuthnContextClassRef)
+					.collect(Collectors.joining());
 		}
 	}
 
@@ -85,6 +98,10 @@ public class SavedUserAuthentication implements Authentication {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name="saved_user_auth_authority", joinColumns=@JoinColumn(name="owner_id"))
@@ -92,6 +109,32 @@ public class SavedUserAuthentication implements Authentication {
 	@Column(name="authority")
 	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
+	}
+
+	public void setAuthorities(Collection<GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
+
+	@Basic
+	@Column(name = "acr")
+	public String getAcr() {
+		return acr;
+	}
+
+	public void setAcr(String acr) {
+		this.acr = acr;
+	}
+
+	@Override
+	@Basic
+	@Column(name="authenticated")
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
+
+	@Override
+	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+		this.authenticated = isAuthenticated;
 	}
 
 	@Override
@@ -110,36 +153,6 @@ public class SavedUserAuthentication implements Authentication {
 	@Transient
 	public Object getPrincipal() {
 		return getName();
-	}
-
-	@Override
-	@Basic
-	@Column(name="authenticated")
-	public boolean isAuthenticated() {
-		return authenticated;
-	}
-
-	@Override
-	public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-		this.authenticated = isAuthenticated;
-	}
-
-	@Basic
-	@Column(name="source_class")
-	public String getSourceClass() {
-		return sourceClass;
-	}
-
-	public void setSourceClass(String sourceClass) {
-		this.sourceClass = sourceClass;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setAuthorities(Collection<GrantedAuthority> authorities) {
-		this.authorities = authorities;
 	}
 
 }

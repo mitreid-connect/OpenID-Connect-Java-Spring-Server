@@ -66,7 +66,6 @@ import org.springframework.stereotype.Service;
  * @author Amanda Anganes
  *
  */
-@Service
 @Slf4j
 public class DefaultOIDCTokenService implements OIDCTokenService {
 

@@ -22,6 +22,7 @@ import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.web.DeviceEndpoint;
 import java.util.Date;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("deviceTokenGranter")
+@Slf4j
 public class DeviceTokenGranter extends AbstractTokenGranter {
 
 	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
