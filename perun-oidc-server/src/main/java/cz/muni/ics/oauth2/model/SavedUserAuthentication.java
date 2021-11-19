@@ -66,7 +66,9 @@ public class SavedUserAuthentication implements Authentication {
 		setName(src.getName());
 		setAuthorities(new HashSet<>(src.getAuthorities()));
 		setAuthenticated(src.isAuthenticated());
-		if (src instanceof ExpiringUsernameAuthenticationToken) {
+		if (src instanceof SavedUserAuthentication) {
+			this.setAcr(((SavedUserAuthentication) src).getAcr());
+		} else if (src instanceof ExpiringUsernameAuthenticationToken) {
 			ExpiringUsernameAuthenticationToken token = (ExpiringUsernameAuthenticationToken) src;
 			this.acr = ((SamlPrincipal) token.getPrincipal()).getSamlCredential()
 					.getAuthenticationAssertion()
