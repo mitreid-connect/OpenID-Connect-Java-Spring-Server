@@ -96,7 +96,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		jwtService.signJwt(signed);
 
-		token.setJwt(signed);
+		token.setJwtValue(signed);
 
 		/**
 		 * Authorization request scope MUST include "openid" in OIDC, but access token request

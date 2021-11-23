@@ -106,7 +106,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Transactional(value="defaultTransactionManager")
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, OAuth2AccessTokenEntity.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN, refreshToken);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFRESH_TOKEN, refreshToken);
 		List<OAuth2AccessTokenEntity> accessTokens = query.getResultList();
 		for (OAuth2AccessTokenEntity accessToken : accessTokens) {
 			removeAccessToken(accessToken);

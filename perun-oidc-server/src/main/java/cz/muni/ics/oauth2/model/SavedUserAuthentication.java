@@ -34,8 +34,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.opensaml.saml2.core.AuthnContext;
 import org.opensaml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml2.core.AuthnStatement;
@@ -48,18 +54,39 @@ import org.springframework.security.providers.ExpiringUsernameAuthenticationToke
  *
  * @author jricher
  */
-@Entity
-@Table(name="saved_user_auth")
-@Slf4j
+@Getter
+@Setter
 @ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
+@Entity
+@Table(name = "saved_user_auth")
 public class SavedUserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = -1804249963940323488L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
+
+	@Basic
+	@Column(name="name")
 	private String name;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "saved_user_auth_authority", joinColumns = @JoinColumn(name = "owner_id"))
+	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
+	@Column(name = "authority")
+	@CascadeOnDelete
 	private Collection<GrantedAuthority> authorities;
+
+	@Column(name="authenticated")
 	private boolean authenticated;
+
+	@Column(name = "acr")
 	private String acr;
 
 	public SavedUserAuthentication(Authentication src) {
@@ -80,56 +107,17 @@ public class SavedUserAuthentication implements Authentication {
 		}
 	}
 
-	public SavedUserAuthentication() { }
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	@Override
-	@Basic
-	@Column(name="name")
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Override
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="saved_user_auth_authority", joinColumns=@JoinColumn(name="owner_id"))
-	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
-	@Column(name="authority")
 	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
-	public void setAuthorities(Collection<GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-
-	@Basic
-	@Column(name = "acr")
-	public String getAcr() {
-		return acr;
-	}
-
-	public void setAcr(String acr) {
-		this.acr = acr;
-	}
-
 	@Override
-	@Basic
-	@Column(name="authenticated")
 	public boolean isAuthenticated() {
 		return authenticated;
 	}

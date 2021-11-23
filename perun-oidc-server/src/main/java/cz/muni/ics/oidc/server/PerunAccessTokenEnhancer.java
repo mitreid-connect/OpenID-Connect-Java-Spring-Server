@@ -108,7 +108,7 @@ public class PerunAccessTokenEnhancer implements TokenEnhancer {
         SignedJWT signed = new SignedJWT(header, claims);
 
         jwtService.signJwt(signed);
-        token.setJwt(signed);
+        token.setJwtValue(signed);
 
         if (userInfo != null) {
             //needs access token

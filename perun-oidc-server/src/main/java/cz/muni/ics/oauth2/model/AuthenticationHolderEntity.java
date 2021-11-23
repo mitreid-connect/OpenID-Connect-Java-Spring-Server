@@ -17,6 +17,9 @@
  *******************************************************************************/
 package cz.muni.ics.oauth2.model;
 
+import static cz.muni.ics.oauth2.model.AuthenticationHolderEntity.QUERY_ALL;
+import static cz.muni.ics.oauth2.model.AuthenticationHolderEntity.QUERY_GET_UNUSED;
+
 import cz.muni.ics.oauth2.model.convert.SerializableStringConverter;
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import java.io.Serializable;
@@ -25,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -43,48 +45,98 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name = "authentication_holder")
 @NamedQueries ({
-	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a"),
-	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where " +
-			"a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and " +
-			"a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r) and " +
-			"a.id not in (select c.authenticationHolder.id from AuthorizationCodeEntity c)")
+	@NamedQuery(name = QUERY_ALL,
+				query = "SELECT a FROM AuthenticationHolderEntity a"),
+	@NamedQuery(name = QUERY_GET_UNUSED,
+				query = "SELECT a FROM AuthenticationHolderEntity a " +
+						"WHERE a.id NOT IN (SELECT t.authenticationHolder.id FROM OAuth2AccessTokenEntity t) " +
+						"AND a.id NOT IN (SELECT r.authenticationHolder.id FROM OAuth2RefreshTokenEntity r) " +
+						"AND a.id NOT IN (SELECT c.authenticationHolder.id FROM AuthorizationCodeEntity c)")
 })
 public class AuthenticationHolderEntity {
 
 	public static final String QUERY_GET_UNUSED = "AuthenticationHolderEntity.getUnusedAuthenticationHolders";
 	public static final String QUERY_ALL = "AuthenticationHolderEntity.getAll";
 
-	private Long id;
-	private SavedUserAuthentication userAuth;
-	private Collection<GrantedAuthority> authorities;
-	private Set<String> resourceIds;
-	private boolean approved;
-	private String redirectUri;
-	private Set<String> responseTypes;
-	private Map<String, Serializable> extensions;
-	private String clientId;
-	private Set<String> scope;
-	private Map<String, String> requestParameters;
-
-	public AuthenticationHolderEntity() { }
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name = "user_auth_id")
+	@CascadeOnDelete
+	private SavedUserAuthentication userAuth;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_authority", joinColumns = @JoinColumn(name = "owner_id"))
+	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
+	@Column(name = "authority")
+	@CascadeOnDelete
+	private Collection<GrantedAuthority> authorities;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_resource_id", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "resource_id")
+	@CascadeOnDelete
+	private Set<String> resourceIds;
+
+	@Column(name = "approved")
+	private boolean approved;
+
+	@Column(name = "redirect_uri")
+	private String redirectUri;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_response_type", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "response_type")
+	@CascadeOnDelete
+	private Set<String> responseTypes;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_extension", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "val")
+	@MapKeyColumn(name = "extension")
+	@Convert(converter = SerializableStringConverter.class)
+	@CascadeOnDelete
+	private Map<String, Serializable> extensions;
+
+	@Column(name = "client_id")
+	private String clientId;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_scope", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "scope")
+	@CascadeOnDelete
+	private Set<String> scope;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "authentication_holder_request_parameter", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "val")
+	@MapKeyColumn(name = "param")
+	@CascadeOnDelete
+	private Map<String, String> requestParameters;
 
 	@Transient
 	public OAuth2Authentication getAuthentication() {
@@ -92,21 +144,17 @@ public class AuthenticationHolderEntity {
 		return new OAuth2Authentication(createOAuth2Request(), getUserAuth());
 	}
 
-	private OAuth2Request createOAuth2Request() {
-		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
-	}
-
 	public void setAuthentication(OAuth2Authentication authentication) {
 		// pull apart the request and save its bits
 		OAuth2Request o2Request = authentication.getOAuth2Request();
-		setAuthorities(o2Request.getAuthorities() == null ? null : new HashSet<>(o2Request.getAuthorities()));
+		setAuthorities(convertToSetOrNull((Set<GrantedAuthority>) o2Request.getAuthorities()));
 		setClientId(o2Request.getClientId());
-		setExtensions(o2Request.getExtensions() == null ? null : new HashMap<>(o2Request.getExtensions()));
+		setExtensions(convertToMapOrNull(o2Request.getExtensions()));
 		setRedirectUri(o2Request.getRedirectUri());
-		setRequestParameters(o2Request.getRequestParameters() == null ? null : new HashMap<>(o2Request.getRequestParameters()));
-		setResourceIds(o2Request.getResourceIds() == null ? null : new HashSet<>(o2Request.getResourceIds()));
-		setResponseTypes(o2Request.getResponseTypes() == null ? null : new HashSet<>(o2Request.getResponseTypes()));
-		setScope(o2Request.getScope() == null ? null : new HashSet<>(o2Request.getScope()));
+		setRequestParameters(convertToMapOrNull(o2Request.getRequestParameters()));
+		setResourceIds(convertToSetOrNull(o2Request.getResourceIds()));
+		setResponseTypes(convertToSetOrNull(o2Request.getResponseTypes()));
+		setScope(convertToSetOrNull(o2Request.getScope()));
 		setApproved(o2Request.isApproved());
 
 		if (authentication.getUserAuthentication() != null) {
@@ -116,114 +164,16 @@ public class AuthenticationHolderEntity {
 		}
 	}
 
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "user_auth_id")
-	public SavedUserAuthentication getUserAuth() {
-		return userAuth;
+	private <T> Set<T> convertToSetOrNull(Collection<T> obj) {
+		return obj == null ? null: new HashSet<>(obj);
 	}
 
-	public void setUserAuth(SavedUserAuthentication userAuth) {
-		this.userAuth = userAuth;
+	private <T, S> Map<T, S> convertToMapOrNull(Map<T, S> obj) {
+		return obj == null ? null : new HashMap<>(obj);
 	}
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_authority", joinColumns=@JoinColumn(name="owner_id"))
-	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
-	@Column(name="authority")
-	public Collection<GrantedAuthority> getAuthorities() {
-		return authorities;
-	}
-
-	public void setAuthorities(Collection<GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_resource_id", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="resource_id")
-	public Set<String> getResourceIds() {
-		return resourceIds;
-	}
-
-	public void setResourceIds(Set<String> resourceIds) {
-		this.resourceIds = resourceIds;
-	}
-
-	@Basic
-	@Column(name="approved")
-	public boolean isApproved() {
-		return approved;
-	}
-
-	public void setApproved(boolean approved) {
-		this.approved = approved;
-	}
-
-	@Basic
-	@Column(name="redirect_uri")
-	public String getRedirectUri() {
-		return redirectUri;
-	}
-
-	public void setRedirectUri(String redirectUri) {
-		this.redirectUri = redirectUri;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_response_type", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="response_type")
-	public Set<String> getResponseTypes() {
-		return responseTypes;
-	}
-
-	public void setResponseTypes(Set<String> responseTypes) {
-		this.responseTypes = responseTypes;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_extension", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="val")
-	@MapKeyColumn(name="extension")
-	@Convert(converter= SerializableStringConverter.class)
-	public Map<String, Serializable> getExtensions() {
-		return extensions;
-	}
-
-	public void setExtensions(Map<String, Serializable> extensions) {
-		this.extensions = extensions;
-	}
-
-	@Basic
-	@Column(name="client_id")
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_scope", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="scope")
-	public Set<String> getScope() {
-		return scope;
-	}
-
-	public void setScope(Set<String> scope) {
-		this.scope = scope;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="authentication_holder_request_parameter", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="val")
-	@MapKeyColumn(name="param")
-	public Map<String, String> getRequestParameters() {
-		return requestParameters;
-	}
-
-	public void setRequestParameters(Map<String, String> requestParameters) {
-		this.requestParameters = requestParameters;
+	private OAuth2Request createOAuth2Request() {
+		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
 	}
 
 }
