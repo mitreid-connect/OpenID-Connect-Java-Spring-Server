@@ -4,17 +4,14 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.web.DeviceEndpoint;
-import cz.muni.ics.oidc.server.PerunDeviceCodeAcrRepository;
 import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.langs.Localization;
-import cz.muni.ics.openid.connect.models.DeviceCodeAcr;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import java.security.Principal;
-import java.time.Instant;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -41,7 +38,6 @@ public class ApproveDeviceController {
     public static final String DEVICE_APPROVED = "deviceApproved";
     public static final String REQUEST_USER_CODE = "requestUserCode";
     public static final String USER_CODE = "user_code";
-    public static final String DEVICE_CODE = "device_code";
     public static final String USER_OAUTH_APPROVAL = "user_oauth_approval";
     public static final String URL = "devicecode";
     public static final String VERIFICATION_URI = "verification_uri";
@@ -59,7 +55,6 @@ public class ApproveDeviceController {
     private final WebHtmlClasses htmlClasses;
     private final PerunScopeClaimTranslationService scopeClaimTranslationService;
     private final UserInfoService userInfoService;
-    private final PerunDeviceCodeAcrRepository deviceCodeAcrRepository;
 
     @Autowired
     public ApproveDeviceController(SystemScopeService scopeService,
@@ -68,8 +63,7 @@ public class ApproveDeviceController {
                                    Localization localization,
                                    WebHtmlClasses htmlClasses,
                                    PerunScopeClaimTranslationService scopeClaimTranslationService,
-                                   UserInfoService userInfoService,
-                                   PerunDeviceCodeAcrRepository perunDeviceCodeAcrRepository)
+                                   UserInfoService userInfoService)
     {
         this.scopeService = scopeService;
         this.deviceEndpoint = deviceEndpoint;
@@ -78,7 +72,6 @@ public class ApproveDeviceController {
         this.htmlClasses = htmlClasses;
         this.scopeClaimTranslationService = scopeClaimTranslationService;
         this.userInfoService = userInfoService;
-        this.deviceCodeAcrRepository = perunDeviceCodeAcrRepository;
     }
 
     @RequestMapping(
@@ -96,7 +89,6 @@ public class ApproveDeviceController {
         Map<String, Object> response = (Map<String, Object>) model.get(ENTITY);
         response.replace(VERIFICATION_URI, response.get(VERIFICATION_URI) + "?" + ACR_VALUES + "=" + acrValues);
         response.replace(VERIFICATION_URI_COMPLETE, response.get(VERIFICATION_URI_COMPLETE) + "&" + ACR_VALUES + "=" + acrValues);
-        storeAcrBase((String) response.get(DEVICE_CODE), (String)response.get(USER_CODE));
 
         return result;
     }
@@ -145,10 +137,6 @@ public class ApproveDeviceController {
     {
         String result = deviceEndpoint.readUserCode(userCode, model, session);
         if (result.equals(APPROVE_DEVICE) && !perunOidcConfig.getTheme().equalsIgnoreCase("default")) {
-            if (StringUtils.hasText(req.getParameter(ACR))) {
-                storeAcr(req.getParameter(ACR), userCode);
-            }
-
             return themedApproveDevice(model, p, req);
         } else if (result.equals(REQUEST_USER_CODE) && !perunOidcConfig.getTheme().equalsIgnoreCase("default")) {
             ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
@@ -189,14 +177,6 @@ public class ApproveDeviceController {
         return result;
     }
 
-    private void storeAcr(String acrValue, String userCode) {
-        DeviceCodeAcr acr = deviceCodeAcrRepository.getByUserCode(userCode);
-        acr.setShibAuthnContextClass(acrValue);
-        long expiresAtEpoch = Instant.now().plusSeconds(600L).toEpochMilli();
-        acr.setExpiresAt(expiresAtEpoch);
-        deviceCodeAcrRepository.store(acr);
-    }
-
     private String themedApproveDevice(ModelMap model, Principal p, HttpServletRequest req) {
         model.remove("scopes");
         DeviceCode dc = (DeviceCode) model.get("dc");
@@ -208,12 +188,6 @@ public class ApproveDeviceController {
 
         model.put("page", APPROVE_DEVICE);
         return "themedApproveDevice";
-    }
-
-    private void storeAcrBase(String deviceCode, String userCode) {
-        DeviceCodeAcr acrBase = new DeviceCodeAcr(deviceCode, userCode);
-        acrBase.setExpiresAt(Instant.now().plusSeconds(1800).toEpochMilli());
-        deviceCodeAcrRepository.store(acrBase);
     }
 
 }

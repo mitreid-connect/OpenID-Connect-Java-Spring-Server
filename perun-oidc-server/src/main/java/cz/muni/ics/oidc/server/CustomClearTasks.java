@@ -4,8 +4,6 @@ import cz.muni.ics.oauth2.model.AuthorizationCodeEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
-import cz.muni.ics.openid.connect.models.Acr;
-import cz.muni.ics.openid.connect.models.DeviceCodeAcr;
 import java.time.Instant;
 import java.util.Date;
 import javax.persistence.EntityManager;
@@ -124,40 +122,6 @@ public class CustomClearTasks {
         int count = 0;
         Query query = manager.createQuery("DELETE FROM DeviceCode d WHERE d.expiration <= :" + DeviceCode.PARAM_DATE);
         query.setParameter(DeviceCode.PARAM_DATE, new Date());
-        if (timeout > 0) {
-            query.setHint("javax.persistence.query.timeout", timeout);
-        }
-        try {
-            count += query.executeUpdate();
-        } catch (QueryTimeoutException e) {
-            // this is OK
-        }
-        return count;
-    }
-
-    public int clearExpiredAcrs(long timeout) {
-        manager.flush();
-        manager.clear();
-        int count = 0;
-        Query query = manager.createNamedQuery(Acr.DELETE_EXPIRED);
-        query.setParameter(Acr.PARAM_EXPIRES_AT, Instant.now().toEpochMilli());
-        if (timeout > 0) {
-            query.setHint("javax.persistence.query.timeout", timeout);
-        }
-        try {
-            count += query.executeUpdate();
-        } catch (QueryTimeoutException e) {
-            // this is OK
-        }
-        return count;
-    }
-
-    public int clearExpiredDeviceCodeAcrs(long timeout) {
-        manager.flush();
-        manager.clear();
-        int count = 0;
-        Query query = manager.createNamedQuery(DeviceCodeAcr.DELETE_EXPIRED);
-        query.setParameter(DeviceCodeAcr.PARAM_EXPIRES_AT, Instant.now().toEpochMilli());
         if (timeout > 0) {
             query.setHint("javax.persistence.query.timeout", timeout);
         }
