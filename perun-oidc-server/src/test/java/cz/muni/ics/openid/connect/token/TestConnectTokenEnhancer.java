@@ -92,7 +92,7 @@ public class TestConnectTokenEnhancer {
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 
 		OAuth2AccessTokenEntity enhanced = (OAuth2AccessTokenEntity) enhancer.enhance(token, authentication);
-		Assert.assertEquals("foo", enhanced.getJwt().getJWTClaimsSet().getClaim("test"));
+		Assert.assertEquals("foo", enhanced.getJwtValue().getJWTClaimsSet().getClaim("test"));
 	}
 
 	private void configure(ConnectTokenEnhancer e) {

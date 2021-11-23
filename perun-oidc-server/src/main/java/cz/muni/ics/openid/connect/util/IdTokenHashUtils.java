@@ -56,7 +56,7 @@ public class IdTokenHashUtils {
 	 */
 	public static Base64URL getAccessTokenHash(JWSAlgorithm signingAlg, OAuth2AccessTokenEntity token) {
 
-		byte[] tokenBytes = token.getJwt().serialize().getBytes();
+		byte[] tokenBytes = token.getJwtValue().serialize().getBytes();
 
 		return getHash(signingAlg, tokenBytes);
 

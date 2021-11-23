@@ -16,10 +16,16 @@
 
 package cz.muni.ics.oauth2.model;
 
+import static cz.muni.ics.oauth2.model.DeviceCode.PARAM_DATE;
+import static cz.muni.ics.oauth2.model.DeviceCode.PARAM_DEVICE_CODE;
+import static cz.muni.ics.oauth2.model.DeviceCode.PARAM_USER_CODE;
+import static cz.muni.ics.oauth2.model.DeviceCode.QUERY_BY_DEVICE_CODE;
+import static cz.muni.ics.oauth2.model.DeviceCode.QUERY_BY_USER_CODE;
+import static cz.muni.ics.oauth2.model.DeviceCode.QUERY_EXPIRED_BY_DATE;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -35,16 +41,37 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 /**
  * @author jricher
  */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name = "device_code")
 @NamedQueries({
-	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.userCode = :" + DeviceCode.PARAM_USER_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)
+		@NamedQuery(name = QUERY_BY_USER_CODE,
+				query = "SELECT d FROM DeviceCode d " +
+						"WHERE d.userCode = :" + PARAM_USER_CODE),
+		@NamedQuery(name = QUERY_BY_DEVICE_CODE,
+				query = "SELECT d FROM DeviceCode d " +
+						"WHERE d.deviceCode = :" + PARAM_DEVICE_CODE),
+		@NamedQuery(name = QUERY_EXPIRED_BY_DATE,
+				query = "SELECT d FROM DeviceCode d " +
+						"WHERE d.expiration <= :" + PARAM_DATE)
 })
 public class DeviceCode {
 
@@ -56,119 +83,55 @@ public class DeviceCode {
 	public static final String PARAM_DEVICE_CODE = "deviceCode";
 	public static final String PARAM_DATE = "date";
 
-	private Long id;
-	private String deviceCode;
-	private String userCode;
-	private Set<String> scope;
-	private Date expiration;
-	private String clientId;
-	private Map<String, String> requestParameters;
-	private boolean approved;
-	private AuthenticationHolderEntity authenticationHolder;
-
-	public DeviceCode() { }
-
-	public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
-		this.deviceCode = deviceCode;
-		this.userCode = userCode;
-		this.scope = scope;
-		this.clientId = clientId;
-		this.requestParameters = params;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Basic
 	@Column(name = "device_code")
-	public String getDeviceCode() {
-		return deviceCode;
-	}
+	private String deviceCode;
 
-	public void setDeviceCode(String deviceCode) {
-		this.deviceCode = deviceCode;
-	}
-
-	@Basic
 	@Column(name = "user_code")
-	public String getUserCode() {
-		return userCode;
-	}
-
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+	private String userCode;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="device_code_scope", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="scope")
-	public Set<String> getScope() {
-		return scope;
-	}
+	@CollectionTable(name = "device_code_scope", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "scope")
+	@CascadeOnDelete
+	private Set<String> scope;
 
-	public void setScope(Set<String> scope) {
-		this.scope = scope;
-	}
-
-	@Basic
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "expiration")
-	public Date getExpiration() {
-		return expiration;
-	}
+	private Date expiration;
 
-	public void setExpiration(Date expiration) {
-		this.expiration = expiration;
-	}
-
-	@Basic
 	@Column(name = "client_id")
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+	private String clientId;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="device_code_request_parameter", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="val")
-	@MapKeyColumn(name="param")
-	public Map<String, String> getRequestParameters() {
-		return requestParameters;
-	}
+	@CollectionTable(name = "device_code_request_parameter", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "val")
+	@MapKeyColumn(name = "param")
+	@CascadeOnDelete
+	private Map<String, String> requestParameters;
 
-	public void setRequestParameters(Map<String, String> params) {
-		this.requestParameters = params;
-	}
-
-	@Basic
 	@Column(name = "approved")
-	public boolean isApproved() {
-		return approved;
-	}
-
-	public void setApproved(boolean approved) {
-		this.approved = approved;
-	}
+	private boolean approved;
 
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-	public AuthenticationHolderEntity getAuthenticationHolder() {
-		return authenticationHolder;
-	}
+	private AuthenticationHolderEntity authenticationHolder;
 
-	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
-		this.authenticationHolder = authenticationHolder;
+	public DeviceCode(String deviceCode,
+					  String userCode,
+					  Set<String> scope,
+					  String clientId,
+					  Map<String, String> params)
+	{
+		this.deviceCode = deviceCode;
+		this.userCode = userCode;
+		this.scope = scope;
+		this.clientId = clientId;
+		this.requestParameters = params;
 	}
 
 }

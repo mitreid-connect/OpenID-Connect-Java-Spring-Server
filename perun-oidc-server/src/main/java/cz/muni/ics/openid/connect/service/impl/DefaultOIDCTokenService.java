@@ -281,7 +281,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 		jwtService.signJwt(signed);
 
-		token.setJwt(signed);
+		token.setJwtValue(signed);
 
 		return token;
 	}

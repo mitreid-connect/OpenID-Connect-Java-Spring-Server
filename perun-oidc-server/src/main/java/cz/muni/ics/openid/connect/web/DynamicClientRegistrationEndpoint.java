@@ -752,7 +752,7 @@ public class DynamicClientRegistrationEndpoint {
 			try {
 				// Re-issue the token if it has been issued before [currentTime - validity]
 				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
-				if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate)) {
+				if(token.getJwtValue().getJWTClaimsSet().getIssueTime().before(validToDate)) {
 					log.info("Rotating the registration access token for " + client.getClientId());
 					tokenService.revokeAccessToken(token);
 					OAuth2AccessTokenEntity newToken = connectTokenService.createRegistrationAccessToken(client);
