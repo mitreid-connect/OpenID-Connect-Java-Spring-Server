@@ -15,29 +15,54 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
-@Table(name="address")
+@Table(name = "address")
 public class DefaultAddress implements Address {
 
 	private static final long serialVersionUID = -1304880008685206811L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Long id;
-	private String formatted;
-	private String streetAddress;
-	private String locality;
-	private String region;
-	private String postalCode;
-	private String country;
 
-	public DefaultAddress() { }
+	@Column(name = "formatted")
+	private String formatted;
+
+	@Column(name = "street_address")
+	private String streetAddress;
+
+	@Column(name = "locality")
+	private String locality;
+
+	@Column(name = "region")
+	private String region;
+
+	@Column(name = "postal_code")
+	private String postalCode;
+
+	@Column(name = "country")
+	private String country;
 
 	public DefaultAddress(Address address) {
 		setFormatted(address.getFormatted());
@@ -49,8 +74,11 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "formatted")
+	public Long getId() {
+		return id;
+	}
+
+	@Override
 	public String getFormatted() {
 		return formatted;
 	}
@@ -61,8 +89,6 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name="street_address")
 	public String getStreetAddress() {
 		return streetAddress;
 	}
@@ -73,8 +99,6 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "locality")
 	public String getLocality() {
 		return locality;
 	}
@@ -85,8 +109,6 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "region")
 	public String getRegion() {
 		return region;
 	}
@@ -97,8 +119,6 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name="postal_code")
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -109,8 +129,6 @@ public class DefaultAddress implements Address {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "country")
 	public String getCountry() {
 		return country;
 	}
@@ -118,95 +136,6 @@ public class DefaultAddress implements Address {
 	@Override
 	public void setCountry(String country) {
 		this.country = country;
-	}
-
-
-	@Override
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((country == null) ? 0 : country.hashCode());
-		result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((locality == null) ? 0 : locality.hashCode());
-		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-		result = prime * result + ((region == null) ? 0 : region.hashCode());
-		result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
-		return result;
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof DefaultAddress)) {
-			return false;
-		}
-		DefaultAddress other = (DefaultAddress) obj;
-		if (country == null) {
-			if (other.country != null) {
-				return false;
-			}
-		} else if (!country.equals(other.country)) {
-			return false;
-		}
-		if (formatted == null) {
-			if (other.formatted != null) {
-				return false;
-			}
-		} else if (!formatted.equals(other.formatted)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (locality == null) {
-			if (other.locality != null) {
-				return false;
-			}
-		} else if (!locality.equals(other.locality)) {
-			return false;
-		}
-		if (postalCode == null) {
-			if (other.postalCode != null) {
-				return false;
-			}
-		} else if (!postalCode.equals(other.postalCode)) {
-			return false;
-		}
-		if (region == null) {
-			if (other.region != null) {
-				return false;
-			}
-		} else if (!region.equals(other.region)) {
-			return false;
-		}
-		if (streetAddress == null) {
-			return other.streetAddress == null;
-		} else return streetAddress.equals(other.streetAddress);
 	}
 
 }

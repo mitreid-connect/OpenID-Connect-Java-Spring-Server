@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableSet;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.enums.AppType;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import org.junit.Before;
@@ -104,12 +105,12 @@ public class TestBlacklistAwareRedirectResolver {
 	public void testRedirectMatches_default() {
 
 		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, AppType.WEB);
 
 		assertThat(res1, is(false));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, AppType.WEB);
 
 		assertThat(res2, is(true));
 
@@ -122,12 +123,12 @@ public class TestBlacklistAwareRedirectResolver {
 		resolver.setStrictMatch(false);
 		
 		// this is not an exact match (but that's OK)
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, AppType.WEB);
 
 		assertThat(res1, is(true));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, AppType.WEB);
 
 		assertThat(res2, is(true));
 
@@ -136,12 +137,12 @@ public class TestBlacklistAwareRedirectResolver {
 	@Test
 	public void testHeartMode() {
 		// this is not an exact match
-		boolean res1 = resolver.redirectMatches(pathUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri, AppType.WEB);
 
 		assertThat(res1, is(false));
 
 		// this is an exact match
-		boolean res2 = resolver.redirectMatches(goodUri, goodUri, ClientDetailsEntity.AppType.WEB);
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri, AppType.WEB);
 
 		assertThat(res2, is(true));
 	}

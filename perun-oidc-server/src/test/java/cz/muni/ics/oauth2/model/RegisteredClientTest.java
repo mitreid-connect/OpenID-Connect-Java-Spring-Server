@@ -25,6 +25,9 @@ import static org.junit.Assert.assertEquals;
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
+import cz.muni.ics.oauth2.model.enums.AppType;
+import cz.muni.ics.oauth2.model.enums.AuthMethod;
+import cz.muni.ics.oauth2.model.enums.SubjectType;
 import java.sql.Date;
 import org.junit.Test;
 
@@ -49,12 +52,12 @@ public class RegisteredClientTest {
 		c.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
 		c.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
 		c.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
-		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
+		c.setApplicationType(AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
-		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		c.setSubjectType(SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
-		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
+		c.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
 		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
 		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
@@ -66,12 +69,12 @@ public class RegisteredClientTest {
 		assertEquals(new Date(1577858400L * 1000L), c.getClientSecretExpiresAt());
 		assertEquals("this.is.an.access.token.value.ffx83", c.getRegistrationAccessToken());
 		assertEquals("https://server.example.com/connect/register?client_id=s6BhdRkqt3", c.getRegistrationClientUri());
-		assertEquals(ClientDetailsEntity.AppType.WEB, c.getApplicationType());
+		assertEquals(AppType.WEB, c.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), c.getRedirectUris());
 		assertEquals("My Example", c.getClientName());
-		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
+		assertEquals(SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
-		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
+		assertEquals(AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", c.getJwksUri());
 		assertEquals(JWEAlgorithm.RSA1_5, c.getUserInfoEncryptedResponseAlg());
 		assertEquals(EncryptionMethod.A128CBC_HS256, c.getUserInfoEncryptedResponseEnc());
@@ -88,13 +91,13 @@ public class RegisteredClientTest {
 
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
-		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
+		c.setApplicationType(AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
 		
-		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		c.setSubjectType(SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
-		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
+		c.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
 		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
 		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
@@ -113,12 +116,12 @@ public class RegisteredClientTest {
 		assertEquals(new Date(1577858400L * 1000L), rc.getClientSecretExpiresAt());
 		assertEquals("this.is.an.access.token.value.ffx83", rc.getRegistrationAccessToken());
 		assertEquals("https://server.example.com/connect/register?client_id=s6BhdRkqt3", rc.getRegistrationClientUri());
-		assertEquals(ClientDetailsEntity.AppType.WEB, rc.getApplicationType());
+		assertEquals(AppType.WEB, rc.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), rc.getRedirectUris());
 		assertEquals("My Example", rc.getClientName());
-		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, rc.getSubjectType());
+		assertEquals(SubjectType.PAIRWISE, rc.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
-		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
+		assertEquals(AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", rc.getJwksUri());
 		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg());
 		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc());
@@ -135,13 +138,13 @@ public class RegisteredClientTest {
 
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
-		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
+		c.setApplicationType(AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
 		
-		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		c.setSubjectType(SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
-		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
+		c.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
 		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
 		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
@@ -156,12 +159,12 @@ public class RegisteredClientTest {
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());
 		assertEquals("this.is.an.access.token.value.ffx83", rc.getRegistrationAccessToken());
 		assertEquals("https://server.example.com/connect/register?client_id=s6BhdRkqt3", rc.getRegistrationClientUri());
-		assertEquals(ClientDetailsEntity.AppType.WEB, rc.getApplicationType());
+		assertEquals(AppType.WEB, rc.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), rc.getRedirectUris());
 		assertEquals("My Example", rc.getClientName());
-		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, rc.getSubjectType());
+		assertEquals(SubjectType.PAIRWISE, rc.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
-		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
+		assertEquals(AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", rc.getJwksUri());
 		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg());
 		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc());

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.enums.SubjectType;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import cz.muni.ics.openid.connect.model.UserInfo;
@@ -112,29 +113,29 @@ public class TestDefaultUserInfoService {
 
 		publicClient2 = new ClientDetailsEntity();
 		publicClient2.setClientId(publicClientId2);
-		publicClient2.setSubjectType(ClientDetailsEntity.SubjectType.PUBLIC);
+		publicClient2.setSubjectType(SubjectType.PUBLIC);
 
 		// pairwise set 1
 		pairwiseClient1 = new ClientDetailsEntity();
 		pairwiseClient1.setClientId(pairwiseClientId1);
-		pairwiseClient1.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		pairwiseClient1.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier1);
 
 		pairwiseClient2 = new ClientDetailsEntity();
 		pairwiseClient2.setClientId(pairwiseClientId2);
-		pairwiseClient2.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		pairwiseClient2.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier2);
 
 		// pairwise set 2
 		pairwiseClient3 = new ClientDetailsEntity();
 		pairwiseClient3.setClientId(pairwiseClientId3);
-		pairwiseClient3.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		pairwiseClient3.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient3.setSectorIdentifierUri(sectorIdentifier3);
 
 		// pairwise with null sector
 		pairwiseClient4 = new ClientDetailsEntity();
 		pairwiseClient4.setClientId(pairwiseClientId4);
-		pairwiseClient4.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
+		pairwiseClient4.setSubjectType(SubjectType.PAIRWISE);
 
 
 

@@ -20,7 +20,11 @@
  */
 package cz.muni.ics.openid.connect.model;
 
-import javax.persistence.Basic;
+import static cz.muni.ics.openid.connect.model.PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER;
+import static cz.muni.ics.openid.connect.model.PairwiseIdentifier.PARAM_SUB;
+import static cz.muni.ics.openid.connect.model.PairwiseIdentifier.QUERY_ALL;
+import static cz.muni.ics.openid.connect.model.PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,6 +33,12 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -37,11 +47,22 @@ import javax.persistence.Table;
  * @author jricher
  *
  */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name = "pairwise_identifier")
 @NamedQueries({
-	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p"),
-	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
+	@NamedQuery(name = QUERY_ALL,
+				query = "SELECT p FROM PairwiseIdentifier p"),
+	@NamedQuery(name = QUERY_BY_SECTOR_IDENTIFIER,
+				query = "SELECT p FROM PairwiseIdentifier p " +
+						"WHERE p.userSub = :" + PARAM_SUB + ' ' +
+						"AND p.sectorIdentifier = :" + PARAM_SECTOR_IDENTIFIER)
 })
 public class PairwiseIdentifier {
 
@@ -51,50 +72,18 @@ public class PairwiseIdentifier {
 	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
 	public static final String PARAM_SUB = "sub";
 
-	private Long id;
-	private String identifier;
-	private String userSub;
-	private String sectorIdentifier;
-
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Basic
 	@Column(name = "identifier")
-	public String getIdentifier() {
-		return identifier;
-	}
+	private String identifier;
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+	@Column(name = PARAM_SUB)
+	private String userSub;
 
-	@Basic
-	@Column(name = PairwiseIdentifier.PARAM_SUB)
-	public String getUserSub() {
-		return userSub;
-	}
-
-	public void setUserSub(String userSub) {
-		this.userSub = userSub;
-	}
-
-	@Basic
 	@Column(name = "sector_identifier")
-	public String getSectorIdentifier() {
-		return sectorIdentifier;
-	}
-
-	public void setSectorIdentifier(String sectorIdentifier) {
-		this.sectorIdentifier = sectorIdentifier;
-	}
+	private String sectorIdentifier;
 
 }

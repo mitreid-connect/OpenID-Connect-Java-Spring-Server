@@ -17,13 +17,17 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
+import static cz.muni.ics.openid.connect.model.DefaultUserInfo.PARAM_EMAIL;
+import static cz.muni.ics.openid.connect.model.DefaultUserInfo.PARAM_USERNAME;
+import static cz.muni.ics.openid.connect.model.DefaultUserInfo.QUERY_BY_EMAIL;
+import static cz.muni.ics.openid.connect.model.DefaultUserInfo.QUERY_BY_USERNAME;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cz.muni.ics.openid.connect.model.convert.JsonObjectStringConverter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -36,12 +40,29 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.email = :" + DefaultUserInfo.PARAM_EMAIL)
+	@NamedQuery(name = QUERY_BY_USERNAME,
+				query = "SELECT u FROM DefaultUserInfo u " +
+						"WHERE u.preferredUsername = :" + PARAM_USERNAME),
+	@NamedQuery(name = QUERY_BY_EMAIL,
+				query = "SELECT u FROM DefaultUserInfo u " +
+						"WHERE u.email = :" + PARAM_EMAIL)
 })
 public class DefaultUserInfo implements UserInfo {
 
@@ -53,44 +74,77 @@ public class DefaultUserInfo implements UserInfo {
 
 	private static final long serialVersionUID = 6078310513185681918L;
 
-	private Long id;
-	private String sub;
-	private String preferredUsername;
-	private String name;
-	private String givenName;
-	private String familyName;
-	private String middleName;
-	private String nickname;
-	private String profile;
-	private String picture;
-	private String website;
-	private String email;
-	private Boolean emailVerified;
-	private String gender;
-	private String zoneinfo;
-	private String locale;
-	private String phoneNumber;
-	private Boolean phoneNumberVerified;
-	private DefaultAddress address;
-	private String updatedTime;
-	private String birthdate;
-	private transient JsonObject src; // source JSON if this is loaded remotely
-
-
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	@Column(name = "sub")
+	private String sub;
+
+	@Column(name = "preferred_username")
+	private String preferredUsername;
+
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "given_name")
+	private String givenName;
+
+	@Column(name = "family_name")
+	private String familyName;
+
+	@Column(name = "middle_name")
+	private String middleName;
+
+	@Column(name = "nickname")
+	private String nickname;
+
+	@Column(name = "profile")
+	private String profile;
+
+	@Column(name = "picture")
+	private String picture;
+
+	@Column(name = "website")
+	private String website;
+
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "email_verified")
+	private Boolean emailVerified;
+
+	@Column(name = "gender")
+	private String gender;
+
+	@Column(name = "zone_info")
+	private String zoneinfo;
+
+	@Column(name = "locale")
+	private String locale;
+
+	@Column(name = "phone_number")
+	private String phoneNumber;
+
+	@Column(name = "phone_number_verified")
+	private Boolean phoneNumberVerified;
+
+	@OneToOne(targetEntity = DefaultAddress.class, cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id")
+	private DefaultAddress address;
+
+	@Column(name = "updated_time")
+	private String updatedTime;
+
+	@Column(name = "birthdate")
+	private String birthdate;
+
+	@Column(name = "src")
+	@Convert(converter = JsonObjectStringConverter.class)
+	private transient JsonObject source; // source JSON if this is loaded remotely
 
 	@Override
-	@Basic
-	@Column(name="sub")
 	public String getSub() {
 		return sub;
 	}
@@ -101,8 +155,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="preferred_username")
 	public String getPreferredUsername() {
 		return this.preferredUsername;
 	}
@@ -113,8 +165,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -125,8 +175,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="given_name")
 	public String getGivenName() {
 		return givenName;
 	}
@@ -137,8 +185,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="family_name")
 	public String getFamilyName() {
 		return familyName;
 	}
@@ -149,8 +195,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="middle_name")
 	public String getMiddleName() {
 		return middleName;
 	}
@@ -161,8 +205,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "nickname")
 	public String getNickname() {
 		return nickname;
 	}
@@ -173,8 +215,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "profile")
 	public String getProfile() {
 		return profile;
 	}
@@ -185,8 +225,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "picture")
 	public String getPicture() {
 		return picture;
 	}
@@ -197,8 +235,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "website")
 	public String getWebsite() {
 		return website;
 	}
@@ -209,8 +245,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "email")
 	public String getEmail() {
 		return email;
 	}
@@ -221,8 +255,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="email_verified")
 	public Boolean getEmailVerified() {
 		return emailVerified;
 	}
@@ -233,8 +265,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "gender")
 	public String getGender() {
 		return gender;
 	}
@@ -245,8 +275,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="zone_info")
 	public String getZoneinfo() {
 		return zoneinfo;
 	}
@@ -257,8 +285,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name = "locale")
 	public String getLocale() {
 		return locale;
 	}
@@ -269,8 +295,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="phone_number")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -281,8 +305,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="phone_number_verified")
 	public Boolean getPhoneNumberVerified() {
 		return phoneNumberVerified;
 	}
@@ -293,8 +315,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@OneToOne(targetEntity = DefaultAddress.class, cascade = CascadeType.ALL)
-	@JoinColumn(name="address_id")
 	public Address getAddress() {
 		return address;
 	}
@@ -309,8 +329,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="updated_time")
 	public String getUpdatedTime() {
 		return updatedTime;
 	}
@@ -321,8 +339,6 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	@Override
-	@Basic
-	@Column(name="birthdate")
 	public String getBirthdate() {
 		return birthdate;
 	}
@@ -334,7 +350,7 @@ public class DefaultUserInfo implements UserInfo {
 
 	@Override
 	public JsonObject toJson() {
-		if (src == null) {
+		if (source == null) {
 			JsonObject obj = new JsonObject();
 
 			obj.addProperty("sub", this.getSub());
@@ -372,10 +388,14 @@ public class DefaultUserInfo implements UserInfo {
 			}
 			return obj;
 		} else {
-			return src;
+			return source;
 		}
 	}
 
+	@Override
+	public JsonObject getSource() {
+		return source;
+	}
 
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
@@ -420,213 +440,16 @@ public class DefaultUserInfo implements UserInfo {
 		return ui;
 	}
 
-	@Override
-	@Basic
-	@Column(name = "src")
-	@Convert(converter = JsonObjectStringConverter.class)
-	public JsonObject getSource() {
-		return src;
-	}
-
-	public void setSource(JsonObject src) {
-		this.src = src;
-	}
-
 	private static String nullSafeGetString(JsonObject obj, String field) {
 		return obj.has(field) && obj.get(field).isJsonPrimitive() ? obj.get(field).getAsString() : null;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
-		result = prime * result + ((birthdate == null) ? 0 : birthdate.hashCode());
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((emailVerified == null) ? 0 : emailVerified.hashCode());
-		result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
-		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
-		result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
-		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
-		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-		result = prime * result + ((phoneNumberVerified == null) ? 0 : phoneNumberVerified.hashCode());
-		result = prime * result + ((picture == null) ? 0 : picture.hashCode());
-		result = prime * result + ((preferredUsername == null) ? 0 : preferredUsername.hashCode());
-		result = prime * result + ((profile == null) ? 0 : profile.hashCode());
-		result = prime * result + ((sub == null) ? 0 : sub.hashCode());
-		result = prime * result + ((updatedTime == null) ? 0 : updatedTime.hashCode());
-		result = prime * result + ((website == null) ? 0 : website.hashCode());
-		result = prime * result + ((zoneinfo == null) ? 0 : zoneinfo.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof DefaultUserInfo)) {
-			return false;
-		}
-		DefaultUserInfo other = (DefaultUserInfo) obj;
-		if (address == null) {
-			if (other.address != null) {
-				return false;
-			}
-		} else if (!address.equals(other.address)) {
-			return false;
-		}
-		if (birthdate == null) {
-			if (other.birthdate != null) {
-				return false;
-			}
-		} else if (!birthdate.equals(other.birthdate)) {
-			return false;
-		}
-		if (email == null) {
-			if (other.email != null) {
-				return false;
-			}
-		} else if (!email.equals(other.email)) {
-			return false;
-		}
-		if (emailVerified == null) {
-			if (other.emailVerified != null) {
-				return false;
-			}
-		} else if (!emailVerified.equals(other.emailVerified)) {
-			return false;
-		}
-		if (familyName == null) {
-			if (other.familyName != null) {
-				return false;
-			}
-		} else if (!familyName.equals(other.familyName)) {
-			return false;
-		}
-		if (gender == null) {
-			if (other.gender != null) {
-				return false;
-			}
-		} else if (!gender.equals(other.gender)) {
-			return false;
-		}
-		if (givenName == null) {
-			if (other.givenName != null) {
-				return false;
-			}
-		} else if (!givenName.equals(other.givenName)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (locale == null) {
-			if (other.locale != null) {
-				return false;
-			}
-		} else if (!locale.equals(other.locale)) {
-			return false;
-		}
-		if (middleName == null) {
-			if (other.middleName != null) {
-				return false;
-			}
-		} else if (!middleName.equals(other.middleName)) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (nickname == null) {
-			if (other.nickname != null) {
-				return false;
-			}
-		} else if (!nickname.equals(other.nickname)) {
-			return false;
-		}
-		if (phoneNumber == null) {
-			if (other.phoneNumber != null) {
-				return false;
-			}
-		} else if (!phoneNumber.equals(other.phoneNumber)) {
-			return false;
-		}
-		if (phoneNumberVerified == null) {
-			if (other.phoneNumberVerified != null) {
-				return false;
-			}
-		} else if (!phoneNumberVerified.equals(other.phoneNumberVerified)) {
-			return false;
-		}
-		if (picture == null) {
-			if (other.picture != null) {
-				return false;
-			}
-		} else if (!picture.equals(other.picture)) {
-			return false;
-		}
-		if (preferredUsername == null) {
-			if (other.preferredUsername != null) {
-				return false;
-			}
-		} else if (!preferredUsername.equals(other.preferredUsername)) {
-			return false;
-		}
-		if (profile == null) {
-			if (other.profile != null) {
-				return false;
-			}
-		} else if (!profile.equals(other.profile)) {
-			return false;
-		}
-		if (sub == null) {
-			if (other.sub != null) {
-				return false;
-			}
-		} else if (!sub.equals(other.sub)) {
-			return false;
-		}
-		if (updatedTime == null) {
-			if (other.updatedTime != null) {
-				return false;
-			}
-		} else if (!updatedTime.equals(other.updatedTime)) {
-			return false;
-		}
-		if (website == null) {
-			if (other.website != null) {
-				return false;
-			}
-		} else if (!website.equals(other.website)) {
-			return false;
-		}
-		if (zoneinfo == null) {
-			return other.zoneinfo == null;
-		} else return zoneinfo.equals(other.zoneinfo);
-	}
-
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
-		if (src == null) {
+		if (source == null) {
 			out.writeObject(null);
 		} else {
-			out.writeObject(src.toString());
+			out.writeObject(source.toString());
 		}
 	}
 
@@ -635,7 +458,7 @@ public class DefaultUserInfo implements UserInfo {
 		Object o = in.readObject();
 		if (o != null) {
 			JsonParser parser = new JsonParser();
-			src = parser.parse((String)o).getAsJsonObject();
+			source = parser.parse((String)o).getAsJsonObject();
 		}
 	}
 

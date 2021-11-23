@@ -17,8 +17,13 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
+import static cz.muni.ics.openid.connect.model.WhitelistedSite.PARAM_CLIENT_ID;
+import static cz.muni.ics.openid.connect.model.WhitelistedSite.PARAM_USER_ID;
+import static cz.muni.ics.openid.connect.model.WhitelistedSite.QUERY_ALL;
+import static cz.muni.ics.openid.connect.model.WhitelistedSite.QUERY_BY_CLIENT_ID;
+import static cz.muni.ics.openid.connect.model.WhitelistedSite.QUERY_BY_CREATOR;
+
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -31,6 +36,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 /**
  * Indicator that login to a site should be automatically granted
@@ -38,12 +50,24 @@ import javax.persistence.Table;
  * @author jricher, aanganes
  *
  */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name="whitelisted_site")
 @NamedQueries({
-	@NamedQuery(name = WhitelistedSite.QUERY_ALL, query = "select w from WhitelistedSite w"),
-	@NamedQuery(name = WhitelistedSite.QUERY_BY_CLIENT_ID, query = "select w from WhitelistedSite w where w.clientId = :" + WhitelistedSite.PARAM_CLIENT_ID),
-	@NamedQuery(name = WhitelistedSite.QUERY_BY_CREATOR, query = "select w from WhitelistedSite w where w.creatorUserId = :" + WhitelistedSite.PARAM_USER_ID)
+	@NamedQuery(name = QUERY_ALL,
+				query = "SELECT w FROM WhitelistedSite w"),
+	@NamedQuery(name = QUERY_BY_CLIENT_ID,
+				query = "SELECT w FROM WhitelistedSite w " +
+						"WHERE w.clientId = :" + PARAM_CLIENT_ID),
+	@NamedQuery(name = QUERY_BY_CREATOR,
+				query = "SELECT w FROM WhitelistedSite w " +
+						"WHERE w.creatorUserId = :" + PARAM_USER_ID)
 })
 public class WhitelistedSite {
 
@@ -54,53 +78,21 @@ public class WhitelistedSite {
 	public static final String PARAM_USER_ID = "userId";
 	public static final String PARAM_CLIENT_ID = "clientId";
 
-	private Long id;
-	private String creatorUserId;
-	private String clientId;
-	private Set<String> allowedScopes;
-
-	public WhitelistedSite() { }
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	@Column(name = "creator_user_id")
+	private String creatorUserId;
 
-	@Basic
-	@Column(name="client_id")
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+	@Column(name = "client_id")
+	private String clientId;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="whitelisted_site_scope", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="scope")
-	public Set<String> getAllowedScopes() {
-		return allowedScopes;
-	}
-
-	public void setAllowedScopes(Set<String> allowedScopes) {
-		this.allowedScopes = allowedScopes;
-	}
-
-	@Basic
-	@Column(name="creator_user_id")
-	public String getCreatorUserId() {
-		return creatorUserId;
-	}
-
-	public void setCreatorUserId(String creatorUserId) {
-		this.creatorUserId = creatorUserId;
-	}
+	@CollectionTable(name = "whitelisted_site_scope", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "scope")
+	@CascadeOnDelete
+	private Set<String> allowedScopes;
 
 }

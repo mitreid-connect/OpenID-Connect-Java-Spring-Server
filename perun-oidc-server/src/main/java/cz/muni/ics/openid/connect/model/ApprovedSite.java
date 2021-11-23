@@ -17,9 +17,15 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.model;
 
+import static cz.muni.ics.openid.connect.model.ApprovedSite.PARAM_CLIENT_ID;
+import static cz.muni.ics.openid.connect.model.ApprovedSite.PARAM_USER_ID;
+import static cz.muni.ics.openid.connect.model.ApprovedSite.QUERY_ALL;
+import static cz.muni.ics.openid.connect.model.ApprovedSite.QUERY_BY_CLIENT_ID;
+import static cz.muni.ics.openid.connect.model.ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID;
+import static cz.muni.ics.openid.connect.model.ApprovedSite.QUERY_BY_USER_ID;
+
 import java.util.Date;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -33,15 +39,37 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name="approved_site")
 @NamedQueries({
-	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.userId = :" + ApprovedSite.PARAM_USER_ID),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
+	@NamedQuery(name = QUERY_ALL,
+			query = "SELECT a FROM ApprovedSite a"),
+	@NamedQuery(name = QUERY_BY_USER_ID,
+			query = "SELECT a FROM ApprovedSite a " +
+					"WHERE a.userId = :" + PARAM_USER_ID),
+	@NamedQuery(name = QUERY_BY_CLIENT_ID,
+			query = "SELECT a FROM ApprovedSite a " +
+					"WHERE a.clientId = :" + PARAM_CLIENT_ID),
+	@NamedQuery(name = QUERY_BY_CLIENT_ID_AND_USER_ID,
+			query = "SELECT a FROM ApprovedSite a " +
+					"WHERE a.clientId = :" + PARAM_CLIENT_ID + ' ' +
+					"AND a.userId = :" + PARAM_USER_ID)
 })
 public class ApprovedSite {
 
@@ -53,90 +81,33 @@ public class ApprovedSite {
 	public static final String PARAM_CLIENT_ID = "clientId";
 	public static final String PARAM_USER_ID = "userId";
 
-	private Long id;
-	private String userId;
-	private String clientId;
-	private Date creationDate;
-	private Date accessDate;
-	private Date timeoutDate;
-	private Set<String> allowedScopes;
-
-	public ApprovedSite() { }
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	@Column(name = "user_id")
+	private String userId;
 
-	@Basic
-	@Column(name="user_id")
-	public String getUserId() {
-		return userId;
-	}
+	@Column(name = "client_id")
+	private String clientId;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "creation_date")
+	private Date creationDate;
 
-	@Basic
-	@Column(name="client_id")
-	public String getClientId() {
-		return clientId;
-	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "access_date")
+	private Date accessDate;
 
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	@Basic
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name="creation_date")
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	@Basic
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name="access_date")
-	public Date getAccessDate() {
-		return accessDate;
-	}
-
-	public void setAccessDate(Date accessDate) {
-		this.accessDate = accessDate;
-	}
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "timeout_date")
+	private Date timeoutDate;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name="approved_site_scope", joinColumns=@JoinColumn(name="owner_id"))
-	@Column(name="scope")
-	public Set<String> getAllowedScopes() {
-		return allowedScopes;
-	}
-
-	public void setAllowedScopes(Set<String> allowedScopes) {
-		this.allowedScopes = allowedScopes;
-	}
-
-	@Basic
-	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
-	@Column(name="timeout_date")
-	public Date getTimeoutDate() {
-		return timeoutDate;
-	}
-
-	public void setTimeoutDate(Date timeoutDate) {
-		this.timeoutDate = timeoutDate;
-	}
+	@CollectionTable(name = "approved_site_scope", joinColumns = @JoinColumn(name = "owner_id"))
+	@Column(name = "scope")
+	private Set<String> allowedScopes;
 
 	@Transient
 	public boolean isExpired() {

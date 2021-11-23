@@ -19,6 +19,7 @@
 package cz.muni.ics.oauth2.service.impl;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.enums.AppType;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import java.util.Arrays;
@@ -158,7 +159,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 * @return Whether the requested redirect URI "matches" the specified redirect URI.
 	 */
 	protected boolean redirectMatches(String requestedRedirect, String redirectUri,
-									  ClientDetailsEntity.AppType applicationType)
+									  AppType applicationType)
 	{
 		UriComponents requestedRedirectUri = UriComponentsBuilder.fromUriString(requestedRedirect).build();
 		UriComponents registeredRedirectUri = UriComponentsBuilder.fromUriString(redirectUri).build();
@@ -167,7 +168,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 		boolean userInfoMatch = isEqual(registeredRedirectUri.getUserInfo(), requestedRedirectUri.getUserInfo());
 		boolean hostMatch = hostMatches(registeredRedirectUri.getHost(), requestedRedirectUri.getHost());
 		boolean portMatch = true;
-		if (!ClientDetailsEntity.AppType.NATIVE.equals(applicationType)) {
+		if (!AppType.NATIVE.equals(applicationType)) {
 			portMatch = !matchPorts || registeredRedirectUri.getPort() == requestedRedirectUri.getPort();
 		}
 		boolean pathMatch = true;
@@ -205,7 +206,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 	 * @throws RedirectMismatchException if no match was found
 	 */
 	private String obtainMatchingRedirect(Set<String> redirectUris, String requestedRedirect,
-										  ClientDetailsEntity.AppType applicationType)
+										  AppType applicationType)
 	{
 		Assert.notEmpty(redirectUris, "Redirect URIs cannot be empty");
 
@@ -222,7 +223,7 @@ public class BlacklistAwareRedirectResolver implements RedirectResolver {
 				if (this.matchSubdomains) {
 					redirectUriBuilder.host(requestedRedirectUri.getHost());
 				}
-				if (!this.matchPorts || ClientDetailsEntity.AppType.NATIVE.equals(applicationType)) {
+				if (!this.matchPorts || AppType.NATIVE.equals(applicationType)) {
 					redirectUriBuilder.port(requestedRedirectUri.getPort());
 				}
 				if (!this.strictMatch) {
