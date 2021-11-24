@@ -26,7 +26,6 @@ import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.uma.model.ResourceSet;
 import cz.muni.ics.util.jpa.JpaUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -220,13 +219,6 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
 		return new LinkedHashSet<>(JpaUtil.getResultPage(query,pageCriteria));
-	}
-
-	@Override
-	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs) {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
-		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override

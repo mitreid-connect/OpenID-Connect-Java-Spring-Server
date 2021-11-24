@@ -14,11 +14,6 @@ CREATE TABLE IF NOT EXISTS access_token (
     UNIQUE(token_value)
 );
 
-CREATE TABLE IF NOT EXISTS access_token_permissions (
-    access_token_id BIGINT NOT NULL,
-    permission_id BIGINT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS address (
     id BIGSERIAL PRIMARY KEY,
     formatted VARCHAR(256),
@@ -88,7 +83,7 @@ CREATE TABLE IF NOT EXISTS saved_user_auth (
     id BIGSERIAL PRIMARY KEY,
     acr VARCHAR(1024),
     name VARCHAR(1024),
-    authenticated BOOLEAN,
+    authenticated BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth_authority (
@@ -284,83 +279,6 @@ CREATE TABLE IF NOT EXISTS pairwise_identifier (
     sector_identifier VARCHAR(2048)
 );
 
-CREATE TABLE IF NOT EXISTS resource_set (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(1024) NOT NULL,
-    uri VARCHAR(1024),
-    icon_uri VARCHAR(1024),
-    rs_type VARCHAR(256),
-    owner VARCHAR(256) NOT NULL,
-    client_id VARCHAR(256)
-);
-
-CREATE TABLE IF NOT EXISTS resource_set_scope (
-    owner_id BIGINT NOT NULL,
-    scope VARCHAR(256) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS permission_ticket (
-    id BIGSERIAL PRIMARY KEY,
-    ticket VARCHAR(256) NOT NULL,
-    permission_id BIGINT NOT NULL,
-    expiration TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS permission (
-    id BIGSERIAL PRIMARY KEY,
-    resource_set_id BIGINT
-);
-
-CREATE TABLE IF NOT EXISTS permission_scope (
-    owner_id BIGINT NOT NULL,
-    scope VARCHAR(256) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS claim (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(256),
-    friendly_name VARCHAR(1024),
-    claim_type VARCHAR(1024),
-    claim_value VARCHAR(1024)
-);
-
-CREATE TABLE IF NOT EXISTS claim_to_policy (
-    policy_id BIGINT NOT NULL,
-    claim_id BIGINT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS claim_to_permission_ticket (
-    permission_ticket_id BIGINT NOT NULL,
-    claim_id BIGINT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS policy (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(1024),
-    resource_set_id BIGINT
-);
-
-CREATE TABLE IF NOT EXISTS policy_scope (
-    owner_id BIGINT NOT NULL,
-    scope VARCHAR(256) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS claim_token_format (
-    owner_id BIGINT NOT NULL,
-    claim_token_format VARCHAR(1024)
-);
-
-CREATE TABLE IF NOT EXISTS claim_issuer (
-    owner_id BIGINT NOT NULL,
-    issuer VARCHAR(1024)
-);
-
-CREATE TABLE IF NOT EXISTS saved_registered_client (
-    id BIGSERIAL PRIMARY KEY,
-    issuer VARCHAR(1024),
-    registered_client VARCHAR(8192)
-);
-
 CREATE TABLE IF NOT EXISTS device_code (
     id BIGSERIAL PRIMARY KEY,
     device_code VARCHAR(1024),
@@ -381,4 +299,3 @@ CREATE TABLE IF NOT EXISTS device_code_request_parameter (
     param VARCHAR(2048),
     val VARCHAR(2048)
 );
-

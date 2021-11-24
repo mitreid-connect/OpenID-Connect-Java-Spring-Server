@@ -30,9 +30,6 @@ import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.uma.service.ResourceSetService;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -68,9 +65,6 @@ public class IntrospectionEndpoint {
 	@Autowired
 	private UserInfoService userInfoService;
 
-	@Autowired
-	private ResourceSetService resourceSetService;
-
 	public IntrospectionEndpoint() {
 
 	}
@@ -101,15 +95,6 @@ public class IntrospectionEndpoint {
 			String ownerId = o2a.getUserAuthentication().getName();
 
 			authScopes.addAll(authClient.getScope());
-
-			// UMA style clients also get a subset of scopes of all the resource sets they've registered
-			Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwnerAndClient(ownerId, authClientId);
-
-			// collect all the scopes
-			for (ResourceSet rs : resourceSets) {
-				authScopes.addAll(rs.getScopes());
-			}
-
 		} else {
 			// the client authenticated directly, make sure it's got the right access
 

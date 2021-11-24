@@ -36,8 +36,6 @@ import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.uma.service.ResourceSetService;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -82,9 +80,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private SystemScopeService scopeService;
-
-	@Autowired
-	private ResourceSetService resourceSetService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -352,12 +347,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
 		if (whitelistedSite != null) {
 			whitelistedSiteService.remove(whitelistedSite);
-		}
-
-		// clear out resource sets registered for this client
-		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
-		for (ResourceSet rs : resourceSets) {
-			resourceSetService.remove(rs);
 		}
 
 		// take care of the client itself

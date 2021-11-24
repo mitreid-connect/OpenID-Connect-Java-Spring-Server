@@ -19,11 +19,11 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
 import cz.muni.ics.oauth2.model.OAuth2RefreshTokenEntity;
 import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
 import cz.muni.ics.openid.connect.model.UserInfo;
-import cz.muni.ics.uma.model.Permission;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
@@ -46,26 +46,9 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 		result.put(ACTIVE, true);
 
-		if (accessToken.getPermissions() != null && !accessToken.getPermissions().isEmpty()) {
 
-			Set<Object> permissions = Sets.newHashSet();
-
-			for (Permission perm : accessToken.getPermissions()) {
-				Map<String, Object> o = newLinkedHashMap();
-				o.put("resource_set_id", perm.getResourceSet().getId().toString());
-				Set<String> scopes = Sets.newHashSet(perm.getScopes());
-				o.put("scopes", scopes);
-				permissions.add(o);
-			}
-
-			result.put("permissions", permissions);
-
-		} else {
-			Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
-
-			result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
-
-		}
+		Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
 
 		if (accessToken.getExpiration() != null) {
 			try {

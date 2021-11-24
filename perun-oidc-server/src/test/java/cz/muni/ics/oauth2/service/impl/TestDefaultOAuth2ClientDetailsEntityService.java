@@ -36,8 +36,6 @@ import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.uma.service.ResourceSetService;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -78,9 +76,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
-
-	@Mock
-	private ResourceSetService resourceSetService;
 
 	@Mock
 	private ConfigurationPropertiesBean config;
@@ -266,8 +261,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
 		Mockito.when(whitelistedSiteService.getByClientId(clientId)).thenReturn(site);
-
-		Mockito.when(resourceSetService.getAllForClient(client)).thenReturn(new HashSet<ResourceSet>());
 
 		service.deleteClient(client);
 
