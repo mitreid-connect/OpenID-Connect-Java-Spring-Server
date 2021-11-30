@@ -1,3 +1,16 @@
+# [5.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v4.0.1...v5.0.0) (2021-11-30)
+
+
+### Code Refactoring
+
+* 💡 Refactored how translations are loaded and used ([665b45f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/665b45fb419a7dedc20de62ec0e1c6d550b7f3bd))
+
+
+### BREAKING CHANGES
+
+* Property `web.langs.customfiles.path` must point to the
+RersourceBundle.
+
 ## [4.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v4.0.0...v4.0.1) (2021-11-19)
 
 
