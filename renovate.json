@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "config:base",
+    ":automergeBranch",
+    ":automergeLinters",
+    ":automergeTesters",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    ":maintainLockFilesWeekly",
+    ":pinOnlyDevDependencies",
+    ":prNotPending",
+    ":rebaseStalePrs",
+    ":semanticCommits",
+    "npm:unpublishSafe"
+  ],
+  "stabilityDays": 3,
+  "transitiveRemediation": true
+}
