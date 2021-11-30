@@ -96,7 +96,7 @@
 		<bcprov-jdk15on.version>1.67</bcprov-jdk15on.version>
 		<commons-io.version>2.7</commons-io.version>
 		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
-		<lombok.version>1.18.18</lombok.version>
+		<lombok.version>1.18.22</lombok.version>
 		<servlet-api.version>2.5</servlet-api.version>
 		<jstl.version>1.2</jstl.version>
 		<apache-commons.version>3.9</apache-commons.version>
