@@ -54,6 +54,10 @@ public class JsonMessageSource extends AbstractMessageSource {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
+	public JsonMessageSource(ConfigurationPropertiesBean config) {
+		this.config = config;
+	}
+
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 

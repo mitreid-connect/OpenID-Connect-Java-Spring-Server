@@ -5,13 +5,11 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_HEADER;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_MESSAGE;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_REASON;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
-import static cz.muni.ics.oidc.web.controllers.ControllerUtils.LANG_PROPS_KEY;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.util.Map;
 import java.util.Properties;
@@ -74,8 +72,6 @@ public class PerunUnapprovedController {
     private static final String NOT_LOGGED_IN_HDR = "403_not_logged_in_hdr";
     private static final String NOT_LOGGED_IN_MSG = "403_not_logged_in_msg";
 
-    private static final String CONTACT_PLACEHOLDER = "%%CONTACT_EMAIL%%";
-    private static final String TARGET_URL_PLACEHOLDER = "%%TARGET%%";
     private static final String CONTACT_LANG_PROP_KEY = "contact_p";
     private static final String CONTACT_MAIL = "contactMail";
 
@@ -86,15 +82,13 @@ public class PerunUnapprovedController {
     private PerunOidcConfig perunOidcConfig;
 
     @Autowired
-    private Localization localization;
-
-    @Autowired
     private WebHtmlClasses htmlClasses;
 
     @GetMapping(value = UNAPPROVED_MAPPING)
-    public String showUnapproved(ServletRequest req, Map<String, Object> model,
-                                 @RequestParam(PARAM_CLIENT_ID) String clientId) {
-        HttpServletRequest request = (HttpServletRequest) req;
+    public String showUnapproved(HttpServletRequest req,
+                                 Map<String, Object> model,
+                                 @RequestParam(PARAM_CLIENT_ID) String clientId)
+    {
         ClientDetailsEntity client;
 
         try {
@@ -115,171 +109,126 @@ public class PerunUnapprovedController {
             return HttpCodeView.VIEWNAME;
         }
 
-        ControllerUtils.setPageOptions(model, request, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
         model.put("client", client);
 
         return "unapproved";
     }
 
     @GetMapping(value = UNAPPROVED_SPECIFIC_MAPPING)
-    public String showUnapprovedSpec(ServletRequest req, Map<String, Object> model,
+    public String showUnapprovedSpec(HttpServletRequest req, Map<String, Object> model,
                                      @RequestParam(value = PARAM_HEADER, required = false) String header,
-                                     @RequestParam(value = PARAM_MESSAGE, required = false) String message) {
+                                     @RequestParam(value = PARAM_MESSAGE, required = false) String message)
+    {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
-
-        String headerText = getText(model, header);
-        String messageText = getText(model, message);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, headerText);
-        model.put(OUT_MESSAGE, messageText);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, header);
+        model.put(OUT_MESSAGE, message);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING)
-    public String showUnapprovedIsCesnetEligible(ServletRequest req, Map<String, Object> model,
+    public String showUnapprovedIsCesnetEligible(HttpServletRequest req, Map<String, Object> model,
                                                  @RequestParam(value = PARAM_TARGET) String target,
                                                  @RequestParam(value = PARAM_REASON) String reason) {
 
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
         String header;
         String message;
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
 
         if (REASON_EXPIRED.equals(reason)) {
-            header = getText(model, ICE_EXPIRED_HDR);
-            message = getText(model, ICE_EXPIRED_MSG);
+            header = ICE_EXPIRED_HDR;
+            message = ICE_EXPIRED_MSG;
         } else if (REASON_NOT_SET.equals(reason)){
-            header = getText(model, ICE_NOT_SET_HDR);
-            message = getText(model, ICE_NOT_SET_MSG);
+            header = ICE_NOT_SET_HDR;
+            message = ICE_NOT_SET_MSG;
         } else {
             model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
             return HttpCodeView.VIEWNAME;
         }
 
-        header = replace(header, TARGET_URL_PLACEHOLDER, target);
-        message = replace(message, TARGET_URL_PLACEHOLDER, target);
-
         model.put(OUT_HEADER, header);
         model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_ENSURE_VO_MAPPING)
-    public String showUnapprovedEnsureVo(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedEnsureVo(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, ENSURE_VO_HDR);
-        String message = getText(model, ENSURE_VO_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, ENSURE_VO_HDR);
+        model.put(OUT_MESSAGE, ENSURE_VO_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_AUTHORIZATION)
-    public String showUnapprovedAuthorization(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedAuthorization(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, AUTHORIZATION_HDR);
-        String message = getText(model, AUTHORIZATION_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, AUTHORIZATION_HDR);
+        model.put(OUT_MESSAGE, AUTHORIZATION_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_NOT_IN_TEST_VOS_GROUPS)
-    public String showUnapprovedNotInTestVosGroups(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedNotInTestVosGroups(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, NOT_IN_TEST_VOS_GROUPS_HDR);
-        String message = getText(model, NOT_IN_TEST_VOS_GROUPS_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, NOT_IN_TEST_VOS_GROUPS_HDR);
+        model.put(OUT_MESSAGE, NOT_IN_TEST_VOS_GROUPS_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_NOT_IN_PROD_VOS_GROUPS)
-    public String showUnapprovedNotInProdVosGroups(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedNotInProdVosGroups(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, NOT_IN_PROD_VOS_GROUPS_HDR);
-        String message = getText(model, NOT_IN_PROD_VOS_GROUPS_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, NOT_IN_PROD_VOS_GROUPS_HDR);
+        model.put(OUT_MESSAGE, NOT_IN_PROD_VOS_GROUPS_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS)
-    public String showUnapprovedNotInMandatoryVosGroups(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedNotInMandatoryVosGroups(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, NOT_IN_MANDATORY_VOS_GROUPS_HDR);
-        String message = getText(model, NOT_IN_MANDATORY_VOS_GROUPS_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, NOT_IN_MANDATORY_VOS_GROUPS_HDR);
+        model.put(OUT_MESSAGE, NOT_IN_MANDATORY_VOS_GROUPS_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
     }
 
     @GetMapping(value = UNAPPROVED_NOT_LOGGED_IN)
-    public String showUnapprovedNotLoggedIn(ServletRequest req, Map<String, Object> model) {
-        ControllerUtils.setPageOptions(model, (HttpServletRequest) req, localization, htmlClasses, perunOidcConfig);
+    public String showUnapprovedNotLoggedIn(HttpServletRequest req, Map<String, Object> model) {
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
-        String header = getText(model, NOT_LOGGED_IN_HDR);
-        String message = getText(model, NOT_LOGGED_IN_MSG);
-        String contactPText = getText(model, CONTACT_LANG_PROP_KEY);
-
-        model.put(OUT_HEADER, header);
-        model.put(OUT_MESSAGE, message);
-        model.put(OUT_CONTACT_P, contactPText);
+        model.put(OUT_HEADER, NOT_LOGGED_IN_HDR);
+        model.put(OUT_MESSAGE, NOT_LOGGED_IN_MSG);
+        model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
         return "unapproved_spec";
-    }
-
-    private String getText(Map<String, Object> model, String key) {
-        Properties langProps = (Properties) model.get(LANG_PROPS_KEY);
-        return langProps.getProperty(key);
-    }
-
-    private String replace(String container, String key, String value) {
-        if (container.contains(key)) {
-            return container.replaceAll(key, value);
-        } else {
-            return container;
-        }
     }
 
 }

@@ -2,7 +2,9 @@ package cz.muni.ics.oidc.server.configurations;
 
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -38,9 +40,9 @@ public class PerunOidcConfig {
 	private String perunOIDCVersion;
 	private String proxyExtSourceName;
 	private Set<String> idTokenScopes;
-	private List<String> availableLangs;
 	private boolean fillMissingUserAttrs;
 	private boolean addClientIdToAcrs = false;
+	private final Map<String, String> languageMap = new HashMap<>();
 
 	@Autowired
 	private ServletContext servletContext;
@@ -166,12 +168,26 @@ public class PerunOidcConfig {
 		}
 	}
 
-	public List<String> getAvailableLangs() {
-		return availableLangs;
+	public Set<String> getAvailableLangs() {
+		return languageMap.keySet();
 	}
 
 	public void setAvailableLangs(List<String> availableLangs) {
-		this.availableLangs = availableLangs;
+		languageMap.clear();
+		for (String lang: availableLangs) {
+			switch (lang.toLowerCase()) {
+				case "en": {
+					languageMap.put("en", "English");
+				} break;
+				case "cs": {
+					languageMap.put("cs", "Čeština");
+				} break;
+			}
+		}
+	}
+
+	public Map<String, String> getLanguageMap() {
+		return languageMap;
 	}
 
 	public String getLocalizationFilesPath() {
@@ -265,7 +281,7 @@ public class PerunOidcConfig {
 			log.info("Registrar URL: {}", registrarUrl);
 			log.info("accessTokenClaimsModifier: {}", coreProperties.getProperty("accessTokenClaimsModifier"));
 			log.info("Proxy EXT_SOURCE name: {}", proxyExtSourceName);
-			log.info("Available languages: {}", availableLangs);
+			log.info("Available languages: {}", languageMap.keySet());
 			log.info("Localization files path: {}", localizationFilesPath);
 			log.info("Email contact: {}", emailContact);
 			log.info("Perun OIDC version: {}", getPerunOIDCVersion());

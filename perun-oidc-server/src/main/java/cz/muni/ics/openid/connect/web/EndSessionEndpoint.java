@@ -31,7 +31,6 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
-import cz.muni.ics.oidc.web.langs.Localization;
 import java.text.ParseException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -76,19 +75,17 @@ public class EndSessionEndpoint {
 	private final SelfAssertionValidator validator;
 	private final PerunOidcConfig perunOidcConfig;
 	private final ClientDetailsEntityService clientService;
-	private final Localization localization;
 	private final WebHtmlClasses htmlClasses;
 
 	@Autowired
 	public EndSessionEndpoint(SelfAssertionValidator validator,
 							  PerunOidcConfig perunOidcConfig,
 							  ClientDetailsEntityService clientService,
-							  Localization localization,
-							  WebHtmlClasses htmlClasses) {
+							  WebHtmlClasses htmlClasses)
+	{
 		this.validator = validator;
 		this.perunOidcConfig = perunOidcConfig;
 		this.clientService = clientService;
-		this.localization = localization;
 		this.htmlClasses = htmlClasses;
 	}
 
@@ -139,14 +136,14 @@ public class EndSessionEndpoint {
 		// are we logged in or not?
 		if (auth == null || !request.isUserInRole("ROLE_USER")) {
 			// we're not logged in anyway, process the final redirect bits if needed
-			return processLogout(null, null, request, session);
+			return processLogout(null, null, session);
 		} else {
 			log.info("Logout confirmating for user {} from client {}", auth.getName(), client != null ? client.getClientName() : "unknown");
 			// we are logged in, need to prompt the user before we log out
 			model.put("client", client);
 			model.put("idToken", idTokenClaims);
 
-			ControllerUtils.setPageOptions(model, request, localization, htmlClasses, perunOidcConfig);
+			ControllerUtils.setPageOptions(model, request, htmlClasses, perunOidcConfig);
 
 			// display the log out confirmation page
 			return "logout";
@@ -156,7 +153,6 @@ public class EndSessionEndpoint {
 	@RequestMapping(value = "/" + URL, method = RequestMethod.POST)
 	public String processLogout(@RequestParam(value = "approve", required = false) String approved,
 								@RequestParam(value = "deny", required = false) String deny,
-								HttpServletRequest request,
 								HttpSession session)
 	{
 		String redirectUri = (String) session.getAttribute(REDIRECT_URI_KEY);

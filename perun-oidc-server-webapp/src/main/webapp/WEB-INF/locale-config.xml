@@ -19,11 +19,25 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="messageSource" class="cz.muni.ics.openid.connect.config.JsonMessageSource">
-		<property name="baseDirectory" value="/resources/js/locale/" />
-		<property name="useCodeAsDefaultMessage" value="true" />
+	<bean id="mitreIdMessageSource" class="cz.muni.ics.openid.connect.config.JsonMessageSource">
+		<property name="baseDirectory" value="/resources/js/locale/"/>
+		<property name="useCodeAsDefaultMessage" value="true"/>
 	</bean>
 
-	<bean id="localeResolver" class="cz.muni.ics.openid.connect.config.ConfigurationBeanLocaleResolver" />
+	<bean id="defaultPerunMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="localization.messages"/>
+		<property name="defaultEncoding" value="UTF-8"/>
+		<property name="parentMessageSource" ref="mitreIdMessageSource"/>
+		<property name="useCodeAsDefaultMessage" value="false"/>
+	</bean>
+
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="file:${web.langs.customfiles.path}"/>
+		<property name="defaultEncoding" value="UTF-8"/>
+		<property name="parentMessageSource" ref="defaultPerunMessageSource"/>
+		<property name="useCodeAsDefaultMessage" value="false"/>
+	</bean>
+
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
 
 </beans>

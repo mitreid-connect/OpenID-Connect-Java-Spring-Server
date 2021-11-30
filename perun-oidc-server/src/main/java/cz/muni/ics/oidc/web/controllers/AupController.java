@@ -11,7 +11,6 @@ import cz.muni.ics.oidc.models.mappers.RpcMapper;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,13 +52,11 @@ public class AupController {
     private PerunOidcConfig perunOidcConfig;
 
     @Autowired
-    private Localization localization;
-
-    @Autowired
     private WebHtmlClasses htmlClasses;
 
     @GetMapping(value = "/" + URL)
-    public String showAup(HttpServletRequest request, Map<String, Object> model,
+    public String showAup(HttpServletRequest req,
+                          Map<String, Object> model,
                           @SessionAttribute(name = NEW_AUPS) String newAupsString) throws IOException
     {
         JsonNode newAupsJson = mapper.readTree(newAupsString);
@@ -72,7 +69,7 @@ public class AupController {
         }
 
         model.put(NEW_AUPS, newAups);
-        ControllerUtils.setPageOptions(model, request, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
         return "aup";
     }

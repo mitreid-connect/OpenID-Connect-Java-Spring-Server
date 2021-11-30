@@ -10,7 +10,6 @@ import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -23,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -51,12 +49,11 @@ public class ControllerUtils {
      * @param req request object
      * @param localization localization with texts
      */
-    public static void setLanguageForPage(Map<String, Object> model, HttpServletRequest req,
-                                          Localization localization) {
+    public static void setLanguageForPage(Map<String, Object> model, HttpServletRequest req, PerunOidcConfig config) {
         String langFromParam = req.getParameter(LANG_KEY);
         String browserLang = req.getLocale().getLanguage();
 
-        List<String> enabledLangs = localization.getEnabledLanguages();
+        Set<String> enabledLangs = config.getAvailableLangs();
         String langKey = "en";
 
         if (langFromParam != null
@@ -78,12 +75,9 @@ public class ControllerUtils {
             log.warn("Could not remove lang param");
         }
 
-        Properties langProperties = localization.getLocalizationFiles().get(langKey);
-
         model.put(LANG_KEY, langKey);
         model.put(REQ_URL_KEY, reqUrl);
-        model.put(LANGS_MAP_KEY, localization.getEntriesAvailable());
-        model.put(LANG_PROPS_KEY, langProperties);
+        model.put(LANGS_MAP_KEY, config.getLanguageMap());
     }
 
     /**
@@ -131,14 +125,12 @@ public class ControllerUtils {
 
      * @param model model object
      * @param req request object
-     * @param localization localization with texts
      * @param classes additional html classes
      * @param perunOidcConfig oidc config class
      */
     public static void setPageOptions(Map<String, Object> model, HttpServletRequest req,
-                                      Localization localization,
                                       WebHtmlClasses classes, PerunOidcConfig perunOidcConfig) {
-        setLanguageForPage(model, req, localization);
+        setLanguageForPage(model, req, perunOidcConfig);
         model.put("classes", classes.getWebHtmlClassesProperties());
         model.put("theme", perunOidcConfig.getTheme().toLowerCase());
         model.put("baseURL", perunOidcConfig.getBaseURL());

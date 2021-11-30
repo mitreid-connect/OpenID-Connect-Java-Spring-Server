@@ -3,17 +3,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:if test="${empty scopes}">
-    <p>${langProps['no_scopes']}</p>
+    <p><spring:message code="no_scopes"/></p>
 </c:if>
 <c:if test="${not empty scopes}">
     <ul id="perun-table_with_attributes" class="perun-attributes">
         <c:forEach var="scope" items="${scopes}">
-            <c:set var="scopeValue" value="${langProps[scope.value]}"/>
-            <c:if test="${empty fn:trim(scopeValue)}">
-                <c:set var="scopeValue" value="${scope.value}"/>
-            </c:if>
+            <spring:message code="${scope.value}" var="scope_value_txt"/>
             <c:set var="singleClaim" value="${fn:length(claims[scope.value]) eq 1}" />
             <li class="scope-item scope_${fn:escapeXml(scope.value)} ${' '} ${fn:length(claims[scope.value]) eq 0 ? 'hidden' : ''}">
                 <div class="row">
@@ -22,24 +20,21 @@
                             <input class="mt-0 mr-half" type="checkbox" name="scope_${ fn:escapeXml(scope.value) }" checked="checked"
                                    id="scope_${fn:escapeXml(scope.value)}" value="${fn:escapeXml(scope.value)}">
                         </div>
-                        <h2 class="perun-attrname <c:out value="${classes['perun-attrname.h2.class']}"/>">
+                        <h2 class="perun-attrname ${classes['perun-attrname.h2.class']}">
                             <label for="scope_${fn:escapeXml(scope.value)}"
-                                   class="<c:out value="${classes['perun-attrname.h2.class']}"/>">${scopeValue}</label>
+                                   class="${classes['perun-attrname.h2.class']}">${scope_value_txt}</label>
                         </h2>
                     </div>
                     <div class="perun-attrcontainer col-sm-7">
                         <span class="perun-attrvalue">
-                            <ul class="perun-attrlist <c:out value="${classes['perun-attrcontainer.ul.class']}"/>">
+                            <ul class="perun-attrlist ${classes['perun-attrcontainer.ul.class']}/>">
                                 <c:forEach var="claim" items="${claims[scope.value]}">
                                     <c:choose>
                                         <c:when test="${not singleClaim}">
                                             <li class="subclaim subclaim_${fn:escapeXml(claim.key)}">
-                                                <c:set var="claimKey" value="${langProps[claim.key]}"/>
-                                                <c:if test="${empty fn:trim(claimKey)}">
-                                                    <c:set var="claimKey" value="${claim.key}"/>
-                                                </c:if>
+                                                <spring:message code="${claim.key}" var="claimKey"/>
                                                 <h3 class="visible-xs-block visible-sm-inline-block visible-md-inline-block
-                                                    visible-lg-inline-block <c:out value="${classes['perun-attrlist.h3.class']}"/>">
+                                                    visible-lg-inline-block ${classes['perun-attrlist.h3.class']}">
                                                     ${claimKey}:
                                                 </h3>
                                                 <c:if test="${claim.value.getClass().name eq 'java.util.ArrayList'}">
