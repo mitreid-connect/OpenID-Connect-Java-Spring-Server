@@ -79,7 +79,7 @@
 		<spring-security-oauth2.version>2.5.1.RELEASE</spring-security-oauth2.version>
 		<jackson.version>2.11.4</jackson.version>
 		<jsp-api.version>2.2</jsp-api.version>
-		<mysql.version>8.0.23</mysql.version>
+		<mysql.version>8.0.27</mysql.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<eclipse-persistence.version>2.7.7</eclipse-persistence.version>
 		<javax-persistence.version>2.2.1</javax-persistence.version>
