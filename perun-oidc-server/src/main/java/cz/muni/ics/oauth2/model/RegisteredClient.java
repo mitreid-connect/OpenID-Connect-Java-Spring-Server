@@ -26,14 +26,27 @@ import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
+import cz.muni.ics.oauth2.model.enums.AppType;
+import cz.muni.ics.oauth2.model.enums.AuthMethod;
+import cz.muni.ics.oauth2.model.enums.SubjectType;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
  * @author jricher
  */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
 public class RegisteredClient {
 
 	private String registrationAccessToken;
@@ -55,14 +68,6 @@ public class RegisteredClient {
 		this.client = client;
 		this.registrationAccessToken = registrationAccessToken;
 		this.registrationClientUri = registrationClientUri;
-	}
-
-	public ClientDetailsEntity getClient() {
-		return client;
-	}
-
-	public void setClient(ClientDetailsEntity client) {
-		this.client = client;
 	}
 
 	public String getClientDescription() {
@@ -201,11 +206,11 @@ public class RegisteredClient {
 		return client.getAdditionalInformation();
 	}
 
-	public ClientDetailsEntity.AppType getApplicationType() {
+	public AppType getApplicationType() {
 		return client.getApplicationType();
 	}
 
-	public void setApplicationType(ClientDetailsEntity.AppType applicationType) {
+	public void setApplicationType(AppType applicationType) {
 		client.setApplicationType(applicationType);
 	}
 
@@ -217,19 +222,19 @@ public class RegisteredClient {
 		client.setClientName(clientName);
 	}
 
-	public ClientDetailsEntity.AuthMethod getTokenEndpointAuthMethod() {
+	public AuthMethod getTokenEndpointAuthMethod() {
 		return client.getTokenEndpointAuthMethod();
 	}
 
-	public void setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod tokenEndpointAuthMethod) {
+	public void setTokenEndpointAuthMethod(AuthMethod tokenEndpointAuthMethod) {
 		client.setTokenEndpointAuthMethod(tokenEndpointAuthMethod);
 	}
 
-	public ClientDetailsEntity.SubjectType getSubjectType() {
+	public SubjectType getSubjectType() {
 		return client.getSubjectType();
 	}
 
-	public void setSubjectType(ClientDetailsEntity.SubjectType subjectType) {
+	public void setSubjectType(SubjectType subjectType) {
 		client.setSubjectType(subjectType);
 	}
 

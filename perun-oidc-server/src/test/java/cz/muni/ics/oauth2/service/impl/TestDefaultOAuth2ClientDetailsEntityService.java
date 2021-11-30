@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.model.enums.AuthMethod;
 import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.oauth2.service.SystemScopeService;
@@ -35,8 +36,6 @@ import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.uma.service.ResourceSetService;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -77,9 +76,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
-
-	@Mock
-	private ResourceSetService resourceSetService;
 
 	@Mock
 	private ConfigurationPropertiesBean config;
@@ -266,8 +262,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
 		Mockito.when(whitelistedSiteService.getByClientId(clientId)).thenReturn(site);
 
-		Mockito.when(resourceSetService.getAllForClient(client)).thenReturn(new HashSet<ResourceSet>());
-
 		service.deleteClient(client);
 
 		Mockito.verify(tokenRepository).clearTokensForClient(client);
@@ -362,7 +356,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -383,7 +377,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.NONE);
+		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -404,7 +398,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setJwksUri("https://foo.bar/jwks");
 
@@ -421,7 +415,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_POST);
+		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_POST);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -440,7 +434,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -459,7 +453,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
+		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -478,7 +472,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		service.saveNewClient(client);
 
@@ -493,7 +487,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("implicit");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.NONE);
+		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
 
 		service.saveNewClient(client);
 
@@ -508,7 +502,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("client_credentials");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -525,7 +519,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -544,7 +538,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -565,7 +559,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
@@ -587,7 +581,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
@@ -607,7 +601,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
-		client.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.PRIVATE_KEY);
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		client.setRedirectUris(Sets.newHashSet("http://localhost/", "https://foo.bar", "foo://bar"));
 

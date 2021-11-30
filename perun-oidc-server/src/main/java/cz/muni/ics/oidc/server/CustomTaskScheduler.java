@@ -105,34 +105,4 @@ public class CustomTaskScheduler {
 		log.info("clearExpiredDeviceCodes took {}ms, deleted {} records", execution, count);
 	}
 
-	@Transactional(value = "defaultTransactionManager")
-	@Scheduled(fixedDelay = 60 * ONE_MINUTE, initialDelay = 48 * ONE_MINUTE)
-	@SchedulerLock(name = "clearExpiredAcrs", lockAtMostFor = "3590s", lockAtLeastFor = "3590s")
-	public void clearExpiredAcrs() {
-		try {
-			LockAssert.assertLocked();
-		} catch (IllegalArgumentException e) {
-			return;
-		}
-		long start = System.currentTimeMillis();
-		int count = this.customClearTasks.clearExpiredAcrs(TimeUnit.MINUTES.toMillis(15));
-		long execution = System.currentTimeMillis() - start;
-		log.info("clearExpiredAcrs took {}ms, deleted {} records", execution, count);
-	}
-
-	@Transactional(value = "defaultTransactionManager")
-	@Scheduled(fixedDelay = 60 * ONE_MINUTE, initialDelay = 48 * ONE_MINUTE)
-	@SchedulerLock(name = "clearExpiredDeviceAcrs", lockAtMostFor = "3590s", lockAtLeastFor = "3590s")
-	public void clearExpiredDeviceAcrs() {
-		try {
-			LockAssert.assertLocked();
-		} catch (IllegalArgumentException e) {
-			return;
-		}
-		long start = System.currentTimeMillis();
-		int count = this.customClearTasks.clearExpiredAcrs(TimeUnit.MINUTES.toMillis(15));
-		long execution = System.currentTimeMillis() - start;
-		log.info("clearExpiredDeviceAcrs took {}ms, deleted {} records", execution, count);
-	}
-
 }

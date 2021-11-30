@@ -20,20 +20,29 @@
  */
 package cz.muni.ics.oauth2.model;
 
-import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.*;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_APPROVED_SITE;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_CLIENT;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_DATE;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_NAME;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_REFRESH_TOKEN;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_ALL;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_BY_CLIENT;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_BY_NAME;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE;
+import static cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nimbusds.jwt.JWT;
 import cz.muni.ics.oauth2.model.convert.JWTStringConverter;
 import cz.muni.ics.openid.connect.model.ApprovedSite;
-import cz.muni.ics.uma.model.Permission;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -44,11 +53,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -96,9 +103,6 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 	@NamedQuery(name = QUERY_BY_APPROVED_SITE,
 				query = "SELECT a FROM OAuth2AccessTokenEntity a " +
 						"WHERE a.approvedSite = :" + PARAM_APPROVED_SITE),
-	@NamedQuery(name = QUERY_BY_RESOURCE_SET,
-				query = "SELECT a FROM OAuth2AccessTokenEntity a JOIN a.permissions p " +
-						"WHERE p.resourceSet.id = :" + PARAM_RESOURCE_SET_ID),
 	@NamedQuery(name = QUERY_BY_NAME,
 				query = "SELECT r FROM OAuth2AccessTokenEntity r " +
 						"WHERE r.authenticationHolder.userAuth.name = :" + PARAM_NAME)
@@ -159,12 +163,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@CollectionTable(name = "token_scope", joinColumns = @JoinColumn(name = "owner_id"))
 	@CascadeOnDelete
 	private Set<String> scope;
-
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "access_token_permissions", joinColumns = @JoinColumn(name = "access_token_id"),
-			inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	@CascadeOnDelete
-	private Set<Permission> permissions;
 
 	@ManyToOne
 	@JoinColumn(name = "approved_site_id")

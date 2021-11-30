@@ -27,7 +27,7 @@ import com.nimbusds.jwt.SignedJWT;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.jwt.signer.service.impl.ClientKeyCacheService;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
+import cz.muni.ics.oauth2.model.enums.AuthMethod;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import java.text.ParseException;

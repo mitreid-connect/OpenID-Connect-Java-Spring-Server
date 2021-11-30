@@ -25,8 +25,8 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
-import cz.muni.ics.oauth2.model.ClientDetailsEntity.AuthMethod;
 import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oauth2.model.enums.AuthMethod;
 import cz.muni.ics.oauth2.repository.OAuth2ClientRepository;
 import cz.muni.ics.oauth2.repository.OAuth2TokenRepository;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
@@ -36,8 +36,6 @@ import cz.muni.ics.openid.connect.model.WhitelistedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
 import cz.muni.ics.openid.connect.service.BlacklistedSiteService;
 import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
-import cz.muni.ics.uma.model.ResourceSet;
-import cz.muni.ics.uma.service.ResourceSetService;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -82,9 +80,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private SystemScopeService scopeService;
-
-	@Autowired
-	private ResourceSetService resourceSetService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -352,12 +347,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
 		if (whitelistedSite != null) {
 			whitelistedSiteService.remove(whitelistedSite);
-		}
-
-		// clear out resource sets registered for this client
-		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
-		for (ResourceSet rs : resourceSets) {
-			resourceSetService.remove(rs);
 		}
 
 		// take care of the client itself

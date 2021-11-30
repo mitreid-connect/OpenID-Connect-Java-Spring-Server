@@ -20,7 +20,8 @@
  */
 package cz.muni.ics.openid.connect.model;
 
-import javax.persistence.Basic;
+import static cz.muni.ics.openid.connect.model.BlacklistedSite.QUERY_ALL;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,43 +30,39 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author jricher
  */
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+// DB ANNOTATIONS
 @Entity
 @Table(name="blacklisted_site")
 @NamedQueries({
-	@NamedQuery(name = BlacklistedSite.QUERY_ALL, query = "select b from BlacklistedSite b")
+	@NamedQuery(name = QUERY_ALL,
+				query = "SELECT b FROM BlacklistedSite b")
 })
 public class BlacklistedSite {
 
 	public static final String QUERY_ALL = "BlacklistedSite.getAll";
 
-	private Long id;
-	private String uri;
-
-	public BlacklistedSite() { }
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Basic
 	@Column(name="uri")
-	public String getUri() {
-		return uri;
-	}
-
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+	private String uri;
 
 }
