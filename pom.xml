@@ -111,7 +111,7 @@
 		<jakarta-xml-bind-api.version>2.3.3</jakarta-xml-bind-api.version>
 		<jaxb-runtime.version>2.3.3</jaxb-runtime.version>
 		<jakarta-servlet-api.version>4.0.4</jakarta-servlet-api.version>
-		<aspectjweaver.version>1.9.6</aspectjweaver.version>
+		<aspectjweaver.version>1.9.7</aspectjweaver.version>
 		<spring-aop.version>4.3.30.RELEASE</spring-aop.version>
 		<spring-context.version>4.3.30.RELEASE</spring-context.version>
 		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
