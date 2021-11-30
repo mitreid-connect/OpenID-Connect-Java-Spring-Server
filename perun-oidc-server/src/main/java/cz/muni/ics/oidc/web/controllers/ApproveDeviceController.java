@@ -9,7 +9,6 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import java.security.Principal;
 import java.util.Map;
@@ -51,7 +50,6 @@ public class ApproveDeviceController {
     private final SystemScopeService scopeService;
     private final DeviceEndpoint deviceEndpoint;
     private final PerunOidcConfig perunOidcConfig;
-    private final Localization localization;
     private final WebHtmlClasses htmlClasses;
     private final PerunScopeClaimTranslationService scopeClaimTranslationService;
     private final UserInfoService userInfoService;
@@ -60,7 +58,6 @@ public class ApproveDeviceController {
     public ApproveDeviceController(SystemScopeService scopeService,
                                    DeviceEndpoint deviceEndpoint,
                                    PerunOidcConfig perunOidcConfig,
-                                   Localization localization,
                                    WebHtmlClasses htmlClasses,
                                    PerunScopeClaimTranslationService scopeClaimTranslationService,
                                    UserInfoService userInfoService)
@@ -68,7 +65,6 @@ public class ApproveDeviceController {
         this.scopeService = scopeService;
         this.deviceEndpoint = deviceEndpoint;
         this.perunOidcConfig = perunOidcConfig;
-        this.localization = localization;
         this.htmlClasses = htmlClasses;
         this.scopeClaimTranslationService = scopeClaimTranslationService;
         this.userInfoService = userInfoService;
@@ -105,7 +101,7 @@ public class ApproveDeviceController {
     {
         String result = deviceEndpoint.requestUserCode(userCode, model, session);
         if (result.equals(REQUEST_USER_CODE) && !perunOidcConfig.getTheme().equalsIgnoreCase("default")) {
-            ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+            ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
             model.put("page", REQUEST_USER_CODE);
             String shibAuthnContextClass = "";
             if (StringUtils.hasText(req.getParameter(ACR_VALUES))) {
@@ -139,7 +135,7 @@ public class ApproveDeviceController {
         if (result.equals(APPROVE_DEVICE) && !perunOidcConfig.getTheme().equalsIgnoreCase("default")) {
             return themedApproveDevice(model, p, req);
         } else if (result.equals(REQUEST_USER_CODE) && !perunOidcConfig.getTheme().equalsIgnoreCase("default")) {
-            ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+            ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
             model.put("page", REQUEST_USER_CODE);
             return "themedRequestUserCode";
         }
@@ -168,7 +164,7 @@ public class ApproveDeviceController {
                     p.getName(), client.getClientId());
 
             ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, dc.getScope(), user);
-            ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+            ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
             model.put("page", DEVICE_APPROVED);
             return "themedDeviceApproved";
@@ -184,7 +180,7 @@ public class ApproveDeviceController {
         PerunUserInfo user = (PerunUserInfo) userInfoService.getByUsernameAndClientId(
                 p.getName(), client.getClientId());
         ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, dc.getScope(), user);
-        ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
         model.put("page", APPROVE_DEVICE);
         return "themedApproveDevice";

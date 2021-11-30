@@ -5,7 +5,6 @@ import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
 
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,13 +28,11 @@ public class IsTestSpController {
     private static final String TARGET = "target";
     private static final String ACTION = "action";
 
-    private final Localization localization;
     private final WebHtmlClasses htmlClasses;
     private final PerunOidcConfig perunOidcConfig;
 
     @Autowired
-    public IsTestSpController(Localization localization, WebHtmlClasses htmlClasses, PerunOidcConfig perunOidcConfig) {
-        this.localization = localization;
+    public IsTestSpController(WebHtmlClasses htmlClasses, PerunOidcConfig perunOidcConfig) {
         this.htmlClasses = htmlClasses;
         this.perunOidcConfig = perunOidcConfig;
     }
@@ -48,7 +45,7 @@ public class IsTestSpController {
         log.debug("Display warning page for isTestSp");
         model.put(TARGET, returnUrl);
         model.put(ACTION, req.getRequestURL().toString());
-        ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
         return "isTestSpWarning";
     }
 

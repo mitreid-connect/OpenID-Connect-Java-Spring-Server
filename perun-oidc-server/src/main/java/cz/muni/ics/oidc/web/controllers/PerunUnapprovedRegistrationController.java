@@ -10,7 +10,6 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.io.IOException;
 import java.util.Collections;
@@ -52,9 +51,6 @@ public class PerunUnapprovedRegistrationController {
 
     @Autowired
     private PerunOidcConfig perunOidcConfig;
-
-    @Autowired
-    private Localization localization;
 
     @Autowired
     private WebHtmlClasses htmlClasses;
@@ -116,7 +112,7 @@ public class PerunUnapprovedRegistrationController {
             }
         }
 
-        ControllerUtils.setPageOptions(model, request, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, request, htmlClasses, perunOidcConfig);
         model.put("client", client);
         model.put("facilityId", facilityId);
         model.put("action", buildActionUrl(request));
@@ -152,7 +148,7 @@ public class PerunUnapprovedRegistrationController {
         model.put("user_id", userId);
         model.put("action", request.getRequestURL().toString()
                 .replace(REGISTRATION_CONTINUE_MAPPING, REGISTRATION_FORM_MAPPING));
-        ControllerUtils.setPageOptions(model, request, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, request, htmlClasses, perunOidcConfig);
 
         return "registrationFormContinue";
     }

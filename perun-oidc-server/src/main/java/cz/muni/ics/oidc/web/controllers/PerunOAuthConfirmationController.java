@@ -8,7 +8,6 @@ import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import java.security.Principal;
 import java.util.Map;
@@ -37,7 +36,6 @@ public class PerunOAuthConfirmationController{
     private final PerunOidcConfig perunOidcConfig;
     private final SystemScopeService scopeService;
     private final PerunScopeClaimTranslationService scopeClaimTranslationService;
-    private final Localization localization;
     private final WebHtmlClasses htmlClasses;
 
     @Autowired
@@ -46,7 +44,6 @@ public class PerunOAuthConfirmationController{
                                             PerunOidcConfig perunOidcConfig,
                                             SystemScopeService scopeService,
                                             PerunScopeClaimTranslationService scopeClaimTranslationService,
-                                            Localization localization,
                                             WebHtmlClasses htmlClasses)
     {
         this.oAuthConfirmationController = oAuthConfirmationController;
@@ -54,7 +51,6 @@ public class PerunOAuthConfirmationController{
         this.perunOidcConfig = perunOidcConfig;
         this.scopeService = scopeService;
         this.scopeClaimTranslationService = scopeClaimTranslationService;
-        this.localization = localization;
         this.htmlClasses = htmlClasses;
     }
 
@@ -71,7 +67,7 @@ public class PerunOAuthConfirmationController{
                     p.getName(), client.getClientId());
             ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, authRequest.getScope(),
                     user);
-            ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+            ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
             model.put("page", "consent");
             return "themedApprove";

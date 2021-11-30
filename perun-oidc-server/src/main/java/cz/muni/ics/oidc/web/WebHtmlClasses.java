@@ -53,7 +53,6 @@ public class WebHtmlClasses {
 			log.debug("Loaded web html classes file: {}", customFileName);
 		} catch (FileNotFoundException e) {
 			log.warn("File: {} not found", customFileName);
-			e.printStackTrace();
 		} catch (IOException e) {
 			log.warn("Exception caught when reading {}", customFileName, e);
 		}

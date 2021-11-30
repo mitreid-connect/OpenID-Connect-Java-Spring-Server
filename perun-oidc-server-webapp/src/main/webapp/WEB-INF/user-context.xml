@@ -33,6 +33,10 @@
 
 	<mvc:interceptors>
 		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<ref bean="localeChangeInterceptor"/>
+		</mvc:interceptor>
+		<mvc:interceptor>
 			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
 			<mvc:mapping path="/**" />
 			<mvc:exclude-mapping path="/token**"/>
@@ -142,7 +146,7 @@
 				<!-- WEB INTERFACE -->
 				<prop key="web.theme">default</prop>
 				<prop key="web.langs">EN</prop> <!-- EN,CS,SK -->
-				<prop key="web.langs.customfiles.path">/etc/perun</prop>
+				<prop key="web.langs.customfiles.path">/etc/perun/locale/messages</prop>
 				<prop key="web.classes.path">/etc/perun/web/classes.properties</prop>
 				<prop key="web.baseURL">https://login.cesnet.cz/proxy</prop>
 				<prop key="email.contact">login@cesnet.cz</prop>
@@ -759,10 +763,6 @@
 	<bean id="oidcTokenService" class="cz.muni.ics.oidc.server.PerunOIDCTokenService" primary="true"/>
 
 	<bean id="callPerunFiltersFilter" class="cz.muni.ics.oidc.server.filters.CallPerunFiltersFilter"/>
-
-	<bean id="localization" class="cz.muni.ics.oidc.web.langs.Localization">
-		<constructor-arg name="perunOidcConfig" ref="perunOidcConfig"/>
-	</bean>
 
 	<bean id="htmlClasses" class="cz.muni.ics.oidc.web.WebHtmlClasses">
 		<constructor-arg name="perunOidcConfig" ref="perunOidcConfig"/>

@@ -2,7 +2,6 @@ package cz.muni.ics.oidc.web.controllers;
 
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
-import cz.muni.ics.oidc.web.langs.Localization;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +27,14 @@ public class RegistrationController {
     private PerunOidcConfig perunOidcConfig;
 
     @Autowired
-    private Localization localization;
-
-    @Autowired
     private WebHtmlClasses htmlClasses;
 
     @GetMapping(value = CONTINUE_DIRECT_MAPPING, params = { PARAM_TARGET })
-    public String showRegistrationForm(Map<String, Object> model, HttpServletRequest req,
+    public String showRegistrationForm(HttpServletRequest req, Map<String, Object> model,
                                        @RequestParam(PARAM_TARGET) String target)
     {
         model.put(PARAM_TARGET, target);
-        ControllerUtils.setPageOptions(model, req, localization, htmlClasses, perunOidcConfig);
+        ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
         return "continue_direct";
     }
 

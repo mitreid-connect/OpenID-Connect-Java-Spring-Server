@@ -46,7 +46,14 @@
 
 	<bean id="userInfoInterceptor" class="cz.muni.ics.openid.connect.web.UserInfoInterceptor" />
 	<bean id="serverConfigInterceptor" class="cz.muni.ics.openid.connect.web.ServerConfigInterceptor" />
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="lang"/>
+	</bean>
 	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<ref bean="localeChangeInterceptor"/>
+		</mvc:interceptor>
 		<mvc:interceptor>
 			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
 			<mvc:mapping path="/**" />

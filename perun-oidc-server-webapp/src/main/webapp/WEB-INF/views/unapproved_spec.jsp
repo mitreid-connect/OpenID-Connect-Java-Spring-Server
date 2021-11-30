@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/common"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%
 
@@ -19,9 +20,9 @@ pageContext.setAttribute("cssLinks", cssLinks);
 
 <div id="content">
     <div class="error_message" style="word-wrap: break-word;">
-        <h1><c:out value="${outHeader}" escapeXml="false"/></h1>
-        <p><c:out value="${outMessage}" escapeXml="false"/></p>
-        <p>${langProps['contact_p']}${" "}<a href="mailto:${contactMail}">${contactMail}</a></p>
+        <h1><spring:message code="${outHeader}"/></h1>
+        <p><sprign:message code="${outMessage}"/></p>
+        <p><spring:message code="contact_p"/>${" "}<a href="mailto:${contactMail}">${contactMail}</a></p>
     </div>
 </div>
 </div><!-- ENDWRAP -->
