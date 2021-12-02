@@ -99,7 +99,7 @@
 		<lombok.version>1.18.22</lombok.version>
 		<servlet-api.version>2.5</servlet-api.version>
 		<jstl.version>1.2</jstl.version>
-		<apache-commons.version>3.9</apache-commons.version>
+		<apache-commons.version>3.12.0</apache-commons.version>
 		<jackson-dataformat-yml.verson>2.13.0</jackson-dataformat-yml.verson>
 		<mariadb-java-client.version>2.7.4</mariadb-java-client.version>
 		<apache-directory-api.version>2.1.0</apache-directory-api.version>
