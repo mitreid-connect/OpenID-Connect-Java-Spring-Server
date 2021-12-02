@@ -1,4 +1,4 @@
-package cz.muni.ics.oidc.server.bbmri;
+package cz.muni.ics.oidc.server.ga4gh;
 
 import static cz.muni.ics.oidc.server.ga4gh.Ga4ghPassportVisa.BY_PEER;
 import static cz.muni.ics.oidc.server.ga4gh.Ga4ghPassportVisa.BY_SELF;
@@ -15,8 +15,6 @@ import cz.muni.ics.oidc.models.PerunAttribute;
 import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
-import cz.muni.ics.oidc.server.ga4gh.Ga4ghClaimRepository;
-import cz.muni.ics.oidc.server.ga4gh.Ga4ghPassportAndVisaClaimSource;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.Instant;
