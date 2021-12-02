@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>cz.muni.ics</groupId>
 		<artifactId>perun-oidc-parent</artifactId>
-		<version>5.0.0</version>
+		<version>5.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

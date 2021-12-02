@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v5.0.0...v5.0.1) (2021-12-02)
+
+
+### Bug Fixes
+
+* 🐛 Fix fallbacking of locale to the code to prevent errors ([ceb01c7](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/ceb01c78e760e32e803be30c559e772323bd68cb))
+
 # [5.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v4.0.1...v5.0.0) (2021-11-30)
 
 
