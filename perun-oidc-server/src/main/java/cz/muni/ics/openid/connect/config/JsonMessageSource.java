@@ -58,6 +58,8 @@ public class JsonMessageSource extends AbstractMessageSource {
 		this.config = config;
 	}
 
+
+
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 
@@ -73,7 +75,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 
 		if (value == null) {
 			// if it's still null, return null
-			return null;
+			return new MessageFormat(code, locale);
 		} else {
 			// otherwise format the message
 			return new MessageFormat(value, locale);
