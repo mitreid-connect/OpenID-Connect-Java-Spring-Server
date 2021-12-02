@@ -1,4 +1,4 @@
-package cz.muni.ics.oidc.server.elixir;
+package cz.muni.ics.oidc.server;
 
 import java.io.IOException;
 import org.springframework.http.HttpRequest;
@@ -12,12 +12,12 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  * @author Martin Kuba <makub@ics.muni.cz>
  */
-class AddHeaderInterceptor implements ClientHttpRequestInterceptor {
+public class AddHeaderInterceptor implements ClientHttpRequestInterceptor {
 
 	private final String header;
 	private final String value;
 
-	AddHeaderInterceptor(String header, String value) {
+	public AddHeaderInterceptor(String header, String value) {
 		this.header = header;
 		this.value = value;
 	}

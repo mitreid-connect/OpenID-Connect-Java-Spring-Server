@@ -1,5 +1,5 @@
 <%@ tag pageEncoding="UTF-8" trimDirectiveWhitespaces="true"
-        import="cz.muni.ics.oidc.server.elixir.GA4GHClaimSource" %>
+        import="cz.muni.ics.oidc.server.ga4gh.Ga4ghPassportAndVisaClaimSource" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
@@ -53,7 +53,7 @@
                                             <c:forEach var="subValue" items="${claim.value}">
                                                 <c:choose>
                                                     <c:when test="${claim.key=='ga4gh_passport_v1'}">
-                                                        <li><%= GA4GHClaimSource.parseAndVerifyVisa(
+                                                        <li><%= Ga4ghPassportAndVisaClaimSource.parseAndVerifyVisa(
                                                                 (String) jspContext.findAttribute("subValue")).getPrettyString() %></li>
                                                     </c:when>
                                                     <c:otherwise>

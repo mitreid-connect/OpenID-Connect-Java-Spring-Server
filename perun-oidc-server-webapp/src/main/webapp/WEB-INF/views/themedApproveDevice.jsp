@@ -1,4 +1,4 @@
-<%@ page import="cz.muni.ics.oidc.server.elixir.GA4GHClaimSource" %>
+<%@ page import="cz.muni.ics.oidc.server.ga4gh.ElixirGa4ghClaimSource" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
