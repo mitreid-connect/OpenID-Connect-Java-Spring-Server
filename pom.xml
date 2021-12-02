@@ -73,7 +73,7 @@
 		<jackson.version>2.11.4</jackson.version>
 		<jsp-api.version>2.2</jsp-api.version>
 		<mysql.version>8.0.27</mysql.version>
-		<hsqldb.version>2.6.1</hsqldb.version>
+		<hsqldb.version>2.5.2</hsqldb.version>
 		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
 		<javax-persistence.version>2.2.1</javax-persistence.version>
 		<hikari.version>3.4.5</hikari.version>
