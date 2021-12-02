@@ -17,14 +17,12 @@ import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 /**
  * Class producing GA4GH Passport claim. The claim is specified in
@@ -48,6 +46,7 @@ public class ElixirGa4ghClaimSource extends Ga4ghPassportAndVisaClaimSource {
 	private static final String BONA_FIDE_URL = "https://doi.org/10.1038/s41431-018-0219-y";
 	private static final String ELIXIR_ORG_URL = "https://elixir-europe.org/";
 	private static final String ELIXIR_ID = "elixir_id";
+	private static final String FACULTY_AT = "faculty@";
 
 	private final String bonaFideStatusAttr;
 	private final String bonaFideStatusREMSAttr;
@@ -56,7 +55,6 @@ public class ElixirGa4ghClaimSource extends Ga4ghPassportAndVisaClaimSource {
 
 	public ElixirGa4ghClaimSource(ClaimSourceInitContext ctx) throws URISyntaxException {
 		super(ctx, "ELIXIR");
-		log.debug("Initializing ELIXIR GA4GH Passports and Visa Claim Source");
 		bonaFideStatusAttr = ctx.getProperty("bonaFideStatus.attr", null);
 		bonaFideStatusREMSAttr = ctx.getProperty("bonaFideStatusREMS.attr", null);
 		groupAffiliationsAttr = ctx.getProperty("groupAffiliations.attr", null);
@@ -84,13 +82,23 @@ public class ElixirGa4ghClaimSource extends Ga4ghPassportAndVisaClaimSource {
 	}
 
 	@Override
-	protected void addAffiliationAndRoles(long now, ClaimSourceProduceContext pctx, ArrayNode passport, List<Affiliation> affiliations) {
+	protected void addAffiliationAndRoles(long now,
+										  ClaimSourceProduceContext pctx,
+										  ArrayNode passport,
+										  List<Affiliation> affiliations)
+	{
 		//by=system for users with affiliation asserted by their IdP (set in UserExtSource attribute "affiliation")
-		for (Affiliation affiliation : affiliations) {
+		if (affiliations == null) {
+			return;
+		}
+		for (Affiliation affiliation: affiliations) {
 			//expires 1 year after the last login from the IdP asserting the affiliation
-			long expires = Instant.ofEpochSecond(affiliation.getAsserted()).atZone(ZoneId.systemDefault()).plusYears(1L).toEpochSecond();
-			if (expires < now) continue;
-			JsonNode visa = createPassportVisa(TYPE_AFFILIATION_AND_ROLE, pctx, affiliation.getValue(), affiliation.getSource(), BY_SYSTEM, affiliation.getAsserted(), expires, null);
+			long expires = Ga4ghUtils.getOneYearExpires(affiliation.getAsserted());
+			if (expires < now) {
+				continue;
+			}
+			JsonNode visa = createPassportVisa(TYPE_AFFILIATION_AND_ROLE, pctx, affiliation.getValue(),
+					affiliation.getSource(), BY_SYSTEM, affiliation.getAsserted(), expires, null);
 			if (visa != null) {
 				passport.add(visa);
 			}
@@ -99,86 +107,132 @@ public class ElixirGa4ghClaimSource extends Ga4ghPassportAndVisaClaimSource {
 
 	@Override
 	protected void addAcceptedTermsAndPolicies(long now, ClaimSourceProduceContext pctx, ArrayNode passport) {
-		//by=self for members of the group 10432 "Bona Fide Researchers"
+		//by=self for members of the group "Bona Fide Researchers"
 		boolean userInGroup = pctx.getPerunAdapter().isUserInGroup(pctx.getPerunUserId(), termsAndPoliciesGroupId);
-		if (userInGroup) {
+		if (!userInGroup) {
+			return;
+		}
+		long asserted = now;
+		if (bonaFideStatusAttr != null) {
 			PerunAttribute bonaFideStatus = pctx.getPerunAdapter()
 					.getAdapterRpc()
 					.getUserAttribute(pctx.getPerunUserId(), bonaFideStatusAttr);
-			String valueCreatedAt = bonaFideStatus.getValueCreatedAt();
-			long asserted;
-			if (valueCreatedAt != null) {
-				asserted = Timestamp.valueOf(valueCreatedAt).getTime() / 1000L;
-			} else {
-				asserted = System.currentTimeMillis() / 1000L;
+			if (bonaFideStatus != null && bonaFideStatus.getValueCreatedAt() != null) {
+				asserted = Timestamp.valueOf(bonaFideStatus.getValueCreatedAt()).getTime() / 1000L;
 			}
-			long expires = Instant.ofEpochSecond(asserted).atZone(ZoneId.systemDefault()).plusYears(100L).toEpochSecond();
-			if (expires < now) return;
-			JsonNode visa = createPassportVisa(TYPE_ACCEPTED_TERMS_AND_POLICIES, pctx, BONA_FIDE_URL, ELIXIR_ORG_URL, BY_SELF, asserted, expires, null);
+		}
+		long expires = Ga4ghUtils.getExpires(asserted, 100L);
+		if (expires < now) {
+			return;
+		}
+		JsonNode visa = createPassportVisa(TYPE_ACCEPTED_TERMS_AND_POLICIES, pctx,
+				BONA_FIDE_URL, ELIXIR_ORG_URL, BY_SELF, asserted, expires, null);
+		if (visa != null) {
+			passport.add(visa);
+		}
+	}
+
+	@Override
+	protected void addResearcherStatuses(long now,
+										 ClaimSourceProduceContext pctx,
+										 ArrayNode passport,
+										 List<Affiliation> affiliations)
+	{
+		addResearcherStatusFromBonaFideAttribute(pctx, now, passport);
+		addResearcherStatusFromAffiliation(pctx, affiliations, now, passport);
+		addResearcherStatusGroupAffiliations(pctx, now, passport);
+	}
+
+	@Override
+	protected void addControlledAccessGrants(long now, ClaimSourceProduceContext pctx, ArrayNode passport) {
+		if (CLAIM_REPOSITORIES.isEmpty()) {
+			return;
+		}
+		Set<String> linkedIdentities = new HashSet<>();
+		for (Ga4ghClaimRepository repo: CLAIM_REPOSITORIES) {
+			callPermissionsJwtAPI(repo, Collections.singletonMap(ELIXIR_ID, pctx.getSub()), passport, linkedIdentities);
+		}
+		if (linkedIdentities.isEmpty()) {
+			return;
+		}
+		for (String linkedIdentity : linkedIdentities) {
+			long expires = Ga4ghUtils.getOneYearExpires(now);
+			JsonNode visa = createPassportVisa(TYPE_LINKED_IDENTITIES, pctx, linkedIdentity,
+					ELIXIR_ORG_URL, BY_SYSTEM, now, expires, null);
 			if (visa != null) {
 				passport.add(visa);
 			}
 		}
 	}
 
-	@Override
-	protected void addResearcherStatuses(long now, ClaimSourceProduceContext pctx, ArrayNode passport, List<Affiliation> affiliations) {
+	private void addResearcherStatusFromBonaFideAttribute(ClaimSourceProduceContext pctx,
+														  long now,
+														  ArrayNode passport)
+	{
 		//by=peer for users with attribute elixirBonaFideStatusREMS
+		String valueCreatedAt = null;
 		PerunAttribute elixirBonaFideStatusREMS = pctx.getPerunAdapter()
 				.getAdapterRpc()
 				.getUserAttribute(pctx.getPerunUserId(), bonaFideStatusREMSAttr);
-
-		String valueCreatedAt = null;
 		if (elixirBonaFideStatusREMS != null) {
 			valueCreatedAt = elixirBonaFideStatusREMS.getValueCreatedAt();
 		}
+		if (valueCreatedAt == null) {
+			return;
+		}
+		long asserted = Timestamp.valueOf(valueCreatedAt).getTime() / 1000L;
+		long expires = Ga4ghUtils.getOneYearExpires(asserted);
+		if (expires < now) {
+			return;
+		}
+		JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL,
+				ELIXIR_ORG_URL, BY_PEER, asserted, expires, null);
+		if (visa != null) {
+			passport.add(visa);
+		}
+	}
 
-		if (valueCreatedAt != null) {
-			long asserted = Timestamp.valueOf(valueCreatedAt).getTime() / 1000L;
-			long expires = ZonedDateTime.now().plusYears(1L).toEpochSecond();
-			if (expires > now) {
-				JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL, ELIXIR_ORG_URL, BY_PEER, asserted, expires, null);
-				if (visa != null) {
-					passport.add(visa);
-				}
-			}
-		}
+	private void addResearcherStatusFromAffiliation(ClaimSourceProduceContext pctx,
+													List<Affiliation> affiliations,
+													long now,
+													ArrayNode passport)
+	{
 		//by=system for users with faculty affiliation asserted by their IdP (set in UserExtSource attribute "affiliation")
-		for (Affiliation affiliation : affiliations) {
-			if (affiliation.getValue().startsWith("faculty@")) {
-				long expires = Instant.ofEpochSecond(affiliation.getAsserted()).atZone(ZoneId.systemDefault()).plusYears(1L).toEpochSecond();
-				if (expires < now) continue;
-				JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL, affiliation.getSource(), BY_SYSTEM, affiliation.getAsserted(), expires, null);
-				if (visa != null) {
-					passport.add(visa);
-				}
-			}
+		if (affiliations == null) {
+			return;
 		}
-		//by=so for users with faculty affiliation asserted by membership in a group with groupAffiliations attribute
-		for (Affiliation affiliation : pctx.getPerunAdapter().getGroupAffiliations(pctx.getPerunUserId(), groupAffiliationsAttr)) {
-			if (affiliation.getValue().startsWith("faculty@")) {
-				long expires = ZonedDateTime.now().plusYears(1L).toEpochSecond();
-				JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL, ELIXIR_ORG_URL, BY_SO, affiliation.getAsserted(), expires, null);
-				if (visa != null) {
-					passport.add(visa);
-				}
+		for (Affiliation affiliation: affiliations) {
+			if (!StringUtils.startsWithIgnoreCase(affiliation.getValue(), FACULTY_AT)) {
+				continue;
+			}
+			long expires = Ga4ghUtils.getOneYearExpires(affiliation.getAsserted());
+			if (expires < now) {
+				continue;
+			}
+			JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL,
+					affiliation.getSource(), BY_SYSTEM, affiliation.getAsserted(), expires, null);
+			if (visa != null) {
+				passport.add(visa);
 			}
 		}
 	}
 
-	@Override
-	protected void addControlledAccessGrants(long now, ClaimSourceProduceContext pctx, ArrayNode passport) {
-		Set<String> linkedIdentities = new HashSet<>();
-		//call Resource Entitlement Management System
-		for (Ga4ghClaimRepository repo : CLAIM_REPOSITORIES) {
-			callPermissionsJwtAPI(repo, Collections.singletonMap(ELIXIR_ID, pctx.getSub()), passport, linkedIdentities);
+	private void addResearcherStatusGroupAffiliations(ClaimSourceProduceContext pctx, long now, ArrayNode passport) {
+		//by=so for users with faculty affiliation asserted by membership in a group with groupAffiliations attribute
+		List<Affiliation> groupAffiliations = pctx.getPerunAdapter()
+				.getGroupAffiliations(pctx.getPerunUserId(), groupAffiliationsAttr);
+		if (groupAffiliations == null) {
+			return;
 		}
-		if (!linkedIdentities.isEmpty()) {
-			for (String linkedIdentity : linkedIdentities) {
-				JsonNode visa = createPassportVisa(TYPE_LINKED_IDENTITIES, pctx, linkedIdentity, ELIXIR_ORG_URL, BY_SYSTEM, now, now + 3600L * 24 * 365, null);
-				if (visa != null) {
-					passport.add(visa);
-				}
+		for (Affiliation affiliation: groupAffiliations) {
+			if (!StringUtils.startsWithIgnoreCase(affiliation.getValue(), FACULTY_AT)) {
+				continue;
+			}
+			long expires = Ga4ghUtils.getOneYearExpires(now);
+			JsonNode visa = createPassportVisa(TYPE_RESEARCHER_STATUS, pctx, BONA_FIDE_URL,
+					ELIXIR_ORG_URL, BY_SO, affiliation.getAsserted(), expires, null);
+			if (visa != null) {
+				passport.add(visa);
 			}
 		}
 	}

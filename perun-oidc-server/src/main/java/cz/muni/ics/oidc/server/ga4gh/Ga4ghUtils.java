@@ -136,6 +136,13 @@ public class Ga4ghUtils {
         );
     }
 
+    public static long getOneYearExpires(long asserted) {
+        return getExpires(asserted, 1L);
+    }
+
+    public static long getExpires(long asserted, long addYears) {
+        return Instant.ofEpochSecond(asserted).atZone(ZoneId.systemDefault()).plusYears(addYears).toEpochSecond();
+    }
 
     private static void initializeSigner(JsonNode signer,
                                          Map<URI, String> signers,
