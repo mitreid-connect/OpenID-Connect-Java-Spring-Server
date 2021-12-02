@@ -65,50 +65,70 @@
 	</repositories>
 
 	<properties>
-		<!-- DEPENDENCIES -->
+		<!-- DEPENDENCY VERSIONS -->
+
+		<!-- Spring -->
 		<spring.version>4.3.30.RELEASE</spring.version>
-		<spring-test.version>4.3.30.RELEASE</spring-test.version>
+
+		<!-- Spring Security -->
 		<spring-security.version>4.2.20.RELEASE</spring-security.version>
 		<spring-security-oauth2.version>2.5.1.RELEASE</spring-security-oauth2.version>
-		<jackson.version>2.11.4</jackson.version>
-		<jsp-api.version>2.2</jsp-api.version>
+		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
+
+		<!-- Jackson -->
+		<jackson.version>2.13.0</jackson.version>
+		<jackson-dataformat-yml.version>${jackson.version}</jackson-dataformat-yml.version>
+
+		<!-- Database -->
+		<postgresql.version>42.3.1</postgresql.version>
 		<mysql.version>8.0.27</mysql.version>
 		<hsqldb.version>2.5.2</hsqldb.version>
-		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
-		<javax-persistence.version>2.2.1</javax-persistence.version>
+		<mariadb-java-client.version>2.7.4</mariadb-java-client.version>
 		<hikari.version>3.4.5</hikari.version>
+		<shedlock.version>4.3.1</shedlock.version>
+		<shedlock-spring.version>${shedlock.version}</shedlock-spring.version>
+		<shedlock-provider-jdbc-template.version>${shedlock.version}</shedlock-provider-jdbc-template.version>
+
+		<!-- Servlet -->
+		<jsp-api.version>2.3.3</jsp-api.version>
+		<servlet-api.version>2.5</servlet-api.version>
+		<jstl.version>1.2</jstl.version>
+		<jakarta-servlet-api.version>4.0.4</jakarta-servlet-api.version>
+		<jakarta-jstl.version>1.2.6</jakarta-jstl.version>
+
+		<!-- Eclipse -->
+		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
+		<eclipse-persistence-core.version>${eclipse-persistence.version}</eclipse-persistence-core.version>
+		<eclipse-persistence-jpa.version>${eclipse-persistence.version}</eclipse-persistence-jpa.version>
+
+		<!-- LDAP -->
+		<apache-directory-api.version>2.1.0</apache-directory-api.version>
+
+		<!-- Logging -->
 		<org.slf4j-version>1.7.30</org.slf4j-version>
 		<log4j-core.version>2.13.3</log4j-core.version>
 		<junit.version>4.13.2</junit.version>
+		<logback.verison>1.2.7</logback.verison>
+		<jul-to-slf4j.version>1.7.32</jul-to-slf4j.version>
+
+		<!-- Testing -->
 		<easymock.version>4.2</easymock.version>
 		<mockito.version>3.2.4</mockito.version>
+
+		<lombok.version>1.18.22</lombok.version>
 		<guava.version>30.1.1-jre</guava.version>
 		<gson.version>2.8.9</gson.version>
 		<httpclient.version>4.5.13</httpclient.version>
 		<nimbus-jose-jwt.version>8.23</nimbus-jose-jwt.version>
 		<bcprov-jdk15on.version>1.67</bcprov-jdk15on.version>
+		<apache-commons.version>3.12.0</apache-commons.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
-		<lombok.version>1.18.22</lombok.version>
-		<servlet-api.version>2.5</servlet-api.version>
-		<jstl.version>1.2</jstl.version>
-		<apache-commons.version>3.12.0</apache-commons.version>
-		<jackson-dataformat-yml.verson>2.13.0</jackson-dataformat-yml.verson>
-		<mariadb-java-client.version>2.7.4</mariadb-java-client.version>
-		<apache-directory-api.version>2.1.0</apache-directory-api.version>
 		<janino.version>3.1.6</janino.version>
-		<logback.verison>1.2.7</logback.verison>
-		<jul-to-slf4j.version>1.7.32</jul-to-slf4j.version>
-		<shedlock.version>4.3.1</shedlock.version>
-		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
 		<jakarta-xml-bind-api.version>2.3.3</jakarta-xml-bind-api.version>
 		<jaxb-runtime.version>2.3.5</jaxb-runtime.version>
-		<jakarta-servlet-api.version>4.0.4</jakarta-servlet-api.version>
 		<aspectjweaver.version>1.9.7</aspectjweaver.version>
-		<spring-aop.version>4.3.30.RELEASE</spring-aop.version>
-		<spring-context.version>4.3.30.RELEASE</spring-context.version>
-		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
-		<postgresql.version>42.3.1</postgresql.version>
+
 		<!-- BUILD -->
 		<java-version>8</java-version>
 		<maven.compiler.source>${java-version}</maven.compiler.source>
@@ -119,6 +139,7 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Us -->
 			<dependency>
 				<groupId>cz.muni.ics</groupId>
 				<artifactId>perun-oidc-server</artifactId>
@@ -129,6 +150,7 @@
 				<artifactId>perun-oidc-server-webapp</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+
 			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -137,6 +159,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
 			<!-- Spring Security -->
 			<dependency>
 				<groupId>org.springframework.security</groupId>
@@ -150,29 +173,32 @@
 				<artifactId>spring-security-oauth2</artifactId>
 				<version>${spring-security-oauth2.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.extensions</groupId>
+				<artifactId>spring-security-saml2-core</artifactId>
+				<version>${spring-security-saml2.version}</version>
+			</dependency>
+
 			<!-- Jackson -->
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson-dataformat-yml.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
+
 			<!-- Servlet -->
 			<dependency>
-				<groupId>javax.servlet.jsp.jstl</groupId>
-				<artifactId>jstl-api</artifactId>
-				<version>${jstl.version}</version>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>${servlet-api.version}</version>
 			</dependency>
+			<!-- Replace this with the 2+ version when migrated to tomcat 10+ -->
 			<dependency>
-				<groupId>javax.servlet.jsp</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>${jsp-api.version}</version>
-				<scope>provided</scope>
+				<groupId>org.glassfish.web</groupId>
+				<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+				<version>${jakarta-jstl.version}</version>
 			</dependency>
+
 			<!-- Database -->
 			<dependency>
 				<groupId>mysql</groupId>
@@ -191,15 +217,38 @@
 				<version>${postgresql.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.eclipse.persistence</groupId>
-				<artifactId>org.eclipse.persistence.jpa</artifactId>
-				<version>${eclipse-persistence.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
 				<version>${hikari.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>${mariadb-java-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-spring</artifactId>
+				<version>${shedlock-spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.javacrumbs.shedlock</groupId>
+				<artifactId>shedlock-provider-jdbc-template</artifactId>
+				<version>${shedlock-provider-jdbc-template.version}</version>
+			</dependency>
+
+			<!-- Eclipse Persistence -->
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.core</artifactId>
+				<version>${eclipse-persistence-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.jpa</artifactId>
+				<version>${eclipse-persistence-jpa.version}</version>
+			</dependency>
+
 			<!-- Test -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -213,6 +262,20 @@
 				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
+
+			<!-- Logging -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.verison}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
 			<!-- Other libraries -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -235,88 +298,9 @@
 				<version>${nimbus-jose-jwt.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>${bcprov-jdk15on.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.persistence</groupId>
-				<artifactId>org.eclipse.persistence.core</artifactId>
-				<version>${eclipse-persistence.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons-io.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>${servlet-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>${jstl.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${apache-commons.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-yaml</artifactId>
-				<version>${jackson-dataformat-yml.verson}</version>
-			</dependency>
-			<!-- MySQL JDBC driver -->
-			<dependency>
-				<groupId>org.mariadb.jdbc</groupId>
-				<artifactId>mariadb-java-client</artifactId>
-				<version>${mariadb-java-client.version}</version>
-			</dependency>
-			<!-- LDAP -->
-			<dependency>
-				<groupId>org.apache.directory.api</groupId>
-				<artifactId>api-all</artifactId>
-				<version>${apache-directory-api.version}</version>
-			</dependency>
-			<!-- logging -->
-			<dependency>
-				<groupId>org.codehaus.janino</groupId>
-				<artifactId>janino</artifactId>
-				<version>${janino.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.verison}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.slf4j</groupId>
-						<artifactId>slf4j-api</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jul-to-slf4j</artifactId>
-				<version>${jul-to-slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.javacrumbs.shedlock</groupId>
-				<artifactId>shedlock-spring</artifactId>
-				<version>${shedlock.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.javacrumbs.shedlock</groupId>
-				<artifactId>shedlock-provider-jdbc-template</artifactId>
-				<version>${shedlock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.annotation</groupId>
@@ -324,39 +308,15 @@
 				<version>${javax-annotation-api.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>jakarta.xml.bind</groupId>
-				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>${jakarta-xml-bind-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jaxb</groupId>
-				<artifactId>jaxb-runtime</artifactId>
-				<version>${jaxb-runtime.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>jakarta.servlet</groupId>
-				<artifactId>jakarta.servlet-api</artifactId>
-				<version>${jakarta-servlet-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-aop</artifactId>
-				<version>${spring-aop.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjweaver</artifactId>
 				<version>${aspectjweaver.version}</version>
 			</dependency>
+			<!-- LDAP -->
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring-context.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security.extensions</groupId>
-				<artifactId>spring-security-saml2-core</artifactId>
-				<version>${spring-security-saml2.version}</version>
+				<groupId>org.apache.directory.api</groupId>
+				<artifactId>api-all</artifactId>
+				<version>${apache-directory-api.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
