@@ -65,9 +65,6 @@
 	</repositories>
 
 	<properties>
-		<java-version>8</java-version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- DEPENDENCIES -->
 		<spring.version>4.3.30.RELEASE</spring.version>
 		<spring-test.version>4.3.30.RELEASE</spring-test.version>
@@ -76,7 +73,7 @@
 		<jackson.version>2.11.4</jackson.version>
 		<jsp-api.version>2.2</jsp-api.version>
 		<mysql.version>8.0.27</mysql.version>
-		<hsqldb.version>2.6.1</hsqldb.version>
+		<hsqldb.version>2.5.2</hsqldb.version>
 		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
 		<javax-persistence.version>2.2.1</javax-persistence.version>
 		<hikari.version>3.4.5</hikari.version>
@@ -113,10 +110,11 @@
 		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
 		<postgresql.version>42.3.1</postgresql.version>
 		<!-- BUILD -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>8</java-version>
 		<maven.compiler.source>${java-version}</maven.compiler.source>
 		<maven.compiler.target>${java-version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
 	<dependencyManagement>
