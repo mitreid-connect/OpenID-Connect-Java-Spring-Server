@@ -43,7 +43,8 @@ public class TestJsonMessageSource {
 
 	@Test
 	public void verifyWhenLocaleDoesNotExist_cannotResolveCode() {
+		String code = "test";
 		MessageFormat mf = jsonMessageSource.resolveCode("test", localeThatDoesNotHaveAFile);
-		assertNull(mf);
+		assertEquals(code, mf.toPattern());
 	}
 }
