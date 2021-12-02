@@ -103,7 +103,7 @@
 		<jackson-dataformat-yml.verson>2.13.0</jackson-dataformat-yml.verson>
 		<mariadb-java-client.version>2.7.4</mariadb-java-client.version>
 		<apache-directory-api.version>2.1.0</apache-directory-api.version>
-		<janino.version>3.0.12</janino.version>
+		<janino.version>3.1.6</janino.version>
 		<logback.verison>1.2.7</logback.verison>
 		<jul-to-slf4j.version>1.7.32</jul-to-slf4j.version>
 		<shedlock.version>4.3.1</shedlock.version>
