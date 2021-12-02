@@ -104,7 +104,7 @@
 		<mariadb-java-client.version>2.7.0</mariadb-java-client.version>
 		<apache-directory-api.version>2.0.1</apache-directory-api.version>
 		<janino.version>3.0.12</janino.version>
-		<logback.verison>1.2.3</logback.verison>
+		<logback.verison>1.2.7</logback.verison>
 		<jul-to-slf4j.version>1.7.30</jul-to-slf4j.version>
 		<shedlock.version>4.3.1</shedlock.version>
 		<javax-annotation-api.version>1.3.2</javax-annotation-api.version>
