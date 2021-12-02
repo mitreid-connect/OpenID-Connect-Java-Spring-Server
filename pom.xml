@@ -81,7 +81,7 @@
 		<jsp-api.version>2.2</jsp-api.version>
 		<mysql.version>8.0.27</mysql.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
-		<eclipse-persistence.version>2.7.7</eclipse-persistence.version>
+		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
 		<javax-persistence.version>2.2.1</javax-persistence.version>
 		<hikari.version>3.4.5</hikari.version>
 		<org.slf4j-version>1.7.30</org.slf4j-version>
