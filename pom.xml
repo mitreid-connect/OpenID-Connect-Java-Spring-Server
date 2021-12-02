@@ -58,10 +58,6 @@
 
 	<repositories>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
 			<id>Shibboleth</id>
 			<name>Shibboleth</name>
 			<url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
