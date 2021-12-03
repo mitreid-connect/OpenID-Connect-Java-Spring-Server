@@ -3,6 +3,7 @@ package cz.muni.ics.oidc.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
@@ -15,7 +16,6 @@ import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
