@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWEHeader;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -59,7 +60,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.stereotype.Service;
 /**
  * Default implementation of service to create specialty OpenID Connect tokens.
  *
@@ -140,7 +140,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (responseTypes.contains("token")) {
 			// calculate the token hash
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
-			idClaims.claim("at_hash", at_hash);
+			idClaims.claim("at_hash", at_hash.toString());
 		}
 
 		addCustomIdTokenClaims(idClaims, client, request, sub, accessToken);
@@ -166,7 +166,6 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			if (signingAlg.equals(Algorithm.NONE)) {
 				// unsigned ID token
 				idToken = new PlainJWT(idClaims.build());
-
 			} else {
 
 				// signed ID token
@@ -175,7 +174,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 						|| signingAlg.equals(JWSAlgorithm.HS384)
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
 
-					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+					JWSHeader header = new JWSHeader(signingAlg, JOSEObjectType.JWT, null, null, null, null, null, null, null, null,
 							jwtService.getDefaultSignerKeyId(),
 							null, null);
 					idToken = new SignedJWT(header, idClaims.build());
@@ -187,7 +186,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				} else {
 					idClaims.claim("kid", jwtService.getDefaultSignerKeyId());
 
-					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+					JWSHeader header = new JWSHeader(signingAlg, JOSEObjectType.JWT, null, null, null, null, null, null, null, null,
 							jwtService.getDefaultSignerKeyId(),
 							null, null);
 
