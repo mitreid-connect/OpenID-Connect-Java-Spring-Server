@@ -22,6 +22,7 @@ package cz.muni.ics.openid.connect.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.google.common.collect.ImmutableSet;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
@@ -36,10 +37,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * @author jricher
@@ -151,7 +151,7 @@ public class TestUUIDPairwiseIdentiferService {
 	public void testGetIdentifier_newEqual() {
 
 		String pairwise1 = service.getIdentifier(userInfoRegular, pairwiseClient1);
-		Mockito.verify(pairwiseIdentifierRepository, Mockito.atLeast(1)).save(Matchers.any(PairwiseIdentifier.class));
+		Mockito.verify(pairwiseIdentifierRepository, Mockito.atLeast(1)).save(any(PairwiseIdentifier.class));
 
 		PairwiseIdentifier pairwiseId = new PairwiseIdentifier();
 		pairwiseId.setUserSub(regularSub);
