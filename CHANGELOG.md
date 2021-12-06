@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v5.0.1...v6.0.0) (2021-12-06)
+
+
+### Code Refactoring
+
+* 💡 Drop support for java 8 ([4a0b63e](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/4a0b63ec0e67c519cd9c0af79c8224777761090b))
+
+
+### BREAKING CHANGES
+
+* 🧨 Dropped support for java 8
+
 ## [5.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v5.0.0...v5.0.1) (2021-12-02)
 
 
