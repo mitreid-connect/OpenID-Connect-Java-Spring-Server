@@ -1,3 +1,21 @@
+# [7.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v6.0.0...v7.0.0) (2021-12-06)
+
+
+### Code Refactoring
+
+* 💡 Refactored GA4GH Passports and visas ([a94fd99](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/a94fd992dd5889745b93b25e2d17460569688c16))
+
+
+### Features
+
+* 🎸 Implemented BBMRI-ERIC Ga4gh Passports and Visas ([141e6c8](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/141e6c8653112e1b3b0beda2ea3ba8be3eca4bca))
+
+
+### BREAKING CHANGES
+
+* 🧨 Ga4gh Claim source class for ELIXIR has been changed. Also, the
+ElixirAccessTokenModifier class has been moved and renamed.
+
 # [6.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v5.0.1...v6.0.0) (2021-12-06)
 
 
