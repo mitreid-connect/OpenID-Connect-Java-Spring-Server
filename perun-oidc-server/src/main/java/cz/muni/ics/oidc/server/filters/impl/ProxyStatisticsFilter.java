@@ -105,36 +105,44 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			return true;
 		}
 
-		this.insertLogin(idpEntityId, idpName, clientIdentifier, clientName, userId);
+		this.insertOrUpdateLogin(idpEntityId, idpName, clientIdentifier, clientName, userId);
 		this.logUserLogin(idpEntityId, clientIdentifier, clientName, userId);
 
 		return true;
 	}
 
-	private void insertLogin(String idpEntityId, String idpName, String spIdentifier, String spName, String userId) {
-		LocalDate date = LocalDate.now();
-		String insertLoginQuery = "INSERT INTO " + statisticsTableName + "(day, idpId, spId, user, logins)" +
-				" VALUES(?, ?, ?, ?, '1') ON DUPLICATE KEY UPDATE logins = logins + 1";
+	private void insertOrUpdateLogin(String idpEntityId, String idpName, String spIdentifier, String spName, String userId) {
+		Connection c;
+		int idpId;
+		int spId;
 
-		try (Connection c = mitreIdStats.getConnection()) {
-			insertIdpMap(c, idpEntityId, idpName);
-			insertSpMap(c, spIdentifier, spName);
-			int idpId = extractIdpId(c, idpEntityId);
-			int spId = extractSpId(c, spIdentifier);
-
-			try (PreparedStatement preparedStatement = c.prepareStatement(insertLoginQuery)) {
-				preparedStatement.setDate(1, Date.valueOf(date));
-				preparedStatement.setInt(2, idpId);
-				preparedStatement.setInt(3, spId);
-				preparedStatement.setString(4, userId);
-				preparedStatement.execute();
-				log.trace("{} - login entry stored ({}, {}, {}, {}, {})", filterName, idpEntityId, idpName,
-						spIdentifier, spName, userId);
-			}
+		try {
+			c = mitreIdStats.getConnection();
+			insertOrUpdateIdpMap(c, idpEntityId, idpName);
+			insertOrUpdateSpMap(c, spIdentifier, spName);
+			idpId = extractIdpId(c, idpEntityId);
+			spId = extractSpId(c, spIdentifier);
 		} catch (SQLException ex) {
 			log.warn("{} - caught SQLException", filterName);
 			log.debug("{} - details:", filterName, ex);
+			return;
 		}
+
+		LocalDate date = LocalDate.now();
+
+		try {
+			insertLogin(date, c, idpId, spId, userId);
+		} catch (SQLException ex) {
+			try {
+				updateLogin(date, c, idpId, spId, userId);
+			} catch (SQLException e) {
+				log.warn("{} - caught SQLException", filterName);
+				log.debug("{} - details:", filterName, e);
+			}
+		}
+
+		log.trace("{} - login entry stored ({}, {}, {}, {}, {})", filterName, idpEntityId, idpName,
+			spIdentifier, spName, userId);
 	}
 
 	private int extractSpId(Connection c, String spIdentifier) throws SQLException {
@@ -159,30 +167,24 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 		}
 	}
 
-	private void insertSpMap(Connection c, String spIdentifier, String spName) throws SQLException {
-		String insertSpMapQuery = "INSERT INTO " + serviceProvidersMapTableName + "(identifier, name)" +
-				" VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?";
-
-		try (PreparedStatement preparedStatement = c.prepareStatement(insertSpMapQuery)) {
-			preparedStatement.setString(1, spIdentifier);
-			preparedStatement.setString(2, spName);
-			preparedStatement.setString(3, spName);
-			preparedStatement.execute();
-			log.trace("{} - SP map entry inserted", filterName);
+	private void insertOrUpdateIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
+		try {
+			insertIdpMap(c, idpEntityId, idpName);
+		} catch (SQLException ex) {
+			updateIdpMap(c, idpEntityId, idpName);
 		}
+
+		log.trace("{} - IdP map entry inserted", filterName);
 	}
 
-	private void insertIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
-		String insertIdpMapQuery = "INSERT INTO " + identityProvidersMapTableName + "(identifier, name)" +
-				" VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?";
-
-		try (PreparedStatement preparedStatement = c.prepareStatement(insertIdpMapQuery)) {
-			preparedStatement.setString(1, idpEntityId);
-			preparedStatement.setString(2, idpName);
-			preparedStatement.setString(3, idpName);
-			preparedStatement.execute();
-			log.trace("{} - IdP map entry inserted", filterName);
+	private void insertOrUpdateSpMap(Connection c, String spIdentifier, String idpName) throws SQLException {
+		try {
+			insertSpMap(c, spIdentifier, idpName);
+		} catch (SQLException ex) {
+			updateSpMap(c, spIdentifier, idpName);
 		}
+
+		log.trace("{} - SP map entry inserted", filterName);
 	}
 
 	private String changeParamEncoding(String original) {
@@ -197,6 +199,70 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 	private void logUserLogin(String idpEntityId, String spIdentifier, String spName, String userId) {
 		log.info("User identity: {}, service: {}, serviceName: {}, via IdP: {}", userId, spIdentifier,
 				spName, idpEntityId);
+	}
+
+	private void insertLogin(LocalDate date, Connection c, int idpId, int spId, String userId) throws SQLException {
+		String insertLoginQuery = "INSERT INTO " + statisticsTableName +
+			"(day, idpId, spId, user, logins)" +
+			" VALUES(?, ?, ?, ?, '1')";
+
+		PreparedStatement preparedStatement = c.prepareStatement(insertLoginQuery);
+		preparedStatement.setDate(1, Date.valueOf(date));
+		preparedStatement.setInt(2, idpId);
+		preparedStatement.setInt(3, spId);
+		preparedStatement.setString(4, userId);
+		preparedStatement.execute();
+	}
+
+	private void updateLogin(LocalDate date, Connection c, int idpId, int spId, String userId) throws SQLException {
+		String updateLoginQuery = "UPDATE " + statisticsTableName + " SET logins = logins + 1" +
+			" WHERE day = ? AND idpId = ? AND spId = ? AND user = ?";
+
+		PreparedStatement preparedStatement = c.prepareStatement(updateLoginQuery);
+		preparedStatement.setDate(1, Date.valueOf(date));
+		preparedStatement.setInt(2, idpId);
+		preparedStatement.setInt(3, spId);
+		preparedStatement.setString(4, userId);
+		preparedStatement.execute();
+	}
+
+	private void insertIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
+		String insertIdpMapQuery = "INSERT INTO " + identityProvidersMapTableName + "(identifier, name)" +
+			" VALUES (?, ?)";
+
+		PreparedStatement preparedStatement = c.prepareStatement(insertIdpMapQuery);
+		preparedStatement.setString(1, idpEntityId);
+		preparedStatement.setString(2, idpName);
+		preparedStatement.execute();
+	}
+
+	private void updateIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
+		String updateIdpMapQuery = "UPDATE " + identityProvidersMapTableName + "SET name = ? WHERE identifier = ?";
+
+		PreparedStatement preparedStatement = c.prepareStatement(updateIdpMapQuery);
+		preparedStatement.setString(1, idpName);
+		preparedStatement.setString(2, idpEntityId);
+		preparedStatement.execute();
+	}
+
+	private void insertSpMap(Connection c, String spIdentifier, String spName) throws SQLException {
+		String insertSpMapQuery = "INSERT INTO " + serviceProvidersMapTableName + "(identifier, name)" +
+			" VALUES (?, ?)";
+
+		try (PreparedStatement preparedStatement = c.prepareStatement(insertSpMapQuery)) {
+			preparedStatement.setString(1, spIdentifier);
+			preparedStatement.setString(2, spName);
+			preparedStatement.execute();
+		}
+	}
+
+	private void updateSpMap(Connection c, String spIdentifier, String idpName) throws SQLException {
+		String updateSpMapQuery = "UPDATE " + serviceProvidersMapTableName + "SET name = ? WHERE identifier = ?";
+
+		PreparedStatement preparedStatement = c.prepareStatement(updateSpMapQuery);
+		preparedStatement.setString(1, idpName);
+		preparedStatement.setString(2, spIdentifier);
+		preparedStatement.execute();
 	}
 
 }
