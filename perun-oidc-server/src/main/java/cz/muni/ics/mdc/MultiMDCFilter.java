@@ -1,7 +1,8 @@
 package cz.muni.ics.mdc;
 
-import java.io.IOException;
+
 import javax.servlet.FilterChain;
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -18,12 +19,12 @@ public class MultiMDCFilter extends GenericFilterBean {
     public MultiMDCFilter() {
         this.remoteAddressMDCFilter = new RemoteAddressMDCFilter();
         this.sessionIdMDCFilter = new SessionIdMDCFilter();
-		log.info("--- Initialized MultiMDCFilter ---");
+        log.info("--- Initialized MultiMDCFilter ---");
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-            throws IOException, ServletException
+            throws ServletException, IOException
     {
         remoteAddressMDCFilter.doFilter(servletRequest);
         sessionIdMDCFilter.doFilter(servletRequest);
