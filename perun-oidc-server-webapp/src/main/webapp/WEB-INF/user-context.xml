@@ -178,6 +178,8 @@
 				<prop key="filter.stats.statisticsTableName">statistics_per_user</prop>
 				<prop key="filter.stats.identityProvidersMapTableName">statistics_idp</prop>
 				<prop key="filter.stats.serviceProvidersMapTableName">statistics_sp</prop>
+				<prop key="filter.stats.idpIdColumnName">idpId</prop>
+				<prop key="filter.stats.spIdColumnName">spId</prop>
 			</props>
 		</property>
 	</bean>
