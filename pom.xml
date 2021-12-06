@@ -107,7 +107,7 @@
 
 		<!-- Testing -->
 		<junit.version>4.13.2</junit.version>
-		<mockito.version>4.0.0</mockito.version>
+		<mockito.version>4.1.0</mockito.version>
 
 		<lombok.version>1.18.22</lombok.version>
 		<guava.version>31.0.1-jre</guava.version>
