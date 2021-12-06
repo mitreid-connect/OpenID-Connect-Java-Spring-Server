@@ -41,6 +41,17 @@ public class ClaimSourceInitContext {
 		return properties.getProperty(propertyPrefix + "." + suffix, defaultValue);
 	}
 
+	public Long getLongProperty(String suffix, Long defaultValue) {
+		String propKey = propertyPrefix + '.' + suffix;
+		String prop = properties.getProperty(propertyPrefix + "." + suffix);
+		try {
+			return Long.parseLong(prop);
+		} catch (NumberFormatException e) {
+			log.warn("Could not parse value '{}' for property '{}' as Long", prop, propKey);
+		}
+		return defaultValue;
+	}
+
 	public JWTSigningAndValidationService getJwtService() {
 		return jwtService;
 	}
