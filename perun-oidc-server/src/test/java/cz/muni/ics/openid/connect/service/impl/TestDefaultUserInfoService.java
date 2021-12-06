@@ -22,6 +22,7 @@ package cz.muni.ics.openid.connect.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.enums.SubjectType;
@@ -34,11 +35,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 /**
@@ -189,7 +189,7 @@ public class TestDefaultUserInfoService {
 
 		Mockito.when(userInfoRepository.getByUsername(regularUsername)).thenReturn(userInfoRegular);
 
-		Mockito.verify(pairwiseIdentiferService, Mockito.never()).getIdentifier(Matchers.any(UserInfo.class), Matchers.any(ClientDetailsEntity.class));
+		Mockito.verify(pairwiseIdentiferService, Mockito.never()).getIdentifier(any(UserInfo.class), any(ClientDetailsEntity.class));
 
 		UserInfo user1 = service.getByUsernameAndClientId(regularUsername, publicClientId1);
 		UserInfo user2 = service.getByUsernameAndClientId(regularUsername, publicClientId2);
