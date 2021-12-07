@@ -1,3 +1,15 @@
+# [7.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.0.0...v7.1.0) (2021-12-07)
+
+
+### Bug Fixes
+
+* DB inserts in statistics work with PostgreSQL ([b72eb8f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/b72eb8fd8e4633205c86e1861f6acb7558ac62de))
+
+
+### Features
+
+* Added configurable ipdIdColumnName and spIdColumnName in statistics ([515f99b](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/515f99b25518d6e8be66a0c50133c01216c0bde5))
+
 # [7.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v6.0.0...v7.0.0) (2021-12-06)
 
 
