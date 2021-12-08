@@ -1,3 +1,10 @@
+## [7.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.1.0...v7.1.1) (2021-12-08)
+
+
+### Bug Fixes
+
+* 🐛 Fix possible SQL exceptions ([b3bd9e9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/b3bd9e94c76b7781a31d362fe8fda61242b30d83))
+
 # [7.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.0.0...v7.1.0) (2021-12-07)
 
 
