@@ -1,3 +1,10 @@
+# [7.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.1.1...v7.2.0) (2021-12-08)
+
+
+### Features
+
+* 🎸 Added automated bundling of .war file into release ([cd1118f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/cd1118f1a0c8121fd49fe73b70b6074ea1ce4a0c))
+
 ## [7.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.1.0...v7.1.1) (2021-12-08)
 
 
