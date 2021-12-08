@@ -159,24 +159,32 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 	}
 
 	private int extractSpId(Connection c, String spIdentifier) throws SQLException {
-		String getSpIdQuery = "SELECT * FROM " + serviceProvidersMapTableName + " WHERE identifier= ?";
+		String query = "SELECT " + spIdColumnName + " FROM " + serviceProvidersMapTableName +
+				" WHERE identifier = ? LIMIT 1";
 
-		try (PreparedStatement preparedStatement = c.prepareStatement(getSpIdQuery)) {
+		try (PreparedStatement preparedStatement = c.prepareStatement(query)) {
 			preparedStatement.setString(1, spIdentifier);
 			ResultSet rs = preparedStatement.executeQuery();
-			rs.first();
-			return rs.getInt("spId");
+			if (rs.next()) {
+				return rs.getInt(spIdColumnName);
+			} else {
+				throw new SQLException("No result found");
+			}
 		}
 	}
 
 	private int extractIdpId(Connection c, String idpEntityId) throws SQLException {
-		String getIdPIdQuery = "SELECT * FROM " + identityProvidersMapTableName + " WHERE identifier = ?";
+		String query = "SELECT " + idpIdColumnName + " FROM " + identityProvidersMapTableName +
+				" WHERE identifier = ? LIMIT 1";
 
-		try (PreparedStatement preparedStatement = c.prepareStatement(getIdPIdQuery)) {
+		try (PreparedStatement preparedStatement = c.prepareStatement(query)) {
 			preparedStatement.setString(1, idpEntityId);
 			ResultSet rs = preparedStatement.executeQuery();
-			rs.first();
-			return rs.getInt("idpId");
+			if (rs.next()) {
+				return rs.getInt(idpIdColumnName);
+			} else {
+				throw new SQLException("No result found");
+			}
 		}
 	}
 
