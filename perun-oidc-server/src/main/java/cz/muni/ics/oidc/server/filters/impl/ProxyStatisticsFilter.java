@@ -1,9 +1,11 @@
 package cz.muni.ics.oidc.server.filters.impl;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.SAML_EPUID;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oidc.BeanUtil;
+import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
@@ -68,11 +70,13 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 
 	private final DataSource mitreIdStats;
 	private final String filterName;
+	private final SamlProperties samlProperties;
 
 	public ProxyStatisticsFilter(PerunRequestFilterParams params) {
 		super(params);
 		BeanUtil beanUtil = params.getBeanUtil();
 		this.mitreIdStats = beanUtil.getBean("mitreIdStats", DataSource.class);
+		this.samlProperties = beanUtil.getBean(SamlProperties.class);
 
 		this.idpNameAttributeName = params.getProperty(IDP_NAME_ATTRIBUTE_NAME);
 		this.idpEntityIdAttributeName = params.getProperty(IDP_ENTITY_ID_ATTRIBUTE_NAME);
@@ -90,31 +94,41 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 
 		ClientDetailsEntity client = params.getClient();
 		if (client == null) {
-			log.debug("{} - skip execution: no client provided", filterName);
+			log.warn("{} - skip execution: no client provided", filterName);
+			return true;
+		} else if (!StringUtils.hasText(client.getClientId())) {
+			log.warn("{} - skip execution: no client identifier provided", filterName);
+			return true;
+		} else if (!StringUtils.hasText(client.getClientName())) {
+			log.warn("{} - skip execution: no client name provided", filterName);
 			return true;
 		}
 
-		String clientIdentifier = client.getClientId();
-		String clientName = client.getClientName();
 		SAMLCredential samlCredential = FiltersUtils.getSamlCredential(request);
-
-		String idpEntityId = samlCredential.getAttributeAsString(idpEntityIdAttributeName);
-		idpEntityId = this.changeParamEncoding(idpEntityId);
-		String idpName = samlCredential.getAttributeAsString(idpNameAttributeName);
-		idpName = this.changeParamEncoding(idpName);
-		if (!StringUtils.hasText(idpEntityId) || !StringUtils.hasText(idpName)) {
-			log.debug("{} - skip execution: no source IDP provided", filterName);
+		if (samlCredential == null) {
+			log.warn("{} - skip execution: no authN object available, cannot extract user identifier and idp identifier",
+					filterName);
+			return true;
+		}
+		String userIdentifier = FiltersUtils.getExtLogin(samlCredential, samlProperties.getUserIdentifierAttribute());
+		if (!StringUtils.hasText(userIdentifier)) {
+			log.warn("{} - skip execution: no user identifier provided", filterName);
+			return true;
+		} else if (!StringUtils.hasText(samlCredential.getAttributeAsString(idpEntityIdAttributeName))) {
+			log.warn("{} - skip execution: no authenticating idp identifier provided", filterName);
+			return true;
+		} else if (!StringUtils.hasText(samlCredential.getAttributeAsString(idpNameAttributeName))) {
+			log.warn("{} - skip execution: no authenticating idp identifier provided", filterName);
 			return true;
 		}
 
-		String userId = samlCredential.getAttributeAsString(SAML_EPUID);
-		if (!StringUtils.hasText(userId)) {
-			log.debug("{} - skip execution: no user ID available", filterName);
-			return true;
-		}
+		String idpEntityId = changeParamEncoding(samlCredential.getAttributeAsString(idpEntityIdAttributeName));
+		String idpName = changeParamEncoding(samlCredential.getAttributeAsString(idpNameAttributeName));
+		String clientId = client.getClientId();
+		String clientName = client.getClientName();
 
-		this.insertOrUpdateLogin(idpEntityId, idpName, clientIdentifier, clientName, userId);
-		this.logUserLogin(idpEntityId, clientIdentifier, clientName, userId);
+		insertOrUpdateLogin(idpEntityId, idpName, clientId, clientName, userIdentifier);
+		logUserLogin(idpEntityId, clientId, clientName, userIdentifier);
 
 		return true;
 	}
@@ -130,10 +144,8 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			insertOrUpdateSpMap(c, spIdentifier, spName);
 
 			idpId = extractIdpId(c, idpEntityId);
-			log.trace("{} - extracted idpId: {}", filterName, idpId);
-
 			spId = extractSpId(c, spIdentifier);
-			log.trace("{} - extracted spId: {}", filterName, spId);
+			log.trace("{} - Extracted IDs for SP and IdP: spId={}, idpId ={}", filterName, spId, idpId);
 		} catch (SQLException ex) {
 			log.warn("{} - caught SQLException", filterName);
 			log.debug("{} - details:", filterName, ex);
@@ -210,8 +222,8 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 
 	private String changeParamEncoding(String original) {
 		if (original != null && !original.isEmpty()) {
-			byte[] sourceBytes = original.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
-			return new String(sourceBytes, java.nio.charset.StandardCharsets.UTF_8);
+			byte[] sourceBytes = original.getBytes(ISO_8859_1);
+			return new String(sourceBytes, UTF_8);
 		}
 
 		return null;
@@ -227,43 +239,47 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			"(day, " + idpIdColumnName + ", " + spIdColumnName + ", user, logins)" +
 			" VALUES(?, ?, ?, ?, '1')";
 
-		PreparedStatement preparedStatement = c.prepareStatement(insertLoginQuery);
-		preparedStatement.setDate(1, Date.valueOf(date));
-		preparedStatement.setInt(2, idpId);
-		preparedStatement.setInt(3, spId);
-		preparedStatement.setString(4, userId);
-		preparedStatement.execute();
+		try (PreparedStatement preparedStatement = c.prepareStatement(insertLoginQuery)) {
+			preparedStatement.setDate(1, Date.valueOf(date));
+			preparedStatement.setInt(2, idpId);
+			preparedStatement.setInt(3, spId);
+			preparedStatement.setString(4, userId);
+			preparedStatement.execute();
+		}
 	}
 
 	private void updateLogin(LocalDate date, Connection c, int idpId, int spId, String userId) throws SQLException {
 		String updateLoginQuery = "UPDATE " + statisticsTableName + " SET logins = logins + 1" +
 			" WHERE day = ? AND " + idpIdColumnName + " = ? AND " + spIdColumnName + " = ? AND user = ?";
 
-		PreparedStatement preparedStatement = c.prepareStatement(updateLoginQuery);
-		preparedStatement.setDate(1, Date.valueOf(date));
-		preparedStatement.setInt(2, idpId);
-		preparedStatement.setInt(3, spId);
-		preparedStatement.setString(4, userId);
-		preparedStatement.execute();
+		try (PreparedStatement preparedStatement = c.prepareStatement(updateLoginQuery)){
+			preparedStatement.setDate(1, Date.valueOf(date));
+			preparedStatement.setInt(2, idpId);
+			preparedStatement.setInt(3, spId);
+			preparedStatement.setString(4, userId);
+			preparedStatement.execute();
+		}
 	}
 
 	private void insertIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
 		String insertIdpMapQuery = "INSERT INTO " + identityProvidersMapTableName + " (identifier, name)" +
 			" VALUES (?, ?)";
 
-		PreparedStatement preparedStatement = c.prepareStatement(insertIdpMapQuery);
-		preparedStatement.setString(1, idpEntityId);
-		preparedStatement.setString(2, idpName);
-		preparedStatement.execute();
+		try (PreparedStatement preparedStatement = c.prepareStatement(insertIdpMapQuery)) {
+			preparedStatement.setString(1, idpEntityId);
+			preparedStatement.setString(2, idpName);
+			preparedStatement.execute();
+		}
 	}
 
 	private void updateIdpMap(Connection c, String idpEntityId, String idpName) throws SQLException {
 		String updateIdpMapQuery = "UPDATE " + identityProvidersMapTableName + " SET name = ? WHERE identifier = ?";
 
-		PreparedStatement preparedStatement = c.prepareStatement(updateIdpMapQuery);
-		preparedStatement.setString(1, idpName);
-		preparedStatement.setString(2, idpEntityId);
-		preparedStatement.execute();
+		try (PreparedStatement preparedStatement = c.prepareStatement(updateIdpMapQuery)) {
+			preparedStatement.setString(1, idpName);
+			preparedStatement.setString(2, idpEntityId);
+			preparedStatement.execute();
+		}
 	}
 
 	private void insertSpMap(Connection c, String spIdentifier, String spName) throws SQLException {
@@ -280,10 +296,11 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 	private void updateSpMap(Connection c, String spIdentifier, String idpName) throws SQLException {
 		String updateSpMapQuery = "UPDATE " + serviceProvidersMapTableName + " SET name = ? WHERE identifier = ?";
 
-		PreparedStatement preparedStatement = c.prepareStatement(updateSpMapQuery);
-		preparedStatement.setString(1, idpName);
-		preparedStatement.setString(2, spIdentifier);
-		preparedStatement.execute();
+		try (PreparedStatement preparedStatement = c.prepareStatement(updateSpMapQuery)) {
+			preparedStatement.setString(1, idpName);
+			preparedStatement.setString(2, spIdentifier);
+			preparedStatement.execute();
+		}
 	}
 
 }
