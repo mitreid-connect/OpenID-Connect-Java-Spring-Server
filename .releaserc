@@ -4,13 +4,17 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     ["@semantic-release/exec", {
-      "prepareCmd": "mvn versions:set -DnewVersion=${nextRelease.version}; mvn versions:commit"
+      "prepareCmd": "./update-versions.sh ${nextRelease.version} && ./maven-build.sh"
     }],
     "@semantic-release/changelog",
-    "@semantic-release/github",
     ["@semantic-release/git", {
       "assets": ["CHANGELOG.md", "pom.xml", "perun-oidc-server-webapp/pom.xml", "perun-oidc-server/pom.xml"],
       "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }],
+    ["@semantic-release/github", {
+      "assets": [
+        {"path": "perun-oidc-server-webapp/target/oidc.war"}
+      ]
     }]
   ]
 }
