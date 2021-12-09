@@ -31,6 +31,13 @@ public class PerunRequestFilterParams {
 		return this.properties.getProperty(propertyPrefix + '.' + name);
 	}
 
+	public String getProperty(String name, String defaultValue) {
+		if (this.properties.containsKey(propertyPrefix + '.' + name)) {
+			return this.properties.getProperty(propertyPrefix + '.' + name);
+		}
+		return defaultValue;
+	}
+
 	public BeanUtil getBeanUtil() {
 		return beanUtil;
 	}
