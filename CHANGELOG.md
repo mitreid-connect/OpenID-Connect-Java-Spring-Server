@@ -1,3 +1,10 @@
+# [7.3.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.2.0...v7.3.0) (2021-12-09)
+
+
+### Features
+
+* 🎸 Configurable max pool size for JDBC data sources ([e5b406e](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/e5b406e85311166a6e9c54ec0d4d52637557746b))
+
 # [7.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.1.1...v7.2.0) (2021-12-08)
 
 
