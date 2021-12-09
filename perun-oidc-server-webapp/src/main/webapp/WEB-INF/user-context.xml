@@ -124,6 +124,7 @@
 				<prop key="jdbc.user">oidc</prop>
 				<prop key="jdbc.password">oidc</prop>
 				<prop key="jdbc.platform">org.eclipse.persistence.platform.database.MySQLPlatform</prop>
+				<prop key="jdbc.max_pool_size">50</prop>
 				<!-- SAML AUTH -->
 				<prop key="saml.entityID">https://login.cesnet.cz/oidc/</prop>
 				<prop key="saml.keystore.location">/etc/perun/perun-mitreid-saml-keystore.jks</prop>
@@ -143,6 +144,7 @@
 				<prop key="stats.jdbc.url">jdbc:mariadb://localhost:3306/STATS</prop>
 				<prop key="stats.jdbc.user">user</prop>
 				<prop key="stats.jdbc.password">password</prop>
+				<prop key="stats.jdbc.max_pool_size">10</prop>
 				<!-- WEB INTERFACE -->
 				<prop key="web.theme">default</prop>
 				<prop key="web.langs">EN</prop> <!-- EN,CS,SK -->

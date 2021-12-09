@@ -29,7 +29,7 @@
 		<property name="jdbcUrl" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.user}" />
 		<property name="password" value="${jdbc.password}" />
-		<property name="maximumPoolSize" value="50" />
+		<property name="maximumPoolSize" value="${jdbc.max_pool_size}" />
 	</bean>
 
 	<bean id="mitreIdStats" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -37,6 +37,7 @@
 		<property name="jdbcUrl" value="${stats.jdbc.url}" />
 		<property name="username" value="${stats.jdbc.user}" />
 		<property name="password" value="${stats.jdbc.password}" />
+		<property name="maximumPoolSize" value="${stats.jdbc.max_pool_size}"/>
 	</bean>
 
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
