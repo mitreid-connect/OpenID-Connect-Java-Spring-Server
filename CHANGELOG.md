@@ -1,3 +1,10 @@
+# [7.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.3.0...v7.4.0) (2021-12-09)
+
+
+### Features
+
+* 🎸 Configurable name of user col in stats filter ([4a5be5d](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/4a5be5d32baf754d6550747cba30fb1a8ec355fb))
+
 # [7.3.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.2.0...v7.3.0) (2021-12-09)
 
 
