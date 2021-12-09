@@ -83,17 +83,16 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 		this.mitreIdStats = beanUtil.getBean("mitreIdStats", DataSource.class);
 		this.samlProperties = beanUtil.getBean(SamlProperties.class);
 
-		Properties props = params.getProperties();
-		this.idpNameAttributeName = props.getProperty(IDP_NAME_ATTRIBUTE_NAME,
+		this.idpNameAttributeName = params.getProperty(IDP_NAME_ATTRIBUTE_NAME,
 				"urn:cesnet:proxyidp:attribute:sourceIdPName");
-		this.idpEntityIdAttributeName = props.getProperty(IDP_ENTITY_ID_ATTRIBUTE_NAME,
+		this.idpEntityIdAttributeName = params.getProperty(IDP_ENTITY_ID_ATTRIBUTE_NAME,
 				"urn:cesnet:proxyidp:attribute:sourceIdPEntityID");
-		this.statisticsTableName = props.getProperty(STATISTICS_TABLE_NAME, "statistics_per_user");
-		this.identityProvidersMapTableName = props.getProperty(IDENTITY_PROVIDERS_MAP_TABLE_NAME, "statistics_idp");
-		this.serviceProvidersMapTableName = props.getProperty(SERVICE_PROVIDERS_MAP_TABLE_NAME, "statistics_sp");
-		this.idpIdColumnName = props.getProperty(IDP_ID_COLUMN_NAME, "idpId");
-		this.spIdColumnName = props.getProperty(SP_ID_COLUMN_NAME, "spId");
-		this.usernameColumnName = props.getProperty(USERNAME_COLUMN_NAME, "user");
+		this.statisticsTableName = params.getProperty(STATISTICS_TABLE_NAME, "statistics_per_user");
+		this.identityProvidersMapTableName = params.getProperty(IDENTITY_PROVIDERS_MAP_TABLE_NAME, "statistics_idp");
+		this.serviceProvidersMapTableName = params.getProperty(SERVICE_PROVIDERS_MAP_TABLE_NAME, "statistics_sp");
+		this.idpIdColumnName = params.getProperty(IDP_ID_COLUMN_NAME, "idpId");
+		this.spIdColumnName = params.getProperty(SP_ID_COLUMN_NAME, "spId");
+		this.usernameColumnName = params.getProperty(USERNAME_COLUMN_NAME, "user");
 		this.filterName = params.getFilterName();
 	}
 
@@ -156,7 +155,8 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			if (spId == null) {
 				return;
 			}
-			log.trace("{} - Extracted IDs for SP and IdP: spId={}, idpId ={}", filterName, spId, idpId);
+			log.trace("{} - Extracted IDs for SP and IdP: spId={}({}), idpId={}({})",
+					filterName, spId, spIdentifier, idpId, idpEntityId);
 			insertOrUpdateLogin(c, idpId, spId, userId);
 		} catch (SQLException ex) {
 			log.warn("{} - caught SQLException", filterName);
@@ -177,12 +177,14 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 		String query = "SELECT COUNT(*) AS res FROM " + statisticsTableName +
 				" WHERE " + idpIdColumnName + " = ?" +
 				" AND " + spIdColumnName + " = ?" +
-				" AND " + usernameColumnName + " = ?";
+				" AND " + usernameColumnName + " = ?" +
+				" AND day = ?";
 
 		try (PreparedStatement ps = c.prepareStatement(query)) {
 			ps.setLong(1, idpId);
 			ps.setLong(2, spId);
 			ps.setString(3, userId);
+			ps.setDate(4, Date.valueOf(LocalDate.now()));
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getInt("res") > 0;
@@ -301,7 +303,8 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			ps.setLong(3, spId);
 			ps.setString(4, userId);
 			ps.execute();
-			log.debug("{} - login inserted", filterName);
+			log.debug("{} - Inserted first login for combination: idpId={}, spId={}, userId={}",
+					filterName, idpId, spId, userId);
 		} catch (SQLException ex) {
 			log.warn("{} - caught SQLException when inserting login entry",  filterName);
 			log.debug("{} - details:", filterName, ex);
@@ -321,8 +324,8 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			ps.setLong(2, idpId);
 			ps.setLong(3, spId);
 			ps.setString(4, userId);
-			ps.execute();
-			log.debug("{} - login updated", filterName);
+			log.debug("{} - Updated login count by 1 for combination: idpId={}, spId={}, userId={}",
+					filterName, idpId, spId, userId);
 		} catch (SQLException ex) {
 			log.warn("{} - caught SQLException when updating login entry",  filterName);
 			log.debug("{} - details:", filterName, ex);
