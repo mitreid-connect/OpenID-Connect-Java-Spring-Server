@@ -1,3 +1,10 @@
+## [7.4.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.4.0...v7.4.1) (2021-12-09)
+
+
+### Bug Fixes
+
+* 🐛 Fix inserting and reading properties in the stats filter ([31710bf](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/31710bf5f5b14009904ec38c88e7a8e80a8d9d8d))
+
 # [7.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.3.0...v7.4.0) (2021-12-09)
 
 
