@@ -18,5 +18,6 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
 
+    <link rel="icon" href="${config.favicon}"/>
     <link rel="stylesheet" type="text/css" href="${samlResourcesURL}/resources/default.css" />
     <link rel="stylesheet" type="text/css" href="resources/css/customs.css">

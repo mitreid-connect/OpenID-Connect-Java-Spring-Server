@@ -18,6 +18,7 @@
 
     <title><spring:message code="unified_login"/> | ${title}</title>
 
+    <link rel="icon" href="resources/images/muni.ico" />
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/style-ie.css?1.2">
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/style.css?1.2">

@@ -12,6 +12,7 @@
 
 <o:headerInit title="${title}" reqURL="${reqURL}" baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}" />
 
+<link rel="icon" href="resources/images/einfra.ico" />
 <link rel="stylesheet" type="text/css" href="${samlResourcesURL}/module.php/cesnet/res/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="${samlResourcesURL}/module.php/cesnet/res/css/einfra.css" />
 
