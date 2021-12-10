@@ -12,6 +12,7 @@
 
 <o:headerInit title="${title}" reqURL="${reqURL}" baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
 
+<link rel="icon" href="resources/images/elixir.ico" />
 <link rel="stylesheet" type="text/css" href="${samlResourcesURL}/module.php/elixir/res/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="${samlResourcesURL}/module.php/elixir/res/css/elixir.css" />
 

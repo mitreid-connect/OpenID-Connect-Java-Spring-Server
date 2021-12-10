@@ -97,6 +97,7 @@
 				<prop key="main.oidc.issuer.url">https://perun-dev.meta.zcu.cz/oidc/</prop>
 				<prop key="logo.image.url">resources/images/perun_24px.png</prop>
 				<prop key="topbar.title">Perun OIDC</prop>
+				<prop key="favicon">resources/images/mitreid-connect.ico</prop>
 				<prop key="admins">3197,59835</prop>
 				<prop key="perun.adapter.callFallback">true</prop>
 				<prop key="fill.missing.user.attrs">true</prop>

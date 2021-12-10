@@ -30,7 +30,7 @@
     <![endif]-->
 
     <!-- favico -->
-    <link rel="shortcut icon" href="resources/images/mitreid-connect.ico">
+    <link rel="shortcut icon" href="${config.favicon}">
 
     <!-- Load jQuery up here so that we can use in-page functions -->
     <script type="text/javascript" src="resources/js/lib/jquery.js"></script>

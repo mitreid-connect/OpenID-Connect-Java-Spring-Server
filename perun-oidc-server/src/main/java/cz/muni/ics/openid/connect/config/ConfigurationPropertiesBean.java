@@ -43,6 +43,7 @@ public class ConfigurationPropertiesBean {
 	private String topbarTitle;
 	private String shortTopbarTitle;
 	private String logoImageUrl;
+	private String favicon = "resources/images/mitreid-connect.ico";
 	private Long regTokenLifeTime;
 	private Long rqpTokenLifeTime;
 	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
@@ -178,4 +179,11 @@ public class ConfigurationPropertiesBean {
 		this.allowCompleteDeviceCodeUri = allowCompleteDeviceCodeUri;
 	}
 
+	public String getFavicon() {
+		return favicon;
+	}
+
+	public void setFavicon(String favicon) {
+		this.favicon = favicon;
+	}
 }
