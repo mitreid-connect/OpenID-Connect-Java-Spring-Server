@@ -1,3 +1,10 @@
+# [7.5.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.4.1...v7.5.0) (2021-12-10)
+
+
+### Features
+
+* 🎸 Configurable favicons ([bf227df](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/bf227df26e364a61c3ba08d122e8bccdbcc9184c))
+
 ## [7.4.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.4.0...v7.4.1) (2021-12-09)
 
 
