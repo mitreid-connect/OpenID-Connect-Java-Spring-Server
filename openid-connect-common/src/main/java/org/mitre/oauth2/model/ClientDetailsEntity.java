@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -1082,5 +1083,24 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setSoftwareVersion(String softwareVersion) {
 		this.softwareVersion = softwareVersion;
 	}
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(clientId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      ClientDetailsEntity other = (ClientDetailsEntity) obj;
+      return Objects.equals(clientId, other.clientId);
+    }
+
+
 
 }
