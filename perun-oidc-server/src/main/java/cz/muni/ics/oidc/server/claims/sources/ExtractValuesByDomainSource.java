@@ -35,16 +35,10 @@ public class ExtractValuesByDomainSource extends ClaimSource {
 
 	public ExtractValuesByDomainSource(ClaimSourceInitContext ctx) {
 		super(ctx);
-		this.domain = ClaimUtils.fillStringPropertyOrNoVal(EXTRACT_BY_DOMAIN, ctx);
-		if (!ClaimUtils.isPropSet(this.domain)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: "
-					+ EXTRACT_BY_DOMAIN);
-		}
-		this.attributeName = ClaimUtils.fillStringPropertyOrNoVal(ATTRIBUTE_NAME, ctx);
-		if (!ClaimUtils.isPropSet(this.attributeName)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: "
-					+ ATTRIBUTE_NAME);
-		}
+
+		this.domain = ClaimUtils.fillStringMandatoryProperty(EXTRACT_BY_DOMAIN, ctx, getClaimName());
+		this.attributeName = ClaimUtils.fillStringMandatoryProperty(ATTRIBUTE_NAME, ctx, getClaimName());
+
 		log.debug("{} - domain: '{}', attributeName: '{}'", getClaimName(), domain, attributeName);
 	}
 
@@ -56,35 +50,29 @@ public class ExtractValuesByDomainSource extends ClaimSource {
 	@Override
 	public JsonNode produceValue(ClaimSourceProduceContext pctx) {
 		JsonNode result = NullNode.getInstance();
-		if (!ClaimUtils.isPropSet(domain)) {
-			log.trace("{} - no domain set, return empty JSON", domain);
-			result = NullNode.getInstance();
-		} else if (!ClaimUtils.isPropSetAndHasAttribute(attributeName, pctx)) {
-			log.trace("{} - no attributeName set, return empty JSON", domain);
-			result = NullNode.getInstance();
-		} else {
-			PerunAttributeValue attributeValue = pctx.getAttrValues().get(attributeName);
-			if (attributeValue != null) {
-				JsonNode attributeValueJson = attributeValue.valueAsJson();
-				if (attributeValueJson.isTextual() && hasDomain(attributeValueJson.textValue(), domain)) {
-					log.trace("{} - found domain in string value: '{}'", getClaimName(), attributeValueJson);
-					result = attributeValueJson;
-				} else if (attributeValueJson.isArray()) {
-					ArrayNode arrayNode = (ArrayNode) attributeValueJson;
-					JsonNodeFactory factory = JsonNodeFactory.instance;
-					ArrayNode arr = new ArrayNode(factory);
+		PerunAttributeValue attributeValue = pctx.getAttrValues().get(attributeName);
 
-					for (int i = 0; i < arrayNode.size(); i++) {
-						String subValue = arrayNode.get(i).textValue();
-						if (hasDomain(subValue, domain)) {
-							log.trace("{} - found domain in array sub-value: '{}'", getClaimName(), subValue);
-							arr.add(subValue);
-						}
+		if (attributeValue != null) {
+			JsonNode attributeValueJson = attributeValue.valueAsJson();
+			if (attributeValueJson.isTextual() && hasDomain(attributeValueJson.textValue(), domain)) {
+				log.trace("{} - found domain in string value: '{}'", getClaimName(), attributeValueJson);
+				result = attributeValueJson;
+			} else if (attributeValueJson.isArray()) {
+				ArrayNode arrayNode = (ArrayNode) attributeValueJson;
+				JsonNodeFactory factory = JsonNodeFactory.instance;
+				ArrayNode arr = new ArrayNode(factory);
+
+				for (int i = 0; i < arrayNode.size(); i++) {
+					String subValue = arrayNode.get(i).textValue();
+					if (hasDomain(subValue, domain)) {
+						log.trace("{} - found domain in array sub-value: '{}'", getClaimName(), subValue);
+						arr.add(subValue);
 					}
-					result = arr;
 				}
+				result = arr;
 			}
 		}
+
 		log.debug("{} - produced value for user({}): '{}'", getClaimName(), pctx.getPerunUserId(), result);
 		return result;
 	}

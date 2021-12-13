@@ -57,19 +57,14 @@ public class EntitlementSource extends GroupNamesSource {
 
 	public EntitlementSource(ClaimSourceInitContext ctx) {
 		super(ctx);
-		this.forwardedEntitlements = ClaimUtils.fillStringPropertyOrNoVal(FORWARDED_ENTITLEMENTS, ctx);
-		this.resourceCapabilities = ClaimUtils.fillStringPropertyOrNoVal(RESOURCE_CAPABILITIES, ctx);
-		this.facilityCapabilities = ClaimUtils.fillStringPropertyOrNoVal(FACILITY_CAPABILITIES, ctx);
-		this.prefix = ClaimUtils.fillStringPropertyOrNoVal(PREFIX, ctx);
-		if (!ClaimUtils.isPropSet(this.prefix)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: " +
-					PREFIX);
-		}
-		this.authority = ClaimUtils.fillStringPropertyOrNoVal(AUTHORITY, ctx);
-		if (!ClaimUtils.isPropSet(this.authority)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: " +
-					AUTHORITY);
-		}
+
+		this.forwardedEntitlements = ClaimUtils.fillStringPropertyOrDefaultVal(FORWARDED_ENTITLEMENTS, ctx, null);
+		this.resourceCapabilities = ClaimUtils.fillStringPropertyOrDefaultVal(RESOURCE_CAPABILITIES, ctx, null);
+		this.facilityCapabilities = ClaimUtils.fillStringPropertyOrDefaultVal(FACILITY_CAPABILITIES, ctx, null);
+
+		this.prefix = ClaimUtils.fillStringMandatoryProperty(PREFIX, ctx, getClaimName());
+		this.authority = ClaimUtils.fillStringMandatoryProperty(AUTHORITY, ctx, getClaimName());
+
 		log.debug("{} - forwardedEntitlements: '{}', resourceCapabilities: '{}', facilityCapabilities: '{}', " +
 				"prefix: '{}', authority: '{}'", getClaimName(), forwardedEntitlements, resourceCapabilities,
 				facilityCapabilities, prefix, authority);

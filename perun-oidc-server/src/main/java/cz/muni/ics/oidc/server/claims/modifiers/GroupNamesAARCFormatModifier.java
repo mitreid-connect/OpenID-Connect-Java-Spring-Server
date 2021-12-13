@@ -35,14 +35,10 @@ public class GroupNamesAARCFormatModifier extends ClaimModifier {
 
 	public GroupNamesAARCFormatModifier(ClaimModifierInitContext ctx) {
 		super(ctx);
-		this.prefix = ClaimUtils.fillStringPropertyOrNoVal(PREFIX, ctx);
-		if (!ClaimUtils.isPropSet(this.prefix)) {
-			throw new IllegalArgumentException(getUnifiedName() + " - missing mandatory configuration option: " + PREFIX);
-		}
-		this.authority = ClaimUtils.fillStringPropertyOrNoVal(AUTHORITY, ctx);
-		if (!ClaimUtils.isPropSet(this.authority)) {
-			throw new IllegalArgumentException(getUnifiedName() + " - missing mandatory configuration option: " + AUTHORITY);
-		}
+
+		this.prefix = ClaimUtils.fillStringMandatoryProperty(PREFIX, ctx, getClaimName());
+		this.authority = ClaimUtils.fillStringMandatoryProperty(AUTHORITY, ctx, getClaimName());
+
 		log.debug("{}:{}(modifier) - prefix: '{}', authority: '{}'", getClaimName(), getModifierName(), prefix, authority);
 	}
 

@@ -40,15 +40,10 @@ public class IsCesnetEligibleClaimSource extends ClaimSource {
 
     public IsCesnetEligibleClaimSource(ClaimSourceInitContext ctx) {
         super(ctx);
-        this.sourceAttr = ClaimUtils.fillStringPropertyOrNoVal(SOURCE_ATTR_NAME, ctx);
-        if (!ClaimUtils.isPropSet(sourceAttr)) {
-            throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: " +
-                    SOURCE_ATTR_NAME);
-        }
-        this.valueFormat = ClaimUtils.fillStringPropertyOrNoVal(VALUE_FORMAT, ctx);
-        if (!ClaimUtils.isPropSet(valueFormat)) {
-            this.valueFormat = DEFAULT_FORMAT;
-        }
+
+        this.sourceAttr = ClaimUtils.fillStringMandatoryProperty(SOURCE_ATTR_NAME, ctx, getClaimName());
+        this.valueFormat = ClaimUtils.fillStringPropertyOrDefaultVal(VALUE_FORMAT, ctx, DEFAULT_FORMAT);
+
         log.debug("{} - sourceAttr: '{}', valueFormat: '{}'", getClaimName(), sourceAttr, valueFormat);
     }
 

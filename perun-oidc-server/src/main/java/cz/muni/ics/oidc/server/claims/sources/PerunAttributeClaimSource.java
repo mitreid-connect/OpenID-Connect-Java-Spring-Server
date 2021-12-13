@@ -31,10 +31,9 @@ public class PerunAttributeClaimSource extends ClaimSource {
 
 	public PerunAttributeClaimSource(ClaimSourceInitContext ctx) {
 		super(ctx);
-		this.attributeName = ClaimUtils.fillStringPropertyOrNoVal(ATTRIBUTE, ctx);
-		if (!ClaimUtils.isPropSet(this.attributeName)) {
-			throw new IllegalArgumentException("Missing mandatory configuration option - " + ATTRIBUTE);
-		}
+
+		this.attributeName = ClaimUtils.fillStringMandatoryProperty(ATTRIBUTE, ctx, getClaimName());
+
 		log.debug("{} - attributeName: '{}'", getClaimName(), attributeName);
 	}
 

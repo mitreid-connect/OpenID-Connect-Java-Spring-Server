@@ -6,6 +6,7 @@ import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
+import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -54,17 +55,14 @@ public class PerunEnsureVoMember extends PerunRequestFilter {
     public PerunEnsureVoMember(PerunRequestFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
+
         this.perunOidcConfig = beanUtil.getBean(PerunOidcConfig.class);
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
         this.filterName = params.getFilterName();
-        this.triggerAttr = params.getProperty(TRIGGER_ATTR);
-        if (!StringUtils.hasText(triggerAttr)) {
-            throw new IllegalArgumentException("No value configured for '" + TRIGGER_ATTR + "' in filter " + filterName);
-        }
-        this.voDefsAttr = params.getProperty(VO_DEFS_ATTR);
-        if (!StringUtils.hasText(voDefsAttr)) {
-            throw new IllegalArgumentException("No value configured for '" + VO_DEFS_ATTR + "' in filter " + filterName);
-        }
+
+        this.triggerAttr = FiltersUtils.fillStringMandatoryProperty(TRIGGER_ATTR, filterName, params);
+        this.voDefsAttr = FiltersUtils.fillStringMandatoryProperty(VO_DEFS_ATTR, filterName, params);
+
         this.loginUrlAttr = params.getProperty(LOGIN_URL_ATTR);
         log.debug("{} - initialized filter: {}", filterName, this);
     }
