@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.openid.connect.model.UserInfo;
@@ -25,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -148,7 +149,7 @@ public class ControllerUtils {
      * @param user userInfo object
      */
     public static void setScopesAndClaims(SystemScopeService scopeService,
-                                          PerunScopeClaimTranslationService translationService,
+                                          ScopeClaimTranslationService translationService,
                                           Map<String, Object> model,
                                           Set<String> scope,
                                           UserInfo user) {

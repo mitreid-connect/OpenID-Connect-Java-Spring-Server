@@ -29,6 +29,10 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
+import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
+import cz.muni.ics.oidc.web.WebHtmlClasses;
+import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
 import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
@@ -41,6 +45,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +60,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author jricher
  *
@@ -62,20 +71,54 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @Slf4j
 public class OAuthConfirmationController {
 
-	@Autowired
+	public static final String AUTHORIZATION_REQUEST = "authorizationRequest";
+	public static final String ERROR = "error";
+	public static final String INTERACTION_REQUIRED = "interaction_required";
+	public static final String STATE = "state";
+	public static final String NONE = "none";
+	public static final String REDIRECT = "redirect";
+	public static final String CODE = "code";
+	public static final String AUTH_REQUEST = "auth_request";
+	public static final String CLIENT = "client";
+	public static final String REDIRECT_URI = "redirect_uri";
+	public static final String SCOPES = "scopes";
+	public static final String CLAIMS = "claims";
+	public static final String CONTACTS = "contacts";
+	public static final String GRAS = "gras";
+	public static final String DEFAULT = "default";
+	public static final String PAGE = "page";
+	public static final String CONSENT = "consent";
+	public static final String THEMED_APPROVE = "themedApprove";
+	public static final String APPROVE = "approve";
+
+	@Getter
+	@Setter
 	private ClientDetailsEntityService clientService;
 
-	@Autowired
 	private SystemScopeService scopeService;
-
-	@Autowired
 	private ScopeClaimTranslationService scopeClaimTranslationService;
-
-	@Autowired
 	private UserInfoService userInfoService;
+	private RedirectResolver redirectResolver;
+	private PerunOidcConfig perunOidcConfig;
+	private WebHtmlClasses htmlClasses;
 
 	@Autowired
-	private RedirectResolver redirectResolver;
+	public OAuthConfirmationController(ClientDetailsEntityService clientService,
+									   SystemScopeService scopeService,
+									   ScopeClaimTranslationService scopeClaimTranslationService,
+									   UserInfoService userInfoService,
+									   RedirectResolver redirectResolver,
+									   PerunOidcConfig perunOidcConfig,
+									   WebHtmlClasses htmlClasses) {
+
+		this.clientService = clientService;
+		this.scopeService = scopeService;
+		this.scopeClaimTranslationService = scopeClaimTranslationService;
+		this.userInfoService = userInfoService;
+		this.redirectResolver = redirectResolver;
+		this.perunOidcConfig = perunOidcConfig;
+		this.htmlClasses = htmlClasses;
+	}
 
 	public OAuthConfirmationController() {
 
@@ -87,9 +130,9 @@ public class OAuthConfirmationController {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public String confirmAccess(Map<String, Object> model, Principal p) {
+	public String confirmAccess(Map<String, Object> model, HttpServletRequest req, Principal p) {
 
-		AuthorizationRequest authRequest = (AuthorizationRequest) model.get("authorizationRequest");
+		AuthorizationRequest authRequest = (AuthorizationRequest) model.get(AUTHORIZATION_REQUEST);
 		// Check the "prompt" parameter to see if we need to do special processing
 
 		String prompt = (String)authRequest.getExtensions().get(ConnectRequestParameters.PROMPT);
@@ -114,36 +157,62 @@ public class OAuthConfirmationController {
 			return HttpCodeView.VIEWNAME;
 		}
 
-		if (prompts.contains("none")) {
+		if (prompts.contains(NONE)) {
 			// if we've got a redirect URI then we'll send it
-
-			String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
-
-			try {
-				URIBuilder uriBuilder = new URIBuilder(url);
-
-				uriBuilder.addParameter("error", "interaction_required");
-				if (!Strings.isNullOrEmpty(authRequest.getState())) {
-					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
-				}
-
-				return "redirect:" + uriBuilder;
-
-			} catch (URISyntaxException e) {
-				log.error("Can't build redirect URI for prompt=none, sending error instead", e);
-				model.put("code", HttpStatus.FORBIDDEN);
-				return HttpCodeView.VIEWNAME;
-			}
+			return sendRedirect(authRequest, model, client);
 		}
 
-		model.put("auth_request", authRequest);
-		model.put("client", client);
+		model.put(AUTH_REQUEST, authRequest);
+		model.put(CLIENT, client);
+		model.put(REDIRECT_URI, authRequest.getRedirectUri());
 
-		String redirect_uri = authRequest.getRedirectUri();
+		Set<SystemScope> sortedScopes = getSortedScopes(authRequest);
+		model.put(SCOPES, sortedScopes);
 
-		model.put("redirect_uri", redirect_uri);
+		// get the userinfo claims for each scope
+		model.put(CLAIMS, getClaimsForScopes(p, sortedScopes));
 
+		// contacts
+		if (client.getContacts() != null) {
+			model.put(CONTACTS, Joiner.on(", ").join(client.getContacts()));
+		}
+		model.put(GRAS, true);
 
+		if (perunOidcConfig.getTheme().equalsIgnoreCase(DEFAULT)) {
+			return APPROVE;
+		}
+
+		PerunUserInfo perunUser = (PerunUserInfo) userInfoService.getByUsernameAndClientId(
+				p.getName(), client.getClientId());
+		ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, authRequest.getScope(),
+				perunUser);
+		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+
+		model.put(PAGE, CONSENT);
+		return THEMED_APPROVE;
+	}
+
+	private String sendRedirect(AuthorizationRequest authRequest, Map<String, Object> model, ClientDetailsEntity client) {
+		String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+
+		try {
+			URIBuilder uriBuilder = new URIBuilder(url);
+
+			uriBuilder.addParameter(ERROR, INTERACTION_REQUIRED);
+			if (!Strings.isNullOrEmpty(authRequest.getState())) {
+				uriBuilder.addParameter(STATE, authRequest.getState()); // copy the state parameter if one was given
+			}
+
+			return REDIRECT + ":" + uriBuilder;
+
+		} catch (URISyntaxException e) {
+			log.error("Can't build redirect URI for prompt=none, sending error instead", e);
+			model.put(CODE, HttpStatus.FORBIDDEN);
+			return HttpCodeView.VIEWNAME;
+		}
+	}
+
+	private Set<SystemScope> getSortedScopes(AuthorizationRequest authRequest) {
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
 
@@ -160,11 +229,13 @@ public class OAuthConfirmationController {
 		// add in any scopes that aren't system scopes to the end of the list
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
 
-		model.put("scopes", sortedScopes);
+		return sortedScopes;
+	}
 
-		// get the userinfo claims for each scope
+	private Map<String, Map<String, String>> getClaimsForScopes(Principal p, Set<SystemScope> sortedScopes) {
 		UserInfo user = userInfoService.getByUsername(p.getName());
 		Map<String, Map<String, String>> claimsForScopes = new HashMap<>();
+
 		if (user != null) {
 			JsonObject userJson = user.toJson();
 
@@ -183,31 +254,6 @@ public class OAuthConfirmationController {
 			}
 		}
 
-		model.put("claims", claimsForScopes);
-
-		// contacts
-		if (client.getContacts() != null) {
-			String contacts = Joiner.on(", ").join(client.getContacts());
-			model.put("contacts", contacts);
-		}
-		model.put("gras", true);
-
-		return "approve";
+		return claimsForScopes;
 	}
-
-	/**
-	 * @return the clientService
-	 */
-	public ClientDetailsEntityService getClientService() {
-		return clientService;
-	}
-
-	/**
-	 * @param clientService the clientService to set
-	 */
-	public void setClientService(ClientDetailsEntityService clientService) {
-		this.clientService = clientService;
-	}
-
-
 }
