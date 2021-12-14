@@ -274,6 +274,18 @@ public class FiltersUtils {
 		FiltersUtils.redirectUnapproved(request, response, clientIdentifier, redirectUrl);
 	}
 
+	public static String fillStringMandatoryProperty(String propertyName,
+													 String filterName,
+													 PerunRequestFilterParams params) {
+		String filled = params.getProperty(propertyName);
+
+		if (!StringUtils.hasText(filled)) {
+			throw new IllegalArgumentException("No value configured for '" + propertyName + "' in filter " + filterName);
+		}
+
+		return filled;
+	}
+
 	private static void redirectToRegistrationForm(HttpServletRequest request, HttpServletResponse response,
 												   String clientIdentifier, Facility facility, PerunUser user) {
 		Map<String, String> params = new HashMap<>();

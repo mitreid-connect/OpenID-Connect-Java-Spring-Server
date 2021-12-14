@@ -19,19 +19,25 @@ public class ClaimUtils {
         return StringUtils.hasText(propertyName);
     }
 
-    public static String fillStringPropertyOrNoVal(String suffix, ClaimSourceInitContext ctx) {
-        return fillStringPropertyOrNoVal(ctx.getProperty(suffix, NO_VALUE));
+    public static String fillStringMandatoryProperty(String suffix, ClaimInitContext ctx, String claimName) {
+        String filled = fillStringPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), NO_VALUE);
+
+        if (filled == null) {
+            throw new IllegalArgumentException(claimName + " - missing mandatory configuration option: " + suffix);
+        }
+
+        return filled;
     }
 
-    public static String fillStringPropertyOrNoVal(String suffix, ClaimModifierInitContext ctx) {
-        return fillStringPropertyOrNoVal(ctx.getProperty(suffix, NO_VALUE));
+    public static String fillStringPropertyOrDefaultVal(String suffix, ClaimInitContext ctx, String defaultVal) {
+        return fillStringPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), defaultVal);
     }
 
-    private static String fillStringPropertyOrNoVal(String prop) {
+    private static String fillStringPropertyOrDefaultVal(String prop, String defaultVal) {
         if (StringUtils.hasText(prop)) {
             return prop;
         } else {
-            return NO_VALUE;
+            return defaultVal;
         }
     }
 

@@ -36,16 +36,10 @@ public class TwoArrayAttributesClaimSource extends ClaimSource {
 
 	public TwoArrayAttributesClaimSource(ClaimSourceInitContext ctx) {
 		super(ctx);
-		this.attribute1Name = ClaimUtils.fillStringPropertyOrNoVal(ATTRIBUTE_1, ctx);
-		if (!ClaimUtils.isPropSet(this.attribute1Name)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: " +
-					ATTRIBUTE_1);
-		}
-		this.attribute2Name = ClaimUtils.fillStringPropertyOrNoVal(ATTRIBUTE_2, ctx);
-		if (!ClaimUtils.isPropSet(this.attribute2Name)) {
-			throw new IllegalArgumentException(getClaimName() + " - missing mandatory configuration option: " +
-					ATTRIBUTE_2);
-		}
+
+		this.attribute1Name = ClaimUtils.fillStringMandatoryProperty(ATTRIBUTE_1, ctx, getClaimName());
+		this.attribute2Name = ClaimUtils.fillStringMandatoryProperty(ATTRIBUTE_2, ctx, getClaimName());
+
 		log.debug("{} - attribute1Name: '{}', attribute2Name: '{}'", getClaimName(), attribute1Name, attribute2Name);
 	}
 

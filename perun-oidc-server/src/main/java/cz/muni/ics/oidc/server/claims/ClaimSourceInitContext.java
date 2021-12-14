@@ -3,6 +3,8 @@ package cz.muni.ics.oidc.server.claims;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import java.util.Properties;
+
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -11,13 +13,11 @@ import lombok.extern.slf4j.Slf4j;
  * @author Martin Kuba <makub@ics.muni.cz>
  */
 @Slf4j
-public class ClaimSourceInitContext {
+@Getter
+public class ClaimSourceInitContext extends ClaimInitContext {
 
 	private final PerunOidcConfig perunOidcConfig;
 	private final JWTSigningAndValidationService jwtService;
-	private final String propertyPrefix;
-	private final Properties properties;
-	private final String claimName;
 
 	public ClaimSourceInitContext(PerunOidcConfig perunOidcConfig,
 								  JWTSigningAndValidationService jwtService,
@@ -25,39 +25,12 @@ public class ClaimSourceInitContext {
 								  Properties properties,
 								  String claimName)
 	{
+		super(propertyPrefix, properties, claimName);
+
 		this.perunOidcConfig = perunOidcConfig;
 		this.jwtService = jwtService;
-		this.propertyPrefix = propertyPrefix;
-		this.properties = properties;
-		this.claimName = claimName;
+
 		log.debug("{} - context: property prefix for modifier configured to '{}'", claimName, propertyPrefix);
-	}
-
-	public String getClaimName() {
-		return claimName;
-	}
-
-	public String getProperty(String suffix, String defaultValue) {
-		return properties.getProperty(propertyPrefix + "." + suffix, defaultValue);
-	}
-
-	public Long getLongProperty(String suffix, Long defaultValue) {
-		String propKey = propertyPrefix + '.' + suffix;
-		String prop = properties.getProperty(propertyPrefix + "." + suffix);
-		try {
-			return Long.parseLong(prop);
-		} catch (NumberFormatException e) {
-			log.warn("Could not parse value '{}' for property '{}' as Long", prop, propKey);
-		}
-		return defaultValue;
-	}
-
-	public JWTSigningAndValidationService getJwtService() {
-		return jwtService;
-	}
-
-	public PerunOidcConfig getPerunOidcConfig() {
-		return perunOidcConfig;
 	}
 
 }
