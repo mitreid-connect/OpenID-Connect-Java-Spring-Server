@@ -177,10 +177,6 @@ public class ProtectedResourceRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
@@ -231,25 +227,18 @@ public class ProtectedResourceRegistrationEndpoint {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
+			
+			// possibly update the token
+			OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
 
+			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "resource/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
+			// send it all out to the view
+			m.addAttribute("client", registered);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
-			try {
-				// possibly update the token
-				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
-
-				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "resource/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
-
-				// send it all out to the view
-				m.addAttribute("client", registered);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
-
-				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
-			}
+			return ClientInformationResponseView.VIEWNAME;
+			
 		} else {
 			// client mismatch
 			logger.error("readResourceConfiguration failed, client ID mismatch: "
@@ -356,10 +345,6 @@ public class ProtectedResourceRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 

@@ -246,10 +246,6 @@ public class DynamicClientRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
@@ -284,20 +280,14 @@ public class DynamicClientRegistrationEndpoint {
 
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
-			try {
-				OAuth2AccessTokenEntity token = rotateRegistrationTokenIfNecessary(auth, client);
-				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
+			OAuth2AccessTokenEntity token = rotateRegistrationTokenIfNecessary(auth, client);
+			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
-				// send it all out to the view
-				m.addAttribute("client", registered);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
+			// send it all out to the view
+			m.addAttribute("client", registered);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
-				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
-			}
+			return ClientInformationResponseView.VIEWNAME;
 
 		} else {
 			// client mismatch
@@ -382,10 +372,6 @@ public class DynamicClientRegistrationEndpoint {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Unsupported encoding", e);
-				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
