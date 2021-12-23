@@ -31,7 +31,7 @@
                        type="submit" class="btn btn-lg btn-block btn-primary" />
             </div>
             <div class="col-md-6 mb-4">
-                <spring:message code="logout.confirmation.submit" var="submit_value_deny"/>
+                <spring:message code="logout.confirmation.deny" var="submit_value_deny"/>
                 <input name="deny" value="${submit_value_deny}"
                        type="submit" class="btn btn-lg btn-block" />
             </div>
