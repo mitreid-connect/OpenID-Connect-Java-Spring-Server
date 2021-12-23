@@ -1,3 +1,10 @@
+## [7.5.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.0...v7.5.1) (2021-12-23)
+
+
+### Bug Fixes
+
+* incorrect label on stay logged in button ([75a626f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/75a626f9daa0a58fc58f03307574b09a5ac17849))
+
 # [7.5.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.4.1...v7.5.0) (2021-12-10)
 
 
