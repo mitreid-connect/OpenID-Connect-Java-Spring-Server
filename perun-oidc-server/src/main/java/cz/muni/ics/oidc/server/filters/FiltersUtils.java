@@ -1,9 +1,10 @@
 package cz.muni.ics.oidc.server.filters;
 
+import static cz.muni.ics.oauth2.web.DeviceEndpoint.DEVICE_CODE_SESSION_ATTRIBUTE;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_FORCE_AUTHN;
 
-import com.google.common.base.Strings;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
@@ -20,13 +21,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,8 +33,6 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 public class FiltersUtils {
-
-	private static final RequestMatcher requestMatcher = new AntPathRequestMatcher(PerunFilterConstants.AUTHORIZE_REQ_PATTERN);
 
 	/**
 	 * Create map of request params in format key = name, value = paramValue.
@@ -69,21 +64,29 @@ public class FiltersUtils {
 															   OAuth2RequestFactory authRequestFactory,
 															   ClientDetailsEntityService clientService)
 	{
-		if (!requestMatcher.matches(request) || request.getParameter("response_type") == null) {
+		if (request.getParameter("response_type") == null
+				&& request.getSession() == null
+				&& request.getSession().getAttribute(DEVICE_CODE_SESSION_ATTRIBUTE) == null
+		) {
 			return null;
 		}
 
-		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(
-				FiltersUtils.createRequestMap(request.getParameterMap()));
+		String clientId;
+		if (request.getSession() != null && request.getSession().getAttribute(DEVICE_CODE_SESSION_ATTRIBUTE) != null) {
+			clientId = ((DeviceCode) request.getSession().getAttribute(DEVICE_CODE_SESSION_ATTRIBUTE)).getClientId();
+		} else {
+			clientId = authRequestFactory.createAuthorizationRequest(
+					FiltersUtils.createRequestMap(request.getParameterMap())).getClientId();
+		}
 
 		ClientDetailsEntity client;
-		if (Strings.isNullOrEmpty(authRequest.getClientId())) {
+		if (!StringUtils.hasText(clientId)) {
 			log.debug("cannot extract client - ClientID is null or empty");
 			return null;
 		}
 
-		client = clientService.loadClientByClientId(authRequest.getClientId());
-		if (Strings.isNullOrEmpty(client.getClientName())) {
+		client = clientService.loadClientByClientId(clientId);
+		if (!StringUtils.hasText(client.getClientName())) {
 			log.warn("cannot extract clientName for the clientID '{}'", client.getClientId());
 			return null;
 		}
@@ -207,11 +210,11 @@ public class FiltersUtils {
 
 	/**
 	 * Redirect user to the unapproved page.
-	 * @param request original request object
+	 * @param base Base URL
 	 * @param response response object
 	 * @param clientId identifier of the service
 	 */
-	public static void redirectUnapproved(HttpServletRequest request, HttpServletResponse response, String clientId, String redirectMapping)
+	public static void redirectUnapproved(String base, HttpServletResponse response, String clientId, String redirectMapping)
 	{
 		// cannot register, redirect to unapproved
 		Map<String, String> params = new HashMap<>();
@@ -219,8 +222,7 @@ public class FiltersUtils {
 			params.put("client_id", clientId);
 		}
 
-		String redirectUrl = ControllerUtils.createRedirectUrl(request, PerunFilterConstants.AUTHORIZE_REQ_PATTERN,
-				redirectMapping, params);
+		String redirectUrl = ControllerUtils.createRedirectUrl(base, redirectMapping, params);
 		response.reset();
 		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 		response.setHeader("Location", redirectUrl);
@@ -228,7 +230,7 @@ public class FiltersUtils {
 
 	/**
 	 * Redirect user to the correct page when cannot access the service based on membership.
-	 * @param request Request object
+	 * @param base base URL
 	 * @param response Response object
 	 * @param facility Facility representing the client
 	 * @param user User accessing the service
@@ -237,7 +239,7 @@ public class FiltersUtils {
 	 * @param facilityAttributes Actual facility attributes
 	 * @param perunAdapter Adapter to call Perun
 	 */
-	public static void redirectUserCannotAccess(HttpServletRequest request,
+	public static void redirectUserCannotAccess(String base,
 												HttpServletResponse response,
 												Facility facility,
 												PerunUser user,
@@ -263,7 +265,7 @@ public class FiltersUtils {
 
 				if (facilityAttributes.get(facilityAttrsConfig.getDynamicRegistrationAttr()).valueAsBoolean()) {
 					// redirect to registration form
-					FiltersUtils.redirectToRegistrationForm(request, response, clientIdentifier, facility, user);
+					FiltersUtils.redirectToRegistrationForm(base, response, clientIdentifier, facility, user);
 					return;
 				}
 			}
@@ -271,7 +273,7 @@ public class FiltersUtils {
 
 		// cannot register, redirect to unapproved
 		log.debug("user cannot register to obtain access, redirecting user '{}' to unapproved page", user);
-		FiltersUtils.redirectUnapproved(request, response, clientIdentifier, redirectUrl);
+		FiltersUtils.redirectUnapproved(base, response, clientIdentifier, redirectUrl);
 	}
 
 	public static String fillStringMandatoryProperty(String propertyName,
@@ -286,13 +288,13 @@ public class FiltersUtils {
 		return filled;
 	}
 
-	private static void redirectToRegistrationForm(HttpServletRequest request, HttpServletResponse response,
+	private static void redirectToRegistrationForm(String base, HttpServletResponse response,
 												   String clientIdentifier, Facility facility, PerunUser user) {
 		Map<String, String> params = new HashMap<>();
 		params.put("client_id", clientIdentifier);
 		params.put("facility_id", facility.getId().toString());
 		params.put("user_id", String.valueOf(user.getId()));
-		String redirectUrl = ControllerUtils.createRedirectUrl(request, PerunFilterConstants.AUTHORIZE_REQ_PATTERN,
+		String redirectUrl = ControllerUtils.createRedirectUrl(base,
 				PerunUnapprovedRegistrationController.REGISTRATION_CONTINUE_MAPPING, params);
 		log.debug("redirecting user '{}' to the registration form URL: {}", user, redirectUrl);
 		response.reset();

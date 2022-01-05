@@ -7,6 +7,7 @@ import cz.muni.ics.oidc.BeanUtil;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
@@ -43,6 +44,7 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
     private final String isTestSpAttrName;
     private final PerunAdapter perunAdapter;
     private final String filterName;
+    private final PerunOidcConfig config;
 
     public PerunIsTestSpFilter(PerunRequestFilterParams params) {
         super(params);
@@ -50,6 +52,7 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
         this.isTestSpAttrName = params.getProperty(IS_TEST_SP_ATTR_NAME);
         this.filterName = params.getFilterName();
+        this.config = beanUtil.getBean(PerunOidcConfig.class);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
 
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_TARGET, targetURL);
-        String redirectUrl = ControllerUtils.createRedirectUrl(req, PerunFilterConstants.AUTHORIZE_REQ_PATTERN,
+        String redirectUrl = ControllerUtils.createRedirectUrl(config.getConfigBean().getIssuer(),
                 IsTestSpController.MAPPING, params);
         log.debug("{} - redirecting user to testSP warning page: {}", filterName, redirectUrl);
         res.reset();

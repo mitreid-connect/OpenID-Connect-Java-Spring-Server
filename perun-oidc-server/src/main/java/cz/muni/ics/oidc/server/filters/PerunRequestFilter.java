@@ -1,6 +1,8 @@
 package cz.muni.ics.oidc.server.filters;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_CHECK_CODE_REQ_PATTERN;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -11,6 +13,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -41,8 +44,6 @@ public abstract class PerunRequestFilter {
     private static final String DELIMITER = ",";
     private static final String CLIENT_IDS = "clientIds";
     private static final String SUBS = "subs";
-
-    private static final RequestMatcher requestMatcher = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN);
 
     private final String filterName;
     private Set<String> clientIds = new HashSet<>();
@@ -77,11 +78,6 @@ public abstract class PerunRequestFilter {
 
     public boolean doFilter(ServletRequest req, ServletResponse res, FilterParams params) throws IOException {
         HttpServletRequest request = (HttpServletRequest) req;
-        // skip everything that's not an authorize URL
-        if (!requestMatcher.matches(request)) {
-            log.debug("{} - filter has been skipped, did not match '/authorize' the request", filterName);
-            return true;
-        }
         if (!skip(request)) {
             log.trace("{} - executing filter", filterName);
             return this.process(req, res, params);

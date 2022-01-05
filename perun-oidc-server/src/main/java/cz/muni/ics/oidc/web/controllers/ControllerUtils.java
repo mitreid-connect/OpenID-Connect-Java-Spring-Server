@@ -84,23 +84,24 @@ public class ControllerUtils {
     /**
      * Create redirect URL.
      *
-     * @param request     Request object
-     * @param removedPart Part of URL to be removed
-     * @param pathPart    What to include as Path
-     * @param params      Map object of parameters
+     * @param base Base of URL, might include some path already
+     * @param path What to include as Path
+     * @param params Map object of parameters
      * @return Modified redirect URL
      */
-    public static String createRedirectUrl(HttpServletRequest request, String removedPart,
-                                           String pathPart, Map<String, String> params) {
-        String baseUrl = request.getRequestURL().toString();
-        int endIndex = baseUrl.indexOf(removedPart);
-        if (endIndex > 1) {
-            baseUrl = baseUrl.substring(0, endIndex);
-        }
-
+    public static String createRedirectUrl(String base,
+                                           String path,
+                                           Map<String, String> params)
+    {
         StringBuilder builder = new StringBuilder();
-        builder.append(baseUrl);
-        builder.append(pathPart);
+        if (!base.endsWith("/")) {
+            base += '/';
+        }
+        builder.append(base);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        builder.append(path);
         if (!params.isEmpty()) {
             builder.append('?');
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -290,6 +291,22 @@ public class ControllerUtils {
         } else {
             return compare;
         }
+    }
+
+    public static Set<SystemScope> getSortedScopes(Set<String> requestedScopes, SystemScopeService scopeService) {
+        Set<SystemScope> scopes = scopeService.fromStrings(requestedScopes);
+
+        Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
+        Set<SystemScope> systemScopes = scopeService.getAll();
+
+        for (SystemScope s : systemScopes) {
+            if (scopes.contains(s)) {
+                sortedScopes.add(s);
+            }
+        }
+
+        sortedScopes.addAll(Sets.difference(scopes, systemScopes));
+        return sortedScopes;
     }
 
 }

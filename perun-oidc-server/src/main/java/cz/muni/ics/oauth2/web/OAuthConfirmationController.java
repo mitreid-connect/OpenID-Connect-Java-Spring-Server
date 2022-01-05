@@ -166,7 +166,7 @@ public class OAuthConfirmationController {
 		model.put(CLIENT, client);
 		model.put(REDIRECT_URI, authRequest.getRedirectUri());
 
-		Set<SystemScope> sortedScopes = getSortedScopes(authRequest);
+		Set<SystemScope> sortedScopes = ControllerUtils.getSortedScopes(authRequest.getScope(), scopeService);
 		model.put(SCOPES, sortedScopes);
 
 		// get the userinfo claims for each scope
@@ -210,26 +210,6 @@ public class OAuthConfirmationController {
 			model.put(CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
-	}
-
-	private Set<SystemScope> getSortedScopes(AuthorizationRequest authRequest) {
-		// pre-process the scopes
-		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
-
-		Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
-		Set<SystemScope> systemScopes = scopeService.getAll();
-
-		// sort scopes for display based on the inherent order of system scopes
-		for (SystemScope s : systemScopes) {
-			if (scopes.contains(s)) {
-				sortedScopes.add(s);
-			}
-		}
-
-		// add in any scopes that aren't system scopes to the end of the list
-		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
-
-		return sortedScopes;
 	}
 
 	private Map<String, Map<String, String>> getClaimsForScopes(Principal p, Set<SystemScope> sortedScopes) {

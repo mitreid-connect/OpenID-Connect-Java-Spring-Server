@@ -11,6 +11,7 @@ import cz.muni.ics.oidc.BeanUtil;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
@@ -58,12 +59,14 @@ public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
     private final int validityPeriod;
     /* END OF CONFIGURATION PROPERTIES */
 
+    private final PerunOidcConfig config;
     private final PerunAdapter perunAdapter;
     private final String filterName;
 
     public PerunIsCesnetEligibleFilter(PerunRequestFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
+        this.config = beanUtil.getBean(PerunOidcConfig.class);
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
         this.isCesnetEligibleAttrName = params.getProperty(IS_CESNET_ELIGIBLE_ATTR_NAME);
         this.triggerScope = params.getProperty(IS_CESNET_ELIGIBLE_SCOPE);
@@ -132,7 +135,7 @@ public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
         params.put(PARAM_TARGET, targetURL);
         params.put(PARAM_REASON, reason);
 
-        String redirectUrl = ControllerUtils.createRedirectUrl(req, PerunFilterConstants.AUTHORIZE_REQ_PATTERN,
+        String redirectUrl = ControllerUtils.createRedirectUrl(config.getConfigBean().getIssuer(),
                 PerunUnapprovedController.UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING, params);
         log.debug("{} - redirecting user to unapproved: URL '{}'", filterName, redirectUrl);
         res.reset();

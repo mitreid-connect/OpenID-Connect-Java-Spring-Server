@@ -6,6 +6,7 @@ import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
@@ -35,6 +36,7 @@ public class PerunAuthorizationFilter extends PerunRequestFilter {
 	private final PerunAdapter perunAdapter;
 	private final FacilityAttrsConfig facilityAttrsConfig;
 	private final String filterName;
+	private final PerunOidcConfig config;
 
 	public PerunAuthorizationFilter(PerunRequestFilterParams params) {
 		super(params);
@@ -42,6 +44,7 @@ public class PerunAuthorizationFilter extends PerunRequestFilter {
 		this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
 		this.facilityAttrsConfig = beanUtil.getBean(FacilityAttrsConfig.class);
 		this.filterName = params.getFilterName();
+		this.config = beanUtil.getBean(PerunOidcConfig.class);
 	}
 
 	@Override
@@ -81,7 +84,7 @@ public class PerunAuthorizationFilter extends PerunRequestFilter {
 			log.info("{} - user allowed to access the service", filterName);
 			return true;
 		} else {
-			FiltersUtils.redirectUserCannotAccess(request, response, facility, user, clientIdentifier,
+			FiltersUtils.redirectUserCannotAccess(config.getConfigBean().getIssuer(), response, facility, user, clientIdentifier,
 					facilityAttrsConfig, facilityAttributes, perunAdapter,
 					PerunUnapprovedController.UNAPPROVED_AUTHORIZATION);
 			return false;

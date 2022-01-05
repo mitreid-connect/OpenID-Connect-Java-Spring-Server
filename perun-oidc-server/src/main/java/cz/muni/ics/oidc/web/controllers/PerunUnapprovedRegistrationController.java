@@ -91,7 +91,7 @@ public class PerunUnapprovedRegistrationController {
         log.debug("groupsForReg: {}", groupsForRegistration);
 
         if (groupsForRegistration.isEmpty()) {
-            String redirectUrl = ControllerUtils.createRedirectUrl(request, REGISTRATION_FORM_MAPPING,
+            String redirectUrl = ControllerUtils.createRedirectUrl(perunOidcConfig.getConfigBean().getIssuer(),
                     PerunUnapprovedController.UNAPPROVED_MAPPING, Collections.singletonMap("client_id", clientId));
             response.reset();
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);

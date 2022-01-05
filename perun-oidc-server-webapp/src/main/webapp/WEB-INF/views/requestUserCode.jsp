@@ -39,14 +39,15 @@
 	</c:if>
 
 
-		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/verify" method="POST">
+		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/code" method="POST">
 
 			<div class="row-fluid">
 				<div class="span12">
 	                <spring:message code="device.request_code.submit" var="authorize_label"/>
 	                <div>
 		                <div class="input-block-level input-xlarge">
-			                <input type="text" name="user_code" placeholder="code" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="" />
+			                <input type="text" name="user_code" placeholder="code" autocorrect="off"
+								   autocapitalize="off" autocomplete="off" spellcheck="false" value="${user_code}" />
 		                </div>
 	                </div>
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />

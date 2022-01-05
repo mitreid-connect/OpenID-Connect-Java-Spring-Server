@@ -16,34 +16,29 @@
 
 package cz.muni.ics.oauth2.web;
 
-import com.google.common.collect.Sets;
 import cz.muni.ics.oauth2.exception.DeviceCodeCreationException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.ClientWithScopes;
 import cz.muni.ics.oauth2.model.DeviceCode;
-import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.token.DeviceTokenGranter;
-import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -64,10 +59,10 @@ import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
@@ -87,6 +82,7 @@ public class DeviceEndpoint {
 	public static final String APPROVE_DEVICE = "approveDevice";
 	public static final String THEMED_APPROVE_DEVICE = "themedApproveDevice";
 	public static final String DEVICE_APPROVED = "deviceApproved";
+	public static final String THEMED_DEVICE_APPROVED = "themedDeviceApproved";
 
 	// response keys
 	public static final String DEVICE_CODE = "device_code";
@@ -107,7 +103,6 @@ public class DeviceEndpoint {
 	public static final String APPROVED = "approved";
 	public static final String SCOPES = "scopes";
 	public static final String PAGE = "page";
-	public static final String ACR = "acr";
 	public static final String ERROR = "error";
 
 	// session attributes
@@ -123,8 +118,10 @@ public class DeviceEndpoint {
 
 	// other
 	public static final String DEFAULT = "default";
-	public static final String URL = "devicecode";
-	public static final String USER_URL = "device";
+	public static final String ENDPOINT_URL = "/devicecode";
+	public static final String REQUEST_USER_CODE_URL = "/device/code";
+	public static final String CHECK_USER_CODE_URL = "/device/checkcode";
+	public static final String DEVICE_APPROVED_URL = "/device/approved";
 
 	private final ClientDetailsEntityService clientService;
 	private final SystemScopeService scopeService;
@@ -132,7 +129,7 @@ public class DeviceEndpoint {
 	private final OAuth2RequestFactory oAuth2RequestFactory;
 	private final PerunOidcConfig perunOidcConfig;
 	private final WebHtmlClasses htmlClasses;
-	private final PerunScopeClaimTranslationService scopeClaimTranslationService;
+	private final ScopeClaimTranslationService scopeClaimTranslationService;
 	private final UserInfoService userInfoService;
 
 	@Autowired
@@ -142,9 +139,9 @@ public class DeviceEndpoint {
 						  OAuth2RequestFactory oAuth2RequestFactory,
 						  PerunOidcConfig perunOidcConfig,
 						  WebHtmlClasses htmlClasses,
-						  PerunScopeClaimTranslationService scopeClaimTranslationService,
-						  UserInfoService userInfoService) {
-
+						  ScopeClaimTranslationService scopeClaimTranslationService,
+						  UserInfoService userInfoService)
+	{
 		this.clientService = clientService;
 		this.scopeService = scopeService;
 		this.deviceCodeService = deviceCodeService;
@@ -155,20 +152,16 @@ public class DeviceEndpoint {
 		this.userInfoService = userInfoService;
 	}
 
-	@RequestMapping(
-			value = "/" + URL,
-			method = RequestMethod.POST,
-			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE
-	)
+	@PostMapping(value = ENDPOINT_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
 	public String requestDeviceCode(@RequestParam(CLIENT_ID) String clientId,
 									@RequestParam(name = SCOPE, required = false) String scope,
 									@RequestParam(name = ACR_VALUES, required = false) String acrValues,
 									Map<String, String> parameters,
-									ModelMap model) {
-
+									ModelMap model)
+	{
 		ClientWithScopes clientWithScopes = new ClientWithScopes();
-		String errorViewName = handleRequest(clientId, clientWithScopes, scope, model);
+		String errorViewName = preprocessRequest(clientId, clientWithScopes, scope, model);
 
 		if (errorViewName != null) {
 			return errorViewName;
@@ -186,80 +179,79 @@ public class DeviceEndpoint {
 			response.put(DEVICE_CODE, dc.getDeviceCode());
 			response.put(USER_CODE, dc.getUserCode());
 
+			Map<String, String> uriParams = new HashMap<>();
 			if (StringUtils.hasText(acrValues)) {
-				response.put(
-						VERIFICATION_URI,
-						constructURI(perunOidcConfig.getConfigBean().getIssuer() + USER_URL, Map.of(ACR_VALUES, acrValues))
-				);
-			} else {
-				response.put(VERIFICATION_URI, perunOidcConfig.getConfigBean().getIssuer() + USER_URL);
+				uriParams.put(ACR_VALUES, acrValues);
+			}
+			String uriBase = perunOidcConfig.getConfigBean().getIssuer(false) + REQUEST_USER_CODE_URL;
+			response.put(VERIFICATION_URI, constructVerificationURI(uriBase, uriParams));
+			
+			if (perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri()) {
+				uriParams.put(USER_CODE, dc.getUserCode());
+				response.put(VERIFICATION_URI_COMPLETE, constructVerificationURI(uriBase, uriParams));
 			}
 
 			if (clientWithScopes.getClient().getDeviceCodeValiditySeconds() != null) {
 				response.put(EXPIRES_IN, clientWithScopes.getClient().getDeviceCodeValiditySeconds());
 			}
-			
-			if (perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri()) {
-				URI verificationUriComplete  = new URIBuilder(perunOidcConfig.getConfigBean().getIssuer() + USER_URL)
-					.addParameter(USER_CODE, dc.getUserCode())
-					.build();
-
-				response.put(
-						VERIFICATION_URI_COMPLETE,
-						constructURI(
-								perunOidcConfig.getConfigBean().getIssuer() + USER_URL,
-								Map.of(ACR_VALUES, acrValues, USER_CODE, dc.getUserCode())
-						)
-				);
-			}
 
 			model.put(JsonEntityView.ENTITY, response);
 			return JsonEntityView.VIEWNAME;
-		} catch (DeviceCodeCreationException dcce) {
+		} catch (DeviceCodeCreationException ex) {
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			model.put(JsonErrorView.ERROR, dcce.getError());
-			model.put(JsonErrorView.ERROR_MESSAGE, dcce.getMessage());
-			
+			model.put(JsonErrorView.ERROR, ex.getError());
+			model.put(JsonErrorView.ERROR_MESSAGE, ex.getMessage());
 			return JsonErrorView.VIEWNAME;
-		} catch (URISyntaxException use) {
+		} catch (URISyntaxException ex) {
 			log.error("unable to build verification_uri_complete due to wrong syntax of uri components");
 			model.put(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-
 			return HttpCodeView.VIEWNAME;
 		}
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "/" + USER_URL, method = RequestMethod.GET)
+	@GetMapping(value = REQUEST_USER_CODE_URL)
 	public String requestUserCode(@RequestParam(value = USER_CODE, required = false) String userCode,
-								  @ModelAttribute(AUTHORIZATION_REQUEST) AuthorizationRequest authRequest,
-								  Principal p,
 								  HttpServletRequest req,
-								  ModelMap model,
-								  HttpSession session) {
-
-		if (!perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri() || userCode == null) {
-			// if we don't allow the complete URI or we didn't get a user code on the way in,
-			// print out a page that asks the user to enter their user code
-			// user must be logged in
-			return getRequestUserCodeViewName(req, model);
+								  ModelMap model)
+	{
+		if (perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri() && StringUtils.hasText(userCode)) {
+			return verifyUserCode(userCode, req, model);
 		} else {
-			// complete verification uri was used, we received user code directly
-			// skip requesting code page
-			// user must be logged in
-			return readUserCode(userCode, model, p, req, session);
+			return getRequestUserCodeViewName(req, model);
 		}
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "/" + USER_URL + "/verify", method = RequestMethod.POST)
-	public String readUserCode(@RequestParam(USER_CODE) String userCode,
-							   ModelMap model,
-							   Principal p,
-							   HttpServletRequest req,
-							   HttpSession session) {
+	@PostMapping(value = REQUEST_USER_CODE_URL)
+	public String verifyUserCode(@RequestParam(value = USER_CODE) String userCode,
+								 HttpServletRequest req,
+								 ModelMap model)
+	{
+		model.put(USER_CODE, userCode);
 
 		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
+
+		String errorViewName = checkDeviceCodeIsValid(dc, req, model);
+		if (errorViewName != null) {
+			return errorViewName;
+		}
+
+		HttpSession session = req.getSession();
+		session.setAttribute(DEVICE_CODE_SESSION_ATTRIBUTE, dc);
+
+		return "redirect:" + CHECK_USER_CODE_URL + '?' + USER_CODE + '=' + userCode;
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping(value = CHECK_USER_CODE_URL)
+	public String startApproveDevice(@RequestParam(USER_CODE) String userCode,
+									 ModelMap model,
+									 Principal p,
+									 HttpServletRequest req)
+	{
+		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
+		model.put(USER_CODE, userCode);
 
 		String errorViewName = checkDeviceCodeIsValid(dc, req, model);
 		if (errorViewName != null) {
@@ -270,26 +262,24 @@ public class DeviceEndpoint {
 
 		model.put(CLIENT, client);
 		model.put(DC, dc);
-		model.put(SCOPES, getSortedScopes(dc));
 
+		HttpSession session = req.getSession();
 		AuthorizationRequest authorizationRequest = oAuth2RequestFactory.createAuthorizationRequest(dc.getRequestParameters());
-
 		session.setAttribute(AUTHORIZATION_REQUEST, authorizationRequest);
-		session.setAttribute(DEVICE_CODE_SESSION_ATTRIBUTE, dc);
 
-		return getApproveDeviceViewName(model, p, req, (DeviceCode) model.get(DC));
+		return getApproveDeviceViewName(model, p, req, dc);
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "/" + USER_URL + "/approve", method = RequestMethod.POST)
-	public String approveDevice(@RequestParam(USER_CODE) String userCode,
-								@RequestParam(value = USER_OAUTH_APPROVAL) Boolean approve,
-								Principal p,
-								HttpServletRequest req,
-								ModelMap model,
-								Authentication auth,
-								HttpSession session) {
-
+	@PostMapping(value = DEVICE_APPROVED_URL)
+	public String processApproveDevice(@RequestParam(USER_CODE) String userCode,
+									   @RequestParam(value = USER_OAUTH_APPROVAL) Boolean approve,
+									   Principal p,
+									   HttpServletRequest req,
+									   ModelMap model,
+									   Authentication auth)
+	{
+		HttpSession session = req.getSession();
 		AuthorizationRequest authorizationRequest = (AuthorizationRequest) session.getAttribute(AUTHORIZATION_REQUEST);
 		if (authorizationRequest == null) {
 			throw new IllegalArgumentException("Authorization request not found in the session");
@@ -325,15 +315,13 @@ public class DeviceEndpoint {
 		OAuth2Request o2req = oAuth2RequestFactory.createOAuth2Request(authorizationRequest);
 		OAuth2Authentication o2Auth = new OAuth2Authentication(o2req, auth);
 		
-		DeviceCode approvedCode = deviceCodeService.approveDeviceCode(dc, o2Auth);
+		deviceCodeService.approveDeviceCode(dc, o2Auth);
 
-		model.put(SCOPES, getSortedScopes(dc));
 		model.put(APPROVED, true);
-
-		return DEVICE_APPROVED;
+		return getDeviceApprovedViewName(req, model);
 	}
 
-	private String handleRequest(String clientId, ClientWithScopes clientWithScopes, String scope, ModelMap model) {
+	private String preprocessRequest(String clientId, ClientWithScopes clientWithScopes, String scope, ModelMap model) {
 		ClientDetailsEntity client;
 
 		try {
@@ -360,10 +348,9 @@ public class DeviceEndpoint {
 		Set<String> allowedScopes = client.getScope();
 
 		if (!scopeService.scopesMatch(allowedScopes, requestedScopes)) {
-			log.error("Client asked for {} but is allowed {}", requestedScopes, allowedScopes);
+			log.error("Client asked for {} but is allowed to request only {}", requestedScopes, allowedScopes);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			model.put(JsonErrorView.ERROR, INVALID_SCOPE);
-
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -402,18 +389,25 @@ public class DeviceEndpoint {
 
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 		model.put(PAGE, REQUEST_USER_CODE);
-		String shibAuthnContextClass = "";
-
-		model.put(ACR, shibAuthnContextClass);
 		return THEMED_REQUEST_USER_CODE;
+	}
+
+	private String getDeviceApprovedViewName(HttpServletRequest req, ModelMap model) {
+		if (perunOidcConfig.getTheme().equalsIgnoreCase(DEFAULT)) {
+			return DEVICE_APPROVED;
+		}
+
+		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+		model.put(PAGE, DEVICE_APPROVED);
+		return THEMED_DEVICE_APPROVED;
 	}
 
 	private String getApproveDeviceViewName(ModelMap model, Principal p, HttpServletRequest req, DeviceCode dc) {
 		if (perunOidcConfig.getTheme().equalsIgnoreCase(DEFAULT)) {
+			model.put(SCOPES, ControllerUtils.getSortedScopes(dc.getScope(), scopeService));
 			return APPROVE_DEVICE;
 		}
 
-		model.remove(SCOPES);
 		ClientDetailsEntity client = (ClientDetailsEntity) model.get(CLIENT);
 
 		PerunUserInfo user = (PerunUserInfo) userInfoService.getByUsernameAndClientId(
@@ -428,39 +422,15 @@ public class DeviceEndpoint {
 		return THEMED_APPROVE_DEVICE;
 	}
 
-	private Set<SystemScope> getSortedScopes(DeviceCode dc) {
-		Set<SystemScope> scopes = scopeService.fromStrings(dc.getScope());
-
-		Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
-		Set<SystemScope> systemScopes = scopeService.getAll();
-
-		for (SystemScope s : systemScopes) {
-			if (scopes.contains(s)) {
-				sortedScopes.add(s);
-			}
-		}
-
-		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
-		return sortedScopes;
-	}
-
-	private String constructURI(String uri, Map<String, String> params) {
-		if (params.isEmpty()) {
+	private String constructVerificationURI(String uri, Map<String, String> params) throws URISyntaxException {
+		if (params == null || params.isEmpty()) {
 			return uri;
 		}
 
-		StringBuilder uriBuilder = new StringBuilder(uri);
-
-		if (!uri.contains("?")) {
-			Optional<String> key = params.keySet().stream().findFirst();
-			uriBuilder.append("?").append(key).append("=").append(params.get(key));
-			params.remove(key);
+		URIBuilder builder = new URIBuilder(uri);
+		for (Map.Entry<String, String> param: params.entrySet()) {
+			builder.addParameter(param.getKey(), param.getValue());
 		}
-
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			uriBuilder.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-		}
-
-		return uriBuilder.toString();
+		return builder.build().toString();
 	}
 }

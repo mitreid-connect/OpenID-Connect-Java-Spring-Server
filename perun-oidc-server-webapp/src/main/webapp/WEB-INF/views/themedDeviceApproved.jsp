@@ -43,7 +43,7 @@ pageContext.setAttribute("cssLinks", cssLinks);
             </c:if>
             ${". "}<spring:message code="device_approved_text_rejected_end"/>
         </c:if>
-    </p>q
+    </p>
 </div>
 
 </div> <%-- wrap --%>

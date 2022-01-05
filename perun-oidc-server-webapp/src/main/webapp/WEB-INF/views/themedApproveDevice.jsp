@@ -33,7 +33,7 @@
 <div id="content">
     <c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
         <form name="confirmationForm"
-              action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/approve" method="post">
+              action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/approved" method="post">
             <p>
                 <c:if test="${not empty client.policyUri}">
                     <spring:message code="device_approve_privacy"/>${" "}<a target='_blank' href='${fn:escapeXml(client.policyUri)}'><em>${fn:escapeXml(client.clientName)}</em></a>

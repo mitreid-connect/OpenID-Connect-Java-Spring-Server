@@ -75,6 +75,15 @@ public class ConfigurationPropertiesBean {
 		return issuer;
 	}
 
+	public String getIssuer(boolean trailingSlash) {
+		String iss = issuer.endsWith("/") ? issuer.substring(0, issuer.length() - 1) : issuer;
+		if (trailingSlash) {
+			return iss + '/';
+		} else {
+			return iss;
+		}
+	}
+
 	public void setIssuer(String iss) {
 		issuer = iss;
 	}
