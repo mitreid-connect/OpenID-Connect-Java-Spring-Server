@@ -65,10 +65,12 @@
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).ENDPOINT_URL}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).REQUEST_USER_CODE_URL}**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).DEVICE_APPROVED_URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
-					 
+
 			<!-- Inject the UserInfo into the response -->
 			<ref bean="userInfoInterceptor"/>
 		</mvc:interceptor>
@@ -83,7 +85,7 @@
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).ENDPOINT_URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
 			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
 			<!-- Inject the server configuration into the response -->
@@ -189,7 +191,7 @@
 		<security:csrf disabled="true"/>
 	</security:http>
 	
- 	<security:http pattern="/#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).URL}/**"
+ 	<security:http pattern="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).ENDPOINT_URL}**"
  		use-expressions="true" 
  		entry-point-ref="oauthAuthenticationEntryPoint" 
  		create-session="stateless"

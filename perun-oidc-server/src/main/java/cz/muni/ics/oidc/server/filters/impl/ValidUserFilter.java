@@ -6,6 +6,7 @@ import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
@@ -66,6 +67,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 	private final PerunAdapter perunAdapter;
 	private final FacilityAttrsConfig facilityAttrsConfig;
 	private final String filterName;
+	private final PerunOidcConfig config;
 
 	public ValidUserFilter(PerunRequestFilterParams params) {
 		super(params);
@@ -80,6 +82,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 		this.prodEnvGroups = this.getIdsFromParam(params, PROD_ENV_GROUPS);
 		this.prodEnvVos = this.getIdsFromParam(params, PROD_ENV_VOS);
 		this.filterName = params.getFilterName();
+		this.config = beanUtil.getBean(PerunOidcConfig.class);
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			return true;
 		}
 
-		if (!checkMemberValidInGroupsAndVos(user, facility, request, response, params, allEnvVos, allEnvGroups,
+		if (!checkMemberValidInGroupsAndVos(user, facility, response, params, allEnvVos, allEnvGroups,
 				PerunUnapprovedController.UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS)) {
 			return false;
 		}
@@ -118,7 +121,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			additionalVos.addAll(testEnvVos);
 			additionalGroups.addAll(testEnvGroups);
 
-			if (!checkMemberValidInGroupsAndVos(user, facility, request, response, params, additionalVos,
+			if (!checkMemberValidInGroupsAndVos(user, facility, response, params, additionalVos,
 					additionalGroups, PerunUnapprovedController.UNAPPROVED_NOT_IN_TEST_VOS_GROUPS)) {
 				return false;
 			}
@@ -126,7 +129,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			additionalVos.addAll(prodEnvVos);
 			additionalGroups.addAll(prodEnvGroups);
 
-			if (!checkMemberValidInGroupsAndVos(user, facility, request, response, params, additionalVos,
+			if (!checkMemberValidInGroupsAndVos(user, facility, response, params, additionalVos,
 					additionalGroups, PerunUnapprovedController.UNAPPROVED_NOT_IN_PROD_VOS_GROUPS)) {
 				return false;
 			}
@@ -153,7 +156,6 @@ public class ValidUserFilter extends PerunRequestFilter {
 	private boolean checkMemberValidInGroupsAndVos(
 			PerunUser user,
 			Facility facility,
-			HttpServletRequest request,
 			HttpServletResponse response,
 			FilterParams params,
 			Set<Long> vos,
@@ -168,8 +170,8 @@ public class ValidUserFilter extends PerunRequestFilter {
 			Map<String, PerunAttributeValue> facilityAttributes = perunAdapter.getFacilityAttributeValues(
 					facility, facilityAttrsConfig.getMembershipAttrNames());
 
-			FiltersUtils.redirectUserCannotAccess(request, response, facility, user, params.getClientIdentifier(),
-					facilityAttrsConfig, facilityAttributes, perunAdapter, redirectUrl);
+			FiltersUtils.redirectUserCannotAccess(config.getConfigBean().getIssuer(), response, facility, user,
+					params.getClientIdentifier(), facilityAttrsConfig, facilityAttributes, perunAdapter, redirectUrl);
 
 			return false;
 		}

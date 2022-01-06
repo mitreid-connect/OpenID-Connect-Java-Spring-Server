@@ -51,15 +51,15 @@
         </c:otherwise>
     </c:choose>
 
-    <form name="confirmationForm" class="mt-2"  method="post"
-          action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/verify">
+    <form name="confirmationForm" class="mt-2"  method="POST"
+          action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/code">
         <div class="row-fluid">
             <div class="span12">
                 <div>
                     <div class="input-block-level input-xlarge">
                         <spring:message code="code" var="code_placeholder"/>
                         <input type="text" name="user_code" placeholder="${code_placeholder}"
-                               autocapitalize="off" autocomplete="off" spellcheck="false" value="" />
+                               autocapitalize="off" autocomplete="off" spellcheck="false" value="${user_code}" />
                     </div>
                 </div>
             </div>

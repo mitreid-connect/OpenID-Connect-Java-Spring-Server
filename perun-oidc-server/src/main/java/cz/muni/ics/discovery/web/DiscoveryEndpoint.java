@@ -346,7 +346,7 @@ public class DiscoveryEndpoint {
 
 		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
 
-		m.put("device_authorization_endpoint", baseUrl + DeviceEndpoint.URL);
+		m.put("device_authorization_endpoint", config.getIssuer(false) + DeviceEndpoint.ENDPOINT_URL);
 
 		model.addAttribute(JsonEntityView.ENTITY, m);
 

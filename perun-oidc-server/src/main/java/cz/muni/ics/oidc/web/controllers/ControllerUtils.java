@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.SystemScopeService;
-import cz.muni.ics.oidc.server.PerunScopeClaimTranslationService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.openid.connect.model.UserInfo;
@@ -25,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -83,23 +84,24 @@ public class ControllerUtils {
     /**
      * Create redirect URL.
      *
-     * @param request     Request object
-     * @param removedPart Part of URL to be removed
-     * @param pathPart    What to include as Path
-     * @param params      Map object of parameters
+     * @param base Base of URL, might include some path already
+     * @param path What to include as Path
+     * @param params Map object of parameters
      * @return Modified redirect URL
      */
-    public static String createRedirectUrl(HttpServletRequest request, String removedPart,
-                                           String pathPart, Map<String, String> params) {
-        String baseUrl = request.getRequestURL().toString();
-        int endIndex = baseUrl.indexOf(removedPart);
-        if (endIndex > 1) {
-            baseUrl = baseUrl.substring(0, endIndex);
-        }
-
+    public static String createRedirectUrl(String base,
+                                           String path,
+                                           Map<String, String> params)
+    {
         StringBuilder builder = new StringBuilder();
-        builder.append(baseUrl);
-        builder.append(pathPart);
+        if (!base.endsWith("/")) {
+            base += '/';
+        }
+        builder.append(base);
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        builder.append(path);
         if (!params.isEmpty()) {
             builder.append('?');
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -148,7 +150,7 @@ public class ControllerUtils {
      * @param user userInfo object
      */
     public static void setScopesAndClaims(SystemScopeService scopeService,
-                                          PerunScopeClaimTranslationService translationService,
+                                          ScopeClaimTranslationService translationService,
                                           Map<String, Object> model,
                                           Set<String> scope,
                                           UserInfo user) {
@@ -289,6 +291,22 @@ public class ControllerUtils {
         } else {
             return compare;
         }
+    }
+
+    public static Set<SystemScope> getSortedScopes(Set<String> requestedScopes, SystemScopeService scopeService) {
+        Set<SystemScope> scopes = scopeService.fromStrings(requestedScopes);
+
+        Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
+        Set<SystemScope> systemScopes = scopeService.getAll();
+
+        for (SystemScope s : systemScopes) {
+            if (scopes.contains(s)) {
+                sortedScopes.add(s);
+            }
+        }
+
+        sortedScopes.addAll(Sets.difference(scopes, systemScopes));
+        return sortedScopes;
     }
 
 }
