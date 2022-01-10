@@ -1,3 +1,10 @@
+## [7.5.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.1...v7.5.2) (2022-01-10)
+
+
+### Bug Fixes
+
+* 🐛 Do not display remember me when prompt=consnet ([1bf72b8](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/1bf72b802ade1f04e35c55061615895ccb435c48))
+
 ## [7.5.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.0...v7.5.1) (2021-12-23)
 
 
