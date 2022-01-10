@@ -40,6 +40,7 @@
 			</c:if>
 		</p>
 		<t:attributesConsent />
+		<c:if test="${rememberEnabled}">
 		<div class="row" id="saveconsentcontainer">
 			<div class="col-xs-12">
 				<div class="checkbox">
@@ -48,6 +49,7 @@
 				</div>
 			</div>
 		</div>
+		</c:if>
 		<input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden" />
 		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 		<t:consentButtons />

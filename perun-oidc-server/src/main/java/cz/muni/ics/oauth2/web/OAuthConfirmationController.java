@@ -90,6 +90,7 @@ public class OAuthConfirmationController {
 	public static final String CONSENT = "consent";
 	public static final String THEMED_APPROVE = "themedApprove";
 	public static final String APPROVE = "approve";
+	public static final String REMEMBER_ENABLED = "rememberEnabled";
 
 	@Getter
 	@Setter
@@ -165,6 +166,7 @@ public class OAuthConfirmationController {
 		model.put(AUTH_REQUEST, authRequest);
 		model.put(CLIENT, client);
 		model.put(REDIRECT_URI, authRequest.getRedirectUri());
+		model.put(REMEMBER_ENABLED, !prompts.contains(CONSENT));
 
 		Set<SystemScope> sortedScopes = ControllerUtils.getSortedScopes(authRequest.getScope(), scopeService);
 		model.put(SCOPES, sortedScopes);
