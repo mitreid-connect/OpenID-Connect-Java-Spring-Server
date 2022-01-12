@@ -1,3 +1,15 @@
+# [8.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.2...v8.0.0) (2022-01-12)
+
+
+### Features
+
+* 🎸 Refactored userinfo serv., new SAML-based claim sources ([2c413d9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/2c413d9916e8a862d91a3be93490bed832245c70))
+
+
+### BREAKING CHANGES
+
+* 🧨 requires database update
+
 ## [7.5.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.1...v7.5.2) (2022-01-10)
 
 
