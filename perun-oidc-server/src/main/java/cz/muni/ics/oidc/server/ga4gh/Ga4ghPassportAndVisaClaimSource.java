@@ -162,6 +162,7 @@ public abstract class Ga4ghPassportAndVisaClaimSource extends ClaimSource {
                                          ArrayNode passport,
                                          Set<String> linkedIdentities)
     {
+        log.debug("GA4GH: {}", uriVariables);
         JsonNode response = callHttpJsonAPI(repo, uriVariables);
         if (response != null) {
             JsonNode visas = response.path(GA4GH_CLAIM);
