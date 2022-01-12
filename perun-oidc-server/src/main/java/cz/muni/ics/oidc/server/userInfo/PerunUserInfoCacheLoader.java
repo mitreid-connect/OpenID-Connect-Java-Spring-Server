@@ -60,10 +60,11 @@ public class PerunUserInfoCacheLoader extends CacheLoader<UserInfoCacheKey, User
         long perunUserId = key.getUserId();
         Set<String> attributes = constructAttributes(key.getScopes());
         Map<String, PerunAttributeValue> userAttributeValues = fetchUserAttributes(perunUserId, attributes);
+        String sub = extractSub(userAttributeValues, perunUserId, false);
 
         ClaimSourceProduceContext.ClaimSourceProduceContextBuilder builder = ClaimSourceProduceContext.builder()
                 .perunUserId(perunUserId)
-                .sub(ui.getSub())
+                .sub(sub)
                 .attrValues(userAttributeValues)
                 .scopes(key.getScopes())
                 .client(key.getClient())
@@ -97,11 +98,9 @@ public class PerunUserInfoCacheLoader extends CacheLoader<UserInfoCacheKey, User
     }
 
     private Set<String> constructAttributes(Set<String> requestedScopes) {
-        Set<String> attributes = new HashSet<>();
+        // always try to fetch sub, as it might be needed in further claims i.e. GA4GH processing
+        Set<String> attributes = new HashSet<>(openidMappings.getAttrNames());
         if (requestedScopes != null && !requestedScopes.isEmpty()) {
-            if (requestedScopes.contains(OPENID)) {
-                attributes.addAll(openidMappings.getAttrNames());
-            }
             if (requestedScopes.contains(PROFILE)) {
                 attributes.addAll(profileMappings.getAttrNames());
             }
@@ -182,17 +181,31 @@ public class PerunUserInfoCacheLoader extends CacheLoader<UserInfoCacheKey, User
 
     private void processOpenid(Map<String, PerunAttributeValue> userAttributeValues, long perunUserId,
                                PerunUserInfo ui) {
+        ui.setSub(extractSub(userAttributeValues, perunUserId, true));
+        ui.setId(perunUserId);
+    }
+
+    private String extractSub(Map<String, PerunAttributeValue> userAttributeValues, long perunUserId, boolean failOnNoSub) {
         JsonNode subJson = extractJsonValue(openidMappings.getSub(), userAttributeValues);
         if (subJson != null && !subJson.isNull() && StringUtils.hasText(subJson.asText())) {
+            String sub = subJson.asText();
             if (subModifiers != null) {
                 subJson = modifyClaims(subModifiers, subJson);
-                if (subJson.asText() == null || !StringUtils.hasText(subJson.asText())) {
+                if (failOnNoSub && (subJson.asText() == null || !StringUtils.hasText(subJson.asText()))) {
                     throw new RuntimeException("Sub has no value after modification for username " + perunUserId);
+                } else {
+                    sub = subJson.asText();
                 }
             }
-            ui.setSub(subJson.asText());
+            if (sub != null && StringUtils.hasText(sub)) {
+                return sub;
+            }
         }
-        ui.setId(perunUserId);
+        if (failOnNoSub) {
+            throw new RuntimeException("Sub has no value for username " + perunUserId);
+        } else {
+            return null;
+        }
     }
 
     private void processProfile(Map<String, PerunAttributeValue> userAttributeValues, PerunUserInfo ui) {
