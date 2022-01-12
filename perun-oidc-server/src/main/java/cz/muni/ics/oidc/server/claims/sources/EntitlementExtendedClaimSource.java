@@ -35,7 +35,7 @@ public class EntitlementExtendedClaimSource extends EntitlementSource {
     @Override
     public JsonNode produceValue(ClaimSourceProduceContext pctx) {
         Long userId = pctx.getPerunUserId();
-        Set<String> entitlements = produceEntitlementsExtended(pctx.getContextCommonParameters().getClient(),
+        Set<String> entitlements = produceEntitlementsExtended(pctx.getFacility(),
                 userId, pctx.getPerunAdapter());
         JsonNode result = convertResultStringsToJsonArray(entitlements);
         log.debug("{} - produced value for user({}): '{}'", getClaimName(), userId, result);

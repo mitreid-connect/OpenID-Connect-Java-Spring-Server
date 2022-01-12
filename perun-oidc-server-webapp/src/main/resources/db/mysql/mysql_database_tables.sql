@@ -82,7 +82,8 @@ CREATE TABLE IF NOT EXISTS saved_user_auth (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     acr VARCHAR(1024),
     name VARCHAR(1024),
-    authenticated BOOLEAN
+    authenticated BOOLEAN,
+    authentication_attributes TEXT
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth_authority (

@@ -141,7 +141,8 @@ public class IntrospectionEndpoint {
 
 			// get the user information of the user that authorized this token in the first place
 			String userName = accessToken.getAuthenticationHolder().getAuthentication().getName();
-			user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
+			user = userInfoService.get(userName, tokenClient.getClientId(),
+					authScopes, accessToken.getAuthenticationHolder().getUserAuth());
 
 		} catch (InvalidTokenException e) {
 			log.info("Invalid access token. Checking refresh token.");
@@ -154,7 +155,8 @@ public class IntrospectionEndpoint {
 
 				// get the user information of the user that authorized this token in the first place
 				String userName = refreshToken.getAuthenticationHolder().getAuthentication().getName();
-				user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
+				user = userInfoService.get(userName, tokenClient.getClientId(), authScopes,
+						refreshToken.getAuthenticationHolder().getUserAuth());
 
 			} catch (InvalidTokenException e2) {
 				log.error("Invalid refresh token");

@@ -18,13 +18,17 @@
 package cz.muni.ics.openid.connect.service.impl;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.SavedUserAuthentication;
+import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.model.enums.SubjectType;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.repository.UserInfoRepository;
 import cz.muni.ics.openid.connect.service.PairwiseIdentiferService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,7 +37,6 @@ import org.springframework.stereotype.Service;
  * @author Michael Joseph Walsh, jricher
  *
  */
-@Service
 public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
@@ -46,19 +49,30 @@ public class DefaultUserInfoService implements UserInfoService {
 	private PairwiseIdentiferService pairwiseIdentifierService;
 
 	@Override
-	public UserInfo getByUsername(String username) {
-		return userInfoRepository.getByUsername(username);
+	public UserInfo get(String username, String clientId, Set<String> scope, SavedUserAuthentication userAuthentication) {
+		return getByUsernameAndClientId(username, clientId);
 	}
 
 	@Override
-	public UserInfo getByUsernameAndClientId(String username, String clientId) {
+	public UserInfo get(String username, String clientId, Set<String> scope, SAMLCredential samlCredential) {
+		return getByUsernameAndClientId(username, clientId);
+	}
+
+	@Override
+	public UserInfo get(String username, String clientId, Set<String> scope) {
+		return getByUsernameAndClientId(username, clientId);
+	}
+
+	private UserInfo getByUsernameAndClientId(String username, String clientId) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-
-		UserInfo userInfo = getByUsername(username);
-
-		if (client == null || userInfo == null) {
+		if (client == null) {
 			return null;
+		}
+		UserInfo userInfo = userInfoRepository.getByUsername(username);
+
+		if (userInfo == null) {
+			return  null;
 		}
 
 		if (SubjectType.PAIRWISE.equals(client.getSubjectType())) {
@@ -68,11 +82,6 @@ public class DefaultUserInfoService implements UserInfoService {
 
 		return userInfo;
 
-	}
-
-	@Override
-	public UserInfo getByEmailAddress(String email) {
-		return userInfoRepository.getByEmailAddress(email);
 	}
 
 }

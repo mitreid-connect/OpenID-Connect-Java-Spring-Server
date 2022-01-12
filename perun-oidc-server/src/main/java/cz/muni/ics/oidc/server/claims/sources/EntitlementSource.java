@@ -83,7 +83,7 @@ public class EntitlementSource extends GroupNamesSource {
 	public JsonNode produceValue(ClaimSourceProduceContext pctx) {
 		PerunAdapter perunAdapter = pctx.getPerunAdapter();
 		Long userId = pctx.getPerunUserId();
-		Facility facility = pctx.getContextCommonParameters().getClient();
+		Facility facility = pctx.getFacility();
 		Set<Group> userGroups = getUserGroupsOnFacility(facility, userId, perunAdapter);
 		Set<String> entitlements = produceEntitlements(facility, userGroups, userId, perunAdapter);
 

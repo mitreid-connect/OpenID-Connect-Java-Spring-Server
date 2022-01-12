@@ -17,10 +17,7 @@
 package cz.muni.ics.openid.connect.service.impl;
 
 import com.google.common.base.Strings;
-import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.LoginHintExtracter;
-import cz.muni.ics.openid.connect.service.UserInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Checks the login hint against the User Info collection, only populates it if a user is found.
@@ -29,9 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class MatchLoginHintsAgainstUsers implements LoginHintExtracter {
 
-	@Autowired
-	private UserInfoService userInfoService;
-
 	/* (non-Javadoc)
 	 * @see cz.muni.ics.openid.connect.service.LoginHintTester#useHint(java.lang.String)
 	 */
@@ -39,19 +33,8 @@ public class MatchLoginHintsAgainstUsers implements LoginHintExtracter {
 	public String extractHint(String loginHint) {
 		if (Strings.isNullOrEmpty(loginHint)) {
 			return null;
-		} else {
-			UserInfo user = userInfoService.getByEmailAddress(loginHint);
-			if (user == null) {
-				user = userInfoService.getByUsername(loginHint);
-				if (user == null) {
-					return null;
-				} else {
-					return user.getPreferredUsername();
-				}
-			} else {
-				return user.getPreferredUsername();
-			}
 		}
+		return loginHint;
 	}
 
 }

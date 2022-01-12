@@ -1,5 +1,8 @@
 package cz.muni.ics.oidc.server.claims;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import java.util.List;
 import org.springframework.util.StringUtils;
 
 public class ClaimUtils {
@@ -41,4 +44,27 @@ public class ClaimUtils {
         }
     }
 
+    public static boolean fillBooleanPropertyOrDefaultVal(String suffix, ClaimSourceInitContext ctx, boolean defaultVal) {
+        return fillBooleanPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), defaultVal);
+    }
+
+    private static boolean fillBooleanPropertyOrDefaultVal(String prop, boolean defaultVal) {
+        if (StringUtils.hasText(prop)) {
+            return Boolean.parseBoolean(prop);
+        } else {
+            return defaultVal;
+        }
+    }
+
+    public static ArrayNode listToArrayNode(List<String> list) {
+        ArrayNode res = JsonNodeFactory.instance.arrayNode();
+        if (list != null && !list.isEmpty()) {
+            for (String s : list) {
+                if (StringUtils.hasText(s)) {
+                    res.add(s);
+                }
+            }
+        }
+        return res;
+    }
 }

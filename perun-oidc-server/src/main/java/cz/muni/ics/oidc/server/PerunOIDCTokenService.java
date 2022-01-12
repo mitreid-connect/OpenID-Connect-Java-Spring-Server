@@ -2,6 +2,7 @@ package cz.muni.ics.oidc.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -61,8 +62,9 @@ public class PerunOIDCTokenService extends DefaultOIDCTokenService {
 		Set<String> authorizedClaims = translator.getClaimsForScopeSet(scopes);
 		Set<String> idTokenClaims = translator.getClaimsForScopeSet(perunOidcConfig.getIdTokenScopes());
 
-		for (Map.Entry<String, JsonElement> claim : userInfoService.getByUsernameAndClientId(userId,
-				clientId).toJson().entrySet()) {
+		JsonObject userInfoJson = userInfoService.get(userId, clientId, accessToken.getScope(), accessToken.getAuthenticationHolder().getUserAuth())
+				.toJson();
+		for (Map.Entry<String, JsonElement> claim : userInfoJson.entrySet()) {
 			String claimKey = claim.getKey();
 			JsonElement claimValue = claim.getValue();
 			if (claimValue != null && !claimValue.isJsonNull() && authorizedClaims.contains(claimKey)

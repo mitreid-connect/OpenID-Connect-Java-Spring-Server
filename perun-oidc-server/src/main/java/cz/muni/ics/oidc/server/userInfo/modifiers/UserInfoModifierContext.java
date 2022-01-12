@@ -1,6 +1,7 @@
-package cz.muni.ics.oidc.server.userInfo;
+package cz.muni.ics.oidc.server.userInfo.modifiers;
 
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
+import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;

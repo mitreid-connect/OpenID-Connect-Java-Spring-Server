@@ -23,14 +23,13 @@ package cz.muni.ics.oauth2.web;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oidc.saml.SamlPrincipal;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
-import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.openid.connect.model.UserInfo;
@@ -39,13 +38,11 @@ import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,14 +50,13 @@ import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author jricher
@@ -121,24 +117,19 @@ public class OAuthConfirmationController {
 		this.htmlClasses = htmlClasses;
 	}
 
-	public OAuthConfirmationController() {
-
-	}
-
 	public OAuthConfirmationController(ClientDetailsEntityService clientService) {
 		this.clientService = clientService;
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public String confirmAccess(Map<String, Object> model, HttpServletRequest req, Principal p) {
-
+	public String confirmAccess(Map<String, Object> model, HttpServletRequest req, Authentication auth) {
 		AuthorizationRequest authRequest = (AuthorizationRequest) model.get(AUTHORIZATION_REQUEST);
 		// Check the "prompt" parameter to see if we need to do special processing
 
 		String prompt = (String)authRequest.getExtensions().get(ConnectRequestParameters.PROMPT);
 		List<String> prompts = Splitter.on(ConnectRequestParameters.PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-		ClientDetailsEntity client = null;
+		ClientDetailsEntity client;
 
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
@@ -167,27 +158,33 @@ public class OAuthConfirmationController {
 		model.put(CLIENT, client);
 		model.put(REDIRECT_URI, authRequest.getRedirectUri());
 		model.put(REMEMBER_ENABLED, !prompts.contains(CONSENT));
-
-		Set<SystemScope> sortedScopes = ControllerUtils.getSortedScopes(authRequest.getScope(), scopeService);
-		model.put(SCOPES, sortedScopes);
+		model.put(GRAS, true);
 
 		// get the userinfo claims for each scope
-		model.put(CLAIMS, getClaimsForScopes(p, sortedScopes));
+
+		// contacts
+		if (client.getContacts() != null) {
+			String contacts = Joiner.on(", ").join(client.getContacts());
+			model.put(CONTACTS, contacts);
+		}
+
+		SamlPrincipal p = (SamlPrincipal) auth.getPrincipal();
+		UserInfo user = userInfoService.get(p.getUsername(), client.getClientId(), authRequest.getScope(), p.getSamlCredential());
 
 		// contacts
 		if (client.getContacts() != null) {
 			model.put(CONTACTS, Joiner.on(", ").join(client.getContacts()));
 		}
-		model.put(GRAS, true);
 
 		if (perunOidcConfig.getTheme().equalsIgnoreCase(DEFAULT)) {
+			Set<SystemScope> sortedScopes = ControllerUtils.getSortedScopes(authRequest.getScope(), scopeService);
+			model.put(SCOPES, sortedScopes);
+			model.put(CLAIMS, getClaimsForScopes(user, sortedScopes));
 			return APPROVE;
 		}
 
-		PerunUserInfo perunUser = (PerunUserInfo) userInfoService.getByUsernameAndClientId(
-				p.getName(), client.getClientId());
 		ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, authRequest.getScope(),
-				perunUser);
+				user);
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
 		model.put(PAGE, CONSENT);
@@ -214,8 +211,7 @@ public class OAuthConfirmationController {
 		}
 	}
 
-	private Map<String, Map<String, String>> getClaimsForScopes(Principal p, Set<SystemScope> sortedScopes) {
-		UserInfo user = userInfoService.getByUsername(p.getName());
+	private Map<String, Map<String, String>> getClaimsForScopes(UserInfo user, Set<SystemScope> sortedScopes) {
 		Map<String, Map<String, String>> claimsForScopes = new HashMap<>();
 
 		if (user != null) {

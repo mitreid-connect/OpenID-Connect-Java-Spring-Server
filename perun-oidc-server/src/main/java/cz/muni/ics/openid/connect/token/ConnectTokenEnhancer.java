@@ -111,7 +111,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				&& !authentication.isClientOnly()) {
 
 			String username = authentication.getName();
-			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
+			UserInfo userInfo = userInfoService.get(username, clientId, originalAuthRequest.getScope(), token.getAuthenticationHolder().getUserAuth());
 
 			if (userInfo != null) {
 
