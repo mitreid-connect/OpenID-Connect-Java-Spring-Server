@@ -13,8 +13,3 @@
 <li class="nav-header"><spring:message code="sidebar.personal.title"/></li>
 <li><a href="manage/#user/approved" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="sidebar.personal.approved_sites"/></a></li>
 <li><a href="manage/#user/tokens" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="sidebar.personal.active_tokens"/></a></li>
-<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="sidebar.personal.profile_information"/></a></li>
-<li class="divider"></li>
-<li class="nav-header"><spring:message code="sidebar.developer.title"/></li>
-<li><a href="manage/#dev/dynreg" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="sidebar.developer.client_registration"/></a><li>
-<li><a href="manage/#dev/resource" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="sidebar.developer.resource_registration"/></a><li>

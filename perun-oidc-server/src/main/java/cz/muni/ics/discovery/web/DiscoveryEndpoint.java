@@ -133,11 +133,9 @@ public class DiscoveryEndpoint {
 	}
 
 	private UserInfo extractUser(UriComponents resourceUri) {
-		UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
-		if (user == null) {
-			user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
-		}
-		return user;
+		String username = resourceUri.getUserInfo() + "@" + resourceUri.getHost();
+		//TODO: lookup username in Perun
+		return null;
 	}
 
 	@RequestMapping("/" + OPENID_CONFIGURATION_URL)

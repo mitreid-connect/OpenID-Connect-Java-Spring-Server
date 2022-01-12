@@ -80,7 +80,9 @@ public class PerunAccessTokenEnhancer implements TokenEnhancer {
         UserInfo userInfo = null;
         if (originalAuthRequest.getScope().contains(SystemScopeService.OPENID_SCOPE)
                 && !authentication.isClientOnly()) {
-            userInfo = userInfoService.getByUsernameAndClientId(authentication.getName(), clientId);
+            userInfo = userInfoService.get(authentication.getName(), clientId,
+                    accessToken.getScope(),
+                    ((OAuth2AccessTokenEntity) accessToken).getAuthenticationHolder().getUserAuth());
         }
 
         // create signed access token

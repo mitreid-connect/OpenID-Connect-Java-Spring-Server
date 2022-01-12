@@ -7,7 +7,6 @@
 	   xmlns:security="http://www.springframework.org/schema/security"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:aop="http://www.springframework.org/schema/aop"
-	   xmlns:mvc="http://www.springframework.org/schema/mvc"
 	   xsi:schemaLocation="http://www.springframework.org/schema/security
 		 http://www.springframework.org/schema/security/spring-security.xsd
 		 http://www.springframework.org/schema/beans
@@ -15,9 +14,7 @@
 		 http://www.springframework.org/schema/context
 		 http://www.springframework.org/schema/context/spring-context.xsd
 		 http://www.springframework.org/schema/aop
-		 http://www.springframework.org/schema/aop/spring-aop.xsd
-		 http://www.springframework.org/schema/mvc
-		 http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+		 http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<context:property-placeholder properties-ref="nonOverwrittenAttributeProperties" ignore-unresolvable="true" order="0"/>
 	<context:property-placeholder properties-ref="userAttrMappingsProperties" ignore-unresolvable="true" order="1"/>
@@ -30,67 +27,6 @@
 	<context:component-scan base-package="cz.muni.ics.oidc"/>
 
 	<aop:aspectj-autoproxy proxy-target-class="true"/>
-
-	<mvc:interceptors>
-		<mvc:interceptor>
-			<mvc:mapping path="/**"/>
-			<ref bean="localeChangeInterceptor"/>
-		</mvc:interceptor>
-		<mvc:interceptor>
-			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
-			<mvc:mapping path="/**" />
-			<mvc:exclude-mapping path="/token**"/>
-			<mvc:exclude-mapping path="/resources/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).ENDPOINT_URL}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).REQUEST_USER_CODE_URL}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).DEVICE_APPROVED_URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.IsTestSpController).MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.AupController).URL}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_AUTHORIZATION}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_ENSURE_VO_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_PROD_VOS_GROUPS}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_TEST_VOS_GROUPS}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_LOGGED_IN}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_SPECIFIC_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_CONTINUE_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_SUBMIT_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.RegistrationController).CONTINUE_DIRECT_MAPPING}**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}" />
-			<mvc:exclude-mapping path="/saml**" />
-			<!-- Inject the UserInfo into the response -->
-			<ref bean="userInfoInterceptor" />
-		</mvc:interceptor>
-		<mvc:interceptor>
-			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
-			<mvc:mapping path="/**" />
-			<mvc:exclude-mapping path="/token**"/>
-			<mvc:exclude-mapping path="/resources/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.UserInfoEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.RootController).API_URL}/**" />
-			<mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.DeviceEndpoint).ENDPOINT_URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.IntrospectionEndpoint).URL}**" />
-			<mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.RevocationEndpoint).URL}**" />
-			<!-- Inject the server configuration into the response -->
-			<ref bean="serverConfigInterceptor"/>
-		</mvc:interceptor>
-	</mvc:interceptors>
 
 	<!-- default config values, by default override in file /etc/perun/perun-mitreid.properties -->
 	<bean id="defaultCoreProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -217,7 +153,7 @@
 	<bean id="nonOverwrittenAttributeProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
-				<prop key="user.attribute_names.fixedList">openid_sub,profile_preferred_username,profile_given_name,profile_middle_name,profile_family_name,profile_name,profile_zoneinfo,profile_locale,email_email,address_address_formatted,phone_phone,aups</prop>
+				<prop key="user.attribute_names.fixedList">openid_sub,profile_name,profile_preferred_username,profile_nickname,profile_given_name,profile_family_name,profile_middle_name,profile_zoneinfo,profile_locale,profile_birthdate,profile_gender,profile_picture,profile_profile,profile_website,email_email,email_email_verified,phone_phone,phone_phone_verified,address_address_formatted,address_country,address_locality,address_postal_code,address_region,address_street_address,aups</prop>
 				<prop key="facility.attribute_names.fixedList">checkGroupMembership,allowRegistration,registrationUrl,dynamicRegistration,clientId,voShortNames,wayfFilter,wayfEFilter,requestedAups,capabilities,testSp</prop>
 				<prop key="group.attribute_names.fixedList"/>
 				<prop key="vo.attribute_names.fixedList">aup</prop>
@@ -231,9 +167,11 @@
 			<props>
 				<prop key="user.attribute_names.customList"/>
 				<!-- ATTRIBUTES MAPPINGS -->
+				<!-- Scope Openid -->
 				<prop key="openid_sub.mapping.ldap">login;x-ns-einfraid-persistent-shadow</prop>
 				<prop key="openid_sub.mapping.rpc">urn:perun:user:attribute-def:core:id</prop>
 				<prop key="openid_sub.type">STRING</prop>
+				<!-- Scope Profile -->
 				<prop key="profile_preferred_username.mapping.ldap">login;x-ns-einfra</prop>
 				<prop key="profile_preferred_username.mapping.rpc">urn:perun:user:attribute-def:def:login-namespace:einfra</prop>
 				<prop key="profile_preferred_username.type">STRING</prop>
@@ -255,15 +193,58 @@
 				<prop key="profile_locale.mapping.ldap">preferredLanguage</prop>
 				<prop key="profile_locale.mapping.rpc">urn:perun:user:attribute-def:def:preferredLanguage</prop>
 				<prop key="profile_locale.type">STRING</prop>
+				<prop key="profile_nickname.mapping.ldap"/>
+				<prop key="profile_nickname.mapping.rpc"/>
+				<prop key="profile_nickname.type"/>
+				<prop key="profile_birthdate.mapping.ldap"/>
+				<prop key="profile_birthdate.mapping.rpc"/>
+				<prop key="profile_birthdate.type"/>
+				<prop key="profile_gender.mapping.ldap"/>
+				<prop key="profile_gender.mapping.rpc"/>
+				<prop key="profile_gender.type"/>
+				<prop key="profile_picture.mapping.ldap"/>
+				<prop key="profile_picture.mapping.rpc"/>
+				<prop key="profile_picture.type"/>
+				<prop key="profile_profile.mapping.ldap"/>
+				<prop key="profile_profile.mapping.rpc"/>
+				<prop key="profile_profile.type"/>
+				<prop key="profile_website.mapping.ldap"/>
+				<prop key="profile_website.mapping.rpc"/>
+				<prop key="profile_website.type"/>
+				<!-- Scope Email -->
 				<prop key="email_email.mapping.ldap">preferredMail</prop>
 				<prop key="email_email.mapping.rpc">urn:perun:user:attribute-def:def:preferredMail</prop>
 				<prop key="email_email.type">STRING</prop>
+				<prop key="email_email_verified.mapping.ldap"/>
+				<prop key="email_email_verified.mapping.rpc"/>
+				<prop key="email_email_verified.type"/>
+				<!-- Scope Phone -->
 				<prop key="phone_phone.mapping.ldap">telephoneNumber</prop>
 				<prop key="phone_phone.mapping.rpc">urn:perun:user:attribute-def:def:phone</prop>
 				<prop key="phone_phone.type">STRING</prop>
+				<prop key="phone_phone_verified.mapping.ldap"/>
+				<prop key="phone_phone_verified.mapping.rpc"/>
+				<prop key="phone_phone_verified.type"/>
+				<!-- Scope Address -->
 				<prop key="address_address_formatted.mapping.ldap">postalAddress</prop>
 				<prop key="address_address_formatted.mapping.rpc">urn:perun:user:attribute-def:def:address</prop>
 				<prop key="address_address_formatted.type">STRING</prop>
+				<prop key="address_country.mapping.ldap"/>
+				<prop key="address_country.mapping.rpc"/>
+				<prop key="address_country.type"/>
+				<prop key="address_locality.mapping.ldap"/>
+				<prop key="address_locality.mapping.rpc"/>
+				<prop key="address_locality.type"/>
+				<prop key="address_postal_code.mapping.ldap"/>
+				<prop key="address_postal_code.mapping.rpc"/>
+				<prop key="address_postal_code.type"/>
+				<prop key="address_region.mapping.ldap"/>
+				<prop key="address_region.mapping.rpc"/>
+				<prop key="address_region.type"/>
+				<prop key="address_street_address.mapping.ldap"/>
+				<prop key="address_street_address.mapping.rpc"/>
+				<prop key="address_street_address.type"/>
+				<!-- Attributes -->
 				<prop key="aups.mapping.ldap">aups</prop>
 				<prop key="aups.mapping.rpc">urn:perun:user:attribute-def:def:aups</prop>
 				<prop key="aups.type">MAP_KEY_VALUE</prop>
@@ -401,20 +382,48 @@
 		<property name="ignoreResourceNotFound" value="true"/>
 	</bean>
 
+	<bean id="openidMappings" class="cz.muni.ics.oidc.server.userInfo.mappings.OpenidMappings">
+		<property name="sub" value="openid_sub"/>
+	</bean>
+
+	<bean id="profileMappings" class="cz.muni.ics.oidc.server.userInfo.mappings.ProfileMappings">
+		<property name="name" value="profile_name"/>
+		<property name="preferredUsername" value="profile_preferred_username"/>
+		<property name="nickname" value="profile_nickname"/>
+		<property name="givenName" value="profile_given_name"/>
+		<property name="familyName" value="profile_family_name"/>
+		<property name="middleName" value="profile_middle_name"/>
+		<property name="zoneinfo" value="profile_zoneinfo"/>
+		<property name="locale" value="profile_locale"/>
+		<property name="birthdate" value="profile_birthdate"/>
+		<property name="gender" value="profile_gender"/>
+		<property name="picture" value="profile_picture"/>
+		<property name="profile" value="profile_profile"/>
+		<property name="website" value="profile_website"/>
+	</bean>
+
+	<bean id="emailMappings" class="cz.muni.ics.oidc.server.userInfo.mappings.EmailMappings">
+		<property name="email" value="email_email"/>
+		<property name="emailVerified" value="email_email_verified"/>
+	</bean>
+
+	<bean id="phoneMappings" class="cz.muni.ics.oidc.server.userInfo.mappings.PhoneMappings">
+		<property name="phoneNumber" value="phone_phone"/>
+		<property name="phoneNumberVerified" value="phone_phone_verified"/>
+	</bean>
+
+	<bean id="addressMappings" class="cz.muni.ics.oidc.server.userInfo.mappings.AddressMappings">
+		<property name="formatted" value="address_address_formatted"/>
+		<property name="country" value="address_country"/>
+		<property name="locality" value="address_locality"/>
+		<property name="postalCode" value="address_postal_code"/>
+		<property name="region" value="address_region"/>
+		<property name="streetAddress" value="address_street_address"/>
+	</bean>
+
 	<!-- defines our own user info service -->
 	<bean id="userInfoService" primary="true" class="cz.muni.ics.oidc.server.userInfo.PerunUserInfoService">
 		<property name="perunAdapter" ref="perunAdapter"/>
-		<property name="subAttribute" value="openid_sub"/>
-		<property name="preferredUsernameAttribute" value="profile_preferred_username"/>
-		<property name="givenNameAttribute" value="profile_given_name"/>
-		<property name="familyNameAttribute" value="profile_family_name"/>
-		<property name="middleNameAttribute" value="profile_middle_name"/>
-		<property name="fullNameAttribute" value="profile_name"/>
-		<property name="emailAttribute" value="email_email"/>
-		<property name="addressAttribute" value="address_address_formatted"/>
-		<property name="phoneAttribute" value="phone_phone"/>
-		<property name="zoneinfoAttribute" value="profile_zoneinfo"/>
-		<property name="localeAttribute" value="profile_locale"/>
 		<property name="properties" ref="coreProperties"/>
 		<property name="customClaimNames" value="#{'${custom.claims}'.split('\s*,\s*')}"/>
 		<property name="forceRegenerateUserinfoCustomClaims" value="#{'${force.regenerate.userinfo.custom.claims}'.split('\s*,\s*')}"/>

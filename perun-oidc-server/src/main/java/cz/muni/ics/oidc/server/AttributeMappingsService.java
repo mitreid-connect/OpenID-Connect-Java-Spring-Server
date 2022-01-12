@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 /**
  * Service providing methods to use AttributeMapping objects when fetching attributes.
@@ -93,8 +94,10 @@ public class AttributeMappingsService {
 				continue;
 			}
 			AttributeMapping am = initAttrMapping(identifier, attrProperties);
-			log.debug("Initialized attributeMapping: {}", am);
-			attributeMap.put(am.getIdentifier(), am);
+			if (am != null) {
+				log.debug("Initialized attributeMapping: {}", am);
+				attributeMap.put(am.getIdentifier(), am);
+			}
 		}
 	}
 
@@ -109,6 +112,12 @@ public class AttributeMappingsService {
 		String separator = "";
 		if (PerunAttrValueType.MAP_KEY_VALUE.equals(PerunAttrValueType.parse(type))) {
 			separator = attrProperties.getProperty(attrIdentifier + SEPARATOR);
+		}
+
+		if (!StringUtils.hasText(rpcIdentifier) && !StringUtils.hasText(ldapIdentifier)) {
+			log.warn("Attribute mapping for {} has no RPC nor LDAP mapping. It won't be used - check your configuration",
+					attrIdentifier);
+			return null;
 		}
 
 		return new AttributeMapping(attrIdentifier, rpcIdentifier, ldapIdentifier, type, separator);

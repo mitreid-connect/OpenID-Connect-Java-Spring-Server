@@ -1,5 +1,8 @@
 package cz.muni.ics.oidc.web.controllers;
 
+import static cz.muni.ics.oauth2.web.OAuthConfirmationController.CLAIMS;
+import static cz.muni.ics.oauth2.web.OAuthConfirmationController.SCOPES;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
@@ -10,6 +13,7 @@ import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -153,20 +157,9 @@ public class ControllerUtils {
                                           ScopeClaimTranslationService translationService,
                                           Map<String, Object> model,
                                           Set<String> scope,
-                                          UserInfo user) {
-        Set<SystemScope> scopes = scopeService.fromStrings(scope);
-        Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
-        Set<SystemScope> systemScopes = scopeService.getAll();
-
-        // sort scopes for display based on the inherent order of system scopes
-        for (SystemScope s : systemScopes) {
-            if (scopes.contains(s)) {
-                sortedScopes.add(s);
-            }
-        }
-
-        // add in any scopes that aren't system scopes to the end of the list
-        sortedScopes.addAll(Sets.difference(scopes, systemScopes));
+                                          UserInfo user)
+    {
+        Set<SystemScope> sortedScopes = ControllerUtils.getSortedScopes(scope, scopeService);
 
         Map<String, Map<String, Object>> claimsForScopes = new LinkedHashMap<>();
         if (user != null) {
@@ -208,8 +201,8 @@ public class ControllerUtils {
             })
             .sorted((o1, o2) -> compareByClaimsAmount(o1, o2, claimsForScopes))
             .collect(Collectors.toCollection(LinkedHashSet::new));
-        model.put("claims", claimsForScopes);
-        model.put("scopes", sortedScopes);
+        model.put(CLAIMS, claimsForScopes);
+        model.put(SCOPES, sortedScopes);
     }
 
     /**

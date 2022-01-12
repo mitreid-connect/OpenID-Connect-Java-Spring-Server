@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS saved_user_auth (
 	acr VARCHAR(1024),
 	name VARCHAR(1024),
 	authenticated BOOLEAN,
+    authentication_attributes VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth_authority (

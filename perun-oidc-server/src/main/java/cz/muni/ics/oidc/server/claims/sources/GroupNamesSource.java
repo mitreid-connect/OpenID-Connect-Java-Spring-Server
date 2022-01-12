@@ -49,7 +49,7 @@ public class GroupNamesSource extends ClaimSource {
 
 	protected Map<Long, String> produceGroupNames(ClaimSourceProduceContext pctx) {
 		log.trace("{} - produce group names with trimming 'members' part of the group names", getClaimName());
-		Facility facility = pctx.getContextCommonParameters().getClient();
+		Facility facility = pctx.getFacility();
 		Set<Group> userGroups = getUserGroupsOnFacility(facility, pctx.getPerunUserId(), pctx.getPerunAdapter());
 		return getGroupIdToNameMap(userGroups, true);
 	}

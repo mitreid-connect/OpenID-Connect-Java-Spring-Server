@@ -20,21 +20,35 @@
  */
 package cz.muni.ics.openid.connect.web;
 
+import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
+import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.SCOPE;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.SamlAuthenticationDetails;
+import cz.muni.ics.oauth2.model.SystemScope;
+import cz.muni.ics.oidc.models.PerunUser;
+import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.openid.connect.model.OIDCAuthenticationToken;
 import cz.muni.ics.openid.connect.model.UserInfo;
+import cz.muni.ics.openid.connect.request.ConnectRequestParameters;
 import cz.muni.ics.openid.connect.service.UserInfoService;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.saml.SAMLCredential;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
@@ -43,6 +57,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  * @author jricher
  *
  */
+@Slf4j
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 	private final Gson gson = new GsonBuilder()
@@ -50,13 +65,13 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				(JsonSerializer<GrantedAuthority>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getAuthority()))
 			.create();
 
-	@Autowired(required = false)
+	@Autowired
 	private UserInfoService userInfoService;
 
 	private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (auth != null){
@@ -75,12 +90,25 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 					request.setAttribute("userInfoJson", "null");
 				}
 			} else {
-				// don't bother checking if we don't have a principal or a userInfoService to work with
-				if (auth != null && auth.getName() != null && userInfoService != null) {
-					UserInfo user = userInfoService.getByUsername(auth.getName());
-					if (user != null) {
-						request.setAttribute("userInfo", user);
-						request.setAttribute("userInfoJson", user.toJson());
+				if (auth == null || auth.getName() == null || userInfoService == null) {
+					log.debug("No point to handle, skip");
+				} else {
+					if (request.getAttribute("userInfo") == null && request.getAttribute("userInfoJson") == null) {
+						String clientId = request.getParameter(CLIENT_ID);
+						if (clientId == null) {
+							log.debug("No client provided, no reason to continue processing");
+							return true;
+						}
+						Set<String> scopes = OAuth2Utils.parseParameterList(request.getParameter(ConnectRequestParameters.SCOPE));
+						UserInfo user = userInfoService.get(auth.getName(), clientId, scopes, (SAMLCredential) auth.getCredentials());
+						if (user != null) {
+							request.setAttribute("userInfo", user);
+							request.setAttribute("userInfoJson", user.toJson());
+						}
+					} else {
+						log.debug("Already has userInfo or userInfoJson");
+						log.trace("userInfo: {}", request.getAttribute("userInfo"));
+						log.trace("userInfoJson: {}", request.getAttribute("userInfoJson"));
 					}
 				}
 			}

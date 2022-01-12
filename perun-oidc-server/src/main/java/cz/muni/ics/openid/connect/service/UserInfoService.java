@@ -17,7 +17,10 @@
  *******************************************************************************/
 package cz.muni.ics.openid.connect.service;
 
+import cz.muni.ics.oauth2.model.SavedUserAuthentication;
 import cz.muni.ics.openid.connect.model.UserInfo;
+import java.util.Set;
+import org.springframework.security.saml.SAMLCredential;
 
 /**
  * Interface for UserInfo service
@@ -27,30 +30,10 @@ import cz.muni.ics.openid.connect.model.UserInfo;
  */
 public interface UserInfoService {
 
-	/**
-	 * Get the UserInfo for the given username (usually maps to the
-	 * preferredUsername field).
-	 * @param username
-	 * @return
-	 */
-	UserInfo getByUsername(String username);
+	UserInfo get(String username, String clientId, Set<String> scope, SavedUserAuthentication userAuthentication);
 
-	/**
-	 * Get the UserInfo for the given username (usually maps to the
-	 * preferredUsername field) and clientId. This allows pairwise
-	 * client identifiers where appropriate.
-	 * @param username
-	 * @param clientId
-	 * @return
-	 */
-	UserInfo getByUsernameAndClientId(String username, String clientId);
+	UserInfo get(String username, String clientId, Set<String> scope, SAMLCredential samlCredential);
 
-	/**
-	 * Get the user registered at this server with the given email address.
-	 *
-	 * @param email
-	 * @return
-	 */
-	UserInfo getByEmailAddress(String email);
+	UserInfo get(String username, String clientId, Set<String> scope);
 
 }

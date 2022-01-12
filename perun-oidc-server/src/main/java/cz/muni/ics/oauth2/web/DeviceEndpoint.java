@@ -24,6 +24,7 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.token.DeviceTokenGranter;
+import cz.muni.ics.oidc.saml.SamlPrincipal;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
@@ -56,13 +57,13 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
@@ -247,7 +248,7 @@ public class DeviceEndpoint {
 	@GetMapping(value = CHECK_USER_CODE_URL)
 	public String startApproveDevice(@RequestParam(USER_CODE) String userCode,
 									 ModelMap model,
-									 Principal p,
+									 Authentication auth,
 									 HttpServletRequest req)
 	{
 		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
@@ -267,6 +268,8 @@ public class DeviceEndpoint {
 		AuthorizationRequest authorizationRequest = oAuth2RequestFactory.createAuthorizationRequest(dc.getRequestParameters());
 		session.setAttribute(AUTHORIZATION_REQUEST, authorizationRequest);
 
+		SamlPrincipal p = (SamlPrincipal) auth.getPrincipal();
+
 		return getApproveDeviceViewName(model, p, req, dc);
 	}
 
@@ -274,7 +277,6 @@ public class DeviceEndpoint {
 	@PostMapping(value = DEVICE_APPROVED_URL)
 	public String processApproveDevice(@RequestParam(USER_CODE) String userCode,
 									   @RequestParam(value = USER_OAUTH_APPROVAL) Boolean approve,
-									   Principal p,
 									   HttpServletRequest req,
 									   ModelMap model,
 									   Authentication auth)
@@ -308,6 +310,7 @@ public class DeviceEndpoint {
 		// user did not approve
 		if (!approve) {
 			model.addAttribute(APPROVED, false);
+			SamlPrincipal p = (SamlPrincipal) auth.getPrincipal();
 			return getApproveDeviceViewName(model, p, req, dc);
 		}
 
@@ -402,7 +405,7 @@ public class DeviceEndpoint {
 		return THEMED_DEVICE_APPROVED;
 	}
 
-	private String getApproveDeviceViewName(ModelMap model, Principal p, HttpServletRequest req, DeviceCode dc) {
+	private String getApproveDeviceViewName(ModelMap model, SamlPrincipal p, HttpServletRequest req, DeviceCode dc) {
 		if (perunOidcConfig.getTheme().equalsIgnoreCase(DEFAULT)) {
 			model.put(SCOPES, ControllerUtils.getSortedScopes(dc.getScope(), scopeService));
 			return APPROVE_DEVICE;
@@ -410,9 +413,11 @@ public class DeviceEndpoint {
 
 		ClientDetailsEntity client = (ClientDetailsEntity) model.get(CLIENT);
 
-		PerunUserInfo user = (PerunUserInfo) userInfoService.getByUsernameAndClientId(
-				p.getName(),
-				client.getClientId()
+		PerunUserInfo user = (PerunUserInfo) userInfoService.get(
+				p.getUsername(),
+				client.getClientId(),
+				dc.getScope(),
+				p.getSamlCredential()
 		);
 
 		ControllerUtils.setScopesAndClaims(scopeService, scopeClaimTranslationService, model, dc.getScope(), user);

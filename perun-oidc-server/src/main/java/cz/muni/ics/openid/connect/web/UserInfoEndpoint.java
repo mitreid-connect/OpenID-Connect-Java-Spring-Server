@@ -19,6 +19,8 @@ package cz.muni.ics.openid.connect.web;
 
 import com.google.common.base.Strings;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
+import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
+import cz.muni.ics.oauth2.model.SavedUserAuthentication;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.model.UserInfo;
@@ -76,7 +78,9 @@ public class UserInfoEndpoint {
 		}
 
 		String username = auth.getName();
-		UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, auth.getOAuth2Request().getClientId());
+		UserInfo userInfo = userInfoService.get(username, auth.getOAuth2Request().getClientId(),
+				auth.getOAuth2Request().getScope(),
+				(SavedUserAuthentication)auth.getUserAuthentication());
 
 		if (userInfo == null) {
 			log.error("getInfo failed; user not found: " + username);

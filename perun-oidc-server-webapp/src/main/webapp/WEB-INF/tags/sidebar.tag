@@ -11,8 +11,3 @@
 	    </div><!--/.well -->
 	</div><!--/span-->
 </security:authorize>
-<security:authorize access="!hasRole('ROLE_USER')">
-	<div class="span1">
-		<!-- placeholder for non-logged-in users -->
-	</div><!--/span-->
-</security:authorize>

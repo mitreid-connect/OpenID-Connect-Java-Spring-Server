@@ -1,4 +1,6 @@
-package cz.muni.ics.oidc.server.userInfo;
+package cz.muni.ics.oidc.server.userInfo.modifiers;
+
+import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 
 /**
  * Interface for all code that needs to modify user info.

@@ -31,6 +31,7 @@ import cz.muni.ics.openid.connect.model.DefaultUserInfo;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.repository.UserInfoRepository;
 import cz.muni.ics.openid.connect.service.PairwiseIdentiferService;
+import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,42 +144,6 @@ public class TestDefaultUserInfoService {
 	}
 
 	/**
-	 * Test loading an admin user, ensuring that the UserDetails object returned
-	 * has both the ROLE_USER and ROLE_ADMIN authorities.
-	 */
-	@Test
-	public void loadByUsername_admin_success() {
-		Mockito.when(userInfoRepository.getByUsername(adminUsername)).thenReturn(userInfoAdmin);
-		UserInfo user = service.getByUsername(adminUsername);
-		assertEquals(user.getSub(), adminSub);
-	}
-
-	/**
-	 * Test loading a regular, non-admin user, ensuring that the returned UserDetails
-	 * object has ROLE_USER but *not* ROLE_ADMIN.
-	 */
-	@Test
-	public void loadByUsername_regular_success() {
-
-		Mockito.when(userInfoRepository.getByUsername(regularUsername)).thenReturn(userInfoRegular);
-		UserInfo user = service.getByUsername(regularUsername);
-		assertEquals(user.getSub(), regularSub);
-
-	}
-
-	/**
-	 * If a user is not found, the loadByUsername method should throw an exception.
-	 */
-	@Test()
-	public void loadByUsername_nullUser() {
-
-		Mockito.when(userInfoRepository.getByUsername(adminUsername)).thenReturn(null);
-		UserInfo user = service.getByUsername(adminUsername);
-
-		assertNull(user);
-	}
-
-	/**
 	 * Clients with public subs should always return the same sub
 	 */
 	@Test
@@ -191,8 +156,8 @@ public class TestDefaultUserInfoService {
 
 		Mockito.verify(pairwiseIdentiferService, Mockito.never()).getIdentifier(any(UserInfo.class), any(ClientDetailsEntity.class));
 
-		UserInfo user1 = service.getByUsernameAndClientId(regularUsername, publicClientId1);
-		UserInfo user2 = service.getByUsernameAndClientId(regularUsername, publicClientId2);
+		UserInfo user1 = service.get(regularUsername, publicClientId1, new HashSet<>());
+		UserInfo user2 = service.get(regularUsername, publicClientId2, new HashSet<>());
 
 		assertEquals(regularSub, user1.getSub());
 		assertEquals(regularSub, user2.getSub());
@@ -225,10 +190,10 @@ public class TestDefaultUserInfoService {
 		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient3)).thenReturn(pairwiseSub3);
 		Mockito.when(pairwiseIdentiferService.getIdentifier(userInfoRegular, pairwiseClient4)).thenReturn(pairwiseSub4);
 
-		UserInfo user1 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId1);
-		UserInfo user2 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId2);
-		UserInfo user3 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId3);
-		UserInfo user4 = service.getByUsernameAndClientId(regularUsername, pairwiseClientId4);
+		UserInfo user1 = service.get(regularUsername, pairwiseClientId1, new HashSet<>());
+		UserInfo user2 = service.get(regularUsername, pairwiseClientId2, new HashSet<>());
+		UserInfo user3 = service.get(regularUsername, pairwiseClientId3, new HashSet<>());
+		UserInfo user4 = service.get(regularUsername, pairwiseClientId4, new HashSet<>());
 
 		assertEquals(pairwiseSub12, user1.getSub());
 		assertEquals(pairwiseSub12, user2.getSub());

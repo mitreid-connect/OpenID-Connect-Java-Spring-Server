@@ -16,6 +16,8 @@
 
 package cz.muni.ics.oauth2.model;
 
+import cz.muni.ics.oauth2.model.convert.JsonElementStringConverter;
+import cz.muni.ics.oauth2.model.convert.SamlAuthenticationDetailsStringConverter;
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import cz.muni.ics.oidc.saml.SamlPrincipal;
 import java.util.Collection;
@@ -40,7 +42,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.opensaml.saml2.core.AuthnContext;
 import org.opensaml.saml2.core.AuthnContextClassRef;
@@ -48,6 +49,7 @@ import org.opensaml.saml2.core.AuthnStatement;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
+import org.springframework.security.saml.SAMLCredential;
 
 /**
  * This class stands in for an original Authentication object.
@@ -89,6 +91,10 @@ public class SavedUserAuthentication implements Authentication {
 	@Column(name = "acr")
 	private String acr;
 
+	@Column(name = "authentication_attributes")
+	@Convert(converter = SamlAuthenticationDetailsStringConverter.class)
+	private SamlAuthenticationDetails authenticationDetails;
+
 	public SavedUserAuthentication(Authentication src) {
 		setName(src.getName());
 		setAuthorities(new HashSet<>(src.getAuthorities()));
@@ -104,6 +110,7 @@ public class SavedUserAuthentication implements Authentication {
 					.map(AuthnContext::getAuthnContextClassRef)
 					.map(AuthnContextClassRef::getAuthnContextClassRef)
 					.collect(Collectors.joining());
+			this.authenticationDetails = new SamlAuthenticationDetails((SAMLCredential) src.getCredentials());
 		}
 	}
 

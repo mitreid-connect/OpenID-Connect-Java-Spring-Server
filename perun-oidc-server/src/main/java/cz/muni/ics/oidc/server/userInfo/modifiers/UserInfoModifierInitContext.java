@@ -1,4 +1,4 @@
-package cz.muni.ics.oidc.server.userInfo;
+package cz.muni.ics.oidc.server.userInfo.modifiers;
 
 
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
