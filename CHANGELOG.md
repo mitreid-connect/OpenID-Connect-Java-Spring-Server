@@ -1,3 +1,10 @@
+## [8.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.0...v8.0.1) (2022-01-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix missing sub in ClaimSourceProduceContext ([5eace9f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/5eace9fb21fce78e8e05e1b4eba8e47143f88c49))
+
 # [8.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v7.5.2...v8.0.0) (2022-01-12)
 
 
