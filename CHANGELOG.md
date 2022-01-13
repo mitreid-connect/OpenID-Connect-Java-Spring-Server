@@ -1,3 +1,10 @@
+## [8.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.1...v8.0.2) (2022-01-13)
+
+
+### Bug Fixes
+
+* 🐛 Set email verified to true ([93fc557](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/93fc5577f57d7102c2c29f4fdd6087751a60e60b))
+
 ## [8.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.0...v8.0.1) (2022-01-12)
 
 
