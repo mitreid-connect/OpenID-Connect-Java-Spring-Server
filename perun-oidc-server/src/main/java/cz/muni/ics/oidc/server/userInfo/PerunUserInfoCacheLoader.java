@@ -227,8 +227,9 @@ public class PerunUserInfoCacheLoader extends CacheLoader<UserInfoCacheKey, User
 
     private void processEmail(Map<String, PerunAttributeValue> userAttributeValues, PerunUserInfo ui) {
         ui.setEmail(extractStringValue(emailMappings.getEmail(), userAttributeValues));
-        ui.setEmailVerified(Boolean.parseBoolean(
-                extractStringValue(emailMappings.getEmailVerified(), userAttributeValues)));
+        //ui.setEmailVerified(Boolean.parseBoolean(extractStringValue(emailMappings.getEmailVerified(), userAttributeValues)));
+        //TODO: temporary solution - Perun requires email verification, so we can hardcode it to "TRUE"
+        ui.setEmailVerified(true);
     }
 
     private void processAddress(Map<String, PerunAttributeValue> userAttributeValues, PerunUserInfo ui) {
