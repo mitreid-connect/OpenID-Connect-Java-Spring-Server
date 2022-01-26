@@ -1,3 +1,10 @@
+## [8.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.2...v8.0.3) (2022-01-26)
+
+
+### Bug Fixes
+
+* 🐛 Consider empty referer as external ([d4bc19e](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/d4bc19e2d8e8a9750c71ad8065fd26a97704da80))
+
 ## [8.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.1...v8.0.2) (2022-01-13)
 
 
