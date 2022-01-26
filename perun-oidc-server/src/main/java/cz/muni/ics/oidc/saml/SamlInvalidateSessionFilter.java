@@ -68,9 +68,8 @@ public class SamlInvalidateSessionFilter extends GenericFilterBean {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         if (MATCHER.matches(req)) {
-            boolean isDeviceCodeFlow = DEVICE_CODE_MATCHER.matches(req) || DEVICE_CODE_ALL_MATCHER.matches(req);
             String referer = req.getHeader(REFERER);
-            if (!isInternalReferer(referer, !isDeviceCodeFlow)) {
+            if (!isInternalReferer(referer)) {
                 log.debug("Got external referer, clear session to reauthenticate");
                 contextLogoutHandler.logout(req, res, null);
             }
@@ -78,9 +77,9 @@ public class SamlInvalidateSessionFilter extends GenericFilterBean {
         chain.doFilter(req, res);
     }
 
-    private boolean isInternalReferer(String referer, boolean emptyRefererAsInternal) {
-        if (!StringUtils.hasText(referer)) { // no referer, consider as internal
-            return emptyRefererAsInternal;
+    private boolean isInternalReferer(String referer) {
+        if (!StringUtils.hasText(referer)) {
+            return false;
         }
         for (String internal : internalReferrers) {
             if (referer.startsWith(internal)) {
