@@ -120,9 +120,10 @@ public class DeviceEndpoint {
 	// other
 	public static final String DEFAULT = "default";
 	public static final String ENDPOINT_URL = "/devicecode";
-	public static final String REQUEST_USER_CODE_URL = "/device/code";
-	public static final String CHECK_USER_CODE_URL = "/device/checkcode";
-	public static final String DEVICE_APPROVED_URL = "/device/approved";
+	public static final String REQUEST_USER_CODE_INIT_URL = "/device";
+	public static final String REQUEST_USER_CODE_URL = "/auth/device";
+	public static final String CHECK_USER_CODE_URL = "/auth/device/authorize";
+	public static final String DEVICE_APPROVED_URL = "/auth/device/approved";
 
 	private final ClientDetailsEntityService clientService;
 	private final SystemScopeService scopeService;
@@ -184,7 +185,7 @@ public class DeviceEndpoint {
 			if (StringUtils.hasText(acrValues)) {
 				uriParams.put(ACR_VALUES, acrValues);
 			}
-			String uriBase = perunOidcConfig.getConfigBean().getIssuer(false) + REQUEST_USER_CODE_URL;
+			String uriBase = perunOidcConfig.getConfigBean().getIssuer(false) + REQUEST_USER_CODE_INIT_URL;
 			response.put(VERIFICATION_URI, constructVerificationURI(uriBase, uriParams));
 			
 			if (perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri()) {

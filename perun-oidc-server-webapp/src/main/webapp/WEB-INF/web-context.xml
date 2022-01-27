@@ -56,6 +56,7 @@
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.controller.GuiController).API_URL}/**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).ENDPOINT_URL}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_INIT_URL}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).DEVICE_APPROVED_URL}**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.IntrospectionEndpoint).URL}**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.RevocationEndpoint).URL}**" />
@@ -83,10 +84,10 @@
         <mvc:interceptor>
             <!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
             <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/token**"/>
+            <mvc:exclude-mapping path="/resources/**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint).URL}**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
-            <mvc:exclude-mapping path="/resources/**" />
-            <mvc:exclude-mapping path="/token**"/>
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.DynamicClientRegistrationEndpoint).URL}/**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.ProtectedResourceRegistrationEndpoint).URL}/**" />
             <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.UserInfoEndpoint).URL}**" />
@@ -241,6 +242,7 @@
                    authentication-manager-ref="authenticationManager">
         <security:csrf disabled="true"/>
         <security:intercept-url pattern="/authorize" access="permitAll()"/>
+        <security:intercept-url pattern="/device" access="permitAll()"/>
         <security:intercept-url pattern="/saml/**" access="permitAll()"/>
         <security:intercept-url pattern="/logout" access="permitAll()"/>
         <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" access="permitAll()"/>

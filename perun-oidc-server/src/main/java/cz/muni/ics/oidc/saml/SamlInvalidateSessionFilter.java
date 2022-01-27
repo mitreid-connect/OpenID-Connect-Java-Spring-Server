@@ -1,9 +1,5 @@
 package cz.muni.ics.oidc.saml;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
-import static org.springframework.http.HttpHeaders.REFERER;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +22,10 @@ import org.springframework.web.filter.GenericFilterBean;
 @Slf4j
 public class SamlInvalidateSessionFilter extends GenericFilterBean {
 
-    private static final RequestMatcher AUTHORIZE_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN);
-    private static final RequestMatcher AUTHORIZE_ALL_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN + "/**");
-    private static final RequestMatcher DEVICE_CODE_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN);
-    private static final RequestMatcher DEVICE_CODE_ALL_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN + "/**");
     private static final RequestMatcher MATCHER = new OrRequestMatcher(
-            Arrays.asList(AUTHORIZE_MATCHER, AUTHORIZE_ALL_MATCHER, DEVICE_CODE_MATCHER, DEVICE_CODE_ALL_MATCHER));
-
-    public static final RequestMatcher MATCH = new AntPathRequestMatcher("/authorize");
+            new AntPathRequestMatcher("/authorize"),
+            new AntPathRequestMatcher("/device")
+    );
 
     private final SecurityContextLogoutHandler contextLogoutHandler;
     private final List<String> internalReferrers = new ArrayList<>();
@@ -73,24 +65,13 @@ public class SamlInvalidateSessionFilter extends GenericFilterBean {
     {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        if (MATCH.matches(req)) {
+        if (MATCHER.matches(req)) {
             log.debug("INV_SESS - invalidate");
             contextLogoutHandler.logout(req, res, null);
         } else {
             log.debug("INV_SESS - skipping");
         }
         chain.doFilter(req, res);
-
-//        HttpServletRequest req = (HttpServletRequest) request;
-//        HttpServletResponse res = (HttpServletResponse) response;
-//        if (MATCHER.matches(req)) {
-//            String referer = req.getHeader(REFERER);
-//            if (!isInternalReferer(referer)) {
-//                log.debug("Got external referer, clear session to reauthenticate");
-//                contextLogoutHandler.logout(req, res, null);
-//            }
-//        }
-//        chain.doFilter(req, res);
     }
 
     private boolean isInternalReferer(String referer) {

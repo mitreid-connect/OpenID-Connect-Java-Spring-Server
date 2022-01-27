@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.server.filters;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_CHECK_CODE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
-import javax.servlet.GenericFilter;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -42,8 +41,8 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
 
     private static final RequestMatcher AUTHORIZE_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN);
     private static final RequestMatcher AUTHORIZE_ALL_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN + "/**");
-    private static final RequestMatcher DEVICE_CODE_MATCHER = new AntPathRequestMatcher(DEVICE_CHECK_CODE_REQ_PATTERN);
-    private static final RequestMatcher DEVICE_CODE_ALL_MATCHER = new AntPathRequestMatcher(DEVICE_CHECK_CODE_REQ_PATTERN + "/**");
+    private static final RequestMatcher DEVICE_CODE_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN);
+    private static final RequestMatcher DEVICE_CODE_ALL_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN + "/**");
     private static final RequestMatcher MATCHER = new OrRequestMatcher(
             Arrays.asList(AUTHORIZE_MATCHER, AUTHORIZE_ALL_MATCHER, DEVICE_CODE_MATCHER, DEVICE_CODE_ALL_MATCHER));
 
@@ -79,8 +78,7 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         if (!MATCHER.matches(req)) {
-            log.debug("Custom filters have been skipped, did not match '{}' nor '{}' request", AUTHORIZE_MATCHER,
-                    AUTHORIZE_REQ_PATTERN);
+            log.debug("Custom filters have been skipped, did not match authorization nor device req URL");
         } else {
             List<AuthProcFilter> filters = perunFiltersContext.getFilters();
             if (filters != null && !filters.isEmpty()) {
