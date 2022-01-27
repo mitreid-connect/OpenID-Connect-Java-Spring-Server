@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.web.controllers;
 
-import static cz.muni.ics.oauth2.web.OAuthConfirmationController.CLAIMS;
-import static cz.muni.ics.oauth2.web.OAuthConfirmationController.SCOPES;
+import static cz.muni.ics.oauth2.web.controller.OAuthConfirmationController.CLAIMS;
+import static cz.muni.ics.oauth2.web.controller.OAuthConfirmationController.SCOPES;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
-import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;

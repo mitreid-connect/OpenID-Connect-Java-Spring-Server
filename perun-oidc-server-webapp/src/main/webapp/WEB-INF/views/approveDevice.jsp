@@ -37,7 +37,7 @@
 		</h1>
 
 		<form name="confirmationForm"
-			action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/approved" method="post">
+			action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }auth/device/approved" method="post">
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">

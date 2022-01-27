@@ -10,16 +10,13 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.IsTestSpController;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +34,9 @@ import org.apache.http.HttpHeaders;
  * @author Pavol Pluta <500348@mail.muni.cz>
  */
 @Slf4j
-public class PerunIsTestSpFilter extends PerunRequestFilter {
+public class PerunIsTestSpFilter extends AuthProcFilter {
+
+    public static final String APPLIED = "APPLIED_" + PerunIsTestSpFilter.class.getSimpleName();
 
     private static final String IS_TEST_SP_ATTR_NAME = "isTestSpAttr";
 
@@ -46,7 +45,7 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
     private final String filterName;
     private final PerunOidcConfig config;
 
-    public PerunIsTestSpFilter(PerunRequestFilterParams params) {
+    public PerunIsTestSpFilter(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
@@ -56,14 +55,17 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
     }
 
     @Override
-    protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) throws IOException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    protected String getSessionAppliedParamName() {
+        return APPLIED;
+    }
+
+    @Override
+    protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) throws IOException {
         Facility facility = params.getFacility();
         if (facility == null || facility.getId() == null) {
             log.debug("{} - skip execution: no facility provided", filterName);
             return true;
-        } else if (testSpWarningApproved(request)){
+        } else if (testSpWarningApproved(req)){
             log.debug("{} - skip execution: warning already approved", filterName);
             return true;
         }
@@ -74,7 +76,7 @@ public class PerunIsTestSpFilter extends PerunRequestFilter {
             return true;
         } else if (attrValue.valueAsBoolean()) {
             log.debug("{} - redirecting user to test SP warning page", filterName);
-            this.redirect(request, response);
+            this.redirect(req, res);
             return false;
         }
         log.debug("{} - service is not testing, let user access it", filterName);

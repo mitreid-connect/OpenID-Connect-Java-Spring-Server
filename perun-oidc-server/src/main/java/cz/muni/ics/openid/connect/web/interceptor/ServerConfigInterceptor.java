@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.interceptor;
 
 import cz.muni.ics.openid.connect.config.ConfigurationPropertiesBean;
 import cz.muni.ics.openid.connect.config.UIConfiguration;

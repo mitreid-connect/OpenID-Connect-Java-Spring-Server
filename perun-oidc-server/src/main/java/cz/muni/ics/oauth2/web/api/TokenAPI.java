@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.api;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.OAuth2AccessTokenEntity;
@@ -27,7 +27,7 @@ import cz.muni.ics.openid.connect.service.OIDCTokenService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
-import cz.muni.ics.openid.connect.web.RootController;
+import cz.muni.ics.openid.connect.web.controller.GuiController;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Slf4j
 public class TokenAPI {
 
-	public static final String URL = RootController.API_URL + "/tokens";
+	public static final String URL = GuiController.API_URL + "/tokens";
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;

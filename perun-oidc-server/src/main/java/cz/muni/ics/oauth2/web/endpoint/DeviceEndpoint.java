@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.endpoint;
 
 import cz.muni.ics.oauth2.exception.DeviceCodeCreationException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
@@ -35,7 +35,6 @@ import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
 import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,13 +56,14 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
-import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
@@ -120,9 +120,10 @@ public class DeviceEndpoint {
 	// other
 	public static final String DEFAULT = "default";
 	public static final String ENDPOINT_URL = "/devicecode";
-	public static final String REQUEST_USER_CODE_URL = "/device/code";
-	public static final String CHECK_USER_CODE_URL = "/device/checkcode";
-	public static final String DEVICE_APPROVED_URL = "/device/approved";
+	public static final String REQUEST_USER_CODE_INIT_URL = "/device";
+	public static final String REQUEST_USER_CODE_URL = "/auth/device";
+	public static final String CHECK_USER_CODE_URL = "/auth/device/authorize";
+	public static final String DEVICE_APPROVED_URL = "/auth/device/approved";
 
 	private final ClientDetailsEntityService clientService;
 	private final SystemScopeService scopeService;
@@ -184,7 +185,7 @@ public class DeviceEndpoint {
 			if (StringUtils.hasText(acrValues)) {
 				uriParams.put(ACR_VALUES, acrValues);
 			}
-			String uriBase = perunOidcConfig.getConfigBean().getIssuer(false) + REQUEST_USER_CODE_URL;
+			String uriBase = perunOidcConfig.getConfigBean().getIssuer(false) + REQUEST_USER_CODE_INIT_URL;
 			response.put(VERIFICATION_URI, constructVerificationURI(uriBase, uriParams));
 			
 			if (perunOidcConfig.getConfigBean().isAllowCompleteDeviceCodeUri()) {
@@ -208,6 +209,16 @@ public class DeviceEndpoint {
 			model.put(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 			return HttpCodeView.VIEWNAME;
 		}
+	}
+
+	@RequestMapping(value = REQUEST_USER_CODE_INIT_URL)
+	public RedirectView authorize(HttpServletRequest req) {
+		String redirect = REQUEST_USER_CODE_URL
+				+ (StringUtils.hasText(req.getQueryString()) ? '?' + req.getQueryString() : "");
+		RedirectView view = new RedirectView(redirect);
+		view.setContextRelative(true);
+		log.debug("User device endpoint - {}: user is being redirected to to: {}", REQUEST_USER_CODE_INIT_URL, redirect);
+		return view;
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")

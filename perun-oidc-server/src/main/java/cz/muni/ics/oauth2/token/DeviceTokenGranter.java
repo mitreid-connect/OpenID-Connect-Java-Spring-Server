@@ -20,7 +20,7 @@ import cz.muni.ics.oauth2.exception.AuthorizationPendingException;
 import cz.muni.ics.oauth2.exception.DeviceCodeExpiredException;
 import cz.muni.ics.oauth2.model.DeviceCode;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
-import cz.muni.ics.oauth2.web.DeviceEndpoint;
+import cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

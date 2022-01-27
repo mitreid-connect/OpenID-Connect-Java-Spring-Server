@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.server.filters;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_CHECK_CODE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
@@ -36,12 +37,12 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class CallPerunFiltersFilter extends GenericFilterBean {
+public class AuthProcFiltersContainer extends GenericFilterBean {
 
     private static final RequestMatcher AUTHORIZE_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN);
     private static final RequestMatcher AUTHORIZE_ALL_MATCHER = new AntPathRequestMatcher(AUTHORIZE_REQ_PATTERN + "/**");
-    private static final RequestMatcher DEVICE_CODE_MATCHER = new AntPathRequestMatcher(DEVICE_CHECK_CODE_REQ_PATTERN);
-    private static final RequestMatcher DEVICE_CODE_ALL_MATCHER = new AntPathRequestMatcher(DEVICE_CHECK_CODE_REQ_PATTERN + "/**");
+    private static final RequestMatcher DEVICE_CODE_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN);
+    private static final RequestMatcher DEVICE_CODE_ALL_MATCHER = new AntPathRequestMatcher(DEVICE_APPROVE_REQ_PATTERN + "/**");
     private static final RequestMatcher MATCHER = new OrRequestMatcher(
             Arrays.asList(AUTHORIZE_MATCHER, AUTHORIZE_ALL_MATCHER, DEVICE_CODE_MATCHER, DEVICE_CODE_ALL_MATCHER));
 
@@ -63,24 +64,25 @@ public class CallPerunFiltersFilter extends GenericFilterBean {
     @Autowired
     private SamlProperties samlProperties;
 
-    private PerunFiltersContext perunFiltersContext;
+    private AuthProcFiltersContext perunFiltersContext;
 
     @PostConstruct
     public void postConstruct() {
-        this.perunFiltersContext = new PerunFiltersContext(coreProperties, beanUtil);
+        this.perunFiltersContext = new AuthProcFiltersContext(coreProperties, beanUtil);
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException
     {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        if (!MATCHER.matches(request)) {
-            log.debug("Custom filters have been skipped, did not match '/authorize' nor '/device/code' request");
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse res = (HttpServletResponse) servletResponse;
+        if (!MATCHER.matches(req)) {
+            log.debug("AuthProc filters have been skipped, did not match authorization nor device req URL");
         } else {
-            List<PerunRequestFilter> filters = perunFiltersContext.getFilters();
+            List<AuthProcFilter> filters = perunFiltersContext.getFilters();
             if (filters != null && !filters.isEmpty()) {
-                ClientDetailsEntity client = FiltersUtils.extractClientFromRequest(request, authRequestFactory,
+                ClientDetailsEntity client = FiltersUtils.extractClientFromRequest(req, authRequestFactory,
                         clientDetailsEntityService);
                 Facility facility = null;
                 if (client != null && StringUtils.hasText(client.getClientId())) {
@@ -88,20 +90,20 @@ public class CallPerunFiltersFilter extends GenericFilterBean {
                         facility = perunAdapter.getFacilityByClientId(client.getClientId());
                     } catch (Exception e) {
                         log.warn("{} - could not fetch facility for client_id '{}'",
-                                CallPerunFiltersFilter.class.getSimpleName(), client.getClientId(), e);
+                                AuthProcFiltersContainer.class.getSimpleName(), client.getClientId(), e);
                     }
                 }
-                PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter,
+                PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter,
                         samlProperties.getUserIdentifierAttribute());
                 FilterParams params = new FilterParams(client, facility, user);
-                for (PerunRequestFilter filter : filters) {
-                    if (!filter.doFilter(servletRequest, servletResponse, params)) {
+                for (AuthProcFilter filter : filters) {
+                    if (!filter.doFilter(req, res, params)) {
                         return;
                     }
                 }
             }
         }
-        filterChain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(req, res);
     }
 
 }

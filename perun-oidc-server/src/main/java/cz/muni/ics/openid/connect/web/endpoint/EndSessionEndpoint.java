@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.endpoint;
 
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;

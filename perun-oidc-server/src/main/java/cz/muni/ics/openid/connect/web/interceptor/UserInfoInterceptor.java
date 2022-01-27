@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.interceptor;
 
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
 import static cz.muni.ics.openid.connect.request.ConnectRequestParameters.SCOPE;

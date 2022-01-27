@@ -1,0 +1,634 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+       xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2
+		 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
+		 http://www.springframework.org/schema/mvc
+		 http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		 http://www.springframework.org/schema/security
+		 http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		 http://www.springframework.org/schema/beans
+		 http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		 http://www.springframework.org/schema/tx
+		 http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <bean id="userInfoInterceptor" class="cz.muni.ics.openid.connect.web.interceptor.UserInfoInterceptor" />
+    <bean id="serverConfigInterceptor" class="cz.muni.ics.openid.connect.web.interceptor.ServerConfigInterceptor" />
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+    </bean>
+
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <tx:annotation-driven />
+
+    <bean id="mdcFilter" class="cz.muni.ics.mdc.MultiMDCFilter"/>
+
+    <!-- MVC -->
+
+    <!-- Error page handler. -->
+    <mvc:view-controller path="/error" view-name="error" />
+
+    <mvc:annotation-driven ignore-default-model-on-redirect="true">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <ref bean="localeChangeInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/token**"/>
+            <mvc:exclude-mapping path="/resources/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.DynamicClientRegistrationEndpoint).URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.ProtectedResourceRegistrationEndpoint).URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.UserInfoEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.controller.GuiController).API_URL}/**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).ENDPOINT_URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_INIT_URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).DEVICE_APPROVED_URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.IntrospectionEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.RevocationEndpoint).URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.IsTestSpController).MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.AupController).URL}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_AUTHORIZATION}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_ENSURE_VO_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_PROD_VOS_GROUPS}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_TEST_VOS_GROUPS}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_LOGGED_IN}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_SPECIFIC_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_CONTINUE_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController).REGISTRATION_FORM_SUBMIT_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.RegistrationController).CONTINUE_DIRECT_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}" />
+            <mvc:exclude-mapping path="/saml**" />
+            <!-- Inject the UserInfo into the response -->
+            <ref bean="userInfoInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/token**"/>
+            <mvc:exclude-mapping path="/resources/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.DynamicClientRegistrationEndpoint).URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.ProtectedResourceRegistrationEndpoint).URL}/**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.endpoint.UserInfoEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.openid.connect.web.controller.GuiController).API_URL}/**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).ENDPOINT_URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.IntrospectionEndpoint).URL}**" />
+            <mvc:exclude-mapping path="/#{T(cz.muni.ics.oauth2.web.endpoint.RevocationEndpoint).URL}**" />
+            <!-- Inject the server configuration into the response -->
+            <ref bean="serverConfigInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving
+    up static resources in the ${webappRoot}/resources directory -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+
+    <mvc:default-servlet-handler />
+
+    <!-- SECURITY -->
+
+    <!-- SPEL processor -->
+    <security:global-method-security pre-post-annotations="enabled"
+                                     proxy-target-class="true"
+                                     authentication-manager-ref="authenticationManager">
+        <security:expression-handler ref="oauthExpressionHandler" />
+    </security:global-method-security>
+
+    <!-- Token endpoint -->
+    <security:http pattern="/token"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   use-expressions="true">
+        <security:intercept-url pattern="/token" access="permitAll" method="OPTIONS" /> <!-- allow OPTIONS calls without auth for CORS stuff -->
+        <security:intercept-url pattern="/token" access="isAuthenticated()" />
+        <security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+        <!-- include this only if you need to authenticate clients via request parameters -->
+        <security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+        <security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:access-denied-handler ref="oauthAccessDeniedHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Userinfo endpoint -->
+    <security:http pattern="/#{T(cz.muni.ics.openid.connect.web.endpoint.UserInfoEndpoint).URL}**"
+                   use-expressions="true"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless">
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:expression-handler ref="oauthWebExpressionHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Introspection endpoint -->
+    <security:http pattern="/#{T(cz.muni.ics.oauth2.web.endpoint.IntrospectionEndpoint).URL}**"
+                   use-expressions="true"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager">
+        <security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+        <security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Revocation endpoint -->
+    <security:http pattern="/#{T(cz.muni.ics.oauth2.web.endpoint.RevocationEndpoint).URL}**"
+                   use-expressions="true"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager">
+        <security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+        <security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Device endpoint -->
+    <security:http pattern="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).ENDPOINT_URL}**"
+                   use-expressions="true"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="stateless"
+                   authentication-manager-ref="clientAuthenticationManager">
+        <security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+        <!-- include this only if you need to authenticate clients via request parameters -->
+        <security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+        <security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:access-denied-handler ref="oauthAccessDeniedHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- JWK endpoint -->
+    <security:http pattern="/#{T(cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint).URL}**"
+                   use-expressions="true"
+                   entry-point-ref="http403EntryPoint"
+                   create-session="stateless">
+        <security:intercept-url pattern="/#{T(cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint).URL}**" access="permitAll"/>
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Well-known -->
+    <security:http pattern="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**"
+                   use-expressions="true"
+                   entry-point-ref="http403EntryPoint"
+                   create-session="stateless">
+        <security:intercept-url pattern="/#{T(cz.muni.ics.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" access="permitAll"/>
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!--Static resources -->
+    <security:http pattern="/resources/**"
+                   use-expressions="true"
+                   entry-point-ref="http403EntryPoint"
+                   create-session="stateless">
+        <security:intercept-url pattern="/resources/**" access="permitAll"/>
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- GUI -->
+    <security:http pattern="/#{T(cz.muni.ics.openid.connect.web.controller.GuiController).API_URL}/**"
+                   use-expressions="true"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   create-session="never">
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
+        <security:expression-handler ref="oauthWebExpressionHandler" />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <security:http auto-config="false"
+                   use-expressions="true"
+                   entry-point-ref="samlEntryPoint"
+                   create-session="always"
+                   authentication-manager-ref="authenticationManager">
+        <security:csrf disabled="true"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oauth2.web.endpoint.AuthorizationEndpoint).ENDPOINT_INIT_URL}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_INIT_URL}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="/saml/**" access="permitAll()"/>
+        <security:intercept-url pattern="/logout" access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <security:custom-filter ref="mdcMuFilter" before="FIRST"/>
+        <security:custom-filter ref="metadataGeneratorFilter" before="CHANNEL_FILTER"/>
+        <security:custom-filter ref="clearSessionFilter" after="CHANNEL_FILTER"/>
+        <security:custom-filter ref="samlFilter" before="CSRF_FILTER"/>
+        <security:custom-filter ref="samlFilter" after="BASIC_AUTH_FILTER"/>
+        <security:custom-filter ref="authProcFilters" before="LAST"/>
+        <security:logout logout-url="/saml/logout"/>
+    </security:http>
+
+    <security:authentication-manager id="clientAuthenticationManager">
+        <security:authentication-provider user-service-ref="clientUserDetailsService" />
+        <security:authentication-provider user-service-ref="uriEncodedClientUserDetailsService" />
+    </security:authentication-manager>
+
+    <security:authentication-manager id="clientAssertionAuthenticationManager">
+        <security:authentication-provider ref="clientAssertionAuthenticationProvider" />
+    </security:authentication-manager>
+
+    <security:authentication-manager id="authenticationManager">
+        <security:authentication-provider ref="authenticationProvider"/>
+    </security:authentication-manager>
+
+    <!-- Dynamic registration endpoint -->
+<!--    <security:http pattern="/#{T(cz.muni.ics.openid.connect.web.endpoint.DynamicClientRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">-->
+<!--        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />-->
+<!--        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />-->
+<!--        <security:custom-filter ref="mdcFilter" before="FIRST"/>-->
+<!--        <security:expression-handler ref="oauthWebExpressionHandler" />-->
+<!--        <security:intercept-url pattern="/register/**" access="permitAll"/>-->
+<!--        <security:csrf disabled="true"/>-->
+<!--    </security:http>-->
+
+<!--    <security:http pattern="/#{T(cz.muni.ics.openid.connect.web.endpoint.ProtectedResourceRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">-->
+<!--        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />-->
+<!--        <security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />-->
+<!--        <security:custom-filter ref="mdcFilter" before="FIRST"/>-->
+<!--        <security:expression-handler ref="oauthWebExpressionHandler" />-->
+<!--        <security:intercept-url pattern="/resource/**" access="permitAll"/>-->
+<!--        <security:csrf disabled="true"/>-->
+<!--    </security:http>-->
+
+    <bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="openidconnect" />
+    </bean>
+
+    <bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+
+    <bean id="oauth2ExceptionTranslator" class="org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator" />
+
+    <bean id="clientAuthMatcher" class="cz.muni.ics.openid.connect.filter.MultiUrlRequestMatcher">
+        <constructor-arg name="filterProcessesUrls">
+            <set>
+                <value>/introspect</value>
+                <value>/revoke</value>
+                <value>/token</value>
+            </set>
+        </constructor-arg>
+    </bean>
+
+    <bean id="clientCredentialsEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+        <property name="authenticationManager" ref="clientAuthenticationManager" />
+        <property name="requiresAuthenticationRequestMatcher" ref="clientAuthMatcher" />
+    </bean>
+
+    <bean id="clientAssertionEndpointFilter" class="cz.muni.ics.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
+        <constructor-arg name="additionalMatcher" ref="clientAuthMatcher" />
+        <property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
+    </bean>
+
+    <bean id="clientAssertionAuthenticationProvider" class="cz.muni.ics.openid.connect.assertion.JWTBearerAuthenticationProvider" />
+
+    <!-- Resolves views selected for rendering by @Controllers to .jsp resources
+        in the /WEB-INF/views directory -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+        <property name="order" value="2" />
+    </bean>
+
+    <!-- Resolve views based on string names -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order" value="1" />
+    </bean>
+
+    <bean id="mdcMuFilter" class="cz.muni.ics.oidc.server.filters.impl.MultiMDCFilter"/>
+
+    <!-- SAML -->
+    <bean id="clearSessionFilter" class="cz.muni.ics.oidc.saml.SamlInvalidateSessionFilter">
+        <constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
+    </bean>
+
+    <bean id="samlDiscovery" class="org.springframework.security.saml.SAMLDiscovery">
+        <property name="contextProvider" ref="samlContextProvider"/>
+        <property name="samlEntryPoint" ref="samlEntryPoint"/>
+        <property name="metadata" ref="metadata"/>
+    </bean>
+
+    <bean id="successRedirectHandler" class="cz.muni.ics.oidc.saml.PerunSamlAuthenticationSuccessHandler">
+        <property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_SUCCESS}"/>
+    </bean>
+
+    <bean id="authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"/>
+        <property name="useForward" value="true"/>
+    </bean>
+
+    <bean id="successLogoutHandler" class="cz.muni.ics.oidc.saml.PerunOidcLogoutSuccessHandler">
+        <property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}"/>
+        <property name="targetUrlParameter" value="#{T(cz.muni.ics.oidc.server.filters.PerunFilterConstants).PARAM_TARGET}"/>
+    </bean>
+
+    <bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
+        <property name="clearAuthentication" value="true"/>
+        <property name="invalidateHttpSession" value="true"/>
+    </bean>
+
+    <bean id="samlLogoutProcessingFilter" class="org.springframework.security.saml.SAMLLogoutProcessingFilter">
+        <constructor-arg name="logoutSuccessHandler" ref="successLogoutHandler"/>
+        <constructor-arg name="handlers" ref="logoutHandler"/>
+    </bean>
+
+    <bean id="samlLogoutFilter" class="org.springframework.security.saml.SAMLLogoutFilter">
+        <constructor-arg name="logoutSuccessHandler" ref="successLogoutHandler"/>
+        <constructor-arg name="localHandler" ref="logoutHandler"/>
+        <constructor-arg name="globalHandlers" ref="logoutHandler"/>
+    </bean>
+
+    <bean id="keyManager" class="org.springframework.security.saml.key.JKSKeyManager">
+        <constructor-arg name="storeFile">
+            <bean class="org.springframework.core.io.FileSystemResource">
+                <constructor-arg name="path" value="${saml.keystore.location}"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg name="storePass" value="${saml.keystore.password}"/>
+        <constructor-arg name="passwords">
+            <map>
+                <entry key="${saml.keystore.defaultKey}" value="${saml.keystore.defaultKeyPass}"/>
+            </map>
+        </constructor-arg>
+        <constructor-arg name="defaultKey" value="${saml.keystore.defaultKey}"/>
+    </bean>
+
+    <bean id="extendedMetadata" class="org.springframework.security.saml.metadata.ExtendedMetadata">
+        <property name="idpDiscoveryEnabled" value="false"/>
+    </bean>
+
+    <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
+        <constructor-arg name="generator">
+            <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
+                <property name="includeDiscoveryExtension" value="false"/>
+                <property name="entityId" value="${saml.entityID}"/>
+                <property name="extendedMetadata" ref="extendedMetadata"/>
+                <property name="wantAssertionSigned" value="true"/>
+                <property name="requestSigned" value="true"/>
+            </bean>
+        </constructor-arg>
+        <property name="normalizeBaseUrl" value="true"/>
+    </bean>
+
+    <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
+
+    <bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
+        <property name="defaultIDP" value="${saml.idp.defaultIdpEntityId}"/>
+        <property name="refreshCheckInterval" value="3600000"/>
+        <property name="refreshRequired" value="true"/>
+        <constructor-arg name="providers">
+            <list>
+                <ref bean="idpMetadata"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" init-method="initialize"/>
+
+    <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
+
+    <bean id="processor" class="org.springframework.security.saml.processor.SAMLProcessorImpl">
+    <constructor-arg name="bindings">
+        <list>
+            <bean id="httpPostBinding" class="org.springframework.security.saml.processor.HTTPPostBinding">
+                <constructor-arg name="parserPool" ref="parserPool"/>
+                <constructor-arg name="encoder">
+                    <bean class="cz.muni.ics.oidc.saml.PerunPostEncoder">
+                        <constructor-arg name="engine" value="#{T(org.springframework.security.saml.util.VelocityFactory).getEngine()}"/>
+                        <constructor-arg name="templateId" value="/templates/saml2-post-binding.vm"/>
+                    </bean>
+                </constructor-arg>
+                <constructor-arg name="decoder">
+                    <bean class="org.opensaml.saml2.binding.decoding.HTTPPostDecoder">
+                        <constructor-arg name="pool" ref="parserPool"/>
+                    </bean>
+                </constructor-arg>
+            </bean>
+            <bean id="httpRedirectDeflateBinding" class="org.springframework.security.saml.processor.HTTPRedirectDeflateBinding">
+                <constructor-arg name="encoder">
+                    <bean class="cz.muni.ics.oidc.saml.PerunHTTPRedirectDeflateEncoder"/>
+                </constructor-arg>
+                <constructor-arg name="decoder">
+                    <bean class="org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder">
+                        <constructor-arg name="pool" ref="parserPool"/>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </list>
+    </constructor-arg>
+    </bean>
+
+    <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
+        <property name="authenticationFailureHandler" ref="authenticationFailureHandler"/>
+    </bean>
+
+    <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
+        <constructor-arg name="filterChains">
+            <list>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                            <constructor-arg name="pattern"
+                                             value="#{T(org.springframework.security.saml.metadata.MetadataDisplayFilter).FILTER_URL}/**"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="metadataDisplayFilter"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                            <constructor-arg name="pattern"
+                                             value="#{T(org.springframework.security.saml.SAMLProcessingFilter).FILTER_URL}"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="samlWebSSOProcessingFilter"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                            <constructor-arg name="pattern"
+                                             value="#{T(org.springframework.security.saml.SAMLDiscovery).FILTER_URL}"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="samlDiscovery"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                            <constructor-arg name="pattern"
+                                             value="#{T(org.springframework.security.saml.SAMLEntryPoint).FILTER_URL}"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="samlEntryPoint"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+                            <constructor-arg name="requestMatchers">
+                                <list>
+                                    <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                                        <constructor-arg name="pattern"
+                                                         value="#{T(org.springframework.security.saml.SAMLLogoutFilter).FILTER_URL}"/>
+                                    </bean>
+                                    <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                                        <constructor-arg name="pattern" value="/logout"/>
+                                    </bean>
+                                </list>
+                            </constructor-arg>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="samlLogoutFilter"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.springframework.security.web.DefaultSecurityFilterChain">
+                    <constructor-arg name="requestMatcher">
+                        <bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                            <constructor-arg name="pattern" value="#{T(org.springframework.security.saml.SAMLLogoutProcessingFilter).FILTER_URL}/**"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg name="filters">
+                        <list>
+                            <ref bean="samlLogoutProcessingFilter"/>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="webSSOProfileOptions" class="org.springframework.security.saml.websso.WebSSOProfileOptions">
+        <property name="includeScoping" value="false"/>
+    </bean>
+
+    <bean id="samlEntryPoint" class="cz.muni.ics.oidc.saml.PerunSamlEntryPoint">
+        <property name="defaultProfileOptions" ref="webSSOProfileOptions"/>
+    </bean>
+
+    <bean id="samlContextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl"/>
+
+    <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+        <property name="logMessagesOnException" value="true"/>
+        <property name="logErrors" value="true"/>
+        </bean>
+
+    <bean id="singleLogoutProfile" class="org.springframework.security.saml.websso.SingleLogoutProfileImpl"/>
+
+    <bean id="webSSOprofileConsumer" class="cz.muni.ics.oidc.saml.PerunWebSSOProfileConsumerImpl">
+        <property name="enableComparison" value="${saml.acrs.enableComparison}"/>
+        <property name="reservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
+        <property name="maxAuthenticationAge" value="360"/>
+        </bean>
+
+    <bean id="webSSOprofile" class="org.springframework.security.saml.websso.WebSSOProfileImpl"/>
+
+    <bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
+
+    <bean id="samlUserDetailsService" class="cz.muni.ics.oidc.saml.PerunSamlUserDetailsService"/>
+
+    <bean id="authenticationProvider" class="cz.muni.ics.oidc.saml.PerunSamlAuthenticationProvider">
+        <constructor-arg name="adminIds" value="#{'${admins}'.split('\s*,\s*')}"/>
+    </bean>
+
+    <bean class="org.springframework.security.saml.SAMLBootstrap"/>
+
+    <!-- END SAML -->
+
+    <!-- OAuth -->
+
+    <oauth:authorization-server
+            client-details-service-ref="defaultOAuth2ClientDetailsEntityService"
+            authorization-request-manager-ref="connectOAuth2RequestFactory"
+            token-services-ref="defaultOAuth2ProviderTokenService"
+            user-approval-handler-ref="tofuUserApprovalHandler"
+            request-validator-ref="oauthRequestValidator"
+            redirect-resolver-ref="blacklistAwareRedirectResolver"
+            authorization-endpoint-url="/auth/authorize"
+            token-endpoint-url="/token"
+            error-page="/error">
+
+        <oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
+        <oauth:implicit/>
+        <oauth:refresh-token/>
+        <oauth:client-credentials/>
+        <oauth:custom-grant token-granter-ref="chainedTokenGranter" />
+        <oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
+        <oauth:custom-grant token-granter-ref="deviceTokenGranter" />
+
+    </oauth:authorization-server>
+
+    <oauth:resource-server id="resourceServerFilter"
+                           token-services-ref="defaultOAuth2ProviderTokenService"
+                           stateless="false" />
+
+    <oauth:expression-handler id="oauthExpressionHandler" />
+
+    <oauth:web-expression-handler id="oauthWebExpressionHandler" />
+
+    <bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+
+    <bean id="oauthRequestValidator" class="cz.muni.ics.oauth2.token.ScopeServiceAwareOAuth2RequestValidator" />
+
+</beans>

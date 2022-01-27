@@ -16,7 +16,7 @@ import cz.muni.ics.oidc.server.claims.ClaimSource;
 import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.connectors.Affiliation;
-import cz.muni.ics.openid.connect.web.JWKSetPublishingEndpoint;
+import cz.muni.ics.openid.connect.web.endpoint.JWKSetPublishingEndpoint;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

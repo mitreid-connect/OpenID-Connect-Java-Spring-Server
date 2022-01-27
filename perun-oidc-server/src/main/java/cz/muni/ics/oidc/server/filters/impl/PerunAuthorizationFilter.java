@@ -9,12 +9,10 @@ import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +29,16 @@ import lombok.extern.slf4j.Slf4j;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class PerunAuthorizationFilter extends PerunRequestFilter {
+public class PerunAuthorizationFilter extends AuthProcFilter {
+
+	public static final String APPLIED = "APPLIED_" + PerunAuthorizationFilter.class.getSimpleName();
 
 	private final PerunAdapter perunAdapter;
 	private final FacilityAttrsConfig facilityAttrsConfig;
 	private final String filterName;
 	private final PerunOidcConfig config;
 
-	public PerunAuthorizationFilter(PerunRequestFilterParams params) {
+	public PerunAuthorizationFilter(AuthProcFilterParams params) {
 		super(params);
 		BeanUtil beanUtil = params.getBeanUtil();
 		this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
@@ -48,10 +48,12 @@ public class PerunAuthorizationFilter extends PerunRequestFilter {
 	}
 
 	@Override
-	protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
+	protected String getSessionAppliedParamName() {
+		return APPLIED;
+	}
 
+	@Override
+	protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
 		Facility facility = params.getFacility();
 		if (facility == null || facility.getId() == null) {
 			log.debug("{} - skip filter execution: no facility provided", filterName);
@@ -64,7 +66,7 @@ public class PerunAuthorizationFilter extends PerunRequestFilter {
 			return true;
 		}
 
-		return this.decideAccess(facility, user, request, response, params.getClientIdentifier(),
+		return this.decideAccess(facility, user, req, res, params.getClientIdentifier(),
 				perunAdapter, facilityAttrsConfig);
 	}
 

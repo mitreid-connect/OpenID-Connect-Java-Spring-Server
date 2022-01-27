@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.api;
 
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
@@ -88,6 +88,7 @@ import cz.muni.ics.openid.connect.view.ClientEntityViewForUsers;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
+import cz.muni.ics.openid.connect.web.controller.GuiController;
 import java.lang.reflect.Type;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
@@ -120,7 +121,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class ClientAPI {
 
-	public static final String URL = RootController.API_URL + "/clients";
+	public static final String URL = GuiController.API_URL + "/clients";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;

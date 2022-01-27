@@ -8,8 +8,8 @@ import cz.muni.ics.oidc.BeanUtil;
 import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -17,10 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Properties;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.saml.SAMLCredential;
@@ -51,7 +49,9 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("SqlResolve")
 @Slf4j
-public class ProxyStatisticsFilter extends PerunRequestFilter {
+public class ProxyStatisticsFilter extends AuthProcFilter {
+
+	public static final String APPLIED = "APPLIED_" + ProxyStatisticsFilter.class.getSimpleName();
 
 	/* CONFIGURATION OPTIONS */
 	private static final String IDP_NAME_ATTRIBUTE_NAME = "idpNameAttributeName";
@@ -77,7 +77,7 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 	private final String filterName;
 	private final SamlProperties samlProperties;
 
-	public ProxyStatisticsFilter(PerunRequestFilterParams params) {
+	public ProxyStatisticsFilter(AuthProcFilterParams params) {
 		super(params);
 		BeanUtil beanUtil = params.getBeanUtil();
 		this.mitreIdStats = beanUtil.getBean("mitreIdStats", DataSource.class);
@@ -97,9 +97,12 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 	}
 
 	@Override
-	protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) {
-		HttpServletRequest request = (HttpServletRequest) req;
+	protected String getSessionAppliedParamName() {
+		return APPLIED;
+	}
 
+	@Override
+	protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
 		ClientDetailsEntity client = params.getClient();
 		if (client == null) {
 			log.warn("{} - skip execution: no client provided", filterName);
@@ -112,7 +115,7 @@ public class ProxyStatisticsFilter extends PerunRequestFilter {
 			return true;
 		}
 
-		SAMLCredential samlCredential = FiltersUtils.getSamlCredential(request);
+		SAMLCredential samlCredential = FiltersUtils.getSamlCredential(req);
 		if (samlCredential == null) {
 			log.warn("{} - skip execution: no authN object available, cannot extract user identifier and idp identifier",
 					filterName);

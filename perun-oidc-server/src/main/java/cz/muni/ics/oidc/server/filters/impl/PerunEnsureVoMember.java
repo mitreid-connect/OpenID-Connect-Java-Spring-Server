@@ -7,20 +7,15 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
 import cz.muni.ics.oidc.web.controllers.RegistrationController;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -39,7 +34,9 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class PerunEnsureVoMember extends PerunRequestFilter {
+public class PerunEnsureVoMember extends AuthProcFilter {
+
+    public static final String APPLIED = "APPLIED_" + PerunEnsureVoMember.class.getSimpleName();
 
     private static final String TRIGGER_ATTR = "triggerAttr";
     private static final String VO_DEFS_ATTR = "voDefsAttr";
@@ -52,7 +49,7 @@ public class PerunEnsureVoMember extends PerunRequestFilter {
     private final String filterName;
     private final PerunOidcConfig perunOidcConfig;
 
-    public PerunEnsureVoMember(PerunRequestFilterParams params) {
+    public PerunEnsureVoMember(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
 
@@ -68,9 +65,12 @@ public class PerunEnsureVoMember extends PerunRequestFilter {
     }
 
     @Override
-    protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) throws IOException {
-        HttpServletResponse response = (HttpServletResponse) res;
+    protected String getSessionAppliedParamName() {
+        return APPLIED;
+    }
 
+    @Override
+    protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
         Facility facility = params.getFacility();
         if (facility == null || facility.getId() == null) {
             log.debug("{} - skip execution: no facility provided", filterName);
@@ -100,7 +100,7 @@ public class PerunEnsureVoMember extends PerunRequestFilter {
             log.debug("{} - user allowed to continue", filterName);
             return true;
         } else {
-            redirect(response, getLoginUrl(facility.getId()), voShortName);
+            redirect(res, getLoginUrl(facility.getId()), voShortName);
             return false;
         }
     }
@@ -131,17 +131,6 @@ public class PerunEnsureVoMember extends PerunRequestFilter {
             return null;
         }
         return attrValue;
-    }
-
-    private boolean canAccess(PerunAttributeValue attrValue, Set<String> memberShortNames) {
-        if (attrValue.valueAsJson().isArray()) {
-            Set<String> val = attrValue.valueAsList() == null ?
-                    Collections.emptySet() : new HashSet<>(attrValue.valueAsList());
-            return !Collections.disjoint(val, memberShortNames);
-        } else {
-            String val = attrValue.valueAsString();
-            return memberShortNames.contains(val);
-        }
     }
 
     @Override

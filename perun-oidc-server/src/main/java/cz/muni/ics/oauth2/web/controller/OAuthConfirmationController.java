@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.controller;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

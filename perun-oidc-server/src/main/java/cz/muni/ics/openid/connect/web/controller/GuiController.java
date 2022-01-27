@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-public class RootController {
+public class GuiController {
 
 	public static final String API_URL = "api";
 

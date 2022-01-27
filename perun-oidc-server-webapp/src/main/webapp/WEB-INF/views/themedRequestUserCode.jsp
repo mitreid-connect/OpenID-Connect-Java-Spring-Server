@@ -52,7 +52,7 @@
     </c:choose>
 
     <form name="confirmationForm" class="mt-2"  method="POST"
-          action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/code">
+          action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }auth/device">
         <div class="row-fluid">
             <div class="span12">
                 <div>

@@ -30,7 +30,7 @@
 <div id="content">
 	<c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
 	<form name="confirmationForm" method="post" action="${pageContext.request.contextPath.endsWith('/') ?
-		   pageContext.request.contextPath : pageContext.request.contextPath.concat('/')}authorize">
+		   pageContext.request.contextPath : pageContext.request.contextPath.concat('/')}auth/authorize">
 		<p>
 			<c:if test="${not empty client.policyUri}">
 				<spring:message code="consent_privacy_policy"/>${" "}
