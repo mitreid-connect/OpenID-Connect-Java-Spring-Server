@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.endpoint;
 
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static cz.muni.ics.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;

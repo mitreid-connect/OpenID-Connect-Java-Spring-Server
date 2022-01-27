@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.endpoint;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -26,6 +26,7 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.IntrospectionResultAssembler;
 import cz.muni.ics.oauth2.service.OAuth2TokenEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oauth2.web.AuthenticationUtilities;
 import cz.muni.ics.openid.connect.model.UserInfo;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;

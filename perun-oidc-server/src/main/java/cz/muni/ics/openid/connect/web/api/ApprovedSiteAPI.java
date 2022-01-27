@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.api;
 
 import cz.muni.ics.openid.connect.model.ApprovedSite;
 import cz.muni.ics.openid.connect.service.ApprovedSiteService;
@@ -26,6 +26,7 @@ import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonApprovedSiteView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
+import cz.muni.ics.openid.connect.web.controller.GuiController;
 import java.security.Principal;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Slf4j
 public class ApprovedSiteAPI {
 
-	public static final String URL = RootController.API_URL + "/approved";
+	public static final String URL = GuiController.API_URL + "/approved";
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;

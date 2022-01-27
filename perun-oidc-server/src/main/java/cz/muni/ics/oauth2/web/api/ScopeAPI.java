@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.api;
 
 import com.google.gson.Gson;
 import cz.muni.ics.oauth2.model.SystemScope;
@@ -26,7 +26,7 @@ import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
-import cz.muni.ics.openid.connect.web.RootController;
+import cz.muni.ics.openid.connect.web.controller.GuiController;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Slf4j
 public class ScopeAPI {
 
-	public static final String URL = RootController.API_URL + "/scopes";
+	public static final String URL = GuiController.API_URL + "/scopes";
 
 	@Autowired
 	private SystemScopeService scopeService;

@@ -78,7 +78,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 	@Autowired(required = false)
 	private LoginHintExtracter loginHintExtracter = new RemoveLoginHintsWithHTTP();
 
-	private RequestMatcher requestMatcher = new AntPathRequestMatcher("/authorize");
+	private RequestMatcher requestMatcher = new AntPathRequestMatcher("/auth/authorize");
 
 	/**
 	 *

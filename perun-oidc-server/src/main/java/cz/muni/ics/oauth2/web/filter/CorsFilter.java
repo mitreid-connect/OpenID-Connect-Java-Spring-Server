@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.filter;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;

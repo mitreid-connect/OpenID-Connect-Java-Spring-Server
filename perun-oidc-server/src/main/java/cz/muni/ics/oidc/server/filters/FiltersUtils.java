@@ -1,6 +1,6 @@
 package cz.muni.ics.oidc.server.filters;
 
-import static cz.muni.ics.oauth2.web.DeviceEndpoint.DEVICE_CODE_SESSION_ATTRIBUTE;
+import static cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint.DEVICE_CODE_SESSION_ATTRIBUTE;
 import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_FORCE_AUTHN;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;

@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.endpoint;
 
 import cz.muni.ics.oauth2.exception.DeviceCodeCreationException;
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.oauth2.web;
+package cz.muni.ics.oauth2.web.endpoint;
 
 import static cz.muni.ics.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 

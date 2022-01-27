@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.endpoint;
 
 import com.nimbusds.jose.jwk.JWK;
 import cz.muni.ics.jwt.signer.service.JWTSigningAndValidationService;

@@ -55,7 +55,7 @@
 	<logger name="cz.muni.ics" level="${log.level}"/>
 	<logger name="cz.muni.ics.oidc.aop.WebLoggingAspect" level="debug"/>
 	<logger name="cz.muni.ics.oidc.aop.ExecutionTimeLoggingAspect" level="trace"/>
-	<logger name="cz.muni.ics.openid.connect.web.EndSessionEndpoint" level="${log.level}"/>
+	<logger name="cz.muni.ics.openid.connect.web.endpoint.EndSessionEndpoint" level="${log.level}"/>
 	<logger name="cz.muni.ics.openid.connect.config.JsonMessageSource" level="warn"/>
 
 </configuration>

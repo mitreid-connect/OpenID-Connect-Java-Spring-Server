@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class PerunFilterConstants {
 
-    public static final String AUTHORIZE_REQ_PATTERN = "/authorize";
+    public static final String AUTHORIZE_REQ_PATTERN = "/auth/authorize";
     public static final String DEVICE_APPROVE_REQ_PATTERN = "/device/code";
     public static final String DEVICE_CHECK_CODE_REQ_PATTERN = "/device/checkcode";
 

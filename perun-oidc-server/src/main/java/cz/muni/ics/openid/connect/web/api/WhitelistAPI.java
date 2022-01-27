@@ -18,7 +18,7 @@
 /**
  *
  */
-package cz.muni.ics.openid.connect.web;
+package cz.muni.ics.openid.connect.web.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -29,6 +29,7 @@ import cz.muni.ics.openid.connect.service.WhitelistedSiteService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import cz.muni.ics.openid.connect.view.JsonEntityView;
 import cz.muni.ics.openid.connect.view.JsonErrorView;
+import cz.muni.ics.openid.connect.web.controller.GuiController;
 import java.security.Principal;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Slf4j
 public class WhitelistAPI {
 
-	public static final String URL = RootController.API_URL + "/whitelist";
+	public static final String URL = GuiController.API_URL + "/whitelist";
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
