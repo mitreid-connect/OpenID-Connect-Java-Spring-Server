@@ -8,7 +8,7 @@ import java.util.Properties;
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
-public class PerunRequestFilterParams {
+public class AuthProcFilterParams {
 
 	private final String filterName;
 
@@ -16,7 +16,7 @@ public class PerunRequestFilterParams {
 	private final Properties properties;
 	private final BeanUtil beanUtil;
 
-	public PerunRequestFilterParams(String filterName, String propertyPrefix, Properties properties, BeanUtil beanUtil) {
+	public AuthProcFilterParams(String filterName, String propertyPrefix, Properties properties, BeanUtil beanUtil) {
 		this.filterName = filterName;
 		this.propertyPrefix = propertyPrefix;
 		this.properties = properties;

@@ -15,7 +15,7 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
 import java.time.LocalDateTime;
@@ -24,8 +24,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +62,7 @@ public class PerunIsCesnetEligibleFilter extends AuthProcFilter {
     private final PerunAdapter perunAdapter;
     private final String filterName;
 
-    public PerunIsCesnetEligibleFilter(PerunRequestFilterParams params) {
+    public PerunIsCesnetEligibleFilter(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
         this.config = beanUtil.getBean(PerunOidcConfig.class);

@@ -73,8 +73,6 @@
 				<prop key="saml.idp.defaultIdpEntityId"/>
 				<prop key="saml.idp.metadataLocation"/> <!-- i.e. /etc/perun/login-cesnet-metadata.xml -->
 				<prop key="saml.idp.metadataUrl"/> <!-- i.e. https://login.cesnet.cz/proxy/module.php/metadata -->
-				<prop key="saml.proxy.spEntityId"/>
-				<prop key="saml.internalReferrers"/> <!-- comma separated list of URLs (which are matched as prefixes) -->
 				<prop key="saml.acrs.reserverdPrefixes">urn:cesnet:</prop>
 				<prop key="saml.acrs.enableComparison">false</prop>
 				<prop key="saml.acrs.onlyreserved.append">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</prop>

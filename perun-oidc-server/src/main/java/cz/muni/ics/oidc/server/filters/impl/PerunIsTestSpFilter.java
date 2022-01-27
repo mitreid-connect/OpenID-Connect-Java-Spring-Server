@@ -11,14 +11,12 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.IsTestSpController;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +45,7 @@ public class PerunIsTestSpFilter extends AuthProcFilter {
     private final String filterName;
     private final PerunOidcConfig config;
 
-    public PerunIsTestSpFilter(PerunRequestFilterParams params) {
+    public PerunIsTestSpFilter(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);

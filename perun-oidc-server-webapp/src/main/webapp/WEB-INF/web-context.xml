@@ -241,12 +241,16 @@
                    create-session="always"
                    authentication-manager-ref="authenticationManager">
         <security:csrf disabled="true"/>
-        <security:intercept-url pattern="/authorize" access="permitAll()"/>
-        <security:intercept-url pattern="/device" access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oauth2.web.endpoint.AuthorizationEndpoint).ENDPOINT_INIT_URL}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint).REQUEST_USER_CODE_INIT_URL}"
+                                access="permitAll()"/>
         <security:intercept-url pattern="/saml/**" access="permitAll()"/>
         <security:intercept-url pattern="/logout" access="permitAll()"/>
-        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}" access="permitAll()"/>
-        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}" access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}"
+                                access="permitAll()"/>
+        <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"
+                                access="permitAll()"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
         <security:custom-filter ref="mdcMuFilter" before="FIRST"/>
         <security:custom-filter ref="metadataGeneratorFilter" before="CHANNEL_FILTER"/>
@@ -337,17 +341,13 @@
 
     <!-- SAML -->
     <bean id="clearSessionFilter" class="cz.muni.ics.oidc.saml.SamlInvalidateSessionFilter">
-<!--    <constructor-arg name="oidcIssuer" value="${main.oidc.issuer.url}"/>-->
-<!--    <constructor-arg name="idpEntityId" value="${saml.idp.defaultIdpEntityId}"/>-->
-<!--    <constructor-arg name="proxySpEntityId" value="${saml.proxy.spEntityId}"/>-->
-<!--    <constructor-arg name="internalReferrers" value="#{'${saml.internalReferrers}'.split('\s*,\s*')}"/>-->
-    <constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
+        <constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
     </bean>
 
     <bean id="samlDiscovery" class="org.springframework.security.saml.SAMLDiscovery">
-    <property name="contextProvider" ref="samlContextProvider"/>
-    <property name="samlEntryPoint" ref="samlEntryPoint"/>
-    <property name="metadata" ref="metadata"/>
+        <property name="contextProvider" ref="samlContextProvider"/>
+        <property name="samlEntryPoint" ref="samlEntryPoint"/>
+        <property name="metadata" ref="metadata"/>
     </bean>
 
     <bean id="successRedirectHandler" class="cz.muni.ics.oidc.saml.PerunSamlAuthenticationSuccessHandler">

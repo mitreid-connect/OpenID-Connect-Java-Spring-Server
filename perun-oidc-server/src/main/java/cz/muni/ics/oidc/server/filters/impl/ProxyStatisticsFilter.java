@@ -9,7 +9,7 @@ import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -17,8 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
@@ -79,7 +77,7 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 	private final String filterName;
 	private final SamlProperties samlProperties;
 
-	public ProxyStatisticsFilter(PerunRequestFilterParams params) {
+	public ProxyStatisticsFilter(AuthProcFilterParams params) {
 		super(params);
 		BeanUtil beanUtil = params.getBeanUtil();
 		this.mitreIdStats = beanUtil.getBean("mitreIdStats", DataSource.class);

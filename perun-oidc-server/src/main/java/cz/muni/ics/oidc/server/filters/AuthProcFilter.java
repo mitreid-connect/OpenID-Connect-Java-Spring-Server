@@ -43,7 +43,7 @@ public abstract class AuthProcFilter {
     private Set<String> clientIds = new HashSet<>();
     private Set<String> subs = new HashSet<>();
 
-    public AuthProcFilter(PerunRequestFilterParams params) {
+    public AuthProcFilter(AuthProcFilterParams params) {
         filterName = params.getFilterName();
 
         if (params.hasProperty(CLIENT_IDS)) {

@@ -278,7 +278,7 @@ public class FiltersUtils {
 
 	public static String fillStringMandatoryProperty(String propertyName,
 													 String filterName,
-													 PerunRequestFilterParams params) {
+													 AuthProcFilterParams params) {
 		String filled = params.getProperty(propertyName);
 
 		if (!StringUtils.hasText(filled)) {

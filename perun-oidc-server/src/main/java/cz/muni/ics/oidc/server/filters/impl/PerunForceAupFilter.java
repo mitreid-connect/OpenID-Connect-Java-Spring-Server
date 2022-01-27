@@ -15,7 +15,7 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.AupController;
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +77,7 @@ public class PerunForceAupFilter extends AuthProcFilter {
     private final SamlProperties samlProperties;
     private final String filterName;
 
-    public PerunForceAupFilter(PerunRequestFilterParams params) {
+    public PerunForceAupFilter(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
         this.perunAdapter = beanUtil.getBean(PerunAdapter.class);

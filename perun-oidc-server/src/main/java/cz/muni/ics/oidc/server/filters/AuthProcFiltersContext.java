@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class PerunFiltersContext {
+public class AuthProcFiltersContext {
 
 	private static final String FILTER_NAMES = "filter.names";
 	private static final String FILTER_CLASS = ".class";
@@ -31,7 +31,7 @@ public class PerunFiltersContext {
 	private final Properties properties;
 	private final BeanUtil beanUtil;
 
-	public PerunFiltersContext(Properties properties, BeanUtil beanUtil) {
+	public AuthProcFiltersContext(Properties properties, BeanUtil beanUtil) {
 		this.properties = properties;
 		this.beanUtil = beanUtil;
 		this.filters = new LinkedList<>();
@@ -52,7 +52,7 @@ public class PerunFiltersContext {
 	}
 
 	private AuthProcFilter loadFilter(String filterName) {
-		String propPrefix = PerunFiltersContext.PREFIX + filterName;
+		String propPrefix = AuthProcFiltersContext.PREFIX + filterName;
 		String filterClass = properties.getProperty(propPrefix + FILTER_CLASS, null);
 		if (!StringUtils.hasText(filterClass)) {
 			log.warn("{} - failed to initialized filter: no class has ben configured", filterName);
@@ -63,14 +63,14 @@ public class PerunFiltersContext {
 		try {
 			Class<?> rawClazz = Class.forName(filterClass);
 			if (!AuthProcFilter.class.isAssignableFrom(rawClazz)) {
-				log.warn("{} - failed to initialized filter: class '{}' does not extend PerunRequestFilter",
+				log.warn("{} - failed to initialized filter: class '{}' does not extend AuthProcFilter",
 						filterName, filterClass);
 				return null;
 			}
 			
 			@SuppressWarnings("unchecked") Class<AuthProcFilter> clazz = (Class<AuthProcFilter>) rawClazz;
-			Constructor<AuthProcFilter> constructor = clazz.getConstructor(PerunRequestFilterParams.class);
-			PerunRequestFilterParams params = new PerunRequestFilterParams(filterName, propPrefix, properties, beanUtil);
+			Constructor<AuthProcFilter> constructor = clazz.getConstructor(AuthProcFilterParams.class);
+			AuthProcFilterParams params = new AuthProcFilterParams(filterName, propPrefix, properties, beanUtil);
 			return constructor.newInstance(params);
 		} catch (ClassNotFoundException e) {
 			log.warn("{} - failed to initialize filter: class '{}' was not found", filterName, filterClass);

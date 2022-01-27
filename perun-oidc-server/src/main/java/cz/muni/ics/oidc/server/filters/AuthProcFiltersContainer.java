@@ -64,11 +64,11 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
     @Autowired
     private SamlProperties samlProperties;
 
-    private PerunFiltersContext perunFiltersContext;
+    private AuthProcFiltersContext perunFiltersContext;
 
     @PostConstruct
     public void postConstruct() {
-        this.perunFiltersContext = new PerunFiltersContext(coreProperties, beanUtil);
+        this.perunFiltersContext = new AuthProcFiltersContext(coreProperties, beanUtil);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         if (!MATCHER.matches(req)) {
-            log.debug("Custom filters have been skipped, did not match authorization nor device req URL");
+            log.debug("AuthProc filters have been skipped, did not match authorization nor device req URL");
         } else {
             List<AuthProcFilter> filters = perunFiltersContext.getFilters();
             if (filters != null && !filters.isEmpty()) {

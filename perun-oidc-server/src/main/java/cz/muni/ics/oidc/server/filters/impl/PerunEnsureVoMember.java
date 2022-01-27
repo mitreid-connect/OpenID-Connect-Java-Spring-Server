@@ -8,19 +8,13 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
 import cz.muni.ics.oidc.web.controllers.RegistrationController;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +49,7 @@ public class PerunEnsureVoMember extends AuthProcFilter {
     private final String filterName;
     private final PerunOidcConfig perunOidcConfig;
 
-    public PerunEnsureVoMember(PerunRequestFilterParams params) {
+    public PerunEnsureVoMember(AuthProcFilterParams params) {
         super(params);
         BeanUtil beanUtil = params.getBeanUtil();
 
@@ -137,17 +131,6 @@ public class PerunEnsureVoMember extends AuthProcFilter {
             return null;
         }
         return attrValue;
-    }
-
-    private boolean canAccess(PerunAttributeValue attrValue, Set<String> memberShortNames) {
-        if (attrValue.valueAsJson().isArray()) {
-            Set<String> val = attrValue.valueAsList() == null ?
-                    Collections.emptySet() : new HashSet<>(attrValue.valueAsList());
-            return !Collections.disjoint(val, memberShortNames);
-        } else {
-            String val = attrValue.valueAsString();
-            return memberShortNames.contains(val);
-        }
     }
 
     @Override
