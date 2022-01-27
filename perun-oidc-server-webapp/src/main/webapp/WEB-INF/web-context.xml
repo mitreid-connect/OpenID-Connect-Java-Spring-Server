@@ -251,7 +251,7 @@
         <security:custom-filter ref="clearSessionFilter" after="CHANNEL_FILTER"/>
         <security:custom-filter ref="samlFilter" before="CSRF_FILTER"/>
         <security:custom-filter ref="samlFilter" after="BASIC_AUTH_FILTER"/>
-        <security:custom-filter ref="callPerunFiltersFilter" before="LAST"/>
+        <security:custom-filter ref="authProcFilters" before="LAST"/>
         <security:logout logout-url="/saml/logout"/>
     </security:http>
 

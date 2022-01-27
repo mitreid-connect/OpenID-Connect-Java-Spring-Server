@@ -12,12 +12,13 @@ public class AuthorizationEndpoint {
 
     @RequestMapping(value = "/authorize")
     public RedirectView authorize(HttpServletRequest req) {
-        log.debug("Handling authorize in endpoint");
         RedirectView view = new RedirectView("/auth/authorize?" + req.getQueryString());
         view.setContextRelative(true);
         view.setAttributesMap(req.getParameterMap());
         log.debug("AUTH_ENDPOINT: Redirecting to: {}", view);
         return view;
     }
+
+    //TODO: handle also device endpoint
 
 }

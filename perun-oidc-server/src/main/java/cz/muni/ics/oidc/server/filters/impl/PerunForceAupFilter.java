@@ -14,7 +14,7 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
 import cz.muni.ics.oidc.web.controllers.AupController;
 import java.io.IOException;
@@ -52,7 +52,9 @@ import org.springframework.util.StringUtils;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class PerunForceAupFilter extends PerunRequestFilter {
+public class PerunForceAupFilter extends AuthProcFilter {
+
+    public static final String APPLIED = "APPLIED_" + PerunForceAupFilter.class.getSimpleName();
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -93,18 +95,20 @@ public class PerunForceAupFilter extends PerunRequestFilter {
     }
 
     @Override
-    protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) throws IOException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    protected String getSessionAppliedParamName() {
+        return APPLIED;
+    }
 
-        if (request.getSession() != null && request.getSession().getAttribute(APPROVED) != null) {
-            request.getSession().removeAttribute(APPROVED);
+    @Override
+    protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) throws IOException {
+        if (req.getSession() != null && req.getSession().getAttribute(APPROVED) != null) {
+            req.getSession().removeAttribute(APPROVED);
             log.debug("{} - skip filter execution: aups are already approved, check at next access to the service due" +
                     " to a delayed propagation to LDAP", filterName);
             return true;
         }
 
-        PerunUser user = FiltersUtils.getPerunUser(request, perunAdapter, samlProperties.getUserIdentifierAttribute());
+        PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties.getUserIdentifierAttribute());
         if (user == null || user.getId() == null) {
             log.debug("{} - skip filter execution: no user provider", filterName);
             return true;
@@ -147,13 +151,13 @@ public class PerunForceAupFilter extends PerunRequestFilter {
             log.trace("{} - AUPS to be approved: '{}'", filterName, newAups);
             String newAupsString = mapper.writeValueAsString(newAups);
 
-            request.getSession().setAttribute(AupController.RETURN_URL, request.getRequestURI()
-                    .replace(request.getContextPath(), "") + '?' + request.getQueryString());
-            request.getSession().setAttribute(AupController.NEW_AUPS, newAupsString);
-            request.getSession().setAttribute(AupController.USER_ATTR, perunUserAupsAttrName);
+            req.getSession().setAttribute(AupController.RETURN_URL, req.getRequestURI()
+                    .replace(req.getContextPath(), "") + '?' + req.getQueryString());
+            req.getSession().setAttribute(AupController.NEW_AUPS, newAupsString);
+            req.getSession().setAttribute(AupController.USER_ATTR, perunUserAupsAttrName);
 
             log.debug("{} - redirecting user '{}' to AUPs approval page", filterName, user);
-            response.sendRedirect(request.getContextPath() + '/' + AupController.URL);
+            res.sendRedirect(req.getContextPath() + '/' + AupController.URL);
             return false;
         }
 

@@ -14,8 +14,7 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
@@ -46,7 +45,9 @@ import org.apache.http.HttpHeaders;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
+public class PerunIsCesnetEligibleFilter extends AuthProcFilter {
+
+    public static final String APPLIED = "APPLIED_" + PerunIsCesnetEligibleFilter.class.getSimpleName();
 
     /* CONFIGURATION PROPERTIES */
     private static final String IS_CESNET_ELIGIBLE_ATTR_NAME = "isCesnetEligibleAttr";
@@ -84,11 +85,13 @@ public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
     }
 
     @Override
-    protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    protected String getSessionAppliedParamName() {
+        return APPLIED;
+    }
 
-        if (!FiltersUtils.isScopePresent(request.getParameter(PARAM_SCOPE), triggerScope)) {
+    @Override
+    protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
+       if (!FiltersUtils.isScopePresent(req.getParameter(PARAM_SCOPE), triggerScope)) {
             log.debug("{} - skip execution: scope '{}' is not present in request", filterName, triggerScope);
             return true;
         }
@@ -124,7 +127,7 @@ public class PerunIsCesnetEligibleFilter extends PerunRequestFilter {
         }
 
         log.debug("{} - attribute '{}' value is invalid, stop user at this point", filterName, attrValue);
-        this.redirect(request, response, reason);
+        this.redirect(req, res, reason);
         return false;
     }
 

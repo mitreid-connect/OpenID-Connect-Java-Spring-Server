@@ -9,7 +9,7 @@ import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.filters.FilterParams;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
-import cz.muni.ics.oidc.server.filters.PerunRequestFilter;
+import cz.muni.ics.oidc.server.filters.AuthProcFilter;
 import cz.muni.ics.oidc.server.filters.PerunRequestFilterParams;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
 import java.util.HashSet;
@@ -46,7 +46,9 @@ import org.springframework.util.StringUtils;
  */
 @SuppressWarnings("SqlResolve")
 @Slf4j
-public class ValidUserFilter extends PerunRequestFilter {
+public class ValidUserFilter extends AuthProcFilter {
+
+	public static final String APPLIED = "APPLIED_" + ValidUserFilter.class.getSimpleName();
 
 	/* CONFIGURATION OPTIONS */
 	private static final String ALL_ENV_GROUPS = "allEnvGroups";
@@ -86,10 +88,12 @@ public class ValidUserFilter extends PerunRequestFilter {
 	}
 
 	@Override
-	protected boolean process(ServletRequest req, ServletResponse res, FilterParams params) {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
+	protected String getSessionAppliedParamName() {
+		return APPLIED;
+	}
 
+	@Override
+	protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
 		Set<Long> additionalVos = new HashSet<>();
 		Set<Long> additionalGroups = new HashSet<>();
 
@@ -106,7 +110,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			return true;
 		}
 
-		if (!checkMemberValidInGroupsAndVos(user, facility, response, params, allEnvVos, allEnvGroups,
+		if (!checkMemberValidInGroupsAndVos(user, facility, res, params, allEnvVos, allEnvGroups,
 				PerunUnapprovedController.UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS)) {
 			return false;
 		}
@@ -121,7 +125,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			additionalVos.addAll(testEnvVos);
 			additionalGroups.addAll(testEnvGroups);
 
-			if (!checkMemberValidInGroupsAndVos(user, facility, response, params, additionalVos,
+			if (!checkMemberValidInGroupsAndVos(user, facility, res, params, additionalVos,
 					additionalGroups, PerunUnapprovedController.UNAPPROVED_NOT_IN_TEST_VOS_GROUPS)) {
 				return false;
 			}
@@ -129,7 +133,7 @@ public class ValidUserFilter extends PerunRequestFilter {
 			additionalVos.addAll(prodEnvVos);
 			additionalGroups.addAll(prodEnvGroups);
 
-			if (!checkMemberValidInGroupsAndVos(user, facility, response, params, additionalVos,
+			if (!checkMemberValidInGroupsAndVos(user, facility, res, params, additionalVos,
 					additionalGroups, PerunUnapprovedController.UNAPPROVED_NOT_IN_PROD_VOS_GROUPS)) {
 				return false;
 			}

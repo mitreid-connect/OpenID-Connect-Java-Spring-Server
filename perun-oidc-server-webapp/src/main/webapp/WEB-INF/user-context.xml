@@ -489,7 +489,7 @@
 
 	<bean id="oidcTokenService" class="cz.muni.ics.oidc.server.PerunOIDCTokenService" primary="true"/>
 
-	<bean id="callPerunFiltersFilter" class="cz.muni.ics.oidc.server.filters.CallPerunFiltersFilter"/>
+	<bean id="authProcFilters" class="cz.muni.ics.oidc.server.filters.AuthProcFiltersContainer"/>
 
 	<bean id="htmlClasses" class="cz.muni.ics.oidc.web.WebHtmlClasses">
 		<constructor-arg name="perunOidcConfig" ref="perunOidcConfig"/>

@@ -1,20 +1,14 @@
 package cz.muni.ics.oidc.server.filters;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_CHECK_CODE_REQ_PATTERN;
-
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Abstract class for Perun filters. All filters called in CallPerunFiltersFilter has to extend this.
@@ -39,7 +33,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
-public abstract class PerunRequestFilter {
+public abstract class AuthProcFilter {
 
     private static final String DELIMITER = ",";
     private static final String CLIENT_IDS = "clientIds";
@@ -49,7 +43,7 @@ public abstract class PerunRequestFilter {
     private Set<String> clientIds = new HashSet<>();
     private Set<String> subs = new HashSet<>();
 
-    public PerunRequestFilter(PerunRequestFilterParams params) {
+    public AuthProcFilter(PerunRequestFilterParams params) {
         filterName = params.getFilterName();
 
         if (params.hasProperty(CLIENT_IDS)) {
@@ -65,6 +59,8 @@ public abstract class PerunRequestFilter {
         log.debug("{} - skip execution for clients with CLIENT_ID in: {}", filterName, clientIds);
     }
 
+    protected abstract String getSessionAppliedParamName();
+
     /**
      * In this method is done whole logic of filer
      *
@@ -73,31 +69,51 @@ public abstract class PerunRequestFilter {
      * @return boolean if filter was successfully done
      * @throws IOException this exception could be thrown because of failed or interrupted I/O operation
      */
-    protected abstract boolean process(ServletRequest request, ServletResponse response, FilterParams params)
+    protected abstract boolean process(HttpServletRequest request, HttpServletResponse response, FilterParams params)
             throws IOException;
 
-    public boolean doFilter(ServletRequest req, ServletResponse res, FilterParams params) throws IOException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        if (!skip(request)) {
+    public boolean doFilter(HttpServletRequest req, HttpServletResponse res, FilterParams params) throws IOException {
+        if (!skip(req)) {
             log.trace("{} - executing filter", filterName);
-            return this.process(req, res, params);
+            return process(req, res, params);
         } else {
             return true;
         }
     }
 
     private boolean skip(HttpServletRequest request) {
-        String sub = (request.getUserPrincipal() != null) ? request.getUserPrincipal().getName() : null;
-        String clientId = request.getParameter(PerunFilterConstants.PARAM_CLIENT_ID);
+        if (hasBeenApplied(request.getSession(true))) {
+            return true;
+        }
+        log.debug("{} - marking filter as applied", filterName);
+        request.getSession(true).setAttribute(getSessionAppliedParamName(), true);
+        return skipForSub(request.getUserPrincipal())
+                || skipForClientId(request.getParameter(PerunFilterConstants.PARAM_CLIENT_ID));
+    }
 
+    private boolean hasBeenApplied(HttpSession sess) {
+        String sessionParamName = getSessionAppliedParamName();
+        if (sess.getAttribute(sessionParamName) != null) {
+            log.debug("{} - skip filter execution: filter has been already applied", filterName);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean skipForSub(Principal p) {
+        String sub = (p != null) ? p.getName() : null;
         if (sub != null && subs.contains(sub)) {
             log.debug("{} - skip filter execution: matched one of the ignored SUBS ({})", filterName, sub);
             return true;
-        } else if (clientId != null && clientIds.contains(clientId)){
+        }
+        return false;
+    }
+
+    private boolean skipForClientId(String clientId) {
+        if (clientId != null && clientIds.contains(clientId)){
             log.debug("{} - skip filter execution: matched one of the ignored CLIENT_IDS ({})", filterName, clientId);
             return true;
         }
-
         return false;
     }
 

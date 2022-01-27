@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
  * Filters are configured from configuration file in following way:
  * filter.names=filterName1,filterName2,...
  *
- * @see PerunRequestFilter for configuration of filter
+ * @see AuthProcFilter for configuration of filter
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
@@ -27,7 +27,7 @@ public class PerunFiltersContext {
 	private static final String FILTER_CLASS = ".class";
 	private static final String PREFIX = "filter.";
 
-	private final List<PerunRequestFilter> filters;
+	private final List<AuthProcFilter> filters;
 	private final Properties properties;
 	private final BeanUtil beanUtil;
 
@@ -41,17 +41,17 @@ public class PerunFiltersContext {
 
 		log.debug("--------------------------------");
 		for (String filterName: filterNames.split(",")) {
-			PerunRequestFilter requestFilter = loadFilter(filterName);
+			AuthProcFilter requestFilter = loadFilter(filterName);
 			filters.add(requestFilter);
 			log.debug("--------------------------------");
 		}
 	}
 
-	public List<PerunRequestFilter> getFilters() {
+	public List<AuthProcFilter> getFilters() {
 		return filters;
 	}
 
-	private PerunRequestFilter loadFilter(String filterName) {
+	private AuthProcFilter loadFilter(String filterName) {
 		String propPrefix = PerunFiltersContext.PREFIX + filterName;
 		String filterClass = properties.getProperty(propPrefix + FILTER_CLASS, null);
 		if (!StringUtils.hasText(filterClass)) {
@@ -62,14 +62,14 @@ public class PerunFiltersContext {
 
 		try {
 			Class<?> rawClazz = Class.forName(filterClass);
-			if (!PerunRequestFilter.class.isAssignableFrom(rawClazz)) {
+			if (!AuthProcFilter.class.isAssignableFrom(rawClazz)) {
 				log.warn("{} - failed to initialized filter: class '{}' does not extend PerunRequestFilter",
 						filterName, filterClass);
 				return null;
 			}
 			
-			@SuppressWarnings("unchecked") Class<PerunRequestFilter> clazz = (Class<PerunRequestFilter>) rawClazz;
-			Constructor<PerunRequestFilter> constructor = clazz.getConstructor(PerunRequestFilterParams.class);
+			@SuppressWarnings("unchecked") Class<AuthProcFilter> clazz = (Class<AuthProcFilter>) rawClazz;
+			Constructor<AuthProcFilter> constructor = clazz.getConstructor(PerunRequestFilterParams.class);
 			PerunRequestFilterParams params = new PerunRequestFilterParams(filterName, propPrefix, properties, beanUtil);
 			return constructor.newInstance(params);
 		} catch (ClassNotFoundException e) {
