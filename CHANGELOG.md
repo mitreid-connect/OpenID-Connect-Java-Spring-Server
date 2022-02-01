@@ -1,3 +1,10 @@
+## [8.0.4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.3...v8.0.4) (2022-02-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.glassfish.jaxb:jaxb-runtime to v2.3.6 ([64f8997](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/64f899708f13d9b23f1eac65cdae5dba3e71dd24))
+
 ## [8.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.2...v8.0.3) (2022-01-26)
 
 
