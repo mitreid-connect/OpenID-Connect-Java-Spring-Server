@@ -48,6 +48,8 @@
 	<logger name="org.apache.directory.ldap.client.api.LdapNetworkConnection" level="error"/>
 	<!-- DB -->
 	<logger name="com.zaxxer.hikari" level="warn"/>
+	<logger name="org.mariadb" level="warn"/>
+	<logger name="org.postgresql" level="warn"/>
 	<logger name="net.javacrumbs.shedlock" level="error"/>
 
 	<!-- OUR LOGGERS -->
