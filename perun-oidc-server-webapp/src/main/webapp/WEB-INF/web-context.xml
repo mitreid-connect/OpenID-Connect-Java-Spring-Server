@@ -354,7 +354,8 @@
         <property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_SUCCESS}"/>
     </bean>
 
-    <bean id="authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+<!--    <bean id="authenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">-->
+    <bean id="authenticationFailureHandler" class="cz.muni.ics.oidc.saml.PerunAuthenticationFailureHandler">
         <property name="defaultFailureUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"/>
         <property name="useForward" value="true"/>
     </bean>

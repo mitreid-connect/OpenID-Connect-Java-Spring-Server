@@ -23,9 +23,14 @@ pageContext.setAttribute("cssLinks", cssLinks);
 
 <div id="content">
     <div id="head">
-        <h1>${fn:escapeXml(langProps['login_failure_header'])}</h1>
+        <h1><spring:message code="login_failure_header"/></h1>
     </div>
     <div class="msg"><spring:message code="login_failure_msg"/></div>
+    <c:if test="${not empty('error_msg')}">
+        <div class="mgs">
+            <spring:message code="${error_msg}"/>
+        </div>
+    </c:if>
     <div class="msg"><spring:message code="login_failure_contact_us"/>${" "}
         <a href="mailto:${contactMail}">${contactMail}</a>.
     </div>
