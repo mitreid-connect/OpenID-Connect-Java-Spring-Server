@@ -1,3 +1,10 @@
+## [8.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.0...v8.1.1) (2022-02-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.code.gson:gson to v2.9.0 ([0ec65b6](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/0ec65b6eeed09fbe5a1c77a17b0e0e278b8a3354))
+
 # [8.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.6...v8.1.0) (2022-02-17)
 
 
