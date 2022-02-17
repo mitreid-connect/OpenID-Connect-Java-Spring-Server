@@ -327,6 +327,7 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			ps.setLong(2, idpId);
 			ps.setLong(3, spId);
 			ps.setString(4, userId);
+			ps.execute();
 			log.debug("{} - Updated login count by 1 for combination: idpId={}, spId={}, userId={}",
 					filterName, idpId, spId, userId);
 		} catch (SQLException ex) {
