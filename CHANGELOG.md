@@ -1,3 +1,17 @@
+# [8.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.6...v8.1.0) (2022-02-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.nimbusds:nimbus-jose-jwt to v9.19 ([bb1443f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/bb1443fd9e838895061543b3376580fbee7acaf0))
+* **deps:** update dependency org.aspectj:aspectjweaver to v1.9.8 ([78087dc](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/78087dc71621c49d0081b812b8c3bd193907ef1b))
+* **deps:** update dependency org.postgresql:postgresql to v42.3.3 ([9810e84](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/9810e84915abe429cacf5e91f431115c19cb9e6c))
+
+
+### Features
+
+* 🎸 Display noAuthnContext message on login_failure ([8872469](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/8872469c197639ef445878ba34b61ee754f06bad))
+
 ## [8.0.6](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.0.5...v8.0.6) (2022-02-01)
 
 
