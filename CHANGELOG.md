@@ -1,3 +1,10 @@
+## [8.1.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.1...v8.1.2) (2022-02-17)
+
+
+### Bug Fixes
+
+* 🐛 Fix missing execute statement in statistics filter ([93b8081](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/93b8081c330419d339a3c7a520df8047c453b578))
+
 ## [8.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.0...v8.1.1) (2022-02-17)
 
 
