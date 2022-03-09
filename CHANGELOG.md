@@ -1,3 +1,10 @@
+## [8.1.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.2...v8.1.3) (2022-03-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v31.1-jre ([1032ed0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/1032ed065ac5e45d51f3dd8520e535b97a43ec63))
+
 ## [8.1.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.1...v8.1.2) (2022-02-17)
 
 
