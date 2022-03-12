@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -124,6 +125,8 @@ public class DeviceEndpoint {
 	public static final String REQUEST_USER_CODE_URL = "/auth/device";
 	public static final String CHECK_USER_CODE_URL = "/auth/device/authorize";
 	public static final String DEVICE_APPROVED_URL = "/auth/device/approved";
+
+	public static final Set<String> euEaa = Set.of("AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "IS", "LI", "GB");
 
 	private final ClientDetailsEntityService clientService;
 	private final SystemScopeService scopeService;
@@ -403,6 +406,9 @@ public class DeviceEndpoint {
 
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 		model.put(PAGE, REQUEST_USER_CODE);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			return "lsaai/" + THEMED_REQUEST_USER_CODE;
+		}
 		return THEMED_REQUEST_USER_CODE;
 	}
 
@@ -413,6 +419,9 @@ public class DeviceEndpoint {
 
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 		model.put(PAGE, DEVICE_APPROVED);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			return "lsaai/" + THEMED_DEVICE_APPROVED;
+		}
 		return THEMED_DEVICE_APPROVED;
 	}
 
@@ -435,7 +444,23 @@ public class DeviceEndpoint {
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
 		model.put(PAGE, APPROVE_DEVICE);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			model.put("getsOfflineAccess", dc.getScope().contains("offline_access"));
+			model.put("jurisdiction", getJurisdiction(client));
+			return "lsaai/" + APPROVE_DEVICE;
+		}
 		return THEMED_APPROVE_DEVICE;
+	}
+
+	private String getJurisdiction(ClientDetailsEntity client) {
+		if (!StringUtils.hasText(client.getJurisdiction()) || euEaa.contains(client.getJurisdiction())) {
+			return "";
+		} else if (client.getJurisdiction().length() > 2) {
+			return "INT";
+		}
+
+		Locale l = new Locale("", client.getJurisdiction());
+		return l.getDisplayCountry() + " (" + l.getISO3Country() + ")";
 	}
 
 	private String constructVerificationURI(String uri, Map<String, String> params) throws URISyntaxException {

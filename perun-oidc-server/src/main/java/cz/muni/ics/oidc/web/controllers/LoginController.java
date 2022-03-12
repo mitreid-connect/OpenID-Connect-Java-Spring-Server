@@ -40,6 +40,9 @@ public class LoginController {
 	@RequestMapping(value = MAPPING_SUCCESS)
 	public String loginSuccess(HttpServletRequest req, Map<String, Object> model) {
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			return "lsaai/login_success";
+		}
 		return "login_success";
 	}
 
@@ -65,6 +68,9 @@ public class LoginController {
 		}
 
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			return "lsaai/login_failure";
+		}
 		return "login_failure";
 	}
 

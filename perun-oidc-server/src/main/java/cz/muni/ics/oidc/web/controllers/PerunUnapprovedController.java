@@ -112,6 +112,9 @@ public class PerunUnapprovedController {
         ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
         model.put("client", client);
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved";
+        }
         return "unapproved";
     }
 
@@ -127,6 +130,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -156,6 +162,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -180,6 +189,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -192,6 +204,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -204,6 +219,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -216,6 +234,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 
@@ -228,6 +249,9 @@ public class PerunUnapprovedController {
         model.put(OUT_CONTACT_P, CONTACT_LANG_PROP_KEY);
         model.put(CONTACT_MAIL, perunOidcConfig.getEmailContact());
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/unapproved_spec";
+        }
         return "unapproved_spec";
     }
 

@@ -119,6 +119,9 @@ public class PerunUnapprovedRegistrationController {
         model.put("groupsForRegistration", groupsForRegistration);
         model.put("page", "regForm");
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/registrationForm";
+        }
         return "registrationForm";
     }
 
@@ -150,6 +153,9 @@ public class PerunUnapprovedRegistrationController {
                 .replace(REGISTRATION_CONTINUE_MAPPING, REGISTRATION_FORM_MAPPING));
         ControllerUtils.setPageOptions(model, request, htmlClasses, perunOidcConfig);
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/registrationFormContinue";
+        }
         return "registrationFormContinue";
     }
 

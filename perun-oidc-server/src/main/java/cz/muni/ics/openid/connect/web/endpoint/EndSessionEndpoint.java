@@ -146,6 +146,9 @@ public class EndSessionEndpoint {
 			ControllerUtils.setPageOptions(model, request, htmlClasses, perunOidcConfig);
 
 			// display the log out confirmation page
+			if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+				return "lsaai/logout";
+			}
 			return "logout";
 		}
 	}
@@ -187,6 +190,9 @@ public class EndSessionEndpoint {
 				log.trace("redirecting to logout SAML only");
 				return "redirect:" + getLogoutUrl(null);
 			} else {
+				if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+					return "lsaai/logout_denied";
+				}
 				return "logout_denied";
 			}
 		}

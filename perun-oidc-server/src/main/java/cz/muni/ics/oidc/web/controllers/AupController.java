@@ -71,6 +71,9 @@ public class AupController {
         model.put(NEW_AUPS, newAups);
         ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/aup";
+        }
         return "aup";
     }
 
