@@ -60,8 +60,8 @@ public class Group extends Model {
 	}
 
 	public void setDescription(String description) {
-		if (Strings.isNullOrEmpty(description)) {
-			throw new IllegalArgumentException("description cannot be null nor empty");
+		if (null == description) {
+			throw new IllegalArgumentException("description cannot be null");
 		}
 
 		this.description = description;

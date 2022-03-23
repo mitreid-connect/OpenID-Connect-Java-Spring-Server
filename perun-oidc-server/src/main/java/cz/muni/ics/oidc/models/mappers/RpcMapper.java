@@ -114,7 +114,7 @@ public class RpcMapper {
 
 		Long id = getRequiredFieldAsLong(json, ID);
 		Long parentGroupId = getFieldAsLong(json, PARENT_GROUP_ID);
-		String name = getRequiredFieldAsString(json, NAME);
+		String name = getFieldAsString(json, NAME);
 		String description = getFieldAsString(json, DESCRIPTION);
 		Long voId = getRequiredFieldAsLong(json, VO_ID);
 		String uuid = getRequiredFieldAsString(json, UUID);

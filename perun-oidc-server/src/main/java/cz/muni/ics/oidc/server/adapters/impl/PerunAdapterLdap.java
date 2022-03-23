@@ -557,15 +557,18 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 					PERUN_VO_ID, PERUN_PARENT_GROUP_ID, UUID};
 
 			EntryMapper<Group> mapper = e -> {
-				if (!checkHasAttributes(e, new String[]{
-						PERUN_GROUP_ID, CN, DESCRIPTION, PERUN_UNIQUE_GROUP_NAME, PERUN_VO_ID, UUID }))
+				if (!checkHasAttributes(e,
+						new String[]{ PERUN_GROUP_ID, CN, PERUN_UNIQUE_GROUP_NAME, PERUN_VO_ID, UUID }))
 				{
 					return null;
 				}
 
 				Long id = Long.valueOf(e.get(PERUN_GROUP_ID).getString());
 				String name = e.get(CN).getString();
-				String description = e.get(DESCRIPTION).getString();
+				String description = "";
+				if (e.containsAttribute(DESCRIPTION)) {
+					description = e.get(DESCRIPTION).getString();
+				}
 				String uniqueName = e.get(PERUN_UNIQUE_GROUP_NAME).getString();
 				Long voId = Long.valueOf(e.get(PERUN_VO_ID).getString());
 				Long parentGroupId = null;
