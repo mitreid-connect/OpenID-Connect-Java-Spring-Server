@@ -95,7 +95,7 @@
 
 		<!-- Eclipse -->
 		<javax-persistence-api.version>2.2</javax-persistence-api.version>
-		<eclipse-persistence.version>2.7.9</eclipse-persistence.version>
+		<eclipse-persistence.version>2.7.10</eclipse-persistence.version>
 		<eclipse-persistence-core.version>${eclipse-persistence.version}</eclipse-persistence-core.version>
 		<eclipse-persistence-jpa.version>${eclipse-persistence.version}</eclipse-persistence-jpa.version>
 
