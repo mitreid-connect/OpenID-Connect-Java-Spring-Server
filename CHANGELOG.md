@@ -1,3 +1,11 @@
+## [8.1.6](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.5...v8.1.6) (2022-03-23)
+
+
+### Bug Fixes
+
+* 🐛 Allow Group description to be empty string ([76899b4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/76899b44777160ec8c12c682af4e940388a72c60))
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.13.2 ([1db9d51](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/1db9d5113a629f893817c08385909729b2819580))
+
 ## [8.1.5](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.4...v8.1.5) (2022-03-09)
 
 
