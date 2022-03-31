@@ -1,3 +1,11 @@
+## [8.1.8](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.7...v8.1.8) (2022-03-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.aspectj:aspectjweaver to v1.9.9 ([4ef0063](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/4ef006308a23111f9270b6d3c6b86d6c1f0f174f))
+* **deps:** update dependency org.mariadb.jdbc:mariadb-java-client to v3.0.4 ([96358d9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/96358d989b46618a048e71fdce310ce11ac807ce))
+
 ## [8.1.7](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.6...v8.1.7) (2022-03-23)
 
 
