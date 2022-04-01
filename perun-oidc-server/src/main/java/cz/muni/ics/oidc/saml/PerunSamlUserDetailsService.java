@@ -23,7 +23,7 @@ public class PerunSamlUserDetailsService implements SAMLUserDetailsService {
     @Override
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
         log.debug("Loading user for SAML credential");
-        return FiltersUtils.getPerunUser(credential, perunAdapter, samlProperties.getUserIdentifierAttribute());
+        return FiltersUtils.getPerunUser(credential, perunAdapter, samlProperties);
     }
 
 }

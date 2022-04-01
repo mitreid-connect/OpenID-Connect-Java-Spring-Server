@@ -927,6 +927,20 @@ public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements 
 		return hasApplicationForm(vo.getId());
 	}
 
+	@Override
+	public PerunUser getPerunUser(Long userId) {
+		if (!this.connectorRpc.isEnabled()) {
+			return null;
+		} else if (userId == null) {
+			throw new IllegalArgumentException("No userId");
+		}
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("id", userId);
+
+		JsonNode response = connectorRpc.post(USERS_MANAGER, "getUserById", map);
+		return RpcMapper.mapPerunUser(response);
+	}
+
 	private Member getMemberByUser(Long userId, Long voId) {
 		if (!this.connectorRpc.isEnabled()) {
 			return null;

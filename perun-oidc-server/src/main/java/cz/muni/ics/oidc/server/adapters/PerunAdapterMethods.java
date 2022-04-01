@@ -338,4 +338,6 @@ public interface PerunAdapterMethods {
 
 	boolean isUserInVo(Long userId, String voShortName);
 
+	PerunUser getPerunUser(Long userId);
+
 }

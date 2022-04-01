@@ -400,4 +400,17 @@ public class PerunAdapterImpl extends PerunAdapter {
         }
     }
 
+    @Override
+    public PerunUser getPerunUser(Long userId) {
+        try {
+            return this.getAdapterPrimary().getPerunUser(userId);
+        } catch (UnsupportedOperationException e) {
+            if (this.isCallFallback()) {
+                return this.getAdapterFallback().getPerunUser(userId);
+            } else {
+                throw e;
+            }
+        }
+    }
+
 }

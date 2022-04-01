@@ -1,16 +1,29 @@
 package cz.muni.ics.oidc.saml;
 
+import cz.muni.ics.oidc.exceptions.ConfigurationException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
 @Slf4j
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SamlProperties implements InitializingBean {
+
+    public static final String LOOKUP_ORIGINAL_AUTH = "original_auth";
+    public static final String LOOKUP_PERUN_USER_ID = "perun_user_id";
+    public static final String LOOKUP_STATIC_EXT_SOURCE = "static_ext_source";
 
     private String entityID;
     private String keystoreLocation;
@@ -23,70 +36,8 @@ public class SamlProperties implements InitializingBean {
     private String[] acrReservedPrefixes;
     private String[] acrsToBeAdded;
     private String userIdentifierAttribute;
-
-    public String getEntityID() {
-        return entityID;
-    }
-
-    public void setEntityID(String entityID) {
-        this.entityID = entityID;
-    }
-
-    public String getKeystoreLocation() {
-        return keystoreLocation;
-    }
-
-    public void setKeystoreLocation(String keystoreLocation) {
-        this.keystoreLocation = keystoreLocation;
-    }
-
-    public String getKeystorePassword() {
-        return keystorePassword;
-    }
-
-    public void setKeystorePassword(String keystorePassword) {
-        this.keystorePassword = keystorePassword;
-    }
-
-    public String getKeystoreDefaultKey() {
-        return keystoreDefaultKey;
-    }
-
-    public void setKeystoreDefaultKey(String keystoreDefaultKey) {
-        this.keystoreDefaultKey = keystoreDefaultKey;
-    }
-
-    public String getKeystoreDefaultKeyPassword() {
-        return keystoreDefaultKeyPassword;
-    }
-
-    public void setKeystoreDefaultKeyPassword(String keystoreDefaultKeyPassword) {
-        this.keystoreDefaultKeyPassword = keystoreDefaultKeyPassword;
-    }
-
-    public String getDefaultIdpEntityId() {
-        return defaultIdpEntityId;
-    }
-
-    public void setDefaultIdpEntityId(String defaultIdpEntityId) {
-        this.defaultIdpEntityId = defaultIdpEntityId;
-    }
-
-    public String getIdpMetadataFile() {
-        return idpMetadataFile;
-    }
-
-    public void setIdpMetadataFile(String idpMetadataFile) {
-        this.idpMetadataFile = idpMetadataFile;
-    }
-
-    public String getIdpMetadataUrl() {
-        return idpMetadataUrl;
-    }
-
-    public void setIdpMetadataUrl(String idpMetadataUrl) {
-        this.idpMetadataUrl = idpMetadataUrl;
-    }
+    private String userLookupMode;
+    private String staticUserExtSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -105,10 +56,29 @@ public class SamlProperties implements InitializingBean {
         if (!f.exists()) {
             throw new IllegalStateException("File '" + idpMetadataFile + "' does not exist");
         }
-    }
 
-    public String[] getAcrReservedPrefixes() {
-        return acrReservedPrefixes;
+        if (!StringUtils.hasText(userIdentifierAttribute)) {
+            throw new ConfigurationException("No user identifier attribute has been configured");
+        }
+
+        switch (userLookupMode) {
+            case LOOKUP_STATIC_EXT_SOURCE: {
+                if (!StringUtils.hasText(staticUserExtSource)) {
+                    throw new ConfigurationException(
+                            "No static ext source has been configured, while static ext source lookup has been set");
+                }
+            } break;
+            case LOOKUP_ORIGINAL_AUTH:
+            case LOOKUP_PERUN_USER_ID: {
+                // nothing that needs to be checked
+            } break;
+            default: {
+                throw new ConfigurationException(
+                        "Invalid configuration - unknown user lookup method, check your config. Allowed values are: "
+                        + LOOKUP_ORIGINAL_AUTH + ", " + LOOKUP_PERUN_USER_ID + ", " + LOOKUP_STATIC_EXT_SOURCE
+                );
+            }
+        }
     }
 
     public void setAcrReservedPrefixes(String[] acrReservedPrefixes) {
@@ -126,19 +96,4 @@ public class SamlProperties implements InitializingBean {
         }
     }
 
-    public String[] getAcrsToBeAdded() {
-        return acrsToBeAdded;
-    }
-
-    public void setAcrsToBeAdded(String[] acrsToBeAdded) {
-        this.acrsToBeAdded = acrsToBeAdded;
-    }
-
-    public String getUserIdentifierAttribute() {
-        return userIdentifierAttribute;
-    }
-
-    public void setUserIdentifierAttribute(String userIdentifierAttribute) {
-        this.userIdentifierAttribute = userIdentifierAttribute;
-    }
 }
