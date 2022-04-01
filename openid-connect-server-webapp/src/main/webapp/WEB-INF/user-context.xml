@@ -30,9 +30,12 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
+	<bean id="noopPasswordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder"/>
+
 	<security:authentication-manager id="authenticationManager">
 		<security:authentication-provider>
 			<security:jdbc-user-service data-source-ref="dataSource"/>
+			<security:password-encoder ref="noopPasswordEncoder" />
 		</security:authentication-provider>
 	</security:authentication-manager>
 		

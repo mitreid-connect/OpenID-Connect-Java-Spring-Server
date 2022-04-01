@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.slf4j.Logger;
@@ -50,12 +48,13 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author wkim
  *
  */
-public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
+public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService, InitializingBean {
 
 	/**
 	 * Logger for this class
@@ -116,7 +115,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	}
 
 
-	@PostConstruct
+	@Override
 	public void afterPropertiesSet() {
 
 		if (keys == null) {
