@@ -120,6 +120,18 @@
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 		<security:csrf disabled="true"/>
 	</security:http>
+	
+	<security:http pattern="/transaction"
+		create-session="stateless"
+		use-expressions="true"
+		entry-point-ref="http403EntryPoint"
+		>
+	
+		<security:intercept-url pattern="/token" access="permitAll" /> <!--  handle authentication internally for now  -->
+		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:csrf disabled="true"/>
+		
+	</security:http>
 
 	<!-- Allow open access to discovery endpoints -->
 	<security:http pattern="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">

@@ -17,11 +17,11 @@
     <meta name="referrer" content="strict-origin-when-cross-origin"/>
 
     <!-- stylesheets -->
-    <link href="resources/bootstrap2/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/css/bootstrap.css" rel="stylesheet">
     <link href="resources/css/bootstrap-sheet.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-local.css" rel="stylesheet">
-    <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="resources/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-responsive.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-responsive-local.css" rel="stylesheet">
 
