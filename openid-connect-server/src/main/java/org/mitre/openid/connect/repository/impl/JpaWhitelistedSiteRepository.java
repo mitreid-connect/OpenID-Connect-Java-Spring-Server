@@ -25,6 +25,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -45,6 +47,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<WhitelistedSite> getAll() {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_ALL, WhitelistedSite.class);
 		return query.getResultList();
@@ -52,6 +55,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public WhitelistedSite getById(Long id) {
 		return manager.find(WhitelistedSite.class, id);
 	}
@@ -85,6 +89,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public WhitelistedSite getByClientId(String clientId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CLIENT_ID, WhitelistedSite.class);
 		query.setParameter(WhitelistedSite.PARAM_CLIENT_ID, clientId);
@@ -93,6 +98,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CREATOR, WhitelistedSite.class);
 		query.setParameter(WhitelistedSite.PARAM_USER_ID, creatorId);

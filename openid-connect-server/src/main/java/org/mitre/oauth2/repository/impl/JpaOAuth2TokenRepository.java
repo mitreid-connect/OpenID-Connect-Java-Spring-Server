@@ -39,6 +39,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
@@ -61,12 +63,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	private EntityManager manager;
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class);
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_ALL, OAuth2RefreshTokenEntity.class);
 		return new LinkedHashSet<>(query.getResultList());
@@ -74,6 +78,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue) {
 		try {
 			JWT jwt = JWTParser.parse(accessTokenValue);
@@ -86,6 +91,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
 		return manager.find(OAuth2AccessTokenEntity.class, id);
 	}
@@ -109,6 +115,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN, refreshToken);
@@ -119,6 +126,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue) {
 		try {
 			JWT jwt = JWTParser.parse(refreshTokenValue);
@@ -131,6 +139,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
 		return manager.find(OAuth2RefreshTokenEntity.class, id);
 	}
@@ -154,6 +163,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public void clearTokensForClient(ClientDetailsEntity client) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
 		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);
@@ -170,6 +180,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
 		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);
@@ -178,6 +189,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client) {
 		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, OAuth2RefreshTokenEntity.class);
 		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_CLIENT, client);
@@ -202,12 +214,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
 		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
 		return getAllExpiredAccessTokens(pageCriteria);
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
@@ -215,12 +229,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens() {
 		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
 		return getAllExpiredRefreshTokens(pageCriteria);
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria) {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
@@ -228,6 +244,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
@@ -278,6 +295,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, OAuth2AccessTokenEntity.class);
 		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_APPROVED_SITE, approvedSite);
