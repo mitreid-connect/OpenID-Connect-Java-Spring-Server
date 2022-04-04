@@ -1,3 +1,10 @@
+## [8.2.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.0...v8.2.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* 🐛 Remove RelayState from SAML details in SavedUserAuth ([0f73d88](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/0f73d882363d1d5adb2bcf464f55339614947ff2))
+
 # [8.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.9...v8.2.0) (2022-04-04)
 
 
