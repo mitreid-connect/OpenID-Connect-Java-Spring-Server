@@ -1,3 +1,10 @@
+## [8.1.9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.8...v8.1.9) (2022-04-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.aspectj:aspectjweaver to v1.9.9.1 ([fb56956](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/fb5695632497b257955a9d72a8d2a83cda65b5a8))
+
 ## [8.1.8](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.7...v8.1.8) (2022-03-31)
 
 
