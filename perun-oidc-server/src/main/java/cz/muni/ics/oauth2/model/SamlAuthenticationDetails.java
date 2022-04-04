@@ -29,7 +29,6 @@ import org.springframework.util.StringUtils;
 @AllArgsConstructor
 public class SamlAuthenticationDetails {
 
-    public static final String RELAY_STATE = "relayState";
     public static final String LOCAL_ENTITY_ID = "localEntityId";
     public static final String REMOTE_ENTITY_ID = "remoteEntityId";
     public static final String ATTRIBUTES = "attributes";
@@ -37,14 +36,12 @@ public class SamlAuthenticationDetails {
     public static final String AUTHN_CONTEXT_CLASS_REF = "authnContextClassRef";
     public static final String AUTHENTICATING_AUTHORITIES = "authenticatingAuthorities";
 
-    private String relayState;
     private String remoteEntityID;
     private String localEntityID;
     private Map<String, String[]> attributes;
     private List<AuthenticationStatement> authnStatements;
 
     public SamlAuthenticationDetails(SAMLCredential samlCredential) {
-        this.relayState = samlCredential.getRelayState();
         this.remoteEntityID = samlCredential.getRemoteEntityID();
         this.localEntityID = samlCredential.getLocalEntityID();
         this.attributes = processAttributes(samlCredential);
@@ -104,7 +101,6 @@ public class SamlAuthenticationDetails {
         }
         JsonObject json = (JsonObject) JsonParser.parseString(strJson);
         SamlAuthenticationDetails details = new SamlAuthenticationDetails();
-        details.setRelayState(getStringOrNull(json.get(RELAY_STATE)));
         details.setRemoteEntityID(getStringOrNull(json.get(REMOTE_ENTITY_ID)));
         details.setLocalEntityID(getStringOrNull(json.get(LOCAL_ENTITY_ID)));
 
@@ -144,7 +140,6 @@ public class SamlAuthenticationDetails {
             return null;
         }
         JsonObject object = new JsonObject();
-        addStringOrNull(object, RELAY_STATE, o.getRelayState());
         addStringOrNull(object, LOCAL_ENTITY_ID, o.getLocalEntityID());
         addStringOrNull(object, REMOTE_ENTITY_ID, o.getRemoteEntityID());
         JsonObject attrs = new JsonObject();
