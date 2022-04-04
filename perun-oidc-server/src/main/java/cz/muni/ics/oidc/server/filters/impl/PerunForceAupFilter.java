@@ -106,7 +106,7 @@ public class PerunForceAupFilter extends AuthProcFilter {
             return true;
         }
 
-        PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties.getUserIdentifierAttribute());
+        PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties);
         if (user == null || user.getId() == null) {
             log.debug("{} - skip filter execution: no user provider", filterName);
             return true;

@@ -100,20 +100,7 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 		FilterBuilder filter = and(
 				equal(OBJECT_CLASS, PERUN_USER), equal(EDU_PERSON_PRINCIPAL_NAMES, extLogin)
 		);
-		SearchScope scope = SearchScope.ONELEVEL;
-		String[] attributes = new String[]{PERUN_USER_ID, GIVEN_NAME, SN};
-		EntryMapper<PerunUser> mapper = e -> {
-			if (!checkHasAttributes(e, new String[] { PERUN_USER_ID, SN })) {
-				return null;
-			}
-
-			long id = Long.parseLong(e.get(PERUN_USER_ID).getString());
-			String firstName = (e.get(GIVEN_NAME) != null) ? e.get(GIVEN_NAME).getString() : null;
-			String lastName = e.get(SN).getString();
-			return new PerunUser(id, firstName, lastName);
-		};
-
-		return connectorLdap.searchFirst(OU_PEOPLE, filter, scope, attributes, mapper);
+		return getPerunUser(filter);
 	}
 
 	@Override
@@ -533,6 +520,31 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 
 		Vo vo = connectorLdap.searchFirst(null, filter, SearchScope.ONELEVEL, attributes, mapper);
 		return vo != null;
+	}
+
+	@Override
+	public PerunUser getPerunUser(Long userId) {
+		FilterBuilder filter = and(
+				equal(OBJECT_CLASS, PERUN_USER), equal(PERUN_USER_ID, userId.toString())
+		);
+		return getPerunUser(filter);
+	}
+
+	private PerunUser getPerunUser(FilterBuilder filter) {
+		SearchScope scope = SearchScope.ONELEVEL;
+		String[] attributes = new String[]{PERUN_USER_ID, GIVEN_NAME, SN};
+		EntryMapper<PerunUser> mapper = e -> {
+			if (!checkHasAttributes(e, new String[] { PERUN_USER_ID, SN })) {
+				return null;
+			}
+
+			long id = Long.parseLong(e.get(PERUN_USER_ID).getString());
+			String firstName = (e.get(GIVEN_NAME) != null) ? e.get(GIVEN_NAME).getString() : null;
+			String lastName = e.get(SN).getString();
+			return new PerunUser(id, firstName, lastName);
+		};
+
+		return connectorLdap.searchFirst(OU_PEOPLE, filter, scope, attributes, mapper);
 	}
 
 	private List<Group> getGroups(Collection<?> objects, String objectAttribute) {

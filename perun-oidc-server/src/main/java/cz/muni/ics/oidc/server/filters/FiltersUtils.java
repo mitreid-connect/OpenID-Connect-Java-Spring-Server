@@ -9,6 +9,7 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
+import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -97,28 +98,65 @@ public class FiltersUtils {
 
 	public static PerunUser getPerunUser(HttpServletRequest request,
 										 PerunAdapter perunAdapter,
-										 String samlIdAttribute)
-	{
-		return getPerunUser(getSamlCredential(request), perunAdapter, samlIdAttribute);
+										 SamlProperties samlProperties) {
+		return getPerunUser(getSamlCredential(request), perunAdapter, samlProperties);
 	}
 
 	public static PerunUser getPerunUser(SAMLCredential samlCredential,
 										 PerunAdapter perunAdapter,
-										 String samlIdAttribute) {
+										 SamlProperties samlProperties) {
 		if (perunAdapter == null) {
 			throw new IllegalArgumentException("Cannot fetch user, no adapter passed");
 		}
 		if (samlCredential == null) {
 			return null;
 		}
-		String extLogin = getExtLogin(samlCredential, samlIdAttribute);
-		String extSourceName = getExtSourceName(samlCredential);
+		switch (samlProperties.getUserLookupMode()) {
+			case SamlProperties.LOOKUP_ORIGINAL_AUTH:
+			case SamlProperties.LOOKUP_STATIC_EXT_SOURCE: {
+				return getPerunUserByExtSourceAndExtLogin(perunAdapter, samlCredential, samlProperties);
+			}
+			case SamlProperties.LOOKUP_PERUN_USER_ID: {
+				return getPerunUserById(perunAdapter, samlCredential, samlProperties);
+			}
+			default: {
+				log.debug("Could not find user, invalid user lookup configured");
+				return null;
+			}
+		}
+	}
+
+	public static PerunUser getPerunUserByExtSourceAndExtLogin(PerunAdapter perunAdapter, SAMLCredential samlCredential, SamlProperties samlProperties) {
+		String extSourceName;
+		if (SamlProperties.LOOKUP_STATIC_EXT_SOURCE.equalsIgnoreCase(samlProperties.getUserLookupMode())) {
+			extSourceName = samlProperties.getStaticUserExtSource();
+		} else {
+			extSourceName = getExtSourceName(samlCredential);
+		}
+		String extLogin = getExtLogin(samlCredential, samlProperties.getUserIdentifierAttribute());
 		if (!StringUtils.hasText(extLogin)) {
 			return null;
 		} else if (!StringUtils.hasText(extSourceName)) {
 			return null;
 		}
 		return perunAdapter.getPreauthenticatedUserId(extLogin, extSourceName);
+	}
+
+	public static PerunUser getPerunUserById(PerunAdapter perunAdapter, SAMLCredential samlCredential, SamlProperties samlProperties) {
+		String userIdString = getExtLogin(samlCredential, samlProperties.getUserIdentifierAttribute());
+		if (!StringUtils.hasText(userIdString)) {
+			return null;
+		}
+		Long userId = null;
+		try {
+			userId = Long.parseLong(userIdString);
+		} catch (NumberFormatException e) {
+			log.debug("UserID '{}' cannot be parsed as long", userId);
+		}
+		if (userId == null) {
+			return null;
+		}
+		return perunAdapter.getPerunUser(userId);
 	}
 
 	public static SAMLCredential getSamlCredential(HttpServletRequest request) {

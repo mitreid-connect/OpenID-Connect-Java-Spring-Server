@@ -38,6 +38,7 @@ public class PerunFilterConstants {
     public static final String SAML_EPTID = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10";
     public static final String SAML_UID = "urn:oid:0.9.2342.19200300.100.1.1";
     public static final String SAML_UNIQUE_IDENTIFIER = "urn:oid:0.9.2342.19200300.100.1.44";
+    public static final String SAML_PERUN_USERID_IDENTIFIER = "urn:cesnet:proxyidp:attribute:perunUserId";
 
     public static final String REFEDS_MFA = "https://refeds.org/profile/mfa";
     public static final String PROMPT_LOGIN = "login";
@@ -50,6 +51,7 @@ public class PerunFilterConstants {
         SAML_IDS.put("eptid", SAML_EPTID);
         SAML_IDS.put("uid", SAML_UID);
         SAML_IDS.put("uniqueIdentifier", SAML_UNIQUE_IDENTIFIER);
+        SAML_IDS.put("perunUserId", SAML_PERUN_USERID_IDENTIFIER);
     }
 
 }

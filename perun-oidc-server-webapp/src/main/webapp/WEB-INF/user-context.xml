@@ -76,7 +76,9 @@
 				<prop key="saml.acrs.reserverdPrefixes">urn:cesnet:</prop>
 				<prop key="saml.acrs.enableComparison">false</prop>
 				<prop key="saml.acrs.onlyreserved.append">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</prop>
-				<prop key="saml.user.attrIdentifier">eppn</prop><!-- eppn|epuid|eptid|uid|uniqueIdentifier -->
+				<prop key="saml.user.attrIdentifier">eppn</prop><!-- eppn|epuid|eptid|uid|uniqueIdentifier|perunUserId -->
+				<prop key="saml.user.lookup">original_auth</prop><!-- original_auth|perun_user_id|static_ext_source -->
+				<prop key="saml.static_ext_idp"/>
 				<!-- STATS JDBC -->
 				<prop key="stats.jdbc.url">jdbc:mariadb://localhost:3306/STATS</prop>
 				<prop key="stats.jdbc.user">user</prop>
@@ -146,6 +148,8 @@
 		<property name="acrReservedPrefixes" value="#{'${saml.acrs.reserverdPrefixes}'.split('\s*,\s*')}"/>
 		<property name="acrsToBeAdded" value="#{'${saml.acrs.onlyreserved.append}'.split('\s*,\s*')}"/>
 		<property name="userIdentifierAttribute" value="${saml.user.attrIdentifier}"/>
+		<property name="userLookupMode" value="${saml.user.lookup}"/>
+		<property name="staticUserExtSource" value="${saml.static_ext_idp}"/>
 	</bean>
 
 	<bean id="nonOverwrittenAttributeProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">

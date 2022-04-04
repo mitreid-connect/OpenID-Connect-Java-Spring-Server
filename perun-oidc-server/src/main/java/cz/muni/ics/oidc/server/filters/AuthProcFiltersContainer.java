@@ -93,8 +93,7 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
                                 AuthProcFiltersContainer.class.getSimpleName(), client.getClientId(), e);
                     }
                 }
-                PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter,
-                        samlProperties.getUserIdentifierAttribute());
+                PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties);
                 FilterParams params = new FilterParams(client, facility, user);
                 for (AuthProcFilter filter : filters) {
                     if (!filter.doFilter(req, res, params)) {
