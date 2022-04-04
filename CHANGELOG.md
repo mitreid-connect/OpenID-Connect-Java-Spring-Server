@@ -1,3 +1,10 @@
+# [8.2.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.9...v8.2.0) (2022-04-04)
+
+
+### Features
+
+* 🎸 More user lookup methods ([3ea2b82](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/3ea2b82053651a331c015b774ce69107f679ecd9))
+
 ## [8.1.9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.1.8...v8.1.9) (2022-04-04)
 
 
