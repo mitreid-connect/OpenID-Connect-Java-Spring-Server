@@ -1,3 +1,10 @@
+## [8.2.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.1...v8.2.2) (2022-04-06)
+
+
+### Bug Fixes
+
+* 🐛 Fix storing SavedUserAuth ([c83ecc2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/c83ecc28e20ed44da21b7c3b9172f0cda5a50d12))
+
 ## [8.2.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.0...v8.2.1) (2022-04-04)
 
 
