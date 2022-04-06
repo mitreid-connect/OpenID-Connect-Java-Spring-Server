@@ -100,17 +100,21 @@ public class SavedUserAuthentication implements Authentication {
 		setAuthorities(new HashSet<>(src.getAuthorities()));
 		setAuthenticated(src.isAuthenticated());
 		if (src instanceof SavedUserAuthentication) {
-			this.setAcr(((SavedUserAuthentication) src).getAcr());
+			SavedUserAuthentication source = (SavedUserAuthentication) src;
+			this.setAcr(source.getAcr());
+			this.setAuthenticationDetails(source.getAuthenticationDetails());
 		} else if (src instanceof ExpiringUsernameAuthenticationToken) {
 			ExpiringUsernameAuthenticationToken token = (ExpiringUsernameAuthenticationToken) src;
-			this.acr = ((SamlPrincipal) token.getPrincipal()).getSamlCredential()
+			SAMLCredential credential = ((SamlPrincipal) token.getPrincipal()).getSamlCredential();
+			this.setAcr(credential
 					.getAuthenticationAssertion()
 					.getAuthnStatements().stream()
 					.map(AuthnStatement::getAuthnContext)
 					.map(AuthnContext::getAuthnContextClassRef)
 					.map(AuthnContextClassRef::getAuthnContextClassRef)
-					.collect(Collectors.joining());
-			this.authenticationDetails = new SamlAuthenticationDetails((SAMLCredential) src.getCredentials());
+					.collect(Collectors.joining())
+			);
+			this.setAuthenticationDetails(new SamlAuthenticationDetails(credential));
 		}
 	}
 
