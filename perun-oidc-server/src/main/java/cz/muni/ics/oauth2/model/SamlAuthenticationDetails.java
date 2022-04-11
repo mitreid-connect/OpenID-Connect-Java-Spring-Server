@@ -172,7 +172,10 @@ public class SamlAuthenticationDetails {
     }
 
     private static void addStringOrNull(JsonObject target, String key, String value) {
-        if (value == null) {
+        if (target == null || !StringUtils.hasText(key)) {
+            return;
+        }
+        if (value == null || "null".equalsIgnoreCase(value)) {
             target.add(key, new JsonNull());
         } else {
             target.addProperty(key, value);
@@ -180,7 +183,7 @@ public class SamlAuthenticationDetails {
     }
 
     private static String getStringOrNull(JsonElement jsonElement) {
-        if (jsonElement.isJsonPrimitive()) {
+        if (jsonElement != null && jsonElement.isJsonPrimitive()) {
             return jsonElement.getAsString();
         } else {
             return null;
