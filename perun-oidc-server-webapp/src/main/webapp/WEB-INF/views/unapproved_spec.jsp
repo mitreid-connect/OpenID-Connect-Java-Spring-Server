@@ -21,7 +21,7 @@ pageContext.setAttribute("cssLinks", cssLinks);
 <div id="content">
     <div class="error_message" style="word-wrap: break-word;">
         <h1><spring:message code="${outHeader}"/></h1>
-        <p><sprign:message code="${outMessage}"/></p>
+        <p><spring:message code="${outMessage}"/></p>
         <p><spring:message code="contact_p"/>${" "}<a href="mailto:${contactMail}">${contactMail}</a></p>
     </div>
 </div>
