@@ -1,3 +1,10 @@
+## [8.2.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.2...v8.2.3) (2022-04-11)
+
+
+### Bug Fixes
+
+* 🐛 Fix nullPointer in SamlAuthenticationDetailsStringCon ([3c034f4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/3c034f4c54965aa44fa654daf90520e5aa3f6a46))
+
 ## [8.2.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.1...v8.2.2) (2022-04-06)
 
 
