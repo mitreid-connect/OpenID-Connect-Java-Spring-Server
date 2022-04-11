@@ -1,3 +1,10 @@
+## [8.2.4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.3...v8.2.4) (2022-04-11)
+
+
+### Bug Fixes
+
+* 🐛 Added missing return values when RPC disabled ([733597a](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/733597a4731dc840520672f344f55a290237e988))
+
 ## [8.2.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.2...v8.2.3) (2022-04-11)
 
 
