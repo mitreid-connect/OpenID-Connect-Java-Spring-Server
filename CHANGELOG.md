@@ -1,3 +1,10 @@
+## [8.2.5](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.4...v8.2.5) (2022-04-11)
+
+
+### Bug Fixes
+
+* show unapproved message ([0d6e2c7](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/0d6e2c70d8b9bc34f0e1a77a9af996966c72f2e5))
+
 ## [8.2.4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.3...v8.2.4) (2022-04-11)
 
 
