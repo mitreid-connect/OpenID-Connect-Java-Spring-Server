@@ -851,7 +851,11 @@ public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements 
 
 	@Override
 	public boolean isValidMemberInGroupsAndVos(Long userId, Set<Long> mandatoryVos, Set<Long> mandatoryGroups,
-											   Set<Long> envVos, Set<Long> envGroups) {
+											   Set<Long> envVos, Set<Long> envGroups)
+	{
+		if (!this.connectorRpc.isEnabled()) {
+			return false;
+		}
 		List<Member> members = getMembersByUser(userId);
 		Set<Long> foundVoIds = new HashSet<>();
 		Set<Long> foundGroupIds = new HashSet<>();
@@ -869,7 +873,11 @@ public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements 
 	}
 
 	@Override
-	public boolean isValidMemberInGroupsAndVos(Long userId, Set<Long> vos, Set<Long> groups) {
+	public boolean isValidMemberInGroupsAndVos(Long userId, Set<Long> vos, Set<Long> groups)
+	{
+		if (!this.connectorRpc.isEnabled()) {
+			return false;
+		}
 		List<Member> members = getMembersByUser(userId);
 		Set<Long> foundVoIds = new HashSet<>();
 		Set<Long> foundGroupIds = new HashSet<>();
@@ -889,6 +897,9 @@ public class PerunAdapterRpc extends PerunAdapterWithMappingServices implements 
 
 	@Override
 	public boolean isUserInVo(Long userId, String voShortName) {
+		if (!this.connectorRpc.isEnabled()) {
+			return false;
+		}
 		if (userId == null) {
 			throw new IllegalArgumentException("No userId");
 		} else if (!StringUtils.hasText(voShortName)) {
