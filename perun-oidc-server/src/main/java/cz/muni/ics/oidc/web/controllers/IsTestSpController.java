@@ -46,6 +46,9 @@ public class IsTestSpController {
         model.put(TARGET, returnUrl);
         model.put(ACTION, req.getRequestURL().toString());
         ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+        if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+            return "lsaai/isTestSpWarning";
+        }
         return "isTestSpWarning";
     }
 

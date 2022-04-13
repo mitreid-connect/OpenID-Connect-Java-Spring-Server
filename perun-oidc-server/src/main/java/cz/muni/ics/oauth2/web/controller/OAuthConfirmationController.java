@@ -38,8 +38,11 @@ import cz.muni.ics.openid.connect.service.ScopeClaimTranslationService;
 import cz.muni.ics.openid.connect.service.UserInfoService;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +58,7 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
@@ -87,6 +91,11 @@ public class OAuthConfirmationController {
 	public static final String THEMED_APPROVE = "themedApprove";
 	public static final String APPROVE = "approve";
 	public static final String REMEMBER_ENABLED = "rememberEnabled";
+
+	public static final String LSAAI = "lsaai";
+
+	public static final Set<String> euEaa = Set.of("AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE",
+			"EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "IS", "LI", "GB");
 
 	@Getter
 	@Setter
@@ -188,7 +197,23 @@ public class OAuthConfirmationController {
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
 
 		model.put(PAGE, CONSENT);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase(LSAAI)) {
+			model.put("getsOfflineAccess", authRequest.getScope().contains("offline_access"));
+			model.put("jurisdiction", getJurisdiction(client));
+			return "lsaai/approve";
+		}
 		return THEMED_APPROVE;
+	}
+
+	private String getJurisdiction(ClientDetailsEntity client) {
+		if (!StringUtils.hasText(client.getJurisdiction()) || euEaa.contains(client.getJurisdiction())) {
+			return "";
+		} else if (client.getJurisdiction().length() > 2) {
+			return "INT";
+		}
+
+		Locale l = new Locale("", client.getJurisdiction());
+		return l.getDisplayCountry() + " (" + l.getISO3Country() + ")";
 	}
 
 	private String sendRedirect(AuthorizationRequest authRequest, Map<String, Object> model, ClientDetailsEntity client) {

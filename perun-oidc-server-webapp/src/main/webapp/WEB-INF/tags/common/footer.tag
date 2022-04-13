@@ -1,7 +1,6 @@
 <%@ tag pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="elixir" tagdir="/WEB-INF/tags/elixir" %>
 <%@ taglib prefix="cesnet" tagdir="/WEB-INF/tags/cesnet" %>
 <%@ taglib prefix="einfra" tagdir="/WEB-INF/tags/einfra" %>
 <%@ taglib prefix="bbmri" tagdir="/WEB-INF/tags/bbmri" %>
@@ -13,9 +12,6 @@
 <%@ attribute name="theme" required="true" %>
 
 <c:choose>
-    <c:when test="${theme eq 'elixir'}">
-        <elixir:footer baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
-    </c:when>
     <c:when test="${theme eq 'cesnet'}">
         <cesnet:footer baseURL="${baseURL}" samlResourcesURL="${samlResourcesURL}"/>
     </c:when>

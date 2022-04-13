@@ -314,6 +314,12 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 	}
 
+	@Column(name = "accepted_tos")
+	private boolean acceptedTos;
+
+	@Column(name = "jurisdiction")
+	private String jurisdiction;
+
 	@Override
 	public String getClientId() {
 		return clientId;

@@ -27,6 +27,9 @@ public class LogoutController {
 	@RequestMapping(value = MAPPING_SUCCESS)
 	public String logoutSuccess(HttpServletRequest req, Map<String, Object> model) {
 		ControllerUtils.setPageOptions(model, req, htmlClasses, perunOidcConfig);
+		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
+			return "lsaai/logout_success";
+		}
 		return "logout_success";
 	}
 
