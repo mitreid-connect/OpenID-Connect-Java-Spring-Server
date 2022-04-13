@@ -1,3 +1,16 @@
+# [9.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.5...v9.0.0) (2022-04-13)
+
+
+### Features
+
+* LS AAI design ([cd1ce6f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/cd1ce6fcc2706d77f01c655b969b597c7f692f49))
+
+
+### BREAKING CHANGES
+
+* requires database update (see migraiton script),
+dropped ELIXIR theme
+
 ## [8.2.5](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.4...v8.2.5) (2022-04-11)
 
 
