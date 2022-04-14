@@ -16,5 +16,6 @@ public class AuthenticationStatement {
 
     private List<String> authenticatingAuthorities;
     private String authnContextClassRef;
+    private String authnInstant;
 
 }

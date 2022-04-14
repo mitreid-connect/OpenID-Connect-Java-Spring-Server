@@ -16,7 +16,6 @@
 
 package cz.muni.ics.oauth2.model;
 
-import cz.muni.ics.oauth2.model.convert.JsonElementStringConverter;
 import cz.muni.ics.oauth2.model.convert.SamlAuthenticationDetailsStringConverter;
 import cz.muni.ics.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import cz.muni.ics.oidc.saml.SamlPrincipal;

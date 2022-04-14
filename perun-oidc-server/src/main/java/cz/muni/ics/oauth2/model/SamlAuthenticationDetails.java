@@ -33,6 +33,7 @@ public class SamlAuthenticationDetails {
     public static final String REMOTE_ENTITY_ID = "remoteEntityId";
     public static final String ATTRIBUTES = "attributes";
     public static final String AUTHN_STATEMENTS = "authnStatements";
+    public static final String AUTHN_INSTANT = "authnInstant";
     public static final String AUTHN_CONTEXT_CLASS_REF = "authnContextClassRef";
     public static final String AUTHENTICATING_AUTHORITIES = "authenticatingAuthorities";
 
@@ -73,7 +74,8 @@ public class SamlAuthenticationDetails {
                 {
                     authnContextClassRef = as.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
                 }
-                authenticationStatements.add(new AuthenticationStatement(authenticatingAuthorities, authnContextClassRef));
+                String authnInstant = as.getAuthnInstant() != null ? as.getAuthnInstant().toString() : "";
+                authenticationStatements.add(new AuthenticationStatement(authenticatingAuthorities, authnContextClassRef, authnInstant));
             }
         }
         return authenticationStatements;
@@ -127,11 +129,10 @@ public class SamlAuthenticationDetails {
                 authorities.add(authority.getAsString());
             }
             String authnContextClassRef = getStringOrNull(obj.get(AUTHN_CONTEXT_CLASS_REF));
-            authnStatements.add(new AuthenticationStatement(authorities, authnContextClassRef));
+            String authnInstant = getStringOrNull(obj.get(AUTHN_INSTANT));
+            authnStatements.add(new AuthenticationStatement(authorities, authnContextClassRef, authnInstant));
         }
         details.setAuthnStatements(authnStatements);
-
-
         return details;
     }
 
@@ -155,9 +156,11 @@ public class SamlAuthenticationDetails {
         }
         object.add(ATTRIBUTES, attrs);
         JsonArray authnStatements = new JsonArray();
+
         for (AuthenticationStatement as: o.getAuthnStatements()) {
             JsonObject asJson = new JsonObject();
             addStringOrNull(asJson, AUTHN_CONTEXT_CLASS_REF, as.getAuthnContextClassRef());
+            addStringOrNull(asJson, AUTHN_INSTANT, as.getAuthnInstant());
             JsonArray authorities = new JsonArray();
             for (String authAuthority: as.getAuthenticatingAuthorities()) {
                 if (authAuthority == null) {
@@ -165,7 +168,8 @@ public class SamlAuthenticationDetails {
                 }
                 authorities.add(authAuthority);
             }
-            asJson.add(AUTHENTICATING_AUTHORITIES, asJson);
+            asJson.add(AUTHENTICATING_AUTHORITIES, authorities);
+            authnStatements.add(asJson);
         }
         object.add(AUTHN_STATEMENTS, authnStatements);
         return object.toString();
