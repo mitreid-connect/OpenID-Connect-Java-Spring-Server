@@ -1,3 +1,10 @@
+## [9.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.0...v9.0.1) (2022-04-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.postgresql:postgresql to v42.3.4 ([cae6002](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/cae60026d32814e814ac76c8dd1a5b867a358e77))
+
 # [9.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v8.2.5...v9.0.0) (2022-04-13)
 
 
