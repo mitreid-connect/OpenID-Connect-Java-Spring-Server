@@ -1,0 +1,126 @@
+package org.mitre.oauth2.service.impl;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import java.sql.Date;
+import org.easymock.Mock;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.AuthorizationCodeEntity;
+import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.oauth2.repository.AuthorizationCodeRepository;
+import org.mitre.oauth2.repository.impl.JpaAuthenticationHolderRepository;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+
+@RunWith(MockitoJUnitRunner.class)
+public class TestDefaultOAuth2AuthorizationCodeService {
+	
+	private String codeNotFound = "codeNotFound";
+	private String consumedCode = "codeConsume";
+	private AuthenticationHolderEntity authHolder;
+	private JpaAuthenticationHolderRepository  authRepo;
+	private RandomValueStringGenerator generator;
+	private OAuth2Authentication OAuth2Authcode1;
+	private OAuth2Request OAuth2Request;
+	private static final long DELTA = 100L;
+
+	@Mock
+	private AuthorizationCodeRepository repository;
+	
+	@Mock
+	private AuthenticationHolderRepository authenticationHolderRepository;
+	
+	@Mock
+	private OAuth2Authentication authentication;
+
+	@InjectMocks
+	private DefaultOAuth2AuthorizationCodeService service;
+
+	@Before
+	public void before() {
+		Mockito.reset(repository);
+		Mockito.reset(authenticationHolderRepository);
+		authHolder = new AuthenticationHolderEntity();
+		authHolder.setAuthentication(authentication);
+		authenticationHolderRepository.save(authHolder);
+		OAuth2Authcode1 = new OAuth2Authentication(OAuth2Request, OAuth2Authcode1);
+		when(authRepo.save(Matchers.isA(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+		doNothing().when(authHolder).setAuthentication(Matchers.isA(OAuth2Authentication.class));
+	    }
+
+	@Test
+	public void testCreateAuthorizationCode(){
+		OAuth2Request auth2Request = Mockito.mock(OAuth2Request.class);
+		Authentication authObj = Mockito.mock(Authentication.class);
+		OAuth2Authentication authentication = new OAuth2Authentication(auth2Request, authObj);
+		String code = service.createAuthorizationCode(authentication);
+		when(service.createAuthorizationCode(authentication)).thenReturn(null);
+		ArgumentCaptor<AuthorizationCodeEntity> argumentCaptor = ArgumentCaptor.forClass(AuthorizationCodeEntity.class);
+		Mockito.verify(repository).save(argumentCaptor.capture());
+		assertThat(argumentCaptor.getValue(), equalTo(code));
+		}
+
+	@Test
+	public void testConsumeAuthorizationCode(){
+		String result = generator.generate();
+		AuthorizationCodeEntity Authentity = repository.getByCode(result);
+		Mockito.verify(repository).remove(Authentity);
+		}
+
+
+
+	@Test(expected = NullPointerException.class)
+	public void testConsumeAuthorizationCodeNotFound(){
+		Mockito.when(repository.getByCode(codeNotFound)).thenReturn(null);
+		assertEquals(null, service.consumeAuthorizationCode(codeNotFound));
+		}
+	
+	
+	@Test
+	public void testCanNotConsumeTwice(){
+		Mockito.doNothing().doThrow(new InvalidGrantException("cannot consume twice")).when(service).consumeAuthorizationCode(consumedCode);
+		}
+
+	
+	@Test
+	public void testRespositoryGetAndSet() {
+		service.setRepository(repository);
+		assertEquals(service.getRepository(), repository);			
+		}
+	
+	@Test
+	public void testExpirationSecond() {
+		service.setAuthCodeExpirationSeconds(10);
+		assertEquals(service.getAuthCodeExpirationSeconds(), 10);			
+		}
+	
+	@Test
+	public void testCodeAppropiateSecond() {
+		Integer appropiateSecond = 99;
+		
+		long start = System.currentTimeMillis();
+		long end = System.currentTimeMillis();
+		
+		service.setAuthCodeExpirationSeconds(appropiateSecond);
+		// for leeway on either side
+		Date oneside = new Date(start + (appropiateSecond * 1000L) + DELTA);
+		Date otherside = new Date(end + (appropiateSecond * 1000L) - DELTA);
+		ArgumentCaptor<AuthorizationCodeEntity> argumentCaptor = ArgumentCaptor.forClass(AuthorizationCodeEntity.class);
+		Mockito.verify(Mockito.mock(AuthorizationCodeRepository.class)).save(argumentCaptor.capture());
+		assertTrue(argumentCaptor.capture().getExpiration().after(oneside) && argumentCaptor.capture().getExpiration().before(otherside));
+
+		}
+}
