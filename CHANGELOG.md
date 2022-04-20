@@ -1,3 +1,10 @@
+## [9.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.1...v9.0.2) (2022-04-20)
+
+
+### Bug Fixes
+
+* MUNI branding ([07479e4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/07479e4a04fdbbee2a14c22739957d43d12e49c2))
+
 ## [9.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.0...v9.0.1) (2022-04-19)
 
 
