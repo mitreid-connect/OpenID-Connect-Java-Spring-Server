@@ -8,7 +8,7 @@
 <%@ attribute name="samlResourcesURL" required="true" %>
 <%@ attribute name="cssLinks" required="true" type="java.util.ArrayList<java.lang.String>" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!doctype html>
 <spring:message code="other_lang" var="other_lang"/>
 <html class="no-js touch no-touch" lang="${other_lang}">
 <head>
@@ -18,7 +18,13 @@
 
     <title><spring:message code="unified_login"/> | ${title}</title>
 
-    <link rel="icon" href="resources/images/muni.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#0000dc">
+    <meta name="msapplication-TileColor" content="#0000dc">
+    <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/style-ie.css?1.2">
     <link rel="stylesheet" type="text/css" href="https://id.muni.cz/simplesaml/module.php/muni/css/style.css?1.2">
