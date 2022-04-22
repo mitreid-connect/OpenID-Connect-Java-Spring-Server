@@ -10,7 +10,7 @@
 
 <!doctype html>
 <spring:message code="other_lang" var="other_lang"/>
-<html class="no-js touch no-touch" lang="${other_lang}">
+<html class="no-js touch no-touch" lang="${pageContext.response.locale}">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,8 +56,12 @@
             <div class="header__wrap">
                 <h1 class="header__logo">
                     <spring:message code="muni_logo" var="alt"/>
-                    <img src="${samlResourcesURL}/module.php/${theme}/img/<spring:message code="img_name"/>.png"
-                         width="<spring:message code="img_width"/>" height="<spring:message code="img_height"/>" alt="${alt}"/>
+                    <svg width="<spring:message code="img_width"/>" height="<spring:message code="img_height"/>" role="img" aria-label="${alt}">
+                        <image xlink:href="${samlResourcesURL}/module.php/${theme}/img/<spring:message code="img_name"/>.svg"
+                               src="${samlResourcesURL}/module.php/${theme}/img/<spring:message code="img_name"/>.png"
+                               width="<spring:message code="img_width"/>" height="<spring:message code="img_height"/>"
+                        />
+                    </svg>
                 </h1>
                 <div class="header__side">
                     <div class="menu-lang" role="navigation">
