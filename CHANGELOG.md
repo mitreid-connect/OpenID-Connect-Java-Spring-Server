@@ -1,3 +1,10 @@
+# [9.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.3...v9.1.0) (2022-04-22)
+
+
+### Features
+
+* 🎸 Filter for logging authentication details ([585dbd8](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/585dbd82a5364e5ca9fe16a9b5714aa340f47896))
+
 ## [9.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.2...v9.0.3) (2022-04-22)
 
 
