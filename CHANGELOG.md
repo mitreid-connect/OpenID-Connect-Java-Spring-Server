@@ -1,3 +1,11 @@
+## [9.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.2...v9.0.3) (2022-04-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.projectlombok:lombok to v1.18.24 ([6736cf4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/6736cf4c38adad8b37e8c9914348da938c69506c))
+* improve MUNI header ([3f0f910](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/3f0f9103d8223ff41476f04e6c6a034a483da84f))
+
 ## [9.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.1...v9.0.2) (2022-04-20)
 
 
