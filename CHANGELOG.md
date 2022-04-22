@@ -1,3 +1,10 @@
+## [9.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.0...v9.1.1) (2022-04-22)
+
+
+### Bug Fixes
+
+* 🐛 Fixed wrong mail in LS consent ([c84912c](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/c84912c55106b5b272e5221efbacdbd1451aeb7e))
+
 # [9.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.0.3...v9.1.0) (2022-04-22)
 
 
