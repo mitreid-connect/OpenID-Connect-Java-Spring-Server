@@ -122,7 +122,7 @@
     </c:if>
     <div class="outro">
         <p>
-            For withdrawing consent, contact <a href="mailto:support@aai.lifescience-ri.eu">support@example.com</a>
+            For withdrawing consent, contact <a href="mailto:support@aai.lifescience-ri.eu">support@aai.lifescience-ri.eu</a>
         </p>
     </div>
     <div class="footer-buttons">
