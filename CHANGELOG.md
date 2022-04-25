@@ -1,3 +1,10 @@
+## [9.1.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.1...v9.1.2) (2022-04-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.29 ([9ff89f7](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/9ff89f78f8571e7becd8d9391b788ee035298a57))
+
 ## [9.1.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.0...v9.1.1) (2022-04-22)
 
 
