@@ -72,7 +72,7 @@
 
 		<!-- Spring Security -->
 		<spring-security.version>4.2.20.RELEASE</spring-security.version>
-		<spring-security-oauth2.version>2.5.1.RELEASE</spring-security-oauth2.version>
+		<spring-security-oauth2.version>2.5.2.RELEASE</spring-security-oauth2.version>
 		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
 
 		<!-- Jackson -->
