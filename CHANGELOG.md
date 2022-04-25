@@ -1,3 +1,10 @@
+## [9.1.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.2...v9.1.3) (2022-04-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.springframework.security.oauth:spring-security-oauth2 to v2.5.2.release ([5eafd46](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/5eafd46d0a53a2bdb88b0cb2086e0fface4022be))
+
 ## [9.1.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.1...v9.1.2) (2022-04-25)
 
 
