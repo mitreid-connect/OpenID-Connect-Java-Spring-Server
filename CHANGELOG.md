@@ -1,3 +1,10 @@
+## [9.1.4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.3...v9.1.4) (2022-04-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.nimbusds:nimbus-jose-jwt to v9.22 ([1a087e4](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/1a087e4ba1da9ef89d5315a09bd41e4acc591c21))
+
 ## [9.1.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.1.2...v9.1.3) (2022-04-25)
 
 
