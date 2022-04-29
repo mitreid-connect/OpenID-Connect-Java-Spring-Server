@@ -93,8 +93,7 @@ CREATE TABLE saved_user_auth (
   id NUMBER(19) NOT NULL PRIMARY KEY,
   name VARCHAR2(1024),
   authenticated NUMBER(1),
-  source_class VARCHAR2(2048),
-
+  source_class VARCHAR2(2048)
   CONSTRAINT authenticated_check CHECK (authenticated in (1,0))
 );
 CREATE SEQUENCE saved_user_auth_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
@@ -180,9 +179,9 @@ CREATE TABLE client_details (
   initiate_login_uri VARCHAR2(2048),
   clear_access_tokens_on_refresh NUMBER(1) DEFAULT 1 NOT NULL,
   
-  software_statement VARCHAR(4096),
-  software_id VARCHAR(2048),
   software_statement VARCHAR2(4000),
+  software_id VARCHAR2(2048),
+  software_version VARCHAR2(2048),
 	
   code_challenge_method VARCHAR2(256),
 
