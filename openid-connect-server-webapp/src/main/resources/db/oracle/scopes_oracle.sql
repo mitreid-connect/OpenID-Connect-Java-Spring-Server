@@ -11,7 +11,7 @@ INSERT INTO system_scope_TEMP (scope, description, icon, restricted, default_sco
 INSERT INTO system_scope_TEMP (scope, description, icon, restricted, default_scope) VALUES
   ('address', 'physical address', 'home', 0, 1);
 INSERT INTO system_scope_TEMP (scope, description, icon, restricted, default_scope) VALUES
-  ('phone', 'telephone number', 'bell', 0, 1, 0);
+  ('phone', 'telephone number', 'bell', 0, 1);
 INSERT INTO system_scope_TEMP (scope, description, icon, restricted, default_scope) VALUES
   ('offline_access', 'offline access', 'time', 0, 0);
 --
