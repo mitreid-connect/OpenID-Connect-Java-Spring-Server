@@ -280,7 +280,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim(RESPONSE_TYPE));
 			if (!responseTypes.isEmpty()) {
-				if (!responseTypes.equals(request.getResponseTypes())) {
+				if (definedButDifferent(responseTypes, request.getResponseTypes())) {
 					logger.info("Mismatch between request object and regular parameter for response_type, using request object");
 				}
 				request.setResponseTypes(responseTypes);
@@ -288,7 +288,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String redirectUri = claims.getStringClaim(REDIRECT_URI);
 			if (redirectUri != null) {
-				if (!redirectUri.equals(request.getRedirectUri())) {
+				if (definedButDifferent(redirectUri, request.getRedirectUri())) {
 					logger.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
 				}
 				request.setRedirectUri(redirectUri);
@@ -296,7 +296,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String state = claims.getStringClaim(STATE);
 			if(state != null) {
-				if (!state.equals(request.getState())) {
+				if (definedButDifferent(state, request.getState())) {
 					logger.info("Mismatch between request object and regular parameter for state, using request object");
 				}
 				request.setState(state);
@@ -304,7 +304,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String nonce = claims.getStringClaim(NONCE);
 			if(nonce != null) {
-				if (!nonce.equals(request.getExtensions().get(NONCE))) {
+				if (definedButDifferent(nonce, (String) request.getExtensions().get(NONCE))) {
 					logger.info("Mismatch between request object and regular parameter for nonce, using request object");
 				}
 				request.getExtensions().put(NONCE, nonce);
@@ -312,7 +312,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String display = claims.getStringClaim(DISPLAY);
 			if (display != null) {
-				if (!display.equals(request.getExtensions().get(DISPLAY))) {
+				if (definedButDifferent(display, (String) request.getExtensions().get(DISPLAY))) {
 					logger.info("Mismatch between request object and regular parameter for display, using request object");
 				}
 				request.getExtensions().put(DISPLAY, display);
@@ -320,7 +320,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String prompt = claims.getStringClaim(PROMPT);
 			if (prompt != null) {
-				if (!prompt.equals(request.getExtensions().get(PROMPT))) {
+				if (definedButDifferent(prompt, (String) request.getExtensions().get(PROMPT))) {
 					logger.info("Mismatch between request object and regular parameter for prompt, using request object");
 				}
 				request.getExtensions().put(PROMPT, prompt);
@@ -328,7 +328,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim(SCOPE));
 			if (!scope.isEmpty()) {
-				if (!scope.equals(request.getScope())) {
+				if (definedButDifferent(scope, request.getScope())) {
 					logger.info("Mismatch between request object and regular parameter for scope, using request object");
 				}
 				request.setScope(scope);
@@ -337,7 +337,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim(CLAIMS));
 			if (claimRequest != null) {
 				Serializable claimExtension = request.getExtensions().get(CLAIMS);
-				if (claimExtension == null || !claimRequest.equals(parseClaimRequest(claimExtension.toString()))) {
+				if (claimExtension != null && !claimRequest.equals(parseClaimRequest(claimExtension.toString()))) {
 					logger.info("Mismatch between request object and regular parameter for claims, using request object");
 				}
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
@@ -346,7 +346,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			String loginHint = claims.getStringClaim(LOGIN_HINT);
 			if (loginHint != null) {
-				if (!loginHint.equals(request.getExtensions().get(LOGIN_HINT))) {
+				if (definedButDifferent(loginHint, (String) request.getExtensions().get(LOGIN_HINT))) {
 					logger.info("Mistmatch between request object and regular parameter for login_hint, using requst object");
 				}
 				request.getExtensions().put(LOGIN_HINT, loginHint);
@@ -355,6 +355,26 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		} catch (ParseException e) {
 			logger.error("ParseException while parsing RequestObject:", e);
 		}
+	}
+
+	/**
+	 * Returns true if both objects are defined but different
+	 * @param requestValue value from the request object
+	 * @param request value from the authorization request directly
+	 * @return true if both objects are defined but different, false otherwise
+	 */
+	private boolean definedButDifferent(String requestValue, String request) {
+		return request != null && !requestValue.equals(request);
+	}
+
+	/**
+	 * Returns true if both objects are defined but different
+	 * @param requestValue value from the request object
+	 * @param request value from the authorization request directly
+	 * @return true if both objects are defined but different, false otherwise
+	 */
+	private boolean definedButDifferent(Set<String> requestValue, Set<String> request) {
+		return request != null && !request.isEmpty() && !requestValue.equals(request);
 	}
 
 	/**
