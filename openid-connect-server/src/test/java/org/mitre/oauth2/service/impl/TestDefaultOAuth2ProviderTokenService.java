@@ -17,18 +17,17 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
+import com.nimbusds.jose.util.Base64URL;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mitre.oauth2.model.AuthenticationHolderEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
-import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.model.*;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -42,6 +41,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -55,6 +55,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anySet;
@@ -65,10 +66,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -542,5 +539,111 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Set<OAuth2RefreshTokenEntity> tokens = service.getAllRefreshTokensForUser(userName);
 		assertEquals(1, tokens.size());
 		assertTrue(tokens.contains(refreshToken));
+	}
+
+	@Test
+	public void getRefreshTokenByValue(){
+		when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
+		OAuth2RefreshTokenEntity token = service.getRefreshToken(refreshTokenValue);
+		assertNotNull(token);
+		assertEquals(token, refreshToken);
+	}
+
+	@Test(expected = InvalidTokenException.class)
+	public void getRefreshTokenByValue_null(){
+		when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(null);
+		OAuth2RefreshTokenEntity token = service.getRefreshToken(refreshTokenValue);
+	}
+
+	/**
+	 * Test Code Challenge
+	 */
+	@Test
+	public void createAccessToken_CodeChallenge_plain(){
+		Map<String, Serializable> extensions = new HashMap<>();
+		extensions.put("code_challenge","FOO");
+		extensions.put("code_challenge_method", "plain");
+
+		Map<String,String> requestParameters = new HashMap<>();
+		requestParameters.put("code_verifier","FOO");
+		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
+		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
+
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.plain);
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+	}
+
+	@Test
+	public void createAccessToken_CodeChallenge_s256(){
+		Map<String, Serializable> extensions = new HashMap<>();
+		String rawVerifier = "foo";
+		String verifierHash = "";
+		try {
+			verifierHash = Base64URL.encode(MessageDigest.getInstance("SHA-256").digest(rawVerifier.getBytes(StandardCharsets.US_ASCII))).toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		extensions.put("code_challenge", verifierHash);
+		extensions.put("code_challenge_method", "S256");
+
+		Map<String,String> requestParameters = new HashMap<>();
+		requestParameters.put("code_verifier", rawVerifier);
+		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
+		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
+
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.S256);
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+	}
+
+	@Test(expected = InvalidRequestException.class)
+	public void createAccessToken_CodeChallenge_verifier_mismatch(){
+		Map<String, Serializable> extensions = new HashMap<>();
+		extensions.put("code_challenge","FOO");
+		extensions.put("code_challenge_method", "plain");
+
+		Map<String,String> requestParameters = new HashMap<>();
+		requestParameters.put("code_verifier","BAR");
+		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
+		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
+
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.plain);
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+	}
+
+	@Test(expected = InvalidRequestException.class)
+	public void createAccessToken_CodeChallenge_s256_mismatch(){
+		Map<String, Serializable> extensions = new HashMap<>();
+		String rawVerifier = "foo";
+		String verifierHash = "";
+		try {
+			verifierHash = Base64URL.encode(MessageDigest.getInstance("SHA-256").digest(rawVerifier.getBytes(StandardCharsets.US_ASCII))).toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		extensions.put("code_challenge", verifierHash);
+		extensions.put("code_challenge_method", "S256");
+
+		Map<String,String> requestParameters = new HashMap<>();
+		requestParameters.put("code_verifier", "bar");
+		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
+		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
+
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.S256);
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+	}
+
+	@Test(expected = InvalidRequestException.class)
+	public void createAccessToken_CodeChallenge_alg_mismatch(){
+		Map<String, Serializable> extensions = new HashMap<>();
+		extensions.put("code_challenge","FOO");
+		extensions.put("code_challenge_method", "sha-256");
+
+		Map<String,String> requestParameters = new HashMap<>();
+		requestParameters.put("code_verifier","FOO");
+		OAuth2Request clientAuth = new OAuth2Request(requestParameters, clientId, null, true, scope, null, null, null, extensions);
+		when(authentication.getOAuth2Request()).thenReturn(clientAuth);
+
+		when(client.getCodeChallengeMethod()).thenReturn(PKCEAlgorithm.plain);
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 	}
 }

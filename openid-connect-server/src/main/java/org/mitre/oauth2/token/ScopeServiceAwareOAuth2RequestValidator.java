@@ -22,13 +22,18 @@ package org.mitre.oauth2.token;
 
 import java.util.Set;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
 import org.springframework.security.oauth2.provider.TokenRequest;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE_METHOD;
+
 
 /**
  *
@@ -56,9 +61,27 @@ public class ScopeServiceAwareOAuth2RequestValidator implements OAuth2RequestVal
 		}
 	}
 
+	private void validateCodeChallengeMethod(AuthorizationRequest request, ClientDetails client) {
+		ClientDetailsEntity clientEntity = (ClientDetailsEntity)client;
+		if (clientEntity.getCodeChallengeMethod() != null) {
+			// We're only basing this off the client, and not some sort of server wide "Enforce PKCE with method X"
+			String clientCodeChallengeMethod = clientEntity.getCodeChallengeMethod().getName();
+
+			if(request.getExtensions().get(CODE_CHALLENGE_METHOD) == null ||
+				!request.getExtensions().get(CODE_CHALLENGE_METHOD).toString().equals(clientCodeChallengeMethod)) {
+				throw OAuth2Exception.create(OAuth2Exception.INVALID_REQUEST, "Request code_challenge_method: '"
+					+ request.getExtensions().get(CODE_CHALLENGE_METHOD).toString()
+					+ "' does not match client settings");
+			}
+		}
+	}
+
 	@Override
 	public void validateScope(AuthorizationRequest authorizationRequest, ClientDetails client) throws InvalidScopeException {
 		validateScope(authorizationRequest.getScope(), client.getScope());
+		// We're going to validate the code challenge method. This method is part of the SecOAuth defined interface,
+		//    which should be more generic to validate more than just the scopes.
+		validateCodeChallengeMethod(authorizationRequest, client);
 	}
 
 	@Override

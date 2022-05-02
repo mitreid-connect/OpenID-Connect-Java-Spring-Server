@@ -175,6 +175,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				String challenge = (String) request.getExtensions().get(CODE_CHALLENGE);
 				PKCEAlgorithm alg = PKCEAlgorithm.parse((String) request.getExtensions().get(CODE_CHALLENGE_METHOD));
 
+				// make sure the code challenge method matches the one defined for the client
+				if (client.getCodeChallengeMethod() != null && !client.getCodeChallengeMethod().equals(alg)){
+					logger.error("Challenge method didn't match");
+					throw new InvalidRequestException("Code challenge method does not match method defined in client");
+				}
+
 				String verifier = request.getRequestParameters().get(CODE_VERIFIER);
 
 				if (alg.equals(PKCEAlgorithm.plain)) {
