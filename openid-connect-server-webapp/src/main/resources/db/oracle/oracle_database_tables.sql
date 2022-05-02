@@ -288,7 +288,9 @@ CREATE TABLE user_info (
   src VARCHAR2(4000),
 
   CONSTRAINT email_verified_check CHECK (email_verified in (1,0)),
-  CONSTRAINT phone_number_verified_check CHECK (phone_number_verified in (1,0))
+  CONSTRAINT phone_number_verified_check CHECK (phone_number_verified in (1,0)),
+  CONSTRAINT user_info_username_unique UNIQUE (preferred_username),
+  CONSTRAINT user_info_email_unique UNIQUE (email)
 );
 CREATE SEQUENCE user_info_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
