@@ -64,7 +64,7 @@ public class ScopeAPI {
 
 	private Gson gson = new Gson();
 
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAll(ModelMap m) {
 
 		Set<SystemScope> allScopes = scopeService.getAll();
@@ -74,7 +74,7 @@ public class ScopeAPI {
 		return JsonEntityView.VIEWNAME;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getScope(@PathVariable("id") Long id, ModelMap m) {
 
 		SystemScope scope = scopeService.getById(id);
@@ -95,7 +95,7 @@ public class ScopeAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String updateScope(@PathVariable("id") Long id, @RequestBody String json, ModelMap m) {
 
 		SystemScope existing = scopeService.getById(id);
@@ -133,7 +133,7 @@ public class ScopeAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
 

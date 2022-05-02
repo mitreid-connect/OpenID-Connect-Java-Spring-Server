@@ -38,6 +38,13 @@
     <script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
     <script type="text/javascript" src="resources/js/lib/i18next.js"></script>
     <script type="text/javascript">
+	    $.ajaxSetup({
+	        headers: {
+	            "Accept": "application/json; charset=UTF-8",
+	            "Content-Type": "application/json; charset=UTF-8"
+	        }
+	    });
+	    
         $.i18n.init({
             fallbackLng: "en",
             lng: "${config.locale}",

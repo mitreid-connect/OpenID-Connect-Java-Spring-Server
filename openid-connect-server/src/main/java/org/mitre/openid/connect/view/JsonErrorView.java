@@ -89,7 +89,7 @@ public class JsonErrorView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
 
 		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);

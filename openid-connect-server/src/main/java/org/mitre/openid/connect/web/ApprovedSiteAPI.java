@@ -65,7 +65,7 @@ public class ApprovedSiteAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAllApprovedSites(ModelMap m, Principal p) {
 
 		Collection<ApprovedSite> all = approvedSiteService.getByUserId(p.getName());
@@ -105,7 +105,7 @@ public class ApprovedSiteAPI {
 	/**
 	 * Get a single approved site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {

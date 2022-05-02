@@ -73,7 +73,7 @@ public class BlacklistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAllBlacklistedSites(ModelMap m) {
 
 		Collection<BlacklistedSite> all = blacklistService.getAll();
@@ -90,7 +90,7 @@ public class BlacklistAPI {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String addNewBlacklistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -124,7 +124,7 @@ public class BlacklistAPI {
 	/**
 	 * Update an existing blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String updateBlacklistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -190,7 +190,7 @@ public class BlacklistAPI {
 	/**
 	 * Get a single blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		if (blacklist == null) {

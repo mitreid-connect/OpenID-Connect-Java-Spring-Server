@@ -32,11 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,7 +73,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getResourceSetsForCurrentUser(Model m, Authentication auth) {
 
 		Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwner(auth.getName());
@@ -90,7 +90,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
@@ -120,7 +120,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String deleteResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
@@ -151,7 +151,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getPoliciesForResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
@@ -181,7 +181,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String createNewPolicyForResourceSet(@PathVariable (value = "rsid") Long rsid, @RequestBody String jsonString, Model m, Authentication auth) {
 		ResourceSet rs = resourceSetService.getById(rsid);
 
@@ -240,7 +240,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getPolicy(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
@@ -280,7 +280,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String setClaimsForResourceSet(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
@@ -350,7 +350,7 @@ public class PolicyAPI {
 	 * @param auth
 	 * @return
 	 */
-	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String deleteResourceSet(@PathVariable ("rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);

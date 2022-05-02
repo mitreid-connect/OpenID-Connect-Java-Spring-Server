@@ -32,11 +32,11 @@ import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,7 +64,7 @@ public class UserClaimSearchHelper {
 	private ConfigurationPropertiesBean config;
 
 
-	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String search(@RequestParam(value = "identifier") String email, Model m, Authentication auth, HttpServletRequest req) {
 
 		// check locally first
