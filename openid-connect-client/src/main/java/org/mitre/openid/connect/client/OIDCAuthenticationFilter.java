@@ -449,6 +449,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			// Handle error
 
 			logger.error("Token Endpoint error response:  " + e.getMessage());
+			
+			if (e instanceof HttpClientErrorException) {
+				logger.debug("Token Endpoint message body: " + ((HttpClientErrorException) e).getResponseBodyAsString());
+			}
 
 			throw new AuthenticationServiceException("Unable to obtain Access Token: " + e.getMessage());
 		}
