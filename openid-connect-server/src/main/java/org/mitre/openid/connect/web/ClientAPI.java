@@ -31,6 +31,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.PKCEAlgorithm;
+import org.mitre.oauth2.model.convert.GrantedAuthorityJsonConverter;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
 import org.mitre.openid.connect.exception.ValidationException;
@@ -51,6 +52,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -212,6 +214,12 @@ public class ClientAPI {
 					}
 				}
 			})
+			.registerTypeAdapter(GrantedAuthority.class, new JsonDeserializer<GrantedAuthority>() {
+                @Override
+                public GrantedAuthority deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    return GrantedAuthorityJsonConverter.parse(json);
+                }
+            })
 			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 			.create();
 
