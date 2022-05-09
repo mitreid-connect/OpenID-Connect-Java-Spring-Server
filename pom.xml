@@ -80,7 +80,7 @@
 		<jackson-dataformat-yml.version>${jackson.version}</jackson-dataformat-yml.version>
 
 		<!-- Database -->
-		<postgresql.version>42.3.4</postgresql.version>
+		<postgresql.version>42.3.5</postgresql.version>
 		<mysql.version>8.0.29</mysql.version>
 		<hsqldb.version>2.6.1</hsqldb.version>
 		<mariadb-java-client.version>3.0.4</mariadb-java-client.version>
