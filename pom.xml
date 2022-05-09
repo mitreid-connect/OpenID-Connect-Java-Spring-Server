@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.muni.ics</groupId>
 	<artifactId>perun-oidc-parent</artifactId>
-	<version>9.1.4</version>
+	<version>9.1.5</version>
 	<packaging>pom</packaging>
 
 	<modules>
