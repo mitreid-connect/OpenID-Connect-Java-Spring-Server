@@ -76,7 +76,7 @@
 		<spring-security-saml2.version>1.0.10.RELEASE</spring-security-saml2.version>
 
 		<!-- Jackson -->
-		<jackson.version>2.13.2</jackson.version>
+		<jackson.version>2.13.3</jackson.version>
 		<jackson-dataformat-yml.version>${jackson.version}</jackson-dataformat-yml.version>
 
 		<!-- Database -->
