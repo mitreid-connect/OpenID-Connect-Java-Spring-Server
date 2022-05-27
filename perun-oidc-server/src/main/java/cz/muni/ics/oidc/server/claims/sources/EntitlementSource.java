@@ -84,10 +84,10 @@ public class EntitlementSource extends GroupNamesSource {
 		PerunAdapter perunAdapter = pctx.getPerunAdapter();
 		Long userId = pctx.getPerunUserId();
 		Facility facility = pctx.getFacility();
-		Set<Group> userGroups = getUserGroupsOnFacility(facility, userId, perunAdapter);
+		Set<Group> userGroups = ClaimUtils.getUserGroupsOnFacility(facility, userId, perunAdapter, getClaimName());
 		Set<String> entitlements = produceEntitlements(facility, userGroups, userId, perunAdapter);
 
-		JsonNode result = convertResultStringsToJsonArray(entitlements);
+		JsonNode result = ClaimUtils.convertResultStringsToJsonArray(entitlements);
 		log.debug("{} - produced value for user({}): '{}'", getClaimName(), userId, result);
 		return result;
 	}

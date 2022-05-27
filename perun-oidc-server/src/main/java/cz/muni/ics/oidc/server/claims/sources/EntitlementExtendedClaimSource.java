@@ -6,6 +6,7 @@ import cz.muni.ics.oidc.models.Group;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
+import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,13 +38,13 @@ public class EntitlementExtendedClaimSource extends EntitlementSource {
         Long userId = pctx.getPerunUserId();
         Set<String> entitlements = produceEntitlementsExtended(pctx.getFacility(),
                 userId, pctx.getPerunAdapter());
-        JsonNode result = convertResultStringsToJsonArray(entitlements);
+        JsonNode result = ClaimUtils.convertResultStringsToJsonArray(entitlements);
         log.debug("{} - produced value for user({}): '{}'", getClaimName(), userId, result);
         return result;
     }
 
     private Set<String> produceEntitlementsExtended(Facility facility, Long userId, PerunAdapter perunAdapter) {
-        Set<Group> userGroups = getUserGroupsOnFacility(facility, userId, perunAdapter);
+        Set<Group> userGroups = ClaimUtils.getUserGroupsOnFacility(facility, userId, perunAdapter, getClaimName());
         Map<Long, String> groupIdToNameMap = super.getGroupIdToNameMap(userGroups, false);
         Set<String> entitlements = new TreeSet<>();
         this.fillUuidEntitlements(userGroups, entitlements);

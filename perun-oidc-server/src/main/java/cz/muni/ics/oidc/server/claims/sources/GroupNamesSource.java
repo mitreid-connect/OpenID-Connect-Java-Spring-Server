@@ -9,6 +9,7 @@ import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.claims.ClaimSource;
 import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
+import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class GroupNamesSource extends ClaimSource {
 	@Override
 	public JsonNode produceValue(ClaimSourceProduceContext pctx) {
 		Map<Long, String> idToNameMap = this.produceGroupNames(pctx);
-		JsonNode result = convertResultStringsToJsonArray(new HashSet<>(idToNameMap.values()));
+		JsonNode result = ClaimUtils.convertResultStringsToJsonArray(new HashSet<>(idToNameMap.values()));
 		log.debug("{} - produced value for user({}): '{}'", getClaimName(), pctx.getPerunUserId(), result);
 		return result;
 	}
@@ -50,7 +51,8 @@ public class GroupNamesSource extends ClaimSource {
 	protected Map<Long, String> produceGroupNames(ClaimSourceProduceContext pctx) {
 		log.trace("{} - produce group names with trimming 'members' part of the group names", getClaimName());
 		Facility facility = pctx.getFacility();
-		Set<Group> userGroups = getUserGroupsOnFacility(facility, pctx.getPerunUserId(), pctx.getPerunAdapter());
+		Set<Group> userGroups = ClaimUtils.getUserGroupsOnFacility(facility, pctx.getPerunUserId(),
+				pctx.getPerunAdapter(), getClaimName());
 		return getGroupIdToNameMap(userGroups, true);
 	}
 
@@ -68,23 +70,6 @@ public class GroupNamesSource extends ClaimSource {
 
 		log.trace("{} - group ID to group name map: '{}'", getClaimName(), idToNameMap);
 		return idToNameMap;
-	}
-
-	protected Set<Group> getUserGroupsOnFacility(Facility facility, Long userId, PerunAdapter perunAdapter) {
-		Set<Group> userGroups = new HashSet<>();
-		if (facility == null) {
-			log.warn("{} - no facility provided when searching for user groups, will return empty set", getClaimName());
-		} else {
-			userGroups = perunAdapter.getGroupsWhereUserIsActiveWithUniqueNames(facility.getId(), userId);
-		}
-		log.trace("{} - found user groups: '{}'", getClaimName(), userGroups);
-		return userGroups;
-	}
-
-	protected JsonNode convertResultStringsToJsonArray(Collection<String> collection) {
-		ArrayNode arr = JsonNodeFactory.instance.arrayNode();
-		collection.forEach(arr::add);
-		return arr;
 	}
 
 }

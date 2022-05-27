@@ -625,7 +625,11 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 			return ids;
 		};
 
-		return connectorLdap.lookup(dnPrefix, attributes, mapper);
+		Set<Long> res = connectorLdap.lookup(dnPrefix, attributes, mapper);
+		if (res == null) {
+			res = new HashSet<>();
+		}
+		return res;
 	}
 
 	private String getDnPrefixForUserId(Long userId) {
@@ -658,10 +662,13 @@ public class PerunAdapterLdap extends PerunAdapterWithMappingServices implements
 		Set<AttributeMapping> mappings = this.getMappingsForAttrNames(entity, attrsToFetch);
 		String[] attributes = this.getAttributesFromMappings(mappings);
 
-		Map<String, PerunAttributeValue> res = new HashMap<>();
+		Map<String, PerunAttributeValue> res = null;
 		if (attributes.length != 0) {
 			EntryMapper<Map<String, PerunAttributeValue>> mapper = attrValueMapper(mappings);
 			res = this.connectorLdap.lookup(dnPrefix, attributes, mapper);
+		}
+		if (res == null) {
+			 res = new HashMap<>();
 		}
 
 		return res;
