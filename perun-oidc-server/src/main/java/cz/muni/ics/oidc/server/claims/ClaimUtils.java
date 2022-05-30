@@ -1,10 +1,19 @@
 package cz.muni.ics.oidc.server.claims;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import cz.muni.ics.oidc.models.Facility;
+import cz.muni.ics.oidc.models.Group;
+import cz.muni.ics.oidc.server.adapters.PerunAdapter;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class ClaimUtils {
 
     public static final String NO_VALUE = null;
@@ -67,4 +76,24 @@ public class ClaimUtils {
         }
         return res;
     }
+
+    public static Set<Group> getUserGroupsOnFacility(Facility facility, Long userId,
+                                                     PerunAdapter perunAdapter, String claimName)
+    {
+        Set<Group> userGroups = new HashSet<>();
+        if (facility == null) {
+            log.warn("{} - no facility provided when searching for user groups, will return empty set", claimName);
+        } else {
+            userGroups = perunAdapter.getGroupsWhereUserIsActiveWithUniqueNames(facility.getId(), userId);
+        }
+        log.trace("{} - found user groups: '{}'", claimName, userGroups);
+        return userGroups;
+    }
+
+    public static JsonNode convertResultStringsToJsonArray(Collection<String> collection) {
+        ArrayNode arr = JsonNodeFactory.instance.arrayNode();
+        collection.forEach(arr::add);
+        return arr;
+    }
+
 }
