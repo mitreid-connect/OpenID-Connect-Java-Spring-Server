@@ -252,7 +252,7 @@
         <security:intercept-url pattern="#{T(cz.muni.ics.oidc.web.controllers.LoginController).MAPPING_FAILURE}"
                                 access="permitAll()"/>
         <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-        <security:custom-filter ref="mdcMuFilter" before="FIRST"/>
+        <security:custom-filter ref="mdcFilter" before="FIRST"/>
         <security:custom-filter ref="metadataGeneratorFilter" before="CHANNEL_FILTER"/>
         <security:custom-filter ref="clearSessionFilter" after="CHANNEL_FILTER"/>
         <security:custom-filter ref="samlFilter" before="CSRF_FILTER"/>
@@ -337,8 +337,6 @@
         <property name="order" value="1" />
     </bean>
 
-    <bean id="mdcMuFilter" class="cz.muni.ics.oidc.server.filters.impl.MultiMDCFilter"/>
-
     <!-- SAML -->
     <bean id="clearSessionFilter" class="cz.muni.ics.oidc.saml.SamlInvalidateSessionFilter">
         <constructor-arg name="contextLogoutHandler" ref="logoutHandler"/>
@@ -362,7 +360,7 @@
 
     <bean id="successLogoutHandler" class="cz.muni.ics.oidc.saml.PerunOidcLogoutSuccessHandler">
         <property name="defaultTargetUrl" value="#{T(cz.muni.ics.oidc.web.controllers.LogoutController).MAPPING_SUCCESS}"/>
-        <property name="targetUrlParameter" value="#{T(cz.muni.ics.oidc.server.filters.PerunFilterConstants).PARAM_TARGET}"/>
+        <property name="targetUrlParameter" value="#{T(cz.muni.ics.oidc.server.filters.AuthProcFilterConstants).PARAM_TARGET}"/>
     </bean>
 
     <bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">

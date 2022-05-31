@@ -36,7 +36,7 @@ public class AupController {
 
     public static final String URL = "aup";
     public static final String NEW_AUPS = "newAups";
-    public static final String APPROVED = "approved";
+    public static final String APPROVED = "aup_approved";
     public static final String RETURN_URL = "returnUrl";
     public static final String USER_ATTR = "userAttr";
 

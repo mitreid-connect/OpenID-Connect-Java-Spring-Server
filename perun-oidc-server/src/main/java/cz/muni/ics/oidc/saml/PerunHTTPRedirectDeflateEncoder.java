@@ -7,7 +7,7 @@ import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.xml.util.Pair;
 import org.springframework.util.StringUtils;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AARC_IDP_HINT;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.AARC_IDP_HINT;
 
 public class PerunHTTPRedirectDeflateEncoder extends HTTPRedirectDeflateEncoder {
 

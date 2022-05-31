@@ -20,10 +20,10 @@ public class RemoteAddressMDCFilter {
             "REMOTE_ADDR"
     };
 
-    private static final String REMOTE_ADDR = "remoteAddr";
+    private static final String REMOTE_ADDRESS = "remoteAddr";
 
     public void doFilter(ServletRequest servletRequest) {
-        MDC.put(REMOTE_ADDR, getRemoteAddr((HttpServletRequest) servletRequest));
+        MDC.put(REMOTE_ADDRESS, getRemoteAddr((HttpServletRequest) servletRequest));
     }
 
     private String getRemoteAddr(HttpServletRequest request) {
@@ -37,7 +37,7 @@ public class RemoteAddressMDCFilter {
                 return ipList.split(",")[0];
             }
         }
-        return "";
+        return "-";
     }
 
 }
