@@ -51,7 +51,8 @@
                 <c:if test="${not empty scopes}">
                     <c:forEach var="scope" items="${scopes}">
                         <c:set var="singleClaim" value="${fn:length(claims[scope.value]) eq 1}" />
-                        <div class="card-body">
+                        <c:set var="emptyClaim" value="${fn:length(claims[scope.value]) eq 0}" />
+                        <div class="card-body <c:if test="${emptyClaim}">d-none</c:if>">
                             <div class="attribute-row">
                                 <div class="attribute">
                                     <div class="attribute-name form-check">
@@ -82,9 +83,7 @@
                                                 </c:forEach>
                                             </c:if>
                                             <c:if test="${not(claim.value.getClass().name eq 'java.util.ArrayList')}">
-                                                <c:if test="${scope.value eq 'profile'
-                                                              or scope.value eq 'email'
-                                                              or scope.value eq 'phone'}">
+                                                <c:if test="${not(singleClaim)}">
                                                     <strong><spring:message code="${claim.key}"/>:${' '}</strong>
                                                 </c:if>
                                                 <code>${claim.value}</code>
