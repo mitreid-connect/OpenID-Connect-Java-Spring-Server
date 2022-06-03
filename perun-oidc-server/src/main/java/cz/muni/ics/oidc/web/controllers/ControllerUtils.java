@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
@@ -26,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
@@ -179,7 +181,14 @@ public class ControllerUtils {
                             JsonArray arr = userJson.getAsJsonArray(claim);
                             List<String> values = new ArrayList<>();
                             for (int i = 0; i < arr.size(); i++) {
-                                values.add(arr.get(i).getAsString());
+                                JsonElement el = arr.get(i);
+                                if (el instanceof JsonObject) {
+                                    values.add(transformObject((JsonObject) el));
+                                } else if (el instanceof JsonPrimitive) {
+                                    values.add(arr.get(i).getAsString());
+                                } else if (el instanceof JsonArray) {
+                                    values.add(transformArray((JsonArray) el));
+                                }
                             }
                             claimValues.put(claim, values);
                         }
@@ -202,6 +211,23 @@ public class ControllerUtils {
             .collect(Collectors.toCollection(LinkedHashSet::new));
         model.put(CLAIMS, claimsForScopes);
         model.put(SCOPES, sortedScopes);
+    }
+
+    private static String transformObject(JsonObject obj) {
+        StringJoiner sj = new StringJoiner(", ");
+        for (String s: obj.keySet()) {
+            sj.add(s + ": " + obj.get(s).getAsString());
+        }
+        return sj.toString();
+    }
+
+
+    private static String transformArray(JsonArray arr) {
+        StringJoiner sj = new StringJoiner(", ");
+        for (int i = 0; i < arr.size(); i++) {
+            sj.add(arr.get(i).getAsString());
+        }
+        return sj.toString();
     }
 
     /**
