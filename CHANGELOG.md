@@ -1,3 +1,11 @@
+## [9.2.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.2.1...v9.2.2) (2022-06-03)
+
+
+### Bug Fixes
+
+* 🐛 Fix SAML Claim source when singleValue to use joiner ([d16c3c6](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/d16c3c6368a4039ac6918f8a68960bfaac899dab))
+* 🐛 Fixed displaying consent screens for LS template ([9884eb1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/9884eb1f0ee1a400b8d6ca285390801ed12086e9))
+
 ## [9.2.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.2.0...v9.2.1) (2022-06-01)
 
 
