@@ -1,3 +1,10 @@
+# [9.3.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.2.2...v9.3.0) (2022-06-03)
+
+
+### Features
+
+* 🎸Claim sources for extracting AuthenticationContextClassRef and AuthnInstant ([d9d3034](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/d9d3034e552676353db30eb3066b56e0d78c6bfc))
+
 ## [9.2.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.2.1...v9.2.2) (2022-06-03)
 
 
