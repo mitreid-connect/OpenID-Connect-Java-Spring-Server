@@ -10,7 +10,10 @@ import cz.muni.ics.oidc.server.claims.ClaimSourceProduceContext;
 import cz.muni.ics.oidc.server.claims.ClaimUtils;
 import java.util.Collections;
 import java.util.Set;
+import java.util.StringJoiner;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SamlAttributeClaimSource extends ClaimSource {
 
     private static final String ATTRIBUTE = "attribute";
@@ -57,9 +60,9 @@ public class SamlAttributeClaimSource extends ClaimSource {
             if (attrValue == null || attrValue.length == 0) {
                 return JsonNodeFactory.instance.nullNode();
             } else {
-                StringBuilder finalStr = new StringBuilder(separator);
+                StringJoiner finalStr = new StringJoiner(separator);
                 for (String s: attrValue) {
-                    finalStr.append(s);
+                    finalStr.add(s);
                 }
                 return JsonNodeFactory.instance.textNode(finalStr.toString());
             }
