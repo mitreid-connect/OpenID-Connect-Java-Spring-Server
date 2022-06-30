@@ -28,7 +28,10 @@ import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.SystemScope;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
+import cz.muni.ics.oidc.models.Facility;
+import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.saml.SamlPrincipal;
+import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
@@ -108,6 +111,8 @@ public class OAuthConfirmationController {
 	private PerunOidcConfig perunOidcConfig;
 	private WebHtmlClasses htmlClasses;
 
+	private PerunAdapter perunAdapter;
+
 	@Autowired
 	public OAuthConfirmationController(ClientDetailsEntityService clientService,
 									   SystemScopeService scopeService,
@@ -115,7 +120,8 @@ public class OAuthConfirmationController {
 									   UserInfoService userInfoService,
 									   RedirectResolver redirectResolver,
 									   PerunOidcConfig perunOidcConfig,
-									   WebHtmlClasses htmlClasses) {
+									   WebHtmlClasses htmlClasses,
+									   PerunAdapter perunAdapter) {
 
 		this.clientService = clientService;
 		this.scopeService = scopeService;
@@ -124,6 +130,7 @@ public class OAuthConfirmationController {
 		this.redirectResolver = redirectResolver;
 		this.perunOidcConfig = perunOidcConfig;
 		this.htmlClasses = htmlClasses;
+		this.perunAdapter = perunAdapter;
 	}
 
 	public OAuthConfirmationController(ClientDetailsEntityService clientService) {
@@ -200,15 +207,37 @@ public class OAuthConfirmationController {
 		if (perunOidcConfig.getTheme().equalsIgnoreCase(LSAAI)) {
 			model.put("getsOfflineAccess", authRequest.getScope().contains("offline_access"));
 			model.put("jurisdiction", getJurisdiction(client));
+			model.put("isTestSp", isTestSp(client));
 			return "lsaai/approve";
 		}
 		return THEMED_APPROVE;
+	}
+
+	private boolean isTestSp(ClientDetailsEntity client) {
+		if (client == null || !StringUtils.hasText(client.getClientId())) {
+			return true;
+		}
+		Facility facility = perunAdapter.getFacilityByClientId(client.getClientId());
+		if (facility == null || facility.getId() == null) {
+			return true;
+		}
+
+		PerunAttributeValue attrValue = perunAdapter.getFacilityAttributeValue(facility.getId(), "urn:perun:facility:attribute-def:def:isTestSp");
+		if (attrValue == null) {
+			return false;
+		} else if (attrValue.valueAsBoolean()) {
+			return attrValue.valueAsBoolean();
+		}
+		return false;
 	}
 
 	private String getJurisdiction(ClientDetailsEntity client) {
 		if (!StringUtils.hasText(client.getJurisdiction()) || euEaa.contains(client.getJurisdiction())) {
 			return "";
 		} else if (client.getJurisdiction().length() > 2) {
+			if ("EMBL".equalsIgnoreCase(client.getJurisdiction())) {
+				return "EMBL";
+			}
 			return "INT";
 		}
 

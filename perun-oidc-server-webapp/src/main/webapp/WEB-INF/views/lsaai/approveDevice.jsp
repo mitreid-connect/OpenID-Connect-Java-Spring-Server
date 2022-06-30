@@ -31,9 +31,10 @@
     </div>
 </div>
 </c:if>
-<c:if test="${not client.acceptedTos}">
+<c:if test="${isTestSp or (not client.acceptedTos)}">
     <div class="alert alert-warning" role="alert">
-        <h6>This service has not declared compliance with the <a target="_blank" href="https://lifescience-ri.eu/aai/terms-of-use">Terms of Use for service providers</a> that govern the service's use of Life Science Login.</h6>
+        <p>You are entering a service that is in the test environment of Life Science Login. The test environment is for service developers to test their relying service’s AAI integration before requesting to move them to the Life Science Login production environment.</p>
+        <p>The test environment is not intended for common users. You are able to access the service because you have opted in as a test user. You need to refresh your registration every 30 days.</p>
     </div>
 </c:if>
 <form name="confirmationForm" id="allow_consent_form" class="form-group"
@@ -101,25 +102,30 @@
     </div>
 
     <c:if test="${not empty jurisdiction}">
-    <div class="alert alert-danger" role="alert">
-        <h6>
-            This service is${' '}
-            <c:if test="${jurisdiction eq 'INT'}">provided by an international organization. </c:if>
-            <c:if test="${jurisdiction ne 'INT'}">in ${jurisdiction}</c:if>
-        </h6>
-        <p>
-            In order to access the requested services, the Life Science Login needs to transfer your personal data to a country outside EU/EEA.
-            We cannot guarantee that this country offers an adequately high level of personal data protection as EU/EEA countries.
-
+        <div class="alert alert-danger" role="alert">
+            <h6>
+                This service is${' '}
+                <c:if test="${jurisdiction eq 'INT' or jurisdiction eq 'EMBL'}">provided by an international organization. </c:if>
+                <c:if test="${jurisdiction ne 'INT' and jurisdiction ne 'EMBL'}">in ${jurisdiction}</c:if>
+            </h6>
+            <p>
+                <c:if test="${jurisdiction eq 'EMBL'}">
+                    In order to access the requested services, the Life Science Login needs to transfer your personal data to an international organization outside EU/EEA jurisdictions.<br/>
+                    <i>Please be aware that upon transfer your personal data will be protected by <a href="https://www.embl.org/documents/document/internal-policy-no-68-on-general-data-protection/" target="_blank">EMBL’s Internal Policy 68 on General Data Protection</a>.</i>
+                </c:if>
+                <c:if test="${jurisdiction ne 'EMBL'}">
+                    In order to access the requested services, the Life Science Login needs to transfer your personal data to a country outside EU/EEA.
+                    We cannot guarantee that this country offers an adequately high level of personal data protection as EU/EEA countries.
+                </c:if>
+            </p>
             <c:if test="${not empty(client.policyUri)}">
-                Please, read the <a target="_blank" href="<c:out value="${client.policyUri}" />">Privacy Policy</a> of the service provider to learn more about its commitments to protect your data.
+                <h6>Please, read the <a target="_blank" href="<c:out value="${client.policyUri}" />">Privacy Policy</a> of the service provider to learn more about its commitments to protect your data.</h6>
             </c:if>
-        </p>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="transfer" id="transfer" data-np-checked="1">
-            <label class="form-check-label" for="transfer">To continue, consent to the transfer of your personal data.</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="transfer" id="transfer" data-np-checked="1">
+                <label class="form-check-label" for="transfer">To continue, consent to the transfer of your personal data.</label>
+            </div>
         </div>
-    </div>
     </c:if>
     <div class="outro">
         <p>

@@ -24,7 +24,10 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oauth2.service.DeviceCodeService;
 import cz.muni.ics.oauth2.service.SystemScopeService;
 import cz.muni.ics.oauth2.token.DeviceTokenGranter;
+import cz.muni.ics.oidc.models.Facility;
+import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.saml.SamlPrincipal;
+import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.server.userInfo.PerunUserInfo;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
@@ -137,6 +140,8 @@ public class DeviceEndpoint {
 	private final ScopeClaimTranslationService scopeClaimTranslationService;
 	private final UserInfoService userInfoService;
 
+	private final PerunAdapter perunAdapter;
+
 	@Autowired
 	public DeviceEndpoint(ClientDetailsEntityService clientService,
 						  SystemScopeService scopeService,
@@ -145,7 +150,8 @@ public class DeviceEndpoint {
 						  PerunOidcConfig perunOidcConfig,
 						  WebHtmlClasses htmlClasses,
 						  ScopeClaimTranslationService scopeClaimTranslationService,
-						  UserInfoService userInfoService)
+						  UserInfoService userInfoService,
+						  PerunAdapter perunAdapter)
 	{
 		this.clientService = clientService;
 		this.scopeService = scopeService;
@@ -155,6 +161,7 @@ public class DeviceEndpoint {
 		this.htmlClasses = htmlClasses;
 		this.scopeClaimTranslationService = scopeClaimTranslationService;
 		this.userInfoService = userInfoService;
+		this.perunAdapter = perunAdapter;
 	}
 
 	@PostMapping(value = ENDPOINT_URL, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
@@ -447,15 +454,37 @@ public class DeviceEndpoint {
 		if (perunOidcConfig.getTheme().equalsIgnoreCase("lsaai")) {
 			model.put("getsOfflineAccess", dc.getScope().contains("offline_access"));
 			model.put("jurisdiction", getJurisdiction(client));
+			model.put("isTestSp", isTestSp(client));
 			return "lsaai/" + APPROVE_DEVICE;
 		}
 		return THEMED_APPROVE_DEVICE;
+	}
+
+	private boolean isTestSp(ClientDetailsEntity client) {
+		if (client == null || !StringUtils.hasText(client.getClientId())) {
+			return true;
+		}
+		Facility facility = perunAdapter.getFacilityByClientId(client.getClientId());
+		if (facility == null || facility.getId() == null) {
+			return true;
+		}
+
+		PerunAttributeValue attrValue = perunAdapter.getFacilityAttributeValue(facility.getId(), "urn:perun:facility:attribute-def:def:isTestSp");
+		if (attrValue == null) {
+			return false;
+		} else if (attrValue.valueAsBoolean()) {
+			return attrValue.valueAsBoolean();
+		}
+		return false;
 	}
 
 	private String getJurisdiction(ClientDetailsEntity client) {
 		if (!StringUtils.hasText(client.getJurisdiction()) || euEaa.contains(client.getJurisdiction())) {
 			return "";
 		} else if (client.getJurisdiction().length() > 2) {
+			if ("EMBL".equalsIgnoreCase(client.getJurisdiction())) {
+				return "EMBL";
+			}
 			return "INT";
 		}
 
