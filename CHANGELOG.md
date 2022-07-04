@@ -1,3 +1,10 @@
+## [9.3.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.3.1...v9.3.2) (2022-07-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.mariadb.jdbc:mariadb-java-client to v3.0.6 ([fc02c8f](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/fc02c8f79c9b034ab8f2eff929f183f52bb120ed))
+
 ## [9.3.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.3.0...v9.3.1) (2022-06-15)
 
 
