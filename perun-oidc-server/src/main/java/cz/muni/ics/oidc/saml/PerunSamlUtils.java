@@ -1,12 +1,12 @@
 package cz.muni.ics.oidc.saml;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_ACR_VALUES;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_FORCE_AUTHN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_PROMPT;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PROMPT_LOGIN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PROMPT_SELECT_ACCOUNT;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_ACR_VALUES;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_FORCE_AUTHN;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_PROMPT;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PROMPT_LOGIN;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PROMPT_SELECT_ACCOUNT;
 
-import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterConstants;
 import javax.servlet.ServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -32,7 +32,7 @@ public class PerunSamlUtils {
     public static boolean needsReAuthByMfa(ServletRequest request) {
         String acrValues = request.getParameter(PARAM_ACR_VALUES);
         boolean res = StringUtils.hasText(acrValues)
-            && acrValues.contains(PerunFilterConstants.REFEDS_MFA);
+            && acrValues.contains(AuthProcFilterConstants.REFEDS_MFA);
         log.debug("requires reAuth by MFA acr - {}", res);
         return res;
     }

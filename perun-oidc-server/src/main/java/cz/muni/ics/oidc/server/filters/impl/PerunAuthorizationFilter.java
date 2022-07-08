@@ -1,17 +1,18 @@
 package cz.muni.ics.oidc.server.filters.impl;
 
-import cz.muni.ics.oidc.BeanUtil;
+import static cz.muni.ics.oidc.web.controllers.PerunUnapprovedController.UNAPPROVED_AUTHORIZATION;
+
+import cz.muni.ics.oidc.exceptions.ConfigurationException;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
-import cz.muni.ics.oidc.server.filters.FilterParams;
-import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
-import cz.muni.ics.oidc.web.controllers.PerunUnapprovedController;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterCommonVars;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterInitContext;
+import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,44 +26,35 @@ import lombok.extern.slf4j.Slf4j;
  * Configuration:
  * - based on the configuration of bean "facilityAttrsConfig"
  * @see FacilityAttrsConfig
+ * @see cz.muni.ics.oidc.server.filters.AuthProcFilter (basic configuration options)
  *
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
  */
 @Slf4j
 public class PerunAuthorizationFilter extends AuthProcFilter {
 
-	public static final String APPLIED = "APPLIED_" + PerunAuthorizationFilter.class.getSimpleName();
-
 	private final PerunAdapter perunAdapter;
 	private final FacilityAttrsConfig facilityAttrsConfig;
-	private final String filterName;
 	private final PerunOidcConfig config;
 
-	public PerunAuthorizationFilter(AuthProcFilterParams params) {
-		super(params);
-		BeanUtil beanUtil = params.getBeanUtil();
-		this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
-		this.facilityAttrsConfig = beanUtil.getBean(FacilityAttrsConfig.class);
-		this.filterName = params.getFilterName();
-		this.config = beanUtil.getBean(PerunOidcConfig.class);
+	public PerunAuthorizationFilter(AuthProcFilterInitContext ctx) throws ConfigurationException {
+		super(ctx);
+		this.perunAdapter = ctx.getPerunAdapterBean();
+		this.config = ctx.getPerunOidcConfigBean();
+		this.facilityAttrsConfig = ctx.getBeanUtil().getBean(FacilityAttrsConfig.class);
 	}
 
 	@Override
-	protected String getSessionAppliedParamName() {
-		return APPLIED;
-	}
-
-	@Override
-	protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
+	protected boolean process(HttpServletRequest req, HttpServletResponse res, AuthProcFilterCommonVars params) {
 		Facility facility = params.getFacility();
 		if (facility == null || facility.getId() == null) {
-			log.debug("{} - skip filter execution: no facility provided", filterName);
+			log.debug("{} - skip filter execution: no facility provided", getFilterName());
 			return true;
 		}
 
 		PerunUser user = params.getUser();
 		if (user == null || user.getId() == null) {
-			log.debug("{} - skip filter execution: no user provided", filterName);
+			log.debug("{} - skip filter execution: no user provided", getFilterName());
 			return true;
 		}
 
@@ -78,17 +70,16 @@ public class PerunAuthorizationFilter extends AuthProcFilter {
 				facility, facilityAttrsConfig.getMembershipAttrNames());
 
 		if (!facilityAttributes.get(facilityAttrsConfig.getCheckGroupMembershipAttr()).valueAsBoolean()) {
-			log.debug("{} - skip filter execution: membership check not requested", filterName);
+			log.debug("{} - skip filter execution: membership check not requested", getFilterName());
 			return true;
 		}
 
 		if (perunAdapter.canUserAccessBasedOnMembership(facility, user.getId())) {
-			log.info("{} - user allowed to access the service", filterName);
+			log.info("{} - user allowed to access the service", getFilterName());
 			return true;
 		} else {
-			FiltersUtils.redirectUserCannotAccess(config.getConfigBean().getIssuer(), response, facility, user, clientIdentifier,
-					facilityAttrsConfig, facilityAttributes, perunAdapter,
-					PerunUnapprovedController.UNAPPROVED_AUTHORIZATION);
+			FiltersUtils.redirectUserCannotAccess(config.getConfigBean().getIssuer(), response, facility, user,
+					clientIdentifier, facilityAttrsConfig, perunAdapter, UNAPPROVED_AUTHORIZATION);
 			return false;
 		}
 	}

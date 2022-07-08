@@ -1,20 +1,20 @@
 package cz.muni.ics.oidc.saml;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AARC_IDP_HINT;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.CLIENT_ID_PREFIX;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.EFILTER_PREFIX;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.FILTER_PREFIX;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.IDP_ENTITY_ID_PREFIX;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_CLIENT_ID;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_PROMPT;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.REFEDS_MFA;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.AARC_IDP_HINT;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.CLIENT_ID_PREFIX;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.EFILTER_PREFIX;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.FILTER_PREFIX;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.IDP_ENTITY_ID_PREFIX;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_CLIENT_ID;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_PROMPT;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.REFEDS_MFA;
 
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
-import cz.muni.ics.oidc.server.filters.PerunFilterConstants;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,12 +160,12 @@ public class PerunSamlEntryPoint extends SAMLEntryPoint {
     }
 
     private void processAcrValues(HttpServletRequest request, WebSSOProfileOptions options) {
-        String acrValues = request.getParameter(PerunFilterConstants.PARAM_ACR_VALUES);
+        String acrValues = request.getParameter(AuthProcFilterConstants.PARAM_ACR_VALUES);
         log.debug("Processing acr_values parameter: {}", acrValues);
         List<String> acrs = convertAcrValuesToList(acrValues);
 
         if (!hasAcrForcingIdp(acrs)) {
-            String clientId = request.getParameter(PerunFilterConstants.PARAM_CLIENT_ID);
+            String clientId = request.getParameter(AuthProcFilterConstants.PARAM_CLIENT_ID);
             String idpFilter = extractIdpFilterForRp(clientId);
             if (idpFilter != null) {
                 log.debug("Added IdP filter as SAML AuthnContextClassRef ({})", idpFilter);

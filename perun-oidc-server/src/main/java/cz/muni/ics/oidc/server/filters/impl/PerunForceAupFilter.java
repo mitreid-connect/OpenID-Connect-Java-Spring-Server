@@ -4,6 +4,7 @@ import static cz.muni.ics.oidc.web.controllers.AupController.APPROVED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.ics.oidc.BeanUtil;
+import cz.muni.ics.oidc.exceptions.ConfigurationException;
 import cz.muni.ics.oidc.models.Aup;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttribute;
@@ -12,10 +13,10 @@ import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
-import cz.muni.ics.oidc.server.filters.FilterParams;
-import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterCommonVars;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterInitContext;
+import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.web.controllers.AupController;
 import java.io.IOException;
 import java.text.ParseException;
@@ -36,6 +37,7 @@ import org.springframework.util.StringUtils;
  * AUP filter checks if there are new AUPs which user hasn't accepted yet and forces him to do that.
  *
  * Configuration (replace [name] part with the name defined for the filter):
+ * @see cz.muni.ics.oidc.server.filters.AuthProcFilter (basic configuration options)
  * <ul>
  *     <li><b>filter.[name].orgAupsAttrName</b> - Mapping to Perun entityless attribute containing organization AUPs</li>
  *     <li><b>filter.[name].userAupsAttrName</b> - Mapping to Perun user attribute containing list of AUPS approved by user</li>
@@ -51,8 +53,6 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 public class PerunForceAupFilter extends AuthProcFilter {
-
-    public static final String APPLIED = "APPLIED_" + PerunForceAupFilter.class.getSimpleName();
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -75,46 +75,39 @@ public class PerunForceAupFilter extends AuthProcFilter {
     private final PerunAdapter perunAdapter;
     private final PerunOidcConfig perunOidcConfig;
     private final SamlProperties samlProperties;
-    private final String filterName;
 
-    public PerunForceAupFilter(AuthProcFilterParams params) {
-        super(params);
-        BeanUtil beanUtil = params.getBeanUtil();
-        this.perunAdapter = beanUtil.getBean(PerunAdapter.class);
-        this.perunOidcConfig = beanUtil.getBean(PerunOidcConfig.class);
+    public PerunForceAupFilter(AuthProcFilterInitContext ctx) throws ConfigurationException {
+        super(ctx);
+        BeanUtil beanUtil = ctx.getBeanUtil();
+        this.perunAdapter = ctx.getPerunAdapterBean();
+        this.perunOidcConfig = ctx.getPerunOidcConfigBean();
         this.samlProperties = beanUtil.getBean(SamlProperties.class);
 
-        this.perunOrgAupsAttrName = params.getProperty(ORG_AUPS_ATTR_NAME);
-        this.perunUserAupsAttrName = params.getProperty(USER_AUPS_ATTR_NAME);
-        this.perunVoAupAttrName = params.getProperty(VO_AUP_ATTR_NAME);
-        this.perunFacilityRequestedAupsAttrName = params.getProperty(FACILITY_REQUESTED_AUPS_ATTR_NAME);
-        this.perunFacilityVoShortNamesAttrName = params.getProperty(VO_SHORT_NAMES_ATTR_NAME);
-        this.filterName = params.getFilterName();
+        this.perunOrgAupsAttrName = FiltersUtils.fillStringMandatoryProperty(ORG_AUPS_ATTR_NAME, ctx);
+        this.perunUserAupsAttrName = FiltersUtils.fillStringMandatoryProperty(USER_AUPS_ATTR_NAME, ctx);
+        this.perunVoAupAttrName = FiltersUtils.fillStringMandatoryProperty(VO_AUP_ATTR_NAME, ctx);
+        this.perunFacilityRequestedAupsAttrName = FiltersUtils.fillStringMandatoryProperty(FACILITY_REQUESTED_AUPS_ATTR_NAME, ctx);
+        this.perunFacilityVoShortNamesAttrName = FiltersUtils.fillStringMandatoryProperty(VO_SHORT_NAMES_ATTR_NAME, ctx);
     }
 
     @Override
-    protected String getSessionAppliedParamName() {
-        return APPLIED;
-    }
-
-    @Override
-    protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) throws IOException {
+    protected boolean process(HttpServletRequest req, HttpServletResponse res, AuthProcFilterCommonVars params) throws IOException {
         if (req.getSession() != null && req.getSession().getAttribute(APPROVED) != null) {
             req.getSession().removeAttribute(APPROVED);
             log.debug("{} - skip filter execution: aups are already approved, check at next access to the service due" +
-                    " to a delayed propagation to LDAP", filterName);
+                    " to a delayed propagation to LDAP", getFilterName());
             return true;
         }
 
         PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties);
         if (user == null || user.getId() == null) {
-            log.debug("{} - skip filter execution: no user provider", filterName);
+            log.debug("{} - skip filter execution: no user provider", getFilterName());
             return true;
         }
 
         Facility facility = params.getFacility();
         if (facility == null || facility.getId() == null) {
-            log.debug("{} - skip filter execution: no facility provider", filterName);
+            log.debug("{} - skip filter execution: no facility provider", getFilterName());
             return true;
         }
 
@@ -124,13 +117,13 @@ public class PerunForceAupFilter extends AuthProcFilter {
 
         if (facilityAttributes == null) {
             log.debug("{} - skip filter execution: could not fetch attributes '{}' for facility '{}'",
-                    filterName, attrsToFetch, facility);
+                    getFilterName(), attrsToFetch, facility);
             return true;
         } else if (!facilityAttributes.containsKey(perunFacilityRequestedAupsAttrName) &&
                 !facilityAttributes.containsKey(perunFacilityVoShortNamesAttrName))
         {
             log.debug("{} - skip filter execution: could not fetch required attributes '{}' and '{}' for facility '{}'",
-                    filterName, perunFacilityRequestedAupsAttrName, perunFacilityVoShortNamesAttrName, facility);
+                    getFilterName(), perunFacilityRequestedAupsAttrName, perunFacilityVoShortNamesAttrName, facility);
             return true;
         }
 
@@ -139,28 +132,34 @@ public class PerunForceAupFilter extends AuthProcFilter {
         try {
             newAups = getAupsToApprove(user, facilityAttributes);
         } catch (ParseException | IOException e) {
-            log.warn("{} - caught parse exception when processing AUPs to approve", filterName);
-            log.trace("{} - details:", filterName, e);
+            log.warn("{} - caught parse exception when processing AUPs to approve", getFilterName());
+            log.debug("{} - details:", getFilterName(), e);
             return true;
         }
 
         if (!newAups.isEmpty()) {
-            log.debug("{} - user has to approve some AUPs", filterName);
-            log.trace("{} - AUPS to be approved: '{}'", filterName, newAups);
-            String newAupsString = mapper.writeValueAsString(newAups);
-
-            req.getSession().setAttribute(AupController.RETURN_URL, req.getRequestURI()
-                    .replace(req.getContextPath(), "") + '?' + req.getQueryString());
-            req.getSession().setAttribute(AupController.NEW_AUPS, newAupsString);
-            req.getSession().setAttribute(AupController.USER_ATTR, perunUserAupsAttrName);
-
-            log.debug("{} - redirecting user '{}' to AUPs approval page", filterName, user);
-            res.sendRedirect(req.getContextPath() + '/' + AupController.URL);
+            log.info("{} - user has to approve some AUPs", getFilterName());
+            log.debug("{} - AUPS to be approved: '{}'", getFilterName(), newAups);
+            redirectToApproval(req, res, newAups, user);
             return false;
         }
 
-        log.debug("{} - no need to approve any AUPs", filterName);
+        log.debug("{} - no need to approve any AUPs", getFilterName());
         return true;
+    }
+
+    private void redirectToApproval(HttpServletRequest req, HttpServletResponse res, Map<String, Aup> newAups,
+                                    PerunUser user) throws IOException
+    {
+        String newAupsString = mapper.writeValueAsString(newAups);
+
+        req.getSession().setAttribute(AupController.RETURN_URL, req.getRequestURI()
+                .replace(req.getContextPath(), "") + '?' + req.getQueryString());
+        req.getSession().setAttribute(AupController.NEW_AUPS, newAupsString);
+        req.getSession().setAttribute(AupController.USER_ATTR, perunUserAupsAttrName);
+
+        log.debug("{} - redirecting user '{}' to AUPs approval page", getFilterName(), user);
+        res.sendRedirect(req.getContextPath() + '/' + AupController.URL);
     }
 
     private Map<String, Aup> getAupsToApprove(PerunUser user, Map<String, PerunAttributeValue> facilityAttributes)
@@ -220,12 +219,12 @@ public class PerunForceAupFilter extends AuthProcFilter {
                         continue;
                     }
                 }
-                log.debug("{} - need to approve AUP with key '{}' ({})", filterName, keyToVoAup.getKey(), voLatestAup);
+                log.debug("{} - need to approve AUP with key '{}' ({})", getFilterName(), keyToVoAup.getKey(), voLatestAup);
                 aupsToApprove.put(keyToVoAup.getKey(), voLatestAup);
             }
         }
 
-        log.trace("{} - VO AUPs to approve: {}", filterName, aupsToApprove);
+        log.trace("{} - VO AUPs to approve: {}", getFilterName(), aupsToApprove);
         return aupsToApprove;
     }
 
@@ -246,7 +245,7 @@ public class PerunForceAupFilter extends AuthProcFilter {
                 }
             }
         }
-        log.debug("{} - Mapped ORG aups: {}", filterName, orgAups);
+        log.debug("{} - Mapped ORG aups: {}", getFilterName(), orgAups);
 
         if (!orgAups.isEmpty()) {
             for (String requiredOrgAupKey : requestedAups) {
@@ -260,12 +259,12 @@ public class PerunForceAupFilter extends AuthProcFilter {
                         continue;
                     }
                 }
-                log.debug("{} - need to approve AUP with key '{}' ({})", filterName, requiredOrgAupKey, orgLatestAup);
+                log.debug("{} - need to approve AUP with key '{}' ({})", getFilterName(), requiredOrgAupKey, orgLatestAup);
                 aupsToApprove.put(requiredOrgAupKey, orgLatestAup);
             }
         }
 
-        log.debug("{} - ORG AUPs to approve: {}", filterName, aupsToApprove);
+        log.debug("{} - ORG AUPs to approve: {}", getFilterName(), aupsToApprove);
         return aupsToApprove;
     }
 

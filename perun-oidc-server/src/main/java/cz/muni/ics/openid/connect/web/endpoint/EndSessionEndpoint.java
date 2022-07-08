@@ -16,9 +16,9 @@
 
 package cz.muni.ics.openid.connect.web.endpoint;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_STATE;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_TARGET;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;

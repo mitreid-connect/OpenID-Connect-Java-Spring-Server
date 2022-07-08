@@ -5,11 +5,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oidc.BeanUtil;
+import cz.muni.ics.oidc.exceptions.ConfigurationException;
 import cz.muni.ics.oidc.saml.SamlProperties;
-import cz.muni.ics.oidc.server.filters.FilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterCommonVars;
 import cz.muni.ics.oidc.server.filters.FiltersUtils;
 import cz.muni.ics.oidc.server.filters.AuthProcFilter;
-import cz.muni.ics.oidc.server.filters.AuthProcFilterParams;
+import cz.muni.ics.oidc.server.filters.AuthProcFilterInitContext;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -29,6 +30,7 @@ import org.springframework.util.StringUtils;
  * Filter for collecting data about login.
  *
  * Configuration (replace [name] part with the name defined for the filter):
+ * @see cz.muni.ics.oidc.server.filters.AuthProcFilter (basic configuration options)
  * <ul>
  *     <li><b>filter.[name].idpNameAttributeName</b> - Mapping to Request attribute containing name of used
  *         Identity Provider</li>
@@ -51,8 +53,6 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class ProxyStatisticsFilter extends AuthProcFilter {
 
-	public static final String APPLIED = "APPLIED_" + ProxyStatisticsFilter.class.getSimpleName();
-
 	/* CONFIGURATION OPTIONS */
 	private static final String IDP_NAME_ATTRIBUTE_NAME = "idpNameAttributeName";
 	private static final String IDP_ENTITY_ID_ATTRIBUTE_NAME = "idpEntityIdAttributeName";
@@ -74,62 +74,55 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 	/* END OF CONFIGURATION OPTIONS */
 
 	private final DataSource mitreIdStats;
-	private final String filterName;
 	private final SamlProperties samlProperties;
 
-	public ProxyStatisticsFilter(AuthProcFilterParams params) {
-		super(params);
-		BeanUtil beanUtil = params.getBeanUtil();
+	public ProxyStatisticsFilter(AuthProcFilterInitContext ctx) throws ConfigurationException {
+		super(ctx);
+		BeanUtil beanUtil = ctx.getBeanUtil();
 		this.mitreIdStats = beanUtil.getBean("mitreIdStats", DataSource.class);
 		this.samlProperties = beanUtil.getBean(SamlProperties.class);
 
-		this.idpNameAttributeName = params.getProperty(IDP_NAME_ATTRIBUTE_NAME,
+		this.idpNameAttributeName = FiltersUtils.fillStringPropertyOrDefaultVal(IDP_NAME_ATTRIBUTE_NAME, ctx,
 				"urn:cesnet:proxyidp:attribute:sourceIdPName");
-		this.idpEntityIdAttributeName = params.getProperty(IDP_ENTITY_ID_ATTRIBUTE_NAME,
+		this.idpEntityIdAttributeName = FiltersUtils.fillStringPropertyOrDefaultVal(IDP_ENTITY_ID_ATTRIBUTE_NAME, ctx,
 				"urn:cesnet:proxyidp:attribute:sourceIdPEntityID");
-		this.statisticsTableName = params.getProperty(STATISTICS_TABLE_NAME, "statistics_per_user");
-		this.identityProvidersMapTableName = params.getProperty(IDENTITY_PROVIDERS_MAP_TABLE_NAME, "statistics_idp");
-		this.serviceProvidersMapTableName = params.getProperty(SERVICE_PROVIDERS_MAP_TABLE_NAME, "statistics_sp");
-		this.idpIdColumnName = params.getProperty(IDP_ID_COLUMN_NAME, "idpId");
-		this.spIdColumnName = params.getProperty(SP_ID_COLUMN_NAME, "spId");
-		this.usernameColumnName = params.getProperty(USERNAME_COLUMN_NAME, "user");
-		this.filterName = params.getFilterName();
+		this.statisticsTableName = FiltersUtils.fillStringPropertyOrDefaultVal(STATISTICS_TABLE_NAME, ctx, "statistics_per_user");
+		this.identityProvidersMapTableName = FiltersUtils.fillStringPropertyOrDefaultVal(IDENTITY_PROVIDERS_MAP_TABLE_NAME, ctx, "statistics_idp");
+		this.serviceProvidersMapTableName = FiltersUtils.fillStringPropertyOrDefaultVal(SERVICE_PROVIDERS_MAP_TABLE_NAME, ctx, "statistics_sp");
+		this.idpIdColumnName = FiltersUtils.fillStringPropertyOrDefaultVal(IDP_ID_COLUMN_NAME, ctx, "idpId");
+		this.spIdColumnName = FiltersUtils.fillStringPropertyOrDefaultVal(SP_ID_COLUMN_NAME, ctx, "spId");
+		this.usernameColumnName = FiltersUtils.fillStringPropertyOrDefaultVal(USERNAME_COLUMN_NAME, ctx, "user");
 	}
 
 	@Override
-	protected String getSessionAppliedParamName() {
-		return APPLIED;
-	}
-
-	@Override
-	protected boolean process(HttpServletRequest req, HttpServletResponse res, FilterParams params) {
+	protected boolean process(HttpServletRequest req, HttpServletResponse res, AuthProcFilterCommonVars params) {
 		ClientDetailsEntity client = params.getClient();
 		if (client == null) {
-			log.warn("{} - skip execution: no client provided", filterName);
+			log.warn("{} - skip execution: no client provided", getFilterName());
 			return true;
 		} else if (!StringUtils.hasText(client.getClientId())) {
-			log.warn("{} - skip execution: no client identifier provided", filterName);
+			log.warn("{} - skip execution: no client identifier provided", getFilterName());
 			return true;
 		} else if (!StringUtils.hasText(client.getClientName())) {
-			log.warn("{} - skip execution: no client name provided", filterName);
+			log.warn("{} - skip execution: no client name provided", getFilterName());
 			return true;
 		}
 
 		SAMLCredential samlCredential = FiltersUtils.getSamlCredential(req);
 		if (samlCredential == null) {
 			log.warn("{} - skip execution: no authN object available, cannot extract user identifier and idp identifier",
-					filterName);
+					getFilterName());
 			return true;
 		}
 		String userIdentifier = FiltersUtils.getExtLogin(samlCredential, samlProperties.getUserIdentifierAttribute());
 		if (!StringUtils.hasText(userIdentifier)) {
-			log.warn("{} - skip execution: no user identifier provided", filterName);
+			log.warn("{} - skip execution: no user identifier provided", getFilterName());
 			return true;
 		} else if (!StringUtils.hasText(samlCredential.getAttributeAsString(idpEntityIdAttributeName))) {
-			log.warn("{} - skip execution: no authenticating idp identifier provided", filterName);
+			log.warn("{} - skip execution: no authenticating idp identifier provided", getFilterName());
 			return true;
 		} else if (!StringUtils.hasText(samlCredential.getAttributeAsString(idpNameAttributeName))) {
-			log.warn("{} - skip execution: no authenticating idp identifier provided", filterName);
+			log.warn("{} - skip execution: no authenticating idp identifier provided", getFilterName());
 			return true;
 		}
 
@@ -141,7 +134,7 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 		insertOrUpdateLogin(idpEntityId, idpName, clientId, clientName, userIdentifier);
 
 		log.info("{} - User identity: {}, service: {}, serviceName: {}, via IdP: {}",
-				filterName, userIdentifier, client.getClientId(), client.getClientName(), idpEntityId);
+				getFilterName(), userIdentifier, client.getClientId(), client.getClientName(), idpEntityId);
 		return true;
 	}
 
@@ -158,12 +151,12 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			if (spId == null) {
 				return;
 			}
-			log.trace("{} - Extracted IDs for SP and IdP: spId={}({}), idpId={}({})",
-					filterName, spId, spIdentifier, idpId, idpEntityId);
+			log.debug("{} - Extracted IDs for SP and IdP: spId={}({}), idpId={}({})",
+					getFilterName(), spId, spIdentifier, idpId, idpEntityId);
 			insertOrUpdateLogin(c, idpId, spId, userId);
 		} catch (SQLException ex) {
-			log.warn("{} - caught SQLException", filterName);
-			log.debug("{} - details:", filterName, ex);
+			log.warn("{} - caught SQLException", getFilterName());
+			log.debug("{} - details:", getFilterName(), ex);
 		}
 	}
 
@@ -174,6 +167,7 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 		} else {
 			updateLogin(c, idpId, spId, userId);
 		}
+		log.info("{} - login info stored in statistics", getFilterName());
 	}
 
 	private boolean fetchLogin(Connection c, Long idpId, Long spId, String userId) {
@@ -193,8 +187,8 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 				return rs.getInt("res") > 0;
 			}
 		} catch (SQLException e) {
-			log.warn("{} - caught SQLException when fetching login entry", filterName);
-			log.debug("{} - details:", filterName, e);
+			log.warn("{} - caught SQLException when fetching login entry", getFilterName());
+			log.debug("{} - details:", getFilterName(), e);
 		}
 		return false;
 	}
@@ -210,8 +204,8 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 				return rs.getLong(spIdColumnName);
 			}
 		}  catch (SQLException ex) {
-			log.warn("{} - caught SQLException when extracting SP ID",  filterName);
-			log.debug("{} - details:", filterName, ex);
+			log.warn("{} - caught SQLException when extracting SP ID",  getFilterName());
+			log.debug("{} - details:", getFilterName(), ex);
 		}
 		return null;
 	}
@@ -227,8 +221,8 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 				return rs.getLong(idpIdColumnName);
 			}
 		} catch (SQLException ex) {
-			log.warn("{} - caught SQLException when extracting IdP ID", filterName);
-			log.debug("{} - details:", filterName, ex);
+			log.warn("{} - caught SQLException when extracting IdP ID", getFilterName());
+			log.debug("{} - details:", getFilterName(), ex);
 		}
 		return null;
 	}
@@ -238,11 +232,11 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 		if (!Objects.equals(idpName, idpNameInDb)) {
 			if (idpNameInDb == null) {
 				if (insertIdpMap(c, idpEntityId, idpName)) {
-					log.trace("{} - IdP map entry inserted", filterName);
+					log.debug("{} - IdP map entry inserted", getFilterName());
 				}
 			} else {
 				if (updateIdpMap(c, idpEntityId, idpName)) {
-					log.trace("{} - IdP map entry updated", filterName);
+					log.debug("{} - IdP map entry updated", getFilterName());
 				}
 			}
 		}
@@ -276,11 +270,11 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 		if (!Objects.equals(spName, spNameInDb)) {
 			if (spNameInDb == null) {
 				if (insertSpMap(c, spIdentifier, spName)) {
-					log.trace("{} - SP map entry inserted", filterName);
+					log.debug("{} - SP map entry inserted", getFilterName());
 				}
 			} else {
 				if (updateSpMap(c, spIdentifier, spName)) {
-					log.trace("{} - SP map entry updated", filterName);
+					log.debug("{} - SP map entry updated", getFilterName());
 				}
 			}
 		}
@@ -307,10 +301,10 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			ps.setString(4, userId);
 			ps.execute();
 			log.debug("{} - Inserted first login for combination: idpId={}, spId={}, userId={}",
-					filterName, idpId, spId, userId);
+					getFilterName(), idpId, spId, userId);
 		} catch (SQLException ex) {
-			log.warn("{} - caught SQLException when inserting login entry",  filterName);
-			log.debug("{} - details:", filterName, ex);
+			log.warn("{} - caught SQLException when inserting login entry",  getFilterName());
+			log.debug("{} - details:", getFilterName(), ex);
 		}
 	}
 
@@ -329,10 +323,10 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			ps.setString(4, userId);
 			ps.execute();
 			log.debug("{} - Updated login count by 1 for combination: idpId={}, spId={}, userId={}",
-					filterName, idpId, spId, userId);
+					getFilterName(), idpId, spId, userId);
 		} catch (SQLException ex) {
-			log.warn("{} - caught SQLException when updating login entry",  filterName);
-			log.debug("{} - details:", filterName, ex);
+			log.warn("{} - caught SQLException when updating login entry",  getFilterName());
+			log.debug("{} - details:", getFilterName(), ex);
 		}
 	}
 
@@ -352,12 +346,12 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			ps.setString(1, identifier);
 			ps.setString(2, name);
 			ps.execute();
-			log.debug("{} - {} entry inserted", filterName, table);
+			log.debug("{} - {} entry inserted", getFilterName(), table);
 			return true;
 		}  catch (SQLException ex) {
 			// someone has already inserted it
-			log.trace("{} - {} entry failed to insert", filterName, table);
-			log.trace("{} - details", filterName, ex);
+			log.debug("{} - {} entry failed to insert", getFilterName(), table);
+			log.debug("{} - details", getFilterName(), ex);
 		}
 		return false;
 	}
@@ -377,11 +371,11 @@ public class ProxyStatisticsFilter extends AuthProcFilter {
 			ps.setString(1, name);
 			ps.setString(2, identifier);
 			ps.execute();
-			log.debug("{} - {} entry updated", filterName, table);
+			log.debug("{} - {} entry updated", getFilterName(), table);
 			return true;
 		} catch (SQLException ex) {
-			log.trace("{} - {} map entry failed to update", filterName, table);
-			log.trace("{} - details", filterName);
+			log.debug("{} - {} map entry failed to update", getFilterName(), table);
+			log.debug("{} - details", getFilterName());
 		}
 		return false;
 	}

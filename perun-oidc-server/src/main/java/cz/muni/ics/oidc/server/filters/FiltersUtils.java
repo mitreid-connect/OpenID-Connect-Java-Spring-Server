@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.server.filters;
 
 import static cz.muni.ics.oauth2.web.endpoint.DeviceEndpoint.DEVICE_CODE_SESSION_ATTRIBUTE;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_FORCE_AUTHN;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_FORCE_AUTHN;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.model.DeviceCode;
@@ -9,8 +9,11 @@ import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunAttributeValue;
 import cz.muni.ics.oidc.models.PerunUser;
+import cz.muni.ics.oidc.saml.SamlPrincipal;
 import cz.muni.ics.oidc.saml.SamlProperties;
 import cz.muni.ics.oidc.server.adapters.PerunAdapter;
+import cz.muni.ics.oidc.server.claims.ClaimInitContext;
+import cz.muni.ics.oidc.server.claims.ClaimSourceInitContext;
 import cz.muni.ics.oidc.server.configurations.FacilityAttrsConfig;
 import cz.muni.ics.oidc.web.controllers.ControllerUtils;
 import cz.muni.ics.oidc.web.controllers.PerunUnapprovedRegistrationController;
@@ -34,6 +37,42 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 public class FiltersUtils {
+
+	public static final String NO_VALUE = null;
+
+	public static String fillStringMandatoryProperty(String suffix, AuthProcFilterInitContext ctx) {
+		String filled = fillStringPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), NO_VALUE);
+
+		if (filled == null) {
+			throw new IllegalArgumentException(ctx.getFilterName() + " - missing mandatory configuration option: " + suffix);
+		}
+
+		return filled;
+	}
+
+	public static String fillStringPropertyOrDefaultVal(String suffix, AuthProcFilterInitContext ctx, String defaultVal) {
+		return fillStringPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), defaultVal);
+	}
+
+	private static String fillStringPropertyOrDefaultVal(String prop, String defaultVal) {
+		if (StringUtils.hasText(prop)) {
+			return prop;
+		} else {
+			return defaultVal;
+		}
+	}
+
+	public static boolean fillBooleanPropertyOrDefaultVal(String suffix, AuthProcFilterInitContext ctx, boolean defaultVal) {
+		return fillBooleanPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), defaultVal);
+	}
+
+	private static boolean fillBooleanPropertyOrDefaultVal(String prop, boolean defaultVal) {
+		if (StringUtils.hasText(prop)) {
+			return Boolean.parseBoolean(prop);
+		} else {
+			return defaultVal;
+		}
+	}
 
 	/**
 	 * Create map of request params in format key = name, value = paramValue.
@@ -173,7 +212,7 @@ public class FiltersUtils {
 		} else if (!StringUtils.hasText(idAttribute)) {
 			throw new IllegalArgumentException("No identifier from SAML configured");
 		}
-		String identifierAttrOid = PerunFilterConstants.SAML_IDS.getOrDefault(idAttribute, null);
+		String identifierAttrOid = AuthProcFilterConstants.SAML_IDS.getOrDefault(idAttribute, null);
 		if (identifierAttrOid == null) {
 			throw new IllegalStateException("SAML credentials has no value for attribute: " + idAttribute);
 		}
@@ -283,10 +322,11 @@ public class FiltersUtils {
 												PerunUser user,
 												String clientIdentifier,
 												FacilityAttrsConfig facilityAttrsConfig,
-												Map<String, PerunAttributeValue> facilityAttributes,
 												PerunAdapter perunAdapter,
 												String redirectUrl)
 	{
+		Map<String, PerunAttributeValue> facilityAttributes = perunAdapter.getFacilityAttributeValues(
+				facility, facilityAttrsConfig.getMembershipAttrNames());
 		if (facilityAttributes.get(facilityAttrsConfig.getAllowRegistrationAttr()).valueAsBoolean()) {
 			boolean canRegister = perunAdapter.getAdapterRpc().groupWhereCanRegisterExists(facility);
 			if (canRegister) {
@@ -316,7 +356,7 @@ public class FiltersUtils {
 
 	public static String fillStringMandatoryProperty(String propertyName,
 													 String filterName,
-													 AuthProcFilterParams params) {
+													 AuthProcFilterInitContext params) {
 		String filled = params.getProperty(propertyName);
 
 		if (!StringUtils.hasText(filled)) {
@@ -366,4 +406,11 @@ public class FiltersUtils {
 		return new AbstractMap.SimpleImmutableEntry<>(key, value);
 	}
 
+	public static String getUserIdentifier(HttpServletRequest req, String identifierSamlAttribute) {
+		return getExtLogin(getSamlCredential(req), identifierSamlAttribute);
+	}
+
+	public static String getClientId(HttpServletRequest req) {
+		return req.getParameter(AuthProcFilterConstants.PARAM_CLIENT_ID);
+	}
 }

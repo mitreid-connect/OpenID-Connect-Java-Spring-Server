@@ -1,10 +1,10 @@
 package cz.muni.ics.oidc.web.controllers;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_CLIENT_ID;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_HEADER;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_MESSAGE;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_REASON;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_CLIENT_ID;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_HEADER;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_MESSAGE;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_REASON;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_TARGET;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
@@ -12,8 +12,6 @@ import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;
 import cz.muni.ics.openid.connect.view.HttpCodeView;
 import java.util.Map;
-import java.util.Properties;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

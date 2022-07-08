@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.web.controllers;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_ACCEPTED;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_TARGET;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_ACCEPTED;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_TARGET;
 
 import cz.muni.ics.oidc.server.configurations.PerunOidcConfig;
 import cz.muni.ics.oidc.web.WebHtmlClasses;

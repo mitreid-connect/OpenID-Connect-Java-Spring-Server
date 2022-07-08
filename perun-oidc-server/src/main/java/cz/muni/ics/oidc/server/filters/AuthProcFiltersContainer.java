@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.server.filters;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.AUTHORIZE_REQ_PATTERN;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.AUTHORIZE_REQ_PATTERN;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.DEVICE_APPROVE_REQ_PATTERN;
 
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -31,7 +32,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 /**
- * This filter calls other Perun filters saved in the PerunFiltersContext
+ * Wrapper filter for the AuthProcFilters in the security chain. Takes care of providing most basic parameters
+ * and calls the custom AuthProcFilter chain.
  *
  * @author Dominik Baranek <baranek@ics.muni.cz>
  * @author Dominik Frantisek Bucik <bucik@ics.muni.cz>
@@ -46,29 +48,34 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
     private static final RequestMatcher MATCHER = new OrRequestMatcher(
             Arrays.asList(AUTHORIZE_MATCHER, AUTHORIZE_ALL_MATCHER, DEVICE_CODE_MATCHER, DEVICE_CODE_ALL_MATCHER));
 
-    @Autowired
-    private Properties coreProperties;
+    private final Properties properties;
+    private final BeanUtil beanUtil;
+    private final OAuth2RequestFactory authRequestFactory;
+    private final ClientDetailsEntityService clientDetailsEntityService;
+    private final PerunAdapter perunAdapter;
+    private final SamlProperties samlProperties;
+
+    private List<AuthProcFilter> filters;
 
     @Autowired
-    private BeanUtil beanUtil;
-
-    @Autowired
-    private OAuth2RequestFactory authRequestFactory;
-
-    @Autowired
-    private ClientDetailsEntityService clientDetailsEntityService;
-
-    @Autowired
-    private PerunAdapter perunAdapter;
-
-    @Autowired
-    private SamlProperties samlProperties;
-
-    private AuthProcFiltersContext perunFiltersContext;
+    public AuthProcFiltersContainer(@Qualifier("coreProperties")Properties properties,
+                                    BeanUtil beanUtil,
+                                    OAuth2RequestFactory authRequestFactory,
+                                    ClientDetailsEntityService clientDetailsEntityService,
+                                    PerunAdapter perunAdapter,
+                                    SamlProperties samlProperties)
+    {
+        this.properties = properties;
+        this.beanUtil = beanUtil;
+        this.authRequestFactory = authRequestFactory;
+        this.clientDetailsEntityService = clientDetailsEntityService;
+        this.perunAdapter = perunAdapter;
+        this.samlProperties = samlProperties;
+    }
 
     @PostConstruct
     public void postConstruct() {
-        this.perunFiltersContext = new AuthProcFiltersContext(coreProperties, beanUtil);
+        this.filters = AuthProcFiltersInitializer.initialize(properties, beanUtil);
     }
 
     @Override
@@ -80,7 +87,6 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
         if (!MATCHER.matches(req)) {
             log.debug("AuthProc filters have been skipped, did not match authorization nor device req URL");
         } else {
-            List<AuthProcFilter> filters = perunFiltersContext.getFilters();
             if (filters != null && !filters.isEmpty()) {
                 ClientDetailsEntity client = FiltersUtils.extractClientFromRequest(req, authRequestFactory,
                         clientDetailsEntityService);
@@ -94,7 +100,7 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
                     }
                 }
                 PerunUser user = FiltersUtils.getPerunUser(req, perunAdapter, samlProperties);
-                FilterParams params = new FilterParams(client, facility, user);
+                AuthProcFilterCommonVars params = new AuthProcFilterCommonVars(client, facility, user);
                 for (AuthProcFilter filter : filters) {
                     if (!filter.doFilter(req, res, params)) {
                         return;

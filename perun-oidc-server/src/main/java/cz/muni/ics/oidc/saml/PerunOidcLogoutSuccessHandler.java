@@ -1,7 +1,7 @@
 package cz.muni.ics.oidc.saml;
 
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
-import static cz.muni.ics.oidc.server.filters.PerunFilterConstants.PARAM_STATE;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_POST_LOGOUT_REDIRECT_URI;
+import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.PARAM_STATE;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
