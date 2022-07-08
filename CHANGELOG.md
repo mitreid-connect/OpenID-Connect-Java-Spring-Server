@@ -1,3 +1,10 @@
+# [9.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.3.2...v9.4.0) (2022-07-08)
+
+
+### Features
+
+* IsEligible authproc filter and claim source ([2e0aaa7](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/2e0aaa772bb063260b6b4abbf3919b01c7320df9))
+
 ## [9.3.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.3.1...v9.3.2) (2022-07-04)
 
 
