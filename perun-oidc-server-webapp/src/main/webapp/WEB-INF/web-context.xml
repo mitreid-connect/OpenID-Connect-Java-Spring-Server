@@ -65,7 +65,7 @@
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_MAPPING}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_AUTHORIZATION}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_ENSURE_VO_MAPPING}**" />
-            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_IS_CESNET_ELIGIBLE_MAPPING}**" />
+            <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_IS_ELIGIBLE_MAPPING}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_MANDATORY_VOS_GROUPS}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_PROD_VOS_GROUPS}**" />
             <mvc:exclude-mapping path="#{T(cz.muni.ics.oidc.web.controllers.PerunUnapprovedController).UNAPPROVED_NOT_IN_TEST_VOS_GROUPS}**" />

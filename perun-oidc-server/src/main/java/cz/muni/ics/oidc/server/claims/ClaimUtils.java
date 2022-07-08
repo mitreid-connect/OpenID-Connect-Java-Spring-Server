@@ -65,6 +65,23 @@ public class ClaimUtils {
         }
     }
 
+    public static int fillIntegerPropertyOrDefaultVal(String suffix, ClaimSourceInitContext ctx, int defaultVal) {
+        return fillIntegerPropertyOrDefaultVal(ctx.getProperty(suffix, NO_VALUE), defaultVal);
+    }
+
+    private static int fillIntegerPropertyOrDefaultVal(String prop, int defaultVal) {
+        if (StringUtils.hasText(prop)) {
+            try {
+                return Integer.parseInt(prop);
+            } catch (NumberFormatException e) {
+                log.warn("Caught {}", e.getClass().getSimpleName(), e);
+                return defaultVal;
+            }
+        } else {
+            return defaultVal;
+        }
+    }
+
     public static ArrayNode listToArrayNode(List<String> list) {
         ArrayNode res = JsonNodeFactory.instance.arrayNode();
         if (list != null && !list.isEmpty()) {
