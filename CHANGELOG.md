@@ -1,3 +1,15 @@
+# [10.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.4.0...v10.0.0) (2022-07-09)
+
+
+### Bug Fixes
+
+* 🐛 Fix displaying for consent for EMBL ([ef47df1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/ef47df163f76a10e8d504b4068c20d1204e7d048))
+
+
+### BREAKING CHANGES
+
+* 🧨 DB changes (see v10.0.0.sql files)
+
 # [9.4.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.3.2...v9.4.0) (2022-07-08)
 
 
