@@ -1,3 +1,10 @@
+## [10.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.0...v10.0.1) (2022-07-13)
+
+
+### Bug Fixes
+
+* 🐛 Fix script loading for LS footer ([bd90a76](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/bd90a763888d91e1b29449612503b8e2ce9b93d1))
+
 # [10.0.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v9.4.0...v10.0.0) (2022-07-09)
 
 
