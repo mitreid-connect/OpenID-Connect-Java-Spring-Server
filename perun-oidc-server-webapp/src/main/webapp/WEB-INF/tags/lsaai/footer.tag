@@ -14,8 +14,8 @@
         </div>
     </div>
 </footer>
-<script type="text/javascript" src="https://login.elixir-czech.org/elixir/res/js/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="https://login.elixir-czech.org/elixir/res/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://login.elixir-czech.org/elixir/res/js/cmservice.js"></script>
+<script type="text/javascript" src="https://login.elixir-czech.org/proxy/module.php/elixir/res/js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="https://login.elixir-czech.org/proxy/module.php/elixir/res/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://login.elixir-czech.org/proxy/module.php/elixir/res/js/cmservice.js"></script>
 </body>
 </html>
