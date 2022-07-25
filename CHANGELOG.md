@@ -1,3 +1,10 @@
+## [10.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.1...v10.0.2) (2022-07-25)
+
+
+### Bug Fixes
+
+* 🐛 Fix nullPointerexception in AuthProcFilterInit ([64c0d51](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/64c0d510597382f3257ed98424fdc239b6e33fd6))
+
 ## [10.0.1](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.0...v10.0.1) (2022-07-13)
 
 
