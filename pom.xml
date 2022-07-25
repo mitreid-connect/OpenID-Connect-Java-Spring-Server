@@ -81,7 +81,7 @@
 
 		<!-- Database -->
 		<postgresql.version>42.4.0</postgresql.version>
-		<mysql.version>8.0.29</mysql.version>
+		<mysql.version>8.0.30</mysql.version>
 		<hsqldb.version>2.6.1</hsqldb.version>
 		<mariadb-java-client.version>3.0.6</mariadb-java-client.version>
 		<hikari.version>5.0.1</hikari.version>
