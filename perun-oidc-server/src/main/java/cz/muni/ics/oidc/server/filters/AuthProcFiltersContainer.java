@@ -6,6 +6,7 @@ import static cz.muni.ics.oidc.server.filters.AuthProcFilterConstants.DEVICE_APP
 import cz.muni.ics.oauth2.model.ClientDetailsEntity;
 import cz.muni.ics.oauth2.service.ClientDetailsEntityService;
 import cz.muni.ics.oidc.BeanUtil;
+import cz.muni.ics.oidc.exceptions.ConfigurationException;
 import cz.muni.ics.oidc.models.Facility;
 import cz.muni.ics.oidc.models.PerunUser;
 import cz.muni.ics.oidc.saml.SamlProperties;
@@ -74,7 +75,7 @@ public class AuthProcFiltersContainer extends GenericFilterBean {
     }
 
     @PostConstruct
-    public void postConstruct() {
+    public void postConstruct() throws ConfigurationException {
         this.filters = AuthProcFiltersInitializer.initialize(properties, beanUtil);
     }
 
