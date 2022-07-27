@@ -1,1 +1,1 @@
-ALTER TABLE client_details MODIFY jurisdiction VARCHAR(256) DEFAULT NULL;
+ALTER TABLE client_details ALTER jurisdiction TYPE VARCHAR(256);
