@@ -1,3 +1,11 @@
+## [10.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.2...v10.0.3) (2022-07-27)
+
+
+### Bug Fixes
+
+* correct postgreSQL for v10 breaking change ([28a9411](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/28a9411af439608ebe43b5b332cf4bb29569c652))
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.30 ([5426aa9](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/5426aa9835463c748506004664e24791c8d76d67))
+
 ## [10.0.2](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.1...v10.0.2) (2022-07-25)
 
 
