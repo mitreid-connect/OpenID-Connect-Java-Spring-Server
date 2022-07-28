@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -51,17 +52,32 @@ public class PerunConnectorRpc {
 	private String perunPassword;
 	private boolean isEnabled;
 	private String serializer;
+
+	private int connectionRequestTimeout = 30000;
+	private int connectionTimeout = 30000;
+	private int responseTimeout = 60000;
 	private RestTemplate restTemplate;
 
-	public PerunConnectorRpc(String perunUrl, String perunUser, String perunPassword, String enabled, String serializer) {
+	public PerunConnectorRpc(String url,
+							 String username,
+							 String password,
+							 String enabled,
+							 String serializer,
+							 int connectionRequestTimeout,
+							 int connectionTimeout,
+							 int responseTimeout)
+	{
 		this.isEnabled = Boolean.parseBoolean(enabled);
-		this.setPerunUrl(perunUrl);
-		this.setPerunUser(perunUser);
-		this.setPerunPassword(perunPassword);
+		this.setPerunUrl(url);
+		this.setPerunUser(username);
+		this.setPerunPassword(password);
 		this.setSerializer(serializer);
+		this.setConnectionRequestTimeout(connectionRequestTimeout);
+		this.setConnectionTimeout(connectionTimeout);
+		this.setResponseTimeout(responseTimeout);
 	}
 
-	public void setEnabled(String enabled) {
+	private void setEnabled(String enabled) {
 		this.isEnabled = Boolean.parseBoolean(enabled);
 	}
 
@@ -69,7 +85,7 @@ public class PerunConnectorRpc {
 		return isEnabled;
 	}
 
-	public void setPerunUrl(String perunUrl) {
+	private void setPerunUrl(String perunUrl) {
 		if (!StringUtils.hasText(perunUrl)) {
 			throw new IllegalArgumentException("Perun URL cannot be null or empty");
 		} else if (perunUrl.endsWith("/")) {
@@ -79,7 +95,7 @@ public class PerunConnectorRpc {
 		this.perunUrl = perunUrl;
 	}
 
-	public void setPerunUser(String perunUser) {
+	private void setPerunUser(String perunUser) {
 		if (!StringUtils.hasText(perunUser)) {
 			throw new IllegalArgumentException("Perun USER cannot be null or empty");
 		}
@@ -87,7 +103,7 @@ public class PerunConnectorRpc {
 		this.perunUser = perunUser;
 	}
 
-	public void setPerunPassword(String perunPassword) {
+	private void setPerunPassword(String perunPassword) {
 		if (!StringUtils.hasText(perunPassword)) {
 			throw new IllegalArgumentException("Perun PASSWORD cannot be null or empty");
 		}
@@ -95,12 +111,33 @@ public class PerunConnectorRpc {
 		this.perunPassword = perunPassword;
 	}
 
-	public void setSerializer(String serializer) {
+	private void setSerializer(String serializer) {
 		if (!StringUtils.hasText(serializer)) {
-			this.serializer = "json";
+			serializer = "json";
 		}
 
 		this.serializer = serializer;
+	}
+
+	private void setConnectionRequestTimeout(int connectionRequestTimeout) {
+		if (0 >= connectionRequestTimeout) {
+			throw new IllegalArgumentException("Connection request timeout must be greater than 0ms");
+		}
+ 		this.connectionRequestTimeout = connectionRequestTimeout;
+	}
+
+	private void setConnectionTimeout(int connectionTimeout) {
+		if (0 >= connectionTimeout) {
+			throw new IllegalArgumentException("Connection timeout must be greater than 0ms");
+		}
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	private void setResponseTimeout(int responseTimeout) {
+		if (0 >= responseTimeout) {
+			throw new IllegalArgumentException("Response timeout must be greater than 0ms");
+		}
+		this.responseTimeout = responseTimeout;
 	}
 
 	@PostConstruct
@@ -108,9 +145,9 @@ public class PerunConnectorRpc {
 		restTemplate = new RestTemplate();
 		//HTTP connection pooling, see https://howtodoinjava.com/spring-restful/resttemplate-httpclient-java-config/
 		RequestConfig requestConfig = RequestConfig.custom()
-				.setConnectionRequestTimeout(30000) // The timeout when requesting a connection from the connection manager
-				.setConnectTimeout(30000) // Determines the timeout in milliseconds until a connection is established
-				.setSocketTimeout(60000) // The timeout for waiting for data
+				.setConnectionRequestTimeout(this.connectionRequestTimeout) // The timeout when requesting a connection from the connection manager
+				.setConnectTimeout(this.connectionTimeout) // Determines the timeout in milliseconds until a connection is established
+				.setSocketTimeout(this.responseTimeout) // The timeout for waiting for data
 				.build();
 		PoolingHttpClientConnectionManager poolingConnectionManager = new PoolingHttpClientConnectionManager();
 		poolingConnectionManager.setMaxTotal(20); // maximum connections total

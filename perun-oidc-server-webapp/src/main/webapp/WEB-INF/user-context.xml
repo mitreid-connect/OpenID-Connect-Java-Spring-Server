@@ -46,6 +46,9 @@
 				<prop key="perun.rpc.user">xxxxx</prop>
 				<prop key="perun.rpc.password">yyyyy</prop>
 				<prop key="perun.rpc.serializer">json</prop>
+				<prop key="perun.rpc.connectionRequestTimeout">30000</prop>
+				<prop key="perun.rpc.connectionTimeout">30000</prop>
+				<prop key="perun.rpc.responseTimeout">60000</prop>
 				<!-- LDAP -->
 				<prop key="ldap.host">perun.cesnet.cz</prop>
 				<prop key="ldap.user">xxxxx</prop>
@@ -500,11 +503,14 @@
 	<!-- communicates with Perun -->
 
 	<bean id="perunConnectorRpc" class="cz.muni.ics.oidc.server.connectors.PerunConnectorRpc">
-		<constructor-arg name="perunUrl" value="${perun.rpc.url}"/>
-		<constructor-arg name="perunUser" value="${perun.rpc.user}"/>
-		<constructor-arg name="perunPassword" value="${perun.rpc.password}"/>
+		<constructor-arg name="url" value="${perun.rpc.url}"/>
+		<constructor-arg name="username" value="${perun.rpc.user}"/>
+		<constructor-arg name="password" value="${perun.rpc.password}"/>
 		<constructor-arg name="enabled" value="${perun.rpc.enabled}"/>
 		<constructor-arg name="serializer" value="${perun.rpc.serializer}"/>
+		<constructor-arg name="connectionRequestTimeout" value="${perun.rpc.connectionRequestTimeout}"/>
+		<constructor-arg name="connectionTimeout" value="${perun.rpc.connectionTimeout}"/>
+		<constructor-arg name="responseTimeout" value="${perun.rpc.responseTimeout}"/>
 	</bean>
 
 	<bean id="perunAdapterMethodsRpc" class="cz.muni.ics.oidc.server.adapters.impl.PerunAdapterRpc">
