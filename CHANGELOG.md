@@ -1,3 +1,10 @@
+# [10.1.0](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.3...v10.1.0) (2022-07-28)
+
+
+### Features
+
+* 🎸 Configurable timeouts in RPC connector ([a929858](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/commit/a929858026de152e8c33c2819f551302b292a443))
+
 ## [10.0.3](https://github.com/CESNET/OpenID-Connect-Java-Spring-Server/compare/v10.0.2...v10.0.3) (2022-07-27)
 
 
