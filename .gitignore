@@ -2,6 +2,7 @@ target
 *~
 bin
 *.idea
+*node_modules
 *.iml
 *.eml
 .project

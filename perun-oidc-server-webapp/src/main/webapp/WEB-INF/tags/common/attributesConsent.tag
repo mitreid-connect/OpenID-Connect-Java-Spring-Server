@@ -51,15 +51,7 @@
                                         </c:when>
                                         <c:when test="${claim.value.getClass().name eq 'java.util.ArrayList'}">
                                             <c:forEach var="subValue" items="${claim.value}">
-                                                <c:choose>
-                                                    <c:when test="${claim.key=='ga4gh_passport_v1'}">
-                                                        <li><%= Ga4ghPassportAndVisaClaimSource.parseAndVerifyVisa(
-                                                                (String) jspContext.findAttribute("subValue")).getPrettyString() %></li>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <li>${subValue}</li>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <li>${subValue}</li>
                                             </c:forEach>
                                         </c:when>
                                         <c:otherwise>

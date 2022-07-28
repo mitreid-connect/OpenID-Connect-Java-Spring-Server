@@ -71,15 +71,7 @@
                                             <c:if test="${claim.value.getClass().name eq 'java.util.ArrayList'}">
                                                 <c:forEach var="subValue" items="${claim.value}">
                                                     <div>
-                                                    <c:choose>
-                                                        <c:when test="${claim.key=='ga4gh_passport_v1'}">
-                                                            <code><%= Ga4ghPassportAndVisaClaimSource.parseAndVerifyVisa(
-                                                                    (String) pageContext.findAttribute("subValue")).getPrettyString() %></code>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <code>${subValue}</code>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                        <code>${subValue}</code>
                                                     </div>
                                                 </c:forEach>
                                             </c:if>
