@@ -1,4 +1,5 @@
 Unreleased:
+- Updated JDK to Corretto 1.8.342
 
 *1.3.3-GRESHAM-28:
 - Updated JDK to Corretto 1.8.332
