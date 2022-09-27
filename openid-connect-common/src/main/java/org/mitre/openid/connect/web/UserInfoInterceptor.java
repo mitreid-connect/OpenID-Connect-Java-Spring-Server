@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.mitre.openid.connect.model.Address;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
@@ -54,7 +54,7 @@ import com.google.gson.JsonSerializer;
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
-	private final Whitelist whitelist = Whitelist.none();
+	private final Safelist safelist = Safelist.none();
 
 	private Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
@@ -145,7 +145,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	
 	private String sanitise(String elementToClean) {
 		if (elementToClean != null) {
-			return Jsoup.clean(elementToClean, whitelist);
+			return Jsoup.clean(elementToClean, safelist);
 		}
 		return null;
 	}
