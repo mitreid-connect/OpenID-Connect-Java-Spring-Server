@@ -22,7 +22,9 @@ package org.mitre.openid.connect.web;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Set;
 
+import org.mitre.openid.connect.exception.WhitelistScopesException;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -56,6 +58,7 @@ import com.google.gson.JsonParser;
 public class WhitelistAPI {
 
 	public static final String URL = RootController.API_URL + "/whitelist";
+	private static final String characterMatcher = "[a-zA-Z]+";
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
@@ -100,7 +103,12 @@ public class WhitelistAPI {
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
-
+			validateWhitelistScopes(whitelist.getAllowedScopes());
+		} catch (WhitelistScopesException e) {
+			logger.error("addNewWhitelistedSite failed due to WhitelistException. {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a whitelist exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -137,7 +145,12 @@ public class WhitelistAPI {
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
-
+			validateWhitelistScopes(whitelist.getAllowedScopes());
+		} catch (WhitelistScopesException e) {
+			logger.error("addNewWhitelistedSite failed due to WhitelistScopeException. {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a whitelist scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -164,6 +177,14 @@ public class WhitelistAPI {
 			m.put(JsonEntityView.ENTITY, newWhitelist);
 
 			return JsonEntityView.VIEWNAME;
+		}
+	}
+
+	private void validateWhitelistScopes(Set<String> scopes) throws WhitelistScopesException {
+		for (String s : scopes) {
+			if (!s.matches(characterMatcher)) {
+				throw new WhitelistScopesException(s);
+			}
 		}
 	}
 
