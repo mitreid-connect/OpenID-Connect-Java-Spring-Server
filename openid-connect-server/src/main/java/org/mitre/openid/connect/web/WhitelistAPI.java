@@ -147,9 +147,9 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 			validateWhitelistScopes(whitelist.getAllowedScopes());
 		} catch (WhitelistScopesException e) {
-			logger.error("addNewWhitelistedSite failed due to WhitelistScopesException. {}", e.getMessage());
-			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a whitelist scopes exception. Contact a system administrator for assistance.");
+			logger.error("updateWhitelistedSite failed due to WhitelistScopesException. {}", e.getMessage());
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a whitelist scopes exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
