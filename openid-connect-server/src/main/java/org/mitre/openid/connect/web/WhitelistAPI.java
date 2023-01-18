@@ -24,7 +24,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mitre.openid.connect.exception.WhitelistScopesException;
+import org.mitre.openid.connect.exception.ScopeException;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -104,10 +104,10 @@ public class WhitelistAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 			validateWhitelistScopes(whitelist.getAllowedScopes());
-		} catch (WhitelistScopesException e) {
-			logger.error("addNewWhitelistedSite failed due to WhitelistScopesException. {}", e.getMessage());
+		} catch (ScopeException e) {
+			logger.error("addNewWhitelistedSite failed due to ScopeException. {}", e.getMessage());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a whitelist scopes exception. Contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a scopes exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
@@ -146,10 +146,10 @@ public class WhitelistAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 			validateWhitelistScopes(whitelist.getAllowedScopes());
-		} catch (WhitelistScopesException e) {
-			logger.error("updateWhitelistedSite failed due to WhitelistScopesException. {}", e.getMessage());
+		} catch (ScopeException e) {
+			logger.error("updateWhitelistedSite failed due to ScopeException. {}", e.getMessage());
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a whitelist scopes exception. Contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a scope exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
@@ -180,10 +180,10 @@ public class WhitelistAPI {
 		}
 	}
 
-	private void validateWhitelistScopes(Set<String> scopes) throws WhitelistScopesException {
+	private void validateWhitelistScopes(Set<String> scopes) throws ScopeException {
 		for (String s : scopes) {
 			if (!s.matches(characterMatcher)) {
-				throw new WhitelistScopesException(s);
+				throw new ScopeException(s);
 			}
 		}
 	}

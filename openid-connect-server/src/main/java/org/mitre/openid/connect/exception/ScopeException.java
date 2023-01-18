@@ -10,11 +10,11 @@ package org.mitre.openid.connect.exception;
 /**
  * @author hwsmith
  */
-public class WhitelistScopesException extends Exception {
+public class ScopeException extends Exception {
 
 	private final String invalidScope;
 
-	public WhitelistScopesException(String invalidScope) {
+	public ScopeException(String invalidScope) {
 		this.invalidScope = invalidScope;
 	}
 
