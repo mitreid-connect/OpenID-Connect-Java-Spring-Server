@@ -21,6 +21,7 @@
 package org.mitre.oauth2.web;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -57,7 +58,7 @@ public class ScopeAPI {
 	public static final String URL = RootController.API_URL + "/scopes";
 
 	private static final String characterMatcher = "[a-zA-Z]+";
-
+	private static final Pattern pattern = Pattern.compile(characterMatcher);
 	@Autowired
 	private SystemScopeService scopeService;
 
@@ -183,7 +184,7 @@ public class ScopeAPI {
 	}
 
 	private void validateScope(SystemScope scope) throws ScopeException {
-		if (!scope.getValue().matches(characterMatcher)) {
+		if (!pattern.matcher(scope.getValue()).matches()) {
 			throw new ScopeException(scope.getValue());
 		}
 	}

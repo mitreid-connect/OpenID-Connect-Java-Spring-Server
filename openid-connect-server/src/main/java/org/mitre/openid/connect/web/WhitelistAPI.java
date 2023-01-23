@@ -23,6 +23,7 @@ package org.mitre.openid.connect.web;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.mitre.openid.connect.exception.ScopeException;
 import org.mitre.openid.connect.model.WhitelistedSite;
@@ -59,6 +60,7 @@ public class WhitelistAPI {
 
 	public static final String URL = RootController.API_URL + "/whitelist";
 	private static final String characterMatcher = "[a-zA-Z]+";
+	private static final Pattern pattern = Pattern.compile(characterMatcher);
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
@@ -182,7 +184,7 @@ public class WhitelistAPI {
 
 	private void validateWhitelistScopes(Set<String> scopes) throws ScopeException {
 		for (String s : scopes) {
-			if (!s.matches(characterMatcher)) {
+			if (!pattern.matcher(s).matches()) {
 				throw new ScopeException(s);
 			}
 		}
