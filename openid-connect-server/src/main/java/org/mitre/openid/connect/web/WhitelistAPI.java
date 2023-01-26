@@ -107,7 +107,7 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 			validateWhitelistScopes(whitelist.getAllowedScopes());
 		} catch (ScopeException e) {
-			logger.error("addNewWhitelistedSite failed due to ScopeException. {}", e.getMessage());
+			logger.error("addNewWhitelistedSite failed due to ScopeException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a scopes exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
@@ -149,7 +149,7 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 			validateWhitelistScopes(whitelist.getAllowedScopes());
 		} catch (ScopeException e) {
-			logger.error("updateWhitelistedSite failed due to ScopeException. {}", e.getMessage());
+			logger.error("updateWhitelistedSite failed due to ScopeException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a scope exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;

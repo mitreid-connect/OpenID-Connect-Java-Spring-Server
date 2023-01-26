@@ -109,7 +109,7 @@ public class ScopeAPI {
 		try {
 			validateScope(scope);
 		} catch (ScopeException e) {
-			logger.error("updateScope failed due to ScopeException. {}", e.getMessage());
+			logger.error("updateScope failed due to ScopeException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update scope. The server encountered a scope exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
@@ -153,7 +153,7 @@ public class ScopeAPI {
 		try {
 			validateScope(scope);
 		} catch (ScopeException e) {
-			logger.error("createScope failed due to ScopeException. {}", e.getMessage());
+			logger.error("createScope failed due to ScopeException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not create scope. The server encountered a scope exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
