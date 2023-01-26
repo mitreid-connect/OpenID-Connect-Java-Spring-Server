@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.PersistenceException;
 
@@ -33,9 +35,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
+import org.mitre.openid.connect.exception.ScopeException;
 import org.mitre.openid.connect.exception.ValidationException;
-import org.mitre.openid.connect.model.CachedImage;
-import org.mitre.openid.connect.service.ClientLogoLoadingService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -45,10 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -129,6 +128,9 @@ import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESP
 public class ClientAPI {
 
 	public static final String URL = RootController.API_URL + "/clients";
+
+	private static final String characterMatcher = "[a-zA-Z]+";
+	private static final Pattern pattern = Pattern.compile(characterMatcher);
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -256,6 +258,12 @@ public class ClientAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
+			validateScopes(client.getScope());
+		} catch (ScopeException e) {
+			logger.error("apiAddClient failed due to ScopeException", e);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -369,6 +377,12 @@ public class ClientAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
+			validateScopes(client.getScope());
+		} catch (ScopeException e) {
+			logger.error("apiUpdateClient failed due to ScopeException", e);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -457,6 +471,14 @@ public class ClientAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
+		}
+	}
+
+	private void validateScopes(Set<String> scopes) throws ScopeException {
+		for (String s : scopes) {
+			if (!pattern.matcher(s).matches()) {
+				throw new ScopeException(s);
+			}
 		}
 	}
 
