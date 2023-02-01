@@ -21,9 +21,11 @@
 package org.mitre.oauth2.web;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.exception.ScopeException;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -54,6 +57,8 @@ public class ScopeAPI {
 
 	public static final String URL = RootController.API_URL + "/scopes";
 
+	private static final String characterMatcher = "[a-zA-Z]+";
+	private static final Pattern pattern = Pattern.compile(characterMatcher);
 	@Autowired
 	private SystemScopeService scopeService;
 
@@ -101,7 +106,14 @@ public class ScopeAPI {
 		SystemScope existing = scopeService.getById(id);
 
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
-
+		try {
+			validateScope(scope);
+		} catch (ScopeException e) {
+			logger.error("updateScope failed due to ScopeException", e);
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update scope. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
+		}
 		if (existing != null && scope != null) {
 
 			if (existing.getId().equals(scope.getId())) {
@@ -138,6 +150,14 @@ public class ScopeAPI {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
 
 		SystemScope alreadyExists = scopeService.getByValue(scope.getValue());
+		try {
+			validateScope(scope);
+		} catch (ScopeException e) {
+			logger.error("createScope failed due to ScopeException", e);
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not create scope. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
+		}
 		if (alreadyExists != null) {
 			//Error, cannot save a scope with the same value as an existing one
 			logger.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
@@ -160,6 +180,12 @@ public class ScopeAPI {
 			m.put(JsonErrorView.ERROR_MESSAGE, "Could not save new scope " + scope + ". The scope service failed to return a saved entity.");
 			return JsonErrorView.VIEWNAME;
 
+		}
+	}
+
+	private void validateScope(SystemScope scope) throws ScopeException {
+		if (!pattern.matcher(scope.getValue()).matches()) {
+			throw new ScopeException(scope.getValue());
 		}
 	}
 
