@@ -6,15 +6,15 @@ parameters:
     default: false
 
 orbs:
-  gresham: gresham-computing/gresham-orb@5.1.0
+  aws-white-list-circleci-ip: configure/aws-white-list-circleci-ip@1.0.1
 
 executors:
   docker-executor:
     docker:
-      - image: 399104266609.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u342
+      - image: 455456581940.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u342
         aws_auth:
-          aws_access_key_id: $GIS_PRD_ECR_INT_BUILD_ACCESS_KEY
-          aws_secret_access_key: $GIS_PRD_ECR_INT_BUILD_SECRET_ACCESS_KEY
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
 
 jobs:
   build-and-deploy:
@@ -23,9 +23,7 @@ jobs:
       - checkout
       - get-maven-settings-file
       - restore-cache
-      - gresham/get-whitelister
-      - gresham/whitelist-add:
-          pattern: OpenId
+      - whitelist-add
       - run:
           name: "Setting Maven version"
           command: |
@@ -45,8 +43,7 @@ jobs:
       - generate-download-urls:
           extension: jar
       - save-cache
-      - gresham/whitelist-remove:
-          pattern: OpenId
+      - whitelist-remove
       - persist-workspace
 
   test:
@@ -55,33 +52,27 @@ jobs:
       - attach_workspace:
           at: .
       - restore-cache
-      - gresham/get-whitelister
-      - gresham/whitelist-add:
-          pattern: OpenId
+      - whitelist-add
       - run:
           name: "Running tests"
           command: mvn -fae -s gresham-nexus-settings/ctc.plugins.settings.xml test -B -V -U
       - save-test-results
       - save-cache
       - persist-workspace
-      - gresham/whitelist-remove:
-          pattern: OpenId
+      - whitelist-remove
 
   release:
     executor: docker-executor
     steps:
       - checkout
       - get-maven-settings-file
-      - gresham/get-whitelister
-      - gresham/whitelist-add:
-          pattern: OpenId
+      - whitelist-add
       - restore-cache
       - run:
           name: Creating openid-connect-server release and next snapshot
           command: chmod +x .circleci/cci_create_release_and_snapshot.sh && .circleci/cci_create_release_and_snapshot.sh
       - save-cache
-      - gresham/whitelist-remove:
-          pattern: OpenId
+      - whitelist-remove
 
 workflows:
   build-and-test:
@@ -129,6 +120,20 @@ commands:
           command: |
             git config --global url."https://api:${GITHUB_GRESHAM_PW}@github.com/".insteadOf "https://github.com/"
             git clone https://github.com/gresham-computing/gresham-nexus-settings
+
+  whitelist-add:
+    steps:
+      - aws-white-list-circleci-ip/add:
+          description: "${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+          tag-key: "Name"
+          tag-value: "SG-CircleCi-CTC"
+
+  whitelist-remove:
+    steps:
+      - aws-white-list-circleci-ip/remove:
+          description: "${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+          tag-key: "Name"
+          tag-value: "SG-CircleCi-CTC"
 
   save-cache:
     steps:
