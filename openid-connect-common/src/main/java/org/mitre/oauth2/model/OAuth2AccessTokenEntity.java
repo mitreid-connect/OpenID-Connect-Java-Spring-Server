@@ -103,6 +103,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	private JWT jwtValue; // JWT-encoded access token value
 
+	private String tokenValueHash; // hash of access token value
+
 	private Date expiration;
 
 	private String tokenType = OAuth2AccessToken.BEARER_TYPE;
@@ -271,6 +273,19 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public void setJwt(JWT jwt) {
 		this.jwtValue = jwt;
 	}
+
+	/**
+     * @return the tokenValueHash
+     */
+    @Basic
+    @Column(name="token_value_hash")
+    public String getTokenValueHash() {
+        return tokenValueHash;
+    }
+
+    public void setTokenValueHash(String hash) {
+        this.tokenValueHash = hash;
+    }
 
 	@Override
 	@Transient
