@@ -87,7 +87,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
       byte[] hash = md.digest(accessTokenValue.getBytes(StandardCharsets.UTF_8));
       String atHash = new String(Hex.encode(hash));
       TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(
-          OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
+          OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE_HASH, OAuth2AccessTokenEntity.class);
       query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE_HASH, atHash);
       return JpaUtil.getSingleResult(query.getResultList());
     } catch (NoSuchAlgorithmException e) {
