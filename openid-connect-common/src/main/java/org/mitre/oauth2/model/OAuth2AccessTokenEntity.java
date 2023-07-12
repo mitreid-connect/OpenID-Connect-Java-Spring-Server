@@ -67,7 +67,7 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :" + OAuth2AccessTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFRESH_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE_HASH, query = "select a from OAuth2AccessTokenEntity a where a.tokenValueHash = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE_HASH),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, query = "select a from OAuth2AccessTokenEntity a where a.approvedSite = :" + OAuth2AccessTokenEntity.PARAM_APPROVED_SITE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_NAME, query = "select r from OAuth2AccessTokenEntity r where r.authenticationHolder.userAuth.name = :" + OAuth2AccessTokenEntity.PARAM_NAME),
@@ -78,7 +78,7 @@ import com.nimbusds.jwt.JWT;
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static final String QUERY_BY_APPROVED_SITE = "OAuth2AccessTokenEntity.getByApprovedSite";
-	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
+	public static final String QUERY_BY_TOKEN_VALUE_HASH = "OAuth2AccessTokenEntity.getByTokenValue";
 	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
 	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
 	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
@@ -87,7 +87,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String QUERY_BY_NAME = "OAuth2AccessTokenEntity.getByName";
 	public static final String DELETE_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.deleteByRefreshToken";
 
-	public static final String PARAM_TOKEN_VALUE = "tokenValue";
+	public static final String PARAM_TOKEN_VALUE_HASH = "tokenValueHash";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_REFRESH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
@@ -104,6 +104,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private AuthenticationHolderEntity authenticationHolder; // the authentication that made this access
 
 	private JWT jwtValue; // JWT-encoded access token value
+
+	private String tokenValueHash; // hash of access token value
 
 	private Date expiration;
 
@@ -273,6 +275,19 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public void setJwt(JWT jwt) {
 		this.jwtValue = jwt;
 	}
+
+	/**
+     * @return the tokenValueHash
+     */
+    @Basic
+    @Column(name="token_value_hash")
+    public String getTokenValueHash() {
+        return tokenValueHash;
+    }
+
+    public void setTokenValueHash(String hash) {
+        this.tokenValueHash = hash;
+    }
 
 	@Override
 	@Transient
