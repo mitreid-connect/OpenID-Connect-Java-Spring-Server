@@ -1,17 +1,8 @@
 #!/usr/bin/env groovy
-@Library('sd')_
-def kubeLabel = getKubeLabel()
 
 pipeline {
 
-  agent {
-      kubernetes {
-          label "${kubeLabel}"
-          cloud 'Kube mwdevel'
-          defaultContainer 'runner'
-          inheritFrom 'ci-template'
-      }
-  }
+  agent { label 'java11' }
 
   options {
     timeout(time: 1, unit: 'HOURS')
@@ -22,11 +13,9 @@ pipeline {
 
   stages {
 
-    stage('deploy'){
+    stage('deploy') {
       steps {
-        container('runner'){
-          sh "mvn -U -B clean deploy"
-        }
+        sh "mvn -U -B clean deploy"
       }
     }
     
