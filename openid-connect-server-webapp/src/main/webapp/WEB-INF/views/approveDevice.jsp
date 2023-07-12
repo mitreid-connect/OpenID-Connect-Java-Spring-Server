@@ -37,7 +37,7 @@
 		</h1>
 
 		<form name="confirmationForm"
-			action="${pageContext.request.contextPath.endsWith('/') ? pageContext.request.contextPath : pageContext.request.contextPath.concat('/') }device/approve" method="post">
+			action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/approve" method="post">
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">

@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="referrer" content="strict-origin-when-cross-origin"/>
 
     <!-- stylesheets -->
     <link href="resources/bootstrap2/css/bootstrap.css" rel="stylesheet">
