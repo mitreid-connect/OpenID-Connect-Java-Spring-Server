@@ -142,7 +142,8 @@ public class TestMITREidDataService_1_1 {
 
 	@Test
 	public void testImportRefreshTokens() throws IOException, ParseException {
-      String expiration1 = "2014-09-10T22:49:44.090Z";
+
+		String expiration1 = "2014-09-10T22:49:44.090+00:00";
 		Date expirationDate1 = formatter.parse(expiration1, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
@@ -158,7 +159,7 @@ public class TestMITREidDataService_1_1 {
 		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
 		token1.setAuthenticationHolder(mockedAuthHolder1);
 
-        String expiration2 = "2015-01-07T18:31:50.079Z";
+		String expiration2 = "2015-01-07T18:31:50.079+00:00";
 		Date expirationDate2 = formatter.parse(expiration2, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
@@ -184,9 +185,9 @@ public class TestMITREidDataService_1_1 {
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
 				"\"" + MITREidDataService.REFRESHTOKENS + "\": [" +
 
-            "{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090Z\","
+				"{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090+00:00\","
 				+ "\"authenticationHolderId\":1,\"value\":\"eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ.\"}," +
-            "{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079Z\","
+				"{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079+00:00\","
 				+ "\"authenticationHolderId\":2,\"value\":\"eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ.\"}" +
 
 				"  ]" +
@@ -261,7 +262,8 @@ public class TestMITREidDataService_1_1 {
 
 	@Test
 	public void testImportAccessTokens() throws IOException, ParseException {
-      String expiration1 = "2014-09-10T22:49:44.090Z";
+
+		String expiration1 = "2014-09-10T22:49:44.090+00:00";
 		Date expirationDate1 = formatter.parse(expiration1, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
@@ -279,7 +281,7 @@ public class TestMITREidDataService_1_1 {
 		token1.setScope(ImmutableSet.of("id-token"));
 		token1.setTokenType("Bearer");
 
-        String expiration2 = "2015-01-07T18:31:50.079Z";
+		String expiration2 = "2015-01-07T18:31:50.079+00:00";
 		Date expirationDate2 = formatter.parse(expiration2, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
@@ -311,10 +313,10 @@ public class TestMITREidDataService_1_1 {
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
 				"\"" + MITREidDataService.ACCESSTOKENS + "\": [" +
 
-            "{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090Z\","
+				"{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090+00:00\","
 				+ "\"refreshTokenId\":null,\"idTokenId\":null,\"scope\":[\"id-token\"],\"type\":\"Bearer\","
 				+ "\"authenticationHolderId\":1,\"value\":\"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3ODk5NjgsInN1YiI6IjkwMzQyLkFTREZKV0ZBIiwiYXRfaGFzaCI6InptTmt1QmNRSmNYQktNaVpFODZqY0EiLCJhdWQiOlsiY2xpZW50Il0sImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDgwXC9vcGVuaWQtY29ubmVjdC1zZXJ2ZXItd2ViYXBwXC8iLCJpYXQiOjE0MTI3ODkzNjh9.xkEJ9IMXpH7qybWXomfq9WOOlpGYnrvGPgey9UQ4GLzbQx7JC0XgJK83PmrmBZosvFPCmota7FzI_BtwoZLgAZfFiH6w3WIlxuogoH-TxmYbxEpTHoTsszZppkq9mNgOlArV4jrR9y3TPo4MovsH71dDhS_ck-CvAlJunHlqhs0\"}," +
-            "{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079Z\","
+				"{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079+00:00\","
 				+ "\"refreshTokenId\":1,\"idTokenId\":1,\"scope\":[\"openid\",\"offline_access\",\"email\",\"profile\"],\"type\":\"Bearer\","
 				+ "\"authenticationHolderId\":2,\"value\":\"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3OTI5NjgsImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgwODBcL29wZW5pZC1jb25uZWN0LXNlcnZlci13ZWJhcHBcLyIsImp0aSI6IjBmZGE5ZmRiLTYyYzItNGIzZS05OTdiLWU0M2VhMDUwMzNiOSIsImlhdCI6MTQxMjc4OTM2OH0.xgaVpRLYE5MzbgXfE0tZt823tjAm6Oh3_kdR1P2I9jRLR6gnTlBQFlYi3Y_0pWNnZSerbAE8Tn6SJHZ9k-curVG0-ByKichV7CNvgsE5X_2wpEaUzejvKf8eZ-BammRY-ie6yxSkAarcUGMvGGOLbkFcz5CtrBpZhfd75J49BIQ\"}" +
 
@@ -576,8 +578,9 @@ public class TestMITREidDataService_1_1 {
 
 	@Test
 	public void testImportGrants() throws IOException, ParseException {
-      Date creationDate1 = formatter.parse("2014-09-10T22:49:44.090Z", Locale.ENGLISH);
-      Date accessDate1 = formatter.parse("2014-09-10T23:49:44.090Z", Locale.ENGLISH);
+
+		Date creationDate1 = formatter.parse("2014-09-10T22:49:44.090+00:00", Locale.ENGLISH);
+		Date accessDate1 = formatter.parse("2014-09-10T23:49:44.090+00:00", Locale.ENGLISH);
 
 		OAuth2AccessTokenEntity mockToken1 = mock(OAuth2AccessTokenEntity.class);
 		when(mockToken1.getId()).thenReturn(1L);
@@ -591,9 +594,9 @@ public class TestMITREidDataService_1_1 {
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
 		when(mockToken1.getApprovedSite()).thenReturn(site1);
 
-        Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090Z", Locale.ENGLISH);
-        Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090Z", Locale.ENGLISH);
-        Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090Z", Locale.ENGLISH);
+		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+00:00", Locale.ENGLISH);
+		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+00:00", Locale.ENGLISH);
+		Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090+00:00", Locale.ENGLISH);
 
 		ApprovedSite site2 = new ApprovedSite();
 		site2.setId(2L);
@@ -614,11 +617,11 @@ public class TestMITREidDataService_1_1 {
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
 				"\"" + MITREidDataService.GRANTS + "\": [" +
 
-            "{\"id\":1,\"clientId\":\"foo\",\"creationDate\":\"2014-09-10T22:49:44.090Z\",\"accessDate\":\"2014-09-10T23:49:44.090Z\","
+				"{\"id\":1,\"clientId\":\"foo\",\"creationDate\":\"2014-09-10T22:49:44.090+00:00\",\"accessDate\":\"2014-09-10T23:49:44.090+00:00\","
 				+ "\"userId\":\"user1\",\"whitelistedSiteId\":null,\"allowedScopes\":[\"openid\",\"phone\"], \"whitelistedSiteId\":1,"
 				+ "\"approvedAccessTokens\":[1]}," +
-            "{\"id\":2,\"clientId\":\"bar\",\"creationDate\":\"2014-09-11T18:49:44.090Z\",\"accessDate\":\"2014-09-11T20:49:44.090Z\","
-            + "\"timeoutDate\":\"2014-10-01T20:49:44.090Z\",\"userId\":\"user2\","
+				"{\"id\":2,\"clientId\":\"bar\",\"creationDate\":\"2014-09-11T18:49:44.090+00:00\",\"accessDate\":\"2014-09-11T20:49:44.090+00:00\","
+				+ "\"timeoutDate\":\"2014-10-01T20:49:44.090+00:00\",\"userId\":\"user2\","
 				+ "\"allowedScopes\":[\"openid\",\"offline_access\",\"email\",\"profile\"]}" +
 
 				"  ]" +
@@ -830,7 +833,8 @@ public class TestMITREidDataService_1_1 {
 
 	@Test
 	public void testFixRefreshTokenAuthHolderReferencesOnImport() throws IOException, ParseException {
-      String expiration1 = "2014-09-10T22:49:44.090Z";
+
+		String expiration1 = "2014-09-10T22:49:44.090+00:00";
 		Date expirationDate1 = formatter.parse(expiration1, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
@@ -853,7 +857,7 @@ public class TestMITREidDataService_1_1 {
 		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
 		token1.setAuthenticationHolder(holder1);
 
-        String expiration2 = "2015-01-07T18:31:50.079Z";
+		String expiration2 = "2015-01-07T18:31:50.079+00:00";
 		Date expirationDate2 = formatter.parse(expiration2, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
@@ -892,9 +896,9 @@ public class TestMITREidDataService_1_1 {
 				"  ]," +
 				"\"" + MITREidDataService.REFRESHTOKENS + "\": [" +
 
-            "{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090Z\","
+				"{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090+00:00\","
 				+ "\"authenticationHolderId\":1,\"value\":\"eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ.\"}," +
-            "{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079Z\","
+				"{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079+00:00\","
 				+ "\"authenticationHolderId\":2,\"value\":\"eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ.\"}" +
 
 				"  ]" +
