@@ -18,8 +18,6 @@
 package org.mitre.oauth2.repository.impl;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,10 +45,10 @@ import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.hash.Hashing;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
@@ -81,27 +79,18 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
-
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenByValue(
 			String accessTokenValue) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-			byte[] hash = md
-				.digest(accessTokenValue.getBytes(StandardCharsets.UTF_8));
-			String atHash = new String(Hex.encode(hash));
-			TypedQuery<OAuth2AccessTokenEntity> query =
-					manager.createNamedQuery(
-							OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE_HASH,
-							OAuth2AccessTokenEntity.class);
-			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE_HASH,
-					atHash);
-			return JpaUtil.getSingleResult(query.getResultList());
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
+		String atHashed = Hashing.sha256()
+			.hashString(accessTokenValue, StandardCharsets.UTF_8)
+			.toString();
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(
+				OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE_HASH,
+				OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE_HASH,
+				atHashed);
+		return JpaUtil.getSingleResult(query.getResultList());
 	}
 
 	@Override

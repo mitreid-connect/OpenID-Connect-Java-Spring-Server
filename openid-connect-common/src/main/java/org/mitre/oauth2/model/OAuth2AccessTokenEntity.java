@@ -277,17 +277,17 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	/**
-     * @return the tokenValueHash
-     */
-    @Basic
-    @Column(name="token_value_hash")
-    public String getTokenValueHash() {
-        return tokenValueHash;
-    }
+	 * @return the tokenValueHash
+	 */
+	@Basic
+	@Column(name = "token_value_hash")
+	public String getTokenValueHash() {
+		return tokenValueHash;
+	}
 
-    public void setTokenValueHash(String hash) {
-        this.tokenValueHash = hash;
-    }
+	public void setTokenValueHash(String hash) {
+		this.tokenValueHash = hash;
+	}
 
 	@Override
 	@Transient

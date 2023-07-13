@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS access_token (
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP NULL,
 	token_type VARCHAR(256),
-	token_value_hash CHAR(64) AS (SHA2(token_value, 256)),
+	token_value_hash CHAR(64),
 	refresh_token_id BIGINT,
 	client_id BIGINT,
 	auth_holder_id BIGINT,
