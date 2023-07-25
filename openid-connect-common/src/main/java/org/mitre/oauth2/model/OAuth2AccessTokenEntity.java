@@ -20,6 +20,7 @@
  */
 package org.mitre.oauth2.model;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Deser
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Serializer;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
+import com.google.common.hash.Hashing;
 import com.nimbusds.jwt.JWT;
 
 /**
@@ -345,4 +347,12 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 			additionalInformation.put(ID_TOKEN_FIELD_NAME, idToken.serialize());
 		}
 	}
+
+  public void hashMe() {
+    if (jwtValue != null) {
+      this.tokenValueHash = Hashing.sha256()
+        .hashString(jwtValue.serialize(), StandardCharsets.UTF_8)
+        .toString();
+    }
+  }
 }
