@@ -83,7 +83,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public OAuth2AccessTokenEntity getAccessTokenByValue(
 			String accessTokenValue) {
 		String atHashed = Hashing.sha256()
-			.hashString(accessTokenValue, StandardCharsets.UTF_8)
+			.hashUnencodedChars(accessTokenValue)
 			.toString();
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(
 				OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE_HASH,
