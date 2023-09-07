@@ -219,12 +219,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
       token.setScope(scopeService.toStrings(scopes));
 
-      // make it expire if necessary
-      if (client.getAccessTokenValiditySeconds() != null
-          && client.getAccessTokenValiditySeconds() > 0) {
+      // make it always expire
+      if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
         Date expiration =
             new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
+
         token.setExpiration(expiration);
+      } else {
+        token.setExpiration(new Date(System.currentTimeMillis()));
       }
 
       // attach the authorization so that we can look it up later
