@@ -11,7 +11,7 @@ orbs:
 executors:
   docker-executor:
     docker:
-      - image: 399104266609.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u342
+      - image: 399104266609.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u382
         aws_auth:
           aws_access_key_id: $GIS_PRD_ECR_INT_BUILD_ACCESS_KEY
           aws_secret_access_key: $GIS_PRD_ECR_INT_BUILD_SECRET_ACCESS_KEY
