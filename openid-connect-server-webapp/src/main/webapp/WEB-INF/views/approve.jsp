@@ -85,7 +85,9 @@
 					<c:if test="${ not empty client.logoUri }">
 						<ul class="thumbnails">
 							<li class="span5">
-								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="api/clients/${ client.id }/logo" /></a>
+								<a class="thumbnail" data-toggle="modal" data-target="#logoModal">
+                                    <img src="<c:out value="${ client.logoUri }" />" referrerpolicy="no-referrer" />
+                                </a>
 							</li>
 						</ul>
 						<!-- Modal -->
@@ -104,7 +106,7 @@
 								</h3>
 							</div>
 							<div class="modal-body">
-								<img src="api/clients/${ client.id }/logo" />
+								<img src="<c:out value="${ client.logoUri }" />" referrerpolicy="no-referrer" />
 								<c:if test="${ not empty client.clientUri }">
 									<a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
 								</c:if>
