@@ -1,6 +1,8 @@
 Unreleased:
+
 - Updated JDK to Corretto 1.8.342
 - Upgraded Jackson Databind Component to 2.13.4.2
+
 
 *1.3.3-GRESHAM-28:
 - Updated JDK to Corretto 1.8.332
