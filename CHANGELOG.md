@@ -6,7 +6,7 @@ Unreleased:
 
 *1.3.3-GRESHAM-28:
 - Updated JDK to Corretto 1.8.332
-- Upgraded Jackson Components to 2.15.2
+- Upgraded Jackson Components to 2.13.3
 
 *1.3.3-GRESHAM:
 - Upgraded libraries with known vulnerabilities
