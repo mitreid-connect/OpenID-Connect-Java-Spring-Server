@@ -242,6 +242,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 			joinColumns=@JoinColumn(name="owner_id"),
 			name="token_scope"
 			)
+	@Column(name="scope")
 	public Set<String> getScope() {
 		return scope;
 	}

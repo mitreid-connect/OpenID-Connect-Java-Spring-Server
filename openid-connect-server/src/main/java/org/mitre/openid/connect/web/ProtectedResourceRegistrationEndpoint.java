@@ -91,6 +91,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	 * @param p
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewProtectedResource(@RequestBody String jsonString, Model m) {
 

@@ -103,9 +103,9 @@ public class OAuthConfirmationController {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest authRequest,
-			Principal p) {
+	public String confirmAccess(Map<String, Object> model, Principal p) {
 
+		AuthorizationRequest authRequest = (AuthorizationRequest) model.get("authorizationRequest");
 		// Check the "prompt" parameter to see if we need to do special processing
 
 		String prompt = (String)authRequest.getExtensions().get(PROMPT);
