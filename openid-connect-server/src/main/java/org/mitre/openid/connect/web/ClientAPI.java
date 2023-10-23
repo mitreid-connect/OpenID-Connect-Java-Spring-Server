@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.PersistenceException;
 
@@ -33,9 +35,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
+import org.mitre.openid.connect.exception.ScopeException;
 import org.mitre.openid.connect.exception.ValidationException;
-import org.mitre.openid.connect.model.CachedImage;
-import org.mitre.openid.connect.service.ClientLogoLoadingService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -45,10 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -130,11 +129,11 @@ public class ClientAPI {
 
 	public static final String URL = RootController.API_URL + "/clients";
 
-	@Autowired
-	private ClientDetailsEntityService clientService;
+	private static final String characterMatcher = "[a-zA-Z]+";
+	private static final Pattern pattern = Pattern.compile(characterMatcher);
 
 	@Autowired
-	private ClientLogoLoadingService clientLogoLoadingService;
+	private ClientDetailsEntityService clientService;
 
 	@Autowired
 	@Qualifier("clientAssertionValidator")
@@ -229,6 +228,9 @@ public class ClientAPI {
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
+
+		clients.forEach(client -> client.setClientSecret(null));
+
 		model.addAttribute(JsonEntityView.ENTITY, clients);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
@@ -256,6 +258,12 @@ public class ClientAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
+			validateScopes(client.getScope());
+		} catch (ScopeException e) {
+			logger.error("apiAddClient failed due to ScopeException", e);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -320,6 +328,8 @@ public class ClientAPI {
 
 		try {
 			ClientDetailsEntity newClient = clientService.saveNewClient(client);
+
+			//Set the client secret to the plaintext from the request
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 			if (AuthenticationUtilities.isAdmin(auth)) {
@@ -367,6 +377,12 @@ public class ClientAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 			client = validateSoftwareStatement(client);
+			validateScopes(client.getScope());
+		} catch (ScopeException e) {
+			logger.error("apiUpdateClient failed due to ScopeException", e);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a scope exception. Contact a system administrator for assistance.");
+			return JsonErrorView.VIEWNAME;
 		} catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -385,6 +401,7 @@ public class ClientAPI {
 		}
 
 		ClientDetailsEntity oldClient = clientService.getClientById(id);
+		String plaintextSecret = client.getClientSecret();
 
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
@@ -408,10 +425,10 @@ public class ClientAPI {
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
 
-			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
-					|| Strings.isNullOrEmpty(client.getClientSecret())) {
+			// Once a client has been created, we only update the secret when asked to
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()) {
 				client = clientService.generateClientSecret(client);
+				plaintextSecret = client.getClientSecret();
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
@@ -438,6 +455,10 @@ public class ClientAPI {
 
 		try {
 			ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
+
+			//Set the client secret to the plaintext from the request
+			newClient.setClientSecret(plaintextSecret);
+
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 			if (AuthenticationUtilities.isAdmin(auth)) {
@@ -450,6 +471,14 @@ public class ClientAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
+		}
+	}
+
+	private void validateScopes(Set<String> scopes) throws ScopeException {
+		for (String s : scopes) {
+			if (!pattern.matcher(s).matches()) {
+				throw new ScopeException(s);
+			}
 		}
 	}
 
@@ -497,37 +526,15 @@ public class ClientAPI {
 			return JsonErrorView.VIEWNAME;
 		}
 
+		//We don't want the UI to get the secret
+		client.setClientSecret(null);
+
 		model.addAttribute(JsonEntityView.ENTITY, client);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
-		}
-	}
-
-	/**
-	 * Get the logo image for a client
-	 * @param id
-	 */
-	@RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
-
-		ClientDetailsEntity client = clientService.getClientById(id);
-
-		if (client == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			// get the image from cache
-			CachedImage image = clientLogoLoadingService.getLogo(client);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.parseMediaType(image.getContentType()));
-			headers.setContentLength(image.getLength());
-
-			return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
 		}
 	}
 
