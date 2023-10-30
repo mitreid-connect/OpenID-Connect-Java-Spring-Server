@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>openid-connect-parent</artifactId>
 		<groupId>org.mitre</groupId>
-		<version>1.3.6.cnaf-20230914</version>
+		<version>1.3.6.cnaf-20231030</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>openid-connect-common</artifactId>
@@ -85,7 +85,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
+			<artifactId>bcprov-jdk18on</artifactId>
 		</dependency>
 		<dependency>
 			  <groupId>javax.annotation</groupId>
