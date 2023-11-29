@@ -75,6 +75,7 @@ import com.nimbusds.jwt.PlainJWT;
  * @author jricher
  *
  */
+@SuppressWarnings("deprecation")
 @Service("defaultOAuth2ProviderTokenService")
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
 
@@ -163,7 +164,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
   @Override
   @Transactional(value = "defaultTransactionManager")
   public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication)
-      throws AuthenticationException, InvalidClientException {
+      throws AuthenticationException {
+
     if (authentication != null && authentication.getOAuth2Request() != null) {
       // look up our client
       OAuth2Request request = authentication.getOAuth2Request();
@@ -220,13 +222,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
       token.setScope(scopeService.toStrings(scopes));
 
       // make it always expire
-      if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
+      if (client.getAccessTokenValiditySeconds() != null
+          && client.getAccessTokenValiditySeconds() > 0) {
         Date expiration =
             new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
 
         token.setExpiration(expiration);
-      } else {
-        token.setExpiration(new Date(System.currentTimeMillis()));
       }
 
       // attach the authorization so that we can look it up later
@@ -263,9 +264,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
       OAuth2AccessTokenEntity savedToken = saveAccessToken(enhancedToken);
 
       if (savedToken.getRefreshToken() != null) {
-        tokenRepository.saveRefreshToken(savedToken.getRefreshToken()); // make sure we save any
-                                                                        // changes that might have
-                                                                        // been enhanced
+        tokenRepository.saveRefreshToken(savedToken.getRefreshToken());
       }
 
       return savedToken;
@@ -281,8 +280,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     JWTClaimsSet.Builder refreshClaims = new JWTClaimsSet.Builder();
 
 
-    // make it expire if necessary
-    if (client.getRefreshTokenValiditySeconds() != null) {
+    // set RT's expiration value, otherwise leaves null
+    if (client.getRefreshTokenValiditySeconds() != null
+        && client.getRefreshTokenValiditySeconds() > 0) {
       Date expiration =
           new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
       refreshToken.setExpiration(expiration);
@@ -386,7 +386,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
     token.setClient(client);
 
-    if (client.getAccessTokenValiditySeconds() != null) {
+    if (client.getAccessTokenValiditySeconds() != null
+        && client.getAccessTokenValiditySeconds() > 0) {
       Date expiration =
           new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
       token.setExpiration(expiration);
@@ -609,4 +610,5 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
     return null;
   }
+
 }

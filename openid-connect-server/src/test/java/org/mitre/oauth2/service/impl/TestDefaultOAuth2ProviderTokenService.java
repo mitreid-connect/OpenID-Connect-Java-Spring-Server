@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -54,6 +54,7 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -75,18 +76,20 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("deprecation")
 public class TestDefaultOAuth2ProviderTokenService {
 
   // Grace period for time-sensitive tests.
   private static final long DELTA = 100L;
 
+  private static final String clientId = "test_client";
+  private static final String badClientId = "bad_client";
+  private static final Set<String> scope =
+      newHashSet("openid", "profile", "email", "offline_access");
+
   // Test Fixture:
-  private OAuth2Authentication authentication;
   private ClientDetailsEntity client;
   private ClientDetailsEntity badClient;
-  private String clientId = "test_client";
-  private String badClientId = "bad_client";
-  private Set<String> scope = newHashSet("openid", "profile", "email", "offline_access");
   private OAuth2RefreshTokenEntity refreshToken;
   private OAuth2AccessTokenEntity accessToken;
   private String refreshTokenValue = "refresh_token_value";
@@ -98,6 +101,9 @@ public class TestDefaultOAuth2ProviderTokenService {
   private OAuth2Authentication storedAuthentication;
   private AuthenticationHolderEntity storedAuthHolder;
   private Set<String> storedScope;
+
+  @Mock
+  private OAuth2Authentication authentication;
 
   @Mock
   private OAuth2TokenRepository tokenRepository;
@@ -114,6 +120,9 @@ public class TestDefaultOAuth2ProviderTokenService {
   @Mock
   private SystemScopeService scopeService;
 
+  @Mock
+  private ApprovedSiteService approvedSiteService;
+
   @InjectMocks
   private DefaultOAuth2ProviderTokenService service;
 
@@ -122,9 +131,10 @@ public class TestDefaultOAuth2ProviderTokenService {
    */
   @Before
   public void prepare() {
-    reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
 
-    authentication = Mockito.mock(OAuth2Authentication.class);
+    reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer,
+        scopeService, approvedSiteService, authentication);
+
     OAuth2Request clientAuth =
         new OAuth2Request(null, clientId, null, true, scope, null, null, null, null);
     when(authentication.getOAuth2Request()).thenReturn(clientAuth);
@@ -165,21 +175,24 @@ public class TestDefaultOAuth2ProviderTokenService {
     when(authenticationHolderRepository.save(any(AuthenticationHolderEntity.class)))
       .thenReturn(storedAuthHolder);
 
-    when(scopeService.fromStrings(anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
-      @Override
-      public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
-        Object[] args = invocation.getArguments();
-        Set<String> input = (Set<String>) args[0];
-        Set<SystemScope> output = new HashSet<>();
-        for (String scope : input) {
-          output.add(new SystemScope(scope));
+    when(scopeService.fromStrings(anySetOf(String.class)))
+      .thenAnswer(new Answer<Set<SystemScope>>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+          Object[] args = invocation.getArguments();
+          Set<String> input = (Set<String>) args[0];
+          Set<SystemScope> output = new HashSet<>();
+          for (String scope : input) {
+            output.add(new SystemScope(scope));
+          }
+          return output;
         }
-        return output;
-      }
-    });
+      });
 
-    when(scopeService.toStrings(anySet())).thenAnswer(new Answer<Set<String>>() {
+    when(scopeService.toStrings(anySetOf(SystemScope.class))).thenAnswer(new Answer<Set<String>>() {
       @Override
+      @SuppressWarnings("unchecked")
       public Set<String> answer(InvocationOnMock invocation) throws Throwable {
         Object[] args = invocation.getArguments();
         Set<SystemScope> input = (Set<SystemScope>) args[0];
@@ -191,19 +204,22 @@ public class TestDefaultOAuth2ProviderTokenService {
       }
     });
 
-    when(scopeService.scopesMatch(anySet(), anySet())).thenAnswer(new Answer<Boolean>() {
-      @Override
-      public Boolean answer(InvocationOnMock invocation) throws Throwable {
-        Object[] args = invocation.getArguments();
-        Set<String> expected = (Set<String>) args[0];
-        Set<String> actual = (Set<String>) args[1];
-        return expected.containsAll(actual);
-      }
-    });
-    
+    when(scopeService.scopesMatch(anySetOf(String.class), anySetOf(String.class)))
+      .thenAnswer(new Answer<Boolean>() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+          Object[] args = invocation.getArguments();
+          Set<String> expected = (Set<String>) args[0];
+          Set<String> actual = (Set<String>) args[1];
+          return expected.containsAll(actual);
+        }
+      });
+
     // we're not testing restricted or reserved scopes here, just pass through
-    when(scopeService.removeReservedScopes(anySet())).then(returnsFirstArg());
-    when(scopeService.removeRestrictedAndReservedScopes(anySet())).then(returnsFirstArg());
+    when(scopeService.removeReservedScopes(anySetOf(SystemScope.class))).then(returnsFirstArg());
+    when(scopeService.removeRestrictedAndReservedScopes(anySetOf(SystemScope.class)))
+      .then(returnsFirstArg());
 
     when(tokenEnhancer.enhance(any(OAuth2AccessTokenEntity.class), any(OAuth2Authentication.class)))
       .thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
@@ -281,7 +297,7 @@ public class TestDefaultOAuth2ProviderTokenService {
     verify(authenticationHolderRepository).save(any(AuthenticationHolderEntity.class));
     verify(tokenEnhancer).enhance(any(OAuth2AccessTokenEntity.class), Matchers.eq(authentication));
     verify(tokenRepository).saveAccessToken(any(OAuth2AccessTokenEntity.class));
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
 
     verify(tokenRepository, Mockito.never()).saveRefreshToken(any(OAuth2RefreshTokenEntity.class));
 
@@ -303,7 +319,7 @@ public class TestDefaultOAuth2ProviderTokenService {
     // Note: a refactor may be appropriate to only save refresh tokens once to the repository during
     // creation.
     verify(tokenRepository, atLeastOnce()).saveRefreshToken(any(OAuth2RefreshTokenEntity.class));
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
 
     assertThat(token.getRefreshToken(), is(notNullValue()));
   }
@@ -330,7 +346,7 @@ public class TestDefaultOAuth2ProviderTokenService {
     Date lowerBoundRefreshTokens = new Date(start + (refreshTokenValiditySeconds * 1000L) - DELTA);
     Date upperBoundRefreshTokens = new Date(end + (refreshTokenValiditySeconds * 1000L) + DELTA);
 
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
 
     assertTrue(token.getExpiration().after(lowerBoundAccessTokens)
         && token.getExpiration().before(upperBoundAccessTokens));
@@ -342,7 +358,7 @@ public class TestDefaultOAuth2ProviderTokenService {
   public void createAccessToken_checkClient() {
     OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
 
     assertThat(token.getClient().getClientId(), equalTo(clientId));
   }
@@ -351,7 +367,7 @@ public class TestDefaultOAuth2ProviderTokenService {
   public void createAccessToken_checkScopes() {
     OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
 
     assertThat(token.getScope(), equalTo(scope));
   }
@@ -368,7 +384,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 
     assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
     verify(authenticationHolderRepository).save(any(AuthenticationHolderEntity.class));
-    verify(scopeService, atLeastOnce()).removeReservedScopes(anySet());
+    verify(scopeService, atLeastOnce()).removeReservedScopes(anySetOf(SystemScope.class));
   }
 
   @Test(expected = InvalidTokenException.class)
