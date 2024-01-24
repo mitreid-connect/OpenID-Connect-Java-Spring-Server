@@ -20,6 +20,7 @@
  */
 package org.mitre.oauth2.model;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -349,9 +350,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
   public void hashMe() {
     if (jwtValue != null) {
-      this.tokenValueHash = Hashing.sha256()
-        .hashUnencodedChars(jwtValue.serialize())
-        .toString();
+      this.tokenValueHash =
+          Hashing.sha256().hashString(jwtValue.serialize(), StandardCharsets.UTF_8).toString();
     }
   }
 }
