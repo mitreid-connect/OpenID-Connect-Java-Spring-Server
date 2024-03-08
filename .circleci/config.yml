@@ -1,0 +1,55 @@
+version: 2.1
+
+parameters:
+  semgrep:
+    type: boolean
+    default: false
+
+orbs:
+  gresham: gresham-computing/gresham-orb@5.8.0
+
+executors:
+  linux-machine:
+    machine:
+      image: ubuntu-2204:2023.10.1
+
+jobs:
+  semgrep-scan:
+    executor: linux-machine
+    resource_class: medium
+    steps:
+      - checkout
+      - gresham/get-whitelister
+      - gresham/whitelist-add:
+          pattern: openid-connect
+          kondukto: true
+      - gresham/semgrep-scan:
+          kondukto: true
+          konduktoProject: "openid-connect-server"
+          konduktoBranch: "${CIRCLE_BRANCH}"
+      - gresham/whitelist-remove:
+          pattern: openid-connect
+          kondukto: true
+
+workflows:
+  semgrep-scan:
+    when: << pipeline.parameters.semgrep >>
+    jobs:
+      - semgrep-scan:
+          context:
+            - gresham-aws
+            - CircleCi-Gresham-Credentials
+
+  scheduled-security-scan:
+    triggers:
+      - schedule:
+          cron: 0 4 * * 1
+          filters:
+            branches:
+              only: main
+    jobs:
+      - semgrep-scan:
+          name: Semgrep Scan
+          context:
+            - gresham-aws
+            - CircleCi-Gresham-Credentials
