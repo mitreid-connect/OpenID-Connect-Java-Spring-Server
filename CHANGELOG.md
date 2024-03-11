@@ -1,5 +1,21 @@
 Unreleased:
 
+- Updated JDK to Corretto 1.8.342
+- Upgraded Jackson Components to 2.15.2
+
+
+*1.3.3-GRESHAM-28:
+- Updated JDK to Corretto 1.8.332
+- Upgraded Jackson Components to 2.13.3
+
+*1.3.3-GRESHAM:
+- Upgraded libraries with known vulnerabilities
+- Added a Gresham specific Jenkinsfile
+- Added a password encoder to the client entity service
+- Fixes a bug by specifying the name of the scope columnn
+- Removed functionality that passed the client secret down to the UI
+- Updated JDK to Corretto 1.8.252
+
 *1.3.2:
 - Added changelog
 - Set default redirect URI resolver strict matching to true

@@ -25,6 +25,9 @@ import java.lang.reflect.Type;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+import org.mitre.openid.connect.model.Address;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -50,6 +53,8 @@ import com.google.gson.JsonSerializer;
  *
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
+
+	private final Safelist safelist = Safelist.none();
 
 	private Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
@@ -78,9 +83,11 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			if (auth instanceof OIDCAuthenticationToken) {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
-				if (oidc.getUserInfo() != null) {
-					request.setAttribute("userInfo", oidc.getUserInfo());
-					request.setAttribute("userInfoJson", oidc.getUserInfo().toJson());
+				UserInfo userInfo = oidc.getUserInfo();
+				if (userInfo != null) {
+					sanitiseUserInfo(userInfo);
+					request.setAttribute("userInfo", userInfo);
+					request.setAttribute("userInfoJson", userInfo.toJson());
 				} else {
 					request.setAttribute("userInfo", null);
 					request.setAttribute("userInfoJson", "null");
@@ -94,6 +101,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 					// if we have one, inject it so views can use it
 					if (user != null) {
+						sanitiseUserInfo(user);
 						request.setAttribute("userInfo", user);
 						request.setAttribute("userInfoJson", user.toJson());
 					}
@@ -102,6 +110,44 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 		}
 
 		return true;
+	}
+
+	private void sanitiseUserInfo(final UserInfo userInfo) {
+		userInfo.setSub(sanitise(userInfo.getSub()));
+		userInfo.setPreferredUsername(sanitise(userInfo.getPreferredUsername()));
+		userInfo.setName(sanitise(userInfo.getName()));
+		userInfo.setGivenName(sanitise(userInfo.getGivenName()));
+		userInfo.setFamilyName(sanitise(userInfo.getFamilyName()));
+		userInfo.setMiddleName(sanitise(userInfo.getMiddleName()));
+		userInfo.setNickname(sanitise(userInfo.getNickname()));
+		userInfo.setProfile(sanitise(userInfo.getProfile()));
+		userInfo.setPicture(sanitise(userInfo.getPicture()));
+		userInfo.setWebsite(sanitise(userInfo.getWebsite()));
+		userInfo.setEmail(sanitise(userInfo.getEmail()));
+		userInfo.setGender(sanitise(userInfo.getGender()));
+		userInfo.setLocale(sanitise(userInfo.getLocale()));
+		userInfo.setPhoneNumber(sanitise(userInfo.getPhoneNumber()));
+		userInfo.setUpdatedTime(sanitise(userInfo.getUpdatedTime()));
+		userInfo.setBirthdate(sanitise(userInfo.getBirthdate()));
+
+		Address userInfoAddress = userInfo.getAddress();
+		if (userInfoAddress != null) {
+			userInfoAddress.setFormatted(sanitise(userInfoAddress.getFormatted()));
+			userInfoAddress.setStreetAddress(sanitise(userInfoAddress.getStreetAddress()));
+			userInfoAddress.setLocality(sanitise(userInfoAddress.getLocality()));
+			userInfoAddress.setRegion(sanitise(userInfoAddress.getRegion()));
+			userInfoAddress.setPostalCode(sanitise(userInfoAddress.getPostalCode()));
+			userInfoAddress.setCountry(sanitise(userInfoAddress.getCountry()));
+			userInfo.setAddress(userInfoAddress);
+		}
+
+	}
+	
+	private String sanitise(String elementToClean) {
+		if (elementToClean != null) {
+			return Jsoup.clean(elementToClean, safelist);
+		}
+		return null;
 	}
 
 }

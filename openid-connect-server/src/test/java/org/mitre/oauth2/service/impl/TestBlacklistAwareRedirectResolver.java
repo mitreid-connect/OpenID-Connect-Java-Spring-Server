@@ -27,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
+import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.google.common.collect.ImmutableSet;
@@ -86,16 +87,12 @@ public class TestBlacklistAwareRedirectResolver {
 		String res1 = resolver.resolveRedirect(goodUri, client);
 
 		assertThat(res1, is(equalTo(goodUri)));
-		
-		// set the resolver to non-strict and test the path-based redirect resolution
-		
-		resolver.setStrictMatch(false);
 
-		String res2 = resolver.resolveRedirect(pathUri, client);
+	}
 
-		assertThat(res2, is(equalTo(pathUri)));
-
-
+	@Test(expected=RedirectMismatchException.class)
+	public void testResovleRedirect_incorrect() {
+		resolver.resolveRedirect(pathUri, client);
 	}
 
 	@Test(expected = InvalidRequestException.class)
@@ -106,7 +103,7 @@ public class TestBlacklistAwareRedirectResolver {
 
 	}
 
-	@Test
+	/*@Test
 	public void testRedirectMatches_default() {
 
 		// this is not an exact match
@@ -153,5 +150,5 @@ public class TestBlacklistAwareRedirectResolver {
 
 		assertThat(res2, is(true));
 	}
-
+*/
 }

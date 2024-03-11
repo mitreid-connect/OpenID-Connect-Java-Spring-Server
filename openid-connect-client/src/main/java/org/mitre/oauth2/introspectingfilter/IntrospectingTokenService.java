@@ -21,12 +21,7 @@ import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -41,6 +36,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -237,9 +233,14 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("client_id", clientId);
 		parameters.put("scope", OAuth2Utils.formatParameterList(scopes));
-		OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, null, true, scopes, null, null, null, null);
+		OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, parseClientAuthorities(token), true, scopes, null, null, null, null);
 		return storedRequest;
 	}
+
+	// Added the protected method to allow custom behaviour
+	protected Collection<? extends GrantedAuthority> parseClientAuthorities(JsonObject token) {
+	    return null;
+    }
 
 	private Authentication createUserAuthentication(JsonObject token) {
 		JsonElement userId = token.get("user_id");

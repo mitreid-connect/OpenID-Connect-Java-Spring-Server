@@ -1,0 +1,223 @@
+version: 2.1
+
+parameters:
+  release:
+    type: boolean
+    default: false
+  semgrep_scan:
+    type: boolean
+    default: false
+
+orbs:
+  gresham: gresham-computing/gresham-orb@5.8.0
+
+executors:
+  docker-executor:
+    docker:
+      - image: 399104266609.dkr.ecr.eu-west-1.amazonaws.com/circleci-build-images:corretto-8u382
+        aws_auth:
+          aws_access_key_id: $GIS_PRD_ECR_INT_BUILD_ACCESS_KEY
+          aws_secret_access_key: $GIS_PRD_ECR_INT_BUILD_SECRET_ACCESS_KEY
+
+  linux-machine:
+    machine:
+      image: ubuntu-2204:2023.10.1
+
+jobs:
+  build-and-deploy:
+    executor: docker-executor
+    steps:
+      - checkout
+      - get-maven-settings-file
+      - restore-cache
+      - gresham/get-whitelister
+      - gresham/whitelist-add:
+          pattern: OpenId
+      - run:
+          name: "Setting Maven version"
+          command: |
+            MASTER_BRANCH=1.3.x
+            VERSION=$(mvn -s gresham-nexus-settings/ctc.plugins.settings.xml -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec -q)
+            if [[ "${CIRCLE_BRANCH}" != "${MASTER_BRANCH}" && "${VERSION}" == *-SNAPSHOT ]]; then
+              mvn -s gresham-nexus-settings/ctc.plugins.settings.xml versions:set -DnewVersion=${CIRCLE_BRANCH}.GRESHAM-SNAPSHOT -B
+            fi
+      - run:
+          name: "Running Maven build and deploy"
+          command: |
+            mvn -s gresham-nexus-settings/ctc.plugins.settings.xml clean deploy \
+              -B -V -U -DskipTests -DskipITs \
+              -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/repository/thirdparty-maven-snapshots/ \
+              -DaltReleaseDeploymentRepository=releases::default::https://nexus.greshamtech.com/repository/thirdparty-maven-releases/ \
+              |& tee -a /home/circleci/project/mavenOutput.log
+      - generate-download-urls:
+          extension: jar
+      - save-cache
+      - gresham/whitelist-remove:
+          pattern: OpenId
+      - persist-workspace
+
+  test:
+    executor: docker-executor
+    steps:
+      - attach_workspace:
+          at: .
+      - restore-cache
+      - gresham/get-whitelister
+      - gresham/whitelist-add:
+          pattern: OpenId
+      - run:
+          name: "Running tests"
+          command: mvn -fae -s gresham-nexus-settings/ctc.plugins.settings.xml test -B -V -U
+      - save-test-results
+      - save-cache
+      - persist-workspace
+      - gresham/whitelist-remove:
+          pattern: OpenId
+
+  release:
+    executor: docker-executor
+    steps:
+      - checkout
+      - get-maven-settings-file
+      - gresham/get-whitelister
+      - gresham/whitelist-add:
+          pattern: OpenId
+      - restore-cache
+      - run:
+          name: Creating openid-connect-server release and next snapshot
+          command: chmod +x .circleci/cci_create_release_and_snapshot.sh && .circleci/cci_create_release_and_snapshot.sh
+      - save-cache
+      - gresham/whitelist-remove:
+          pattern: OpenId
+
+  semgrep-scan:
+    executor: linux-machine
+    resource_class: medium
+    steps:
+      - checkout
+      - gresham/get-whitelister
+      - gresham/whitelist-add:
+          pattern: OpenId
+          kondukto: true
+      - gresham/semgrep-scan:
+          kondukto: true
+          konduktoProject: "openid-connect-server"
+          konduktoBranch: "${CIRCLE_BRANCH}"
+      - gresham/whitelist-remove:
+          pattern: OpenId
+          kondukto: true
+workflows:
+  build-and-test:
+    unless:
+      or:
+        - << pipeline.parameters.release >>
+        - << pipeline.parameters.semgrep_scan >>
+    jobs:
+      - build-and-deploy:
+          context:
+            - gresham-aws
+            - CTC
+            - CircleCi-Gresham-Credentials
+      - test:
+          requires:
+            - build-and-deploy
+          context:
+            - gresham-aws
+            - CTC
+            - CircleCi-Gresham-Credentials
+
+  build-release:
+    when: << pipeline.parameters.release >>
+    jobs:
+      - release:
+          context:
+            - gresham-aws
+            - CTC
+            - CircleCi-Gresham-Credentials
+          filters:
+            branches:
+              only: 1.3.x
+
+  semgrep-scan:
+    when: << pipeline.parameters.semgrep_scan >>
+    jobs:
+      - semgrep-scan:
+          context:
+            - gresham-aws
+            - CircleCi-Gresham-Credentials
+
+  scheduled-security-scan:
+    triggers:
+      - schedule:
+          cron: 0 4 * * 1
+          filters:
+            branches:
+              only: 1.3.x
+    jobs:
+      - semgrep-scan:
+          name: Semgrep Scan
+          context:
+            - gresham-aws
+            - CircleCi-Gresham-Credentials
+
+commands:
+  setup-git-credentials:
+    steps:
+      - run:
+          name: Setting up Git credentials
+          command: |
+            git config --global user.name "CircleCI"
+            git config --global user.email "$GITHUB_GRESHAM_USER"
+
+  get-maven-settings-file:
+    steps:
+      - setup-git-credentials
+      - run:
+          name: Getting Maven settings file
+          command: |
+            git config --global url."https://api:${GITHUB_GRESHAM_PW}@github.com/".insteadOf "https://github.com/"
+            git clone https://github.com/gresham-computing/gresham-nexus-settings
+
+  save-cache:
+    steps:
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-m2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "pom.xml" }}
+
+  restore-cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-m2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "pom.xml" }}
+            - v1-m2-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}
+            - v1-m2-
+
+  persist-workspace:
+    steps:
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  generate-download-urls:
+    parameters:
+      extension:
+        type: string
+    steps:
+      - run:
+          name: "Generating artifact download URLs"
+          command: chmod +x .circleci/cci_generate_artifact_links.sh && .circleci/cci_generate_artifact_links.sh << parameters.extension >>
+      - store_artifacts:
+          path: download.html
+
+  save-test-results:
+    steps:
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results

@@ -150,6 +150,7 @@ public class DynamicClientRegistrationEndpoint {
 	 * @param p
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
@@ -242,6 +243,7 @@ public class DynamicClientRegistrationEndpoint {
 				// send it all out to the view
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+
 				m.addAttribute("client", registered);
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
@@ -376,6 +378,9 @@ public class DynamicClientRegistrationEndpoint {
 				OAuth2AccessTokenEntity token = rotateRegistrationTokenIfNecessary(auth, savedClient);
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+
+				// We don't want the UI to receive the client secret
+				registered.setClientSecret(null);
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
