@@ -4,7 +4,9 @@ parameters:
   release:
     type: boolean
     default: false
-
+  semgrep_scan:
+    type: boolean
+    default: false
 orbs:
   gresham: gresham-computing/gresham-orb@5.8.0
 
