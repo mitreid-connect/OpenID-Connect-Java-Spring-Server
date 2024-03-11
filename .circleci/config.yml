@@ -108,7 +108,10 @@ jobs:
           kondukto: true
 workflows:
   build-and-test:
-    unless: << pipeline.parameters.release >>
+    unless:
+      or:
+        - << pipeline.parameters.release >>
+        - << pipeline.parameters.semgrep_scan >>
     jobs:
       - build-and-deploy:
           context:
