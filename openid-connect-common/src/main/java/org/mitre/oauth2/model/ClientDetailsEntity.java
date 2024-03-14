@@ -149,6 +149,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Date createdAt; // time the client was created
 	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
 	private Integer deviceCodeValiditySeconds; // timeout for device codes
+	private boolean active = true;
+	private Date statusChangedOn;
 
 	/** fields for UMA */
 	private Set<String> claimsRedirectUris;
@@ -980,6 +982,38 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setClearAccessTokensOnRefresh(boolean clearAccessTokensOnRefresh) {
 		this.clearAccessTokensOnRefresh = clearAccessTokensOnRefresh;
+	}
+
+	/**
+	 * @return the active
+	 */
+	@Basic
+	@Column(name = "active")
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	/**
+	 * @return the status changed on
+	 */
+	@Basic
+	@Column(name = "status_changed_on")
+	public Date getStatusChangedOn() {
+		return statusChangedOn;
+	}
+
+	/**
+	 * @param statusChangedOn the status changed on to set
+	 */
+	public void setStatusChangedOn(Date statusChangedOn) {
+		this.statusChangedOn = statusChangedOn;
 	}
 
 	/**
