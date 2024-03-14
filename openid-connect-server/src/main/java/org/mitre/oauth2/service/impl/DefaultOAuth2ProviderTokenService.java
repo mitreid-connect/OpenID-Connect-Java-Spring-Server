@@ -176,6 +176,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
         throw new InvalidClientException("Client not found: " + request.getClientId());
       }
 
+      if (!client.isActive()) {
+        throw new InvalidClientException("Client is suspended: " + request.getClientId());
+      }
+
       // handle the PKCE code challenge if present
       if (request.getExtensions().containsKey(CODE_CHALLENGE)) {
         String challenge = (String) request.getExtensions().get(CODE_CHALLENGE);
