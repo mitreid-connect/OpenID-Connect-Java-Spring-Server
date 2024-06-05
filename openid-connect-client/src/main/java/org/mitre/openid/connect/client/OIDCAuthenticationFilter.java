@@ -425,7 +425,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 						null, null);
 				SignedJWT jwt = new SignedJWT(header, claimsSet.build());
 
-				signer.signJwt(jwt, alg);
+				if (signer.getDefaultSignerKeyId() != null)
+					signer.signJwt(jwt);
+				else
+					signer.signJwt(jwt, alg);
 
 				form.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
 				form.add("client_assertion", jwt.serialize());
